@@ -1,14 +1,15 @@
-# Smoke Tests v0.8.0
+# Smoke Tests v0.10.0
 
-1. #costs abre.
-2. monthly_cost_periods responde.
-3. vw_monthly_product_costs responde.
-4. price_versions responde.
-5. filtros funcionan.
-6. precio vigente se cruza por producto.
-7. precio bajo costo se resalta.
-8. detalle de entradas abre.
-9. monthly_cost_entries responde.
-10. recalcular llama RPC.
-11. usuario no financiero respeta RLS.
-12. volver a Inventario/Despachos/Ventas/Dashboard funciona.
+1. #planning abre.
+2. operational_plans responde.
+3. vw_plan_vs_actual_status responde.
+4. forecast_snapshots responde.
+5. filtros por sucursal funcionan.
+6. semáforo GREEN/YELLOW/RED se muestra.
+7. refresh_forecasts ejecuta.
+8. aparecen horizontes 7/15/30.
+9. crear plan DRAFT funciona.
+10. primera línea se crea.
+11. RLS limita sucursales.
+12. Plan vs Real con métrica no implementada muestra N/A.
+13. volver a Calidad/Costos/Inventario/Despachos/Ventas/Dashboard funciona.

@@ -5,10 +5,10 @@ export function renderView(route){
   if(route === 'dispatches') return `<div id="dispatch-root"></div>`;
   if(route === 'inventory') return `<div id="inventory-root"></div>`;
   if(route === 'costs') return `<div id="costs-root"></div>`;
+  if(route === 'quality') return `<div id="quality-root"></div>`;
+  if(route === 'planning') return `<div id="planning-root"></div>`;
 
   switch(route){
-    case 'quality': return placeholder('Calidad','Indicadores, no conformidades y CAPA.');
-    case 'planning': return placeholder('Planificación','Plan vs Real y forecast.');
     case 'settings': return placeholder('Configuración','Parámetros del sistema.');
     default: return placeholder('Módulo','Ruta no reconocida.');
   }

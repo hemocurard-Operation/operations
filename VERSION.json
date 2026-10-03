@@ -1,23 +1,21 @@
 {
   "project": "HemoCura Operations",
-  "version": "0.8.0",
-  "stage": "Costos, precios y rentabilidad",
+  "version": "0.10.0",
+  "stage": "Planificación, Plan vs Real y Forecast",
   "entry": "index.html",
+  "operating_mode": "FORECAST_SHADOW",
   "data_sources": [
-    "monthly_cost_periods",
-    "monthly_cost_entries",
-    "vw_monthly_product_costs",
-    "price_versions",
-    "cost_snapshots",
-    "products",
-    "branches",
-    "rpc:calculate_monthly_product_costs"
+    "operational_plans",
+    "operational_plan_lines",
+    "forecast_snapshots",
+    "vw_plan_vs_actual_status",
+    "rpc:refresh_forecasts"
   ],
   "debug_tags": [
-    "HEMOCURA_COSTS",
-    "HEMOCURA_COSTS_PERIOD",
-    "HEMOCURA_COSTS_RECALC",
-    "HEMOCURA_PRICING",
-    "HEMOCURA_COSTS_ERROR"
+    "HEMOCURA_PLANNING",
+    "HEMOCURA_PLAN_VS_ACTUAL",
+    "HEMOCURA_FORECAST",
+    "HEMOCURA_FORECAST_REFRESH",
+    "HEMOCURA_PLANNING_ERROR"
   ]
 }

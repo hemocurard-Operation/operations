@@ -5,6 +5,8 @@ import { mountSales } from './sales.js';
 import { mountDispatches } from './dispatch.js';
 import { mountInventory } from './inventory.js';
 import { mountCosts } from './costs.js';
+import { mountQuality } from './quality.js';
+import { mountPlanning } from './planning.js';
 import { signOut } from './auth.js';
 
 export function mountLayout(session){
@@ -17,7 +19,7 @@ export function mountLayout(session){
       <aside class="sidebar" id="sidebar">
         <div class="sidebar-brand">
           <div class="brand-mark">H</div>
-          <div><strong>HemoCura</strong><br><small>Operations v0.8.0</small></div>
+          <div><strong>HemoCura</strong><br><small>Operations v0.10.0</small></div>
         </div>
         <nav class="nav">${navItems}</nav>
       </aside>
@@ -70,6 +72,8 @@ export function mountLayout(session){
     if(route==='dispatches') await mountDispatches(document.getElementById('dispatch-root'));
     if(route==='inventory') await mountInventory(document.getElementById('inventory-root'));
     if(route==='costs') await mountCosts(document.getElementById('costs-root'));
+    if(route==='quality') await mountQuality(document.getElementById('quality-root'));
+    if(route==='planning') await mountPlanning(document.getElementById('planning-root'));
   };
 
   window.addEventListener('hashchange',()=>render().catch(error=>{

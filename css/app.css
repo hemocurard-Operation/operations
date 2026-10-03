@@ -120,3 +120,15 @@ button.secondary{background:#eef2f7;color:var(--text)}
 /* v0.8.0 Costos */
 .row-danger{background:#fff4f4}
 .row-danger td:first-child{border-left:4px solid var(--bad)}
+
+/* v0.10.0 Planificación */
+.shadow-badge{
+  display:inline-block;padding:6px 10px;border-radius:999px;
+  background:#fff4d9;color:var(--warn);font-size:12px;font-weight:700;
+}
+.toolbar-row{display:flex;gap:8px;flex-wrap:wrap}
+.plan-dot{display:inline-block;padding:3px 8px;border-radius:999px;font-size:11px;font-weight:700}
+.plan-green{background:#e5f3e8;color:var(--ok)}
+.plan-yellow{background:#fff4d9;color:var(--warn)}
+.plan-red{background:#f9e3e3;color:var(--bad)}
+.plan-na{background:#eef2f7;color:#667085}

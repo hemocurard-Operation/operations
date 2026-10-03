@@ -1,12 +1,10 @@
 # Changelog
 
-## 0.8.0
-- Módulo Costos.
-- Períodos mensuales.
-- Costos por producto.
-- Precio vigente.
-- Margen estimado.
-- Comparación costo previo.
-- Detalle de entradas.
-- Recalcular costos vía RPC.
-- No incluye aprobación/cierre.
+## 0.10.0
+- Planificación conectada.
+- Plan vs Real.
+- Semáforo de cumplimiento.
+- Forecast 7/15/30.
+- Actualización manual del forecast.
+- Creación de plan DRAFT.
+- Forecast marcado SHADOW.

@@ -1,34 +1,32 @@
-# HemoCura Operations v0.8.0
+# HemoCura Operations v0.10.0
 
-Etapa: Costos, precios y rentabilidad.
+Etapa: Planificación, Plan vs Real y Forecast.
 
 ## Fuentes reales
-- monthly_cost_periods
-- monthly_cost_entries
-- vw_monthly_product_costs
-- price_versions
-- products
-- branches
-- RPC calculate_monthly_product_costs(uuid)
+- operational_plans
+- operational_plan_lines
+- forecast_snapshots
+- vw_plan_vs_actual_status
+- RPC refresh_forecasts(date)
 
 ## Cadena
-#costs
+#planning
 → views.js
-→ costs.js
-→ costs-data.js
+→ planning.js
+→ planning-data.js
 → supabase.js
 → Supabase
 
 ## Funciones
-- períodos mensuales;
-- costo unitario por producto;
-- comparación contra costo previo;
-- precio vigente;
-- margen unitario y %;
-- señal de precio bajo costo;
-- detalle de entradas de costo;
-- recálculo del período vía RPC.
+- planes DAILY/WEEKLY/MONTHLY;
+- metas por métrica;
+- Plan vs Real;
+- semáforo GREEN/YELLOW/RED;
+- forecast 7/15/30 días;
+- refresco del forecast;
+- creación de plan DRAFT + primera línea.
 
-## Importante
-Esta versión NO aprueba ni cierra períodos.
-La aprobación financiera sigue siendo una acción separada.
+## Forecast
+Modo: SHADOW.
+Método inicial: media móvil de 30 días y stock menos forecast.
+No usar para decisiones clínicas automáticas.

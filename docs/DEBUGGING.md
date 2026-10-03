@@ -1,22 +1,22 @@
-# Diagnóstico v0.8.0
+# Diagnóstico v0.10.0
 
 Esperado:
-[HEMOCURA_ROUTER] costs
-[HEMOCURA_VIEW] costs
-[HEMOCURA_COSTS_PERIOD]
-[HEMOCURA_COSTS] vw_monthly_product_costs
-[HEMOCURA_PRICING] price_versions
-[HEMOCURA_COSTS] módulo OK
+[HEMOCURA_ROUTER] planning
+[HEMOCURA_VIEW] planning
+[HEMOCURA_PLANNING] operational_plans
+[HEMOCURA_PLAN_VS_ACTUAL]
+[HEMOCURA_FORECAST]
+[HEMOCURA_PLANNING] módulo OK
 
-Recalcular:
-[HEMOCURA_COSTS_RECALC]
+Actualizar:
+[HEMOCURA_FORECAST_REFRESH]
 
 Errores:
-[HEMOCURA_COSTS_ERROR]
+[HEMOCURA_PLANNING_ERROR]
 
 Interpretación:
-- permission denied → rol financiero/gerencial o RLS.
-- relation does not exist → objeto SQL faltante.
-- function calculate_monthly_product_costs does not exist → RPC no instalada.
-- no hay costos → período no calculado o sin entradas.
-- precio bajo costo → revisar price_versions y costo mensual.
+- relation does not exist → módulo planning SQL no instalado.
+- function refresh_forecasts does not exist → RPC no instalada.
+- permission denied → RLS/can_access_branch.
+- Plan vs Real N/A → métrica aún no soportada por la vista o meta = 0.
+- forecast vacío → no hay historial suficiente o no se ejecutó refresh_forecasts.
