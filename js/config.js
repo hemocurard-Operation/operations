@@ -1,7 +1,7 @@
 // Completar con datos públicos de Supabase.
 export const CONFIG = {
-  SUPABASE_URL: 'https://TU-PROYECTO.supabase.co',
-  SUPABASE_PUBLISHABLE_KEY: 'TU_CLAVE_PUBLICABLE',
+  SUPABASE_URL: 'https://hemocurard-operation/operations.supabase.co',
+  SUPABASE_PUBLISHABLE_KEY: 'sb_publishable_OO9fniHIjPS6iueOWPSIHg_p1W-iWn0',
   APP_BASE: '/operations/'
 };
 
