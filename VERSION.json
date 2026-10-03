@@ -1,22 +1,16 @@
 {
   "project": "HemoCura Operations",
-  "version": "0.13.0",
-  "stage": "Pre-Go-Live, Rollback y Respuesta a Incidentes",
-  "release_channel": "RC",
+  "version": "0.14.0",
+  "stage": "RC Freeze / Frontend Integrity",
+  "release_channel": "RC-FREEZE",
   "entry": "index.html",
   "production_target": "LIVE-LIMITED",
   "clinical_core": "SHADOW/BLOCKED",
-  "release_policy": {
-    "requires_qa_zero_critical_failures": true,
-    "requires_backup_confirmation": true,
-    "requires_rollback_plan": true,
-    "requires_post_deploy_validation": true
-  },
-  "debug_tags": [
-    "HEMOCURA_RELEASE",
-    "HEMOCURA_PREFLIGHT",
-    "HEMOCURA_ROLLBACK",
-    "HEMOCURA_POSTDEPLOY",
-    "HEMOCURA_RELEASE_ERROR"
-  ]
+  "frontend_controls": {
+    "version_banner": true,
+    "asset_integrity_manifest": true,
+    "frontend_selftest": true,
+    "cache_diagnostics": true,
+    "service_worker_registration": false
+  }
 }

@@ -1,12 +1,14 @@
-# Smoke Tests v0.13.0
+# Smoke Tests v0.14.0
 
-1. #release abre.
-2. Preflight ejecuta QA.
-3. Resultado QA se refleja en Go/No-Go.
-4. Checklist persiste.
-5. Reporte de liberación se genera.
-6. Copiar reporte funciona.
-7. Guardrails muestran SHADOW/BLOCKED.
-8. #qa sigue funcionando.
-9. Todos los módulos anteriores siguen accesibles.
-10. No se añadió service_role.
+1. #freeze abre.
+2. VERSION.json se carga con no-store.
+3. index.html responde.
+4. login.html responde.
+5. css/app.css responde.
+6. js/app.js responde.
+7. bootstrap.js responde.
+8. layout.js responde.
+9. RELEASE_MANIFEST.json responde.
+10. diagnóstico de caché funciona.
+11. limpiar caché funciona.
+12. #qa y #release siguen funcionando.

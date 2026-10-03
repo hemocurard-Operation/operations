@@ -8,7 +8,8 @@ const ROUTES = {
   planning: {title:'Planificación', subtitle:'Plan vs Real y forecast'},
   settings: {title:'Configuración', subtitle:'Parámetros del sistema'},
   qa: {title:'QA / Release', subtitle:'Estabilización y validación integral'},
-  release: {title:'Pre-Go-Live', subtitle:'Liberación, rollback y contingencia'}
+  release: {title:'Pre-Go-Live', subtitle:'Liberación, rollback y contingencia'},
+  freeze: {title:'RC Freeze', subtitle:'Integridad del frontend y control de caché'}
 };
 
 export function getRoute(){

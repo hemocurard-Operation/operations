@@ -1,27 +1,18 @@
-# HemoCura Operations v0.13.0 RC
+# HemoCura Operations v0.14.0 RC-FREEZE
 
-Etapa: Pre-Go-Live, rollback y respuesta a incidentes.
-
-## No agrega lógica operativa nueva
-La funcionalidad de negocio sigue siendo la misma que v0.12.0.
+Objetivo: congelar arquitectura y verificar integridad del frontend.
 
 ## Nueva ruta
-`#release`
+`#freeze`
 
 ## Incluye
-- preflight técnico reutilizando QA;
-- checklist Pre-Go-Live;
-- decisión Go/No-Go técnica;
-- reporte de liberación;
-- procedimiento de rollback de frontend;
-- documentación de incidentes;
-- validación post-deploy.
+- versión publicada visible;
+- self-test de archivos;
+- diagnóstico de caché;
+- limpieza manual de caches/Service Workers;
+- manifest de integridad;
+- checklist de freeze.
 
-## Estado
-- Operación: LIVE-LIMITED target
-- Forecast: SHADOW
-- FEFO clínico: BLOCKED
-- Cold chain blocking: BLOCKED
-- Donor-recipient traceability: SHADOW/BLOCKED
-
-v1.0.0 no debe declararse hasta ejecutar QA real y resolver hallazgos.
+## Importante
+No agrega lógica operativa.
+No promueve automáticamente a v1.0.0.
