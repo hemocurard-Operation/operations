@@ -1,28 +1,20 @@
-# HemoCura — Estructura Estándar de Programación
+# HemoCura Operations v0.2.0
 
-Estructura raíz:
+Etapa: Supabase + Auth.
 
-operations/
-├── assets/
-├── css/
-├── js/
-├── hemocura-core/
-├── vendor/
-├── sql/
-├── docs/
-├── tests/
-├── 404.html
-├── index.html
-├── login.html
-├── manifest.json
-├── sw.js
-├── VERSION.json
-└── README.md
+## Ruta crítica
 
-Regla de trabajo:
-1. Versionar cada cambio.
-2. Indicar archivo exacto modificado.
-3. Registrar motivo.
-4. Registrar prueba.
-5. Registrar resultado.
-6. Si falla, reportar URL + Console + Network + Actions.
+index.html
+→ js/app.js
+→ hemocura-core/bootstrap.js
+→ hemocura-core/auth.js
+→ hemocura-core/supabase.js
+→ js/config.js
+
+Login:
+login.html
+→ js/login.js
+→ hemocura-core/auth.js
+→ Supabase
+
+No avanzar a v0.3.0 hasta validar autenticación.

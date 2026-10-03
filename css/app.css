@@ -1,3 +1,29 @@
-:root{--navy:#1A365D;--red:#8B0000;--bg:#f6f8fb;--text:#172131}
-*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--text)}
-#app{min-height:100vh}.login-shell{max-width:420px;margin:10vh auto;background:#fff;padding:28px;border-radius:12px}
+:root{
+  --navy:#1A365D; --red:#8B0000; --bg:#f5f7fb; --paper:#fff; --text:#172131;
+  --muted:#667085; --line:#d9e0ea; --ok:#23703B; --warn:#9a6700; --bad:#8B0000;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text)}
+button,input{font:inherit}
+.boot{padding:32px}
+.app-shell{max-width:1100px;margin:0 auto;padding:28px}
+.topbar{display:flex;justify-content:space-between;gap:16px;align-items:center;background:var(--paper);padding:16px 18px;border-bottom:1px solid var(--line)}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:18px;margin-top:18px}
+.login-shell{min-height:100vh;display:grid;place-items:center;padding:20px}
+.login-card{width:min(430px,100%);background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:28px;box-shadow:0 8px 30px rgba(0,0,0,.08)}
+.brand-mark{width:42px;height:42px;border-radius:10px;display:grid;place-items:center;background:var(--navy);color:white;font-weight:700;font-size:22px}
+.login-card h1{margin-bottom:4px}
+.muted{color:var(--muted)}
+label{display:block;margin:14px 0 6px}
+input{width:100%;padding:11px 12px;border:1px solid #cfd7e3;border-radius:8px;margin-top:5px}
+button{width:100%;border:0;border-radius:8px;padding:11px 14px;background:var(--navy);color:white;cursor:pointer;margin-top:12px}
+button.secondary{background:#eef2f7;color:var(--text)}
+button:disabled{opacity:.6;cursor:not-allowed}
+.hidden{display:none!important}
+.status{padding:10px 12px;border-radius:8px;margin:14px 0;font-size:14px}
+.status.info{background:#e8eef7;color:var(--navy)}
+.status.ok{background:#e5f3e8;color:var(--ok)}
+.status.warn{background:#fff4d9;color:var(--warn)}
+.status.bad{background:#f9e3e3;color:var(--bad)}
+.debug-panel{margin-top:20px;border-top:1px solid var(--line);padding-top:12px}
+.debug-panel pre{white-space:pre-wrap;word-break:break-word;background:#111827;color:#e5e7eb;padding:10px;border-radius:8px;font-size:12px}

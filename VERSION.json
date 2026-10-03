@@ -1,7 +1,13 @@
 {
   "project": "HemoCura Operations",
-  "version": "0.1.0-standard",
-  "structure": "github-static-modular",
+  "version": "0.2.0",
+  "stage": "Supabase + Auth",
   "entry": "index.html",
-  "debug_tag": "HEMOCURA_BOOT"
+  "debug_tags": [
+    "HEMOCURA_BOOT",
+    "HEMOCURA_CONFIG",
+    "HEMOCURA_SUPABASE",
+    "HEMOCURA_AUTH",
+    "HEMOCURA_AUTH_ERROR"
+  ]
 }

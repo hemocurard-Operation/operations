@@ -1,6 +1,39 @@
 <!doctype html>
 <html lang="es">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>HemoCura — Acceso</title><link rel="stylesheet" href="./css/app.css"></head>
-<body><main class="login-shell"><h1>HemoCura</h1><div id="login-root"></div></main>
-<script type="module" src="./js/login.js"></script></body></html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>HemoCura — Acceso</title>
+  <link rel="stylesheet" href="./css/app.css">
+</head>
+<body>
+  <main class="login-shell">
+    <section class="login-card">
+      <div class="brand-mark">H</div>
+      <h1>HemoCura</h1>
+      <p class="muted">Sistema de Gerencia de Operaciones</p>
+
+      <div id="login-status" class="status info">Preparando autenticación…</div>
+
+      <form id="login-form" autocomplete="on">
+        <label>Correo
+          <input id="email" type="email" autocomplete="username" required>
+        </label>
+        <label>Contraseña
+          <input id="password" type="password" autocomplete="current-password" required>
+        </label>
+        <button id="login-button" type="submit">Entrar</button>
+      </form>
+
+      <button id="logout-button" type="button" class="secondary hidden">Cerrar sesión</button>
+
+      <details class="debug-panel">
+        <summary>Diagnóstico</summary>
+        <pre id="debug-output">Sin eventos todavía.</pre>
+      </details>
+    </section>
+  </main>
+
+  <script type="module" src="./js/login.js"></script>
+</body>
+</html>
