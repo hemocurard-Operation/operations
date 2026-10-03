@@ -2,6 +2,7 @@ import { routeList, getRoute, getRouteMeta, navigate } from './router.js';
 import { renderView } from './views.js';
 import { mountDashboard } from './dashboard.js';
 import { mountSales } from './sales.js';
+import { mountDispatches } from './dispatch.js';
 import { signOut } from './auth.js';
 
 export function mountLayout(session){
@@ -14,7 +15,7 @@ export function mountLayout(session){
       <aside class="sidebar" id="sidebar">
         <div class="sidebar-brand">
           <div class="brand-mark">H</div>
-          <div><strong>HemoCura</strong><br><small>Operations v0.5.0</small></div>
+          <div><strong>HemoCura</strong><br><small>Operations v0.6.0</small></div>
         </div>
         <nav class="nav">${navItems}</nav>
       </aside>
@@ -64,6 +65,7 @@ export function mountLayout(session){
 
     if(route==='dashboard') await mountDashboard(document.getElementById('dashboard-root'));
     if(route==='sales') await mountSales(document.getElementById('sales-root'));
+    if(route==='dispatches') await mountDispatches(document.getElementById('dispatch-root'));
   };
 
   window.addEventListener('hashchange',()=>render().catch(error=>{

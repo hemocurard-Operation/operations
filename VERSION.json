@@ -1,18 +1,18 @@
 {
   "project": "HemoCura Operations",
-  "version": "0.5.0",
-  "stage": "Ventas operativas",
+  "version": "0.6.0",
+  "stage": "Despachos operativos",
   "entry": "index.html",
   "data_sources": [
-    "daily_sales",
-    "vw_sale_lines_editable",
+    "dispatches",
+    "dispatch_lines",
     "branches",
-    "rpc:adjust_sale_line"
+    "vw_dispatch_vs_sale"
   ],
   "debug_tags": [
-    "HEMOCURA_SALES",
-    "HEMOCURA_SALES_DETAIL",
-    "HEMOCURA_SALES_ADJUST",
-    "HEMOCURA_SALES_ERROR"
+    "HEMOCURA_DISPATCH",
+    "HEMOCURA_DISPATCH_DETAIL",
+    "HEMOCURA_DISPATCH_RECON",
+    "HEMOCURA_DISPATCH_ERROR"
   ]
 }

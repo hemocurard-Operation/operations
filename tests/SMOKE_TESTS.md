@@ -1,16 +1,12 @@
-# Smoke Tests v0.5.0
+# Smoke Tests v0.6.0
 
-1. #sales abre sin pantalla blanca.
-2. Sucursales se cargan.
-3. daily_sales responde.
-4. Filtro de fecha funciona.
-5. Filtro de sucursal funciona.
-6. Filtro de estado funciona.
-7. Detalle abre.
-8. vw_sale_lines_editable responde.
-9. Ajuste sin motivo se rechaza.
-10. Ajuste válido llama RPC.
-11. Totales se recalculan.
-12. Venta cerrada respeta restricciones.
-13. RLS limita ventas por sucursal.
-14. Volver a Dashboard funciona.
+1. #dispatches abre.
+2. dispatches responde.
+3. filtros funcionan.
+4. detalle abre.
+5. dispatch_lines responde.
+6. conciliación carga.
+7. diferencias 0 muestran OK.
+8. diferencias != 0 muestran Revisar.
+9. fallo conciliación no tumba lista.
+10. volver a ventas/dashboard funciona.

@@ -1,28 +1,21 @@
-# HemoCura Operations v0.5.0
+# HemoCura Operations v0.6.0
 
-Etapa: Ventas operativas.
-
-## Fuentes reales
-- `daily_sales`
-- `vw_sale_lines_editable`
-- `branches`
-- RPC `adjust_sale_line`
+Etapa: Despachos operativos.
 
 ## Cadena
-#sales
+#dispatches
 → views.js
-→ sales.js
-→ sales-data.js
+→ dispatch.js
+→ dispatch-data.js
 → supabase.js
 → Supabase
 
 ## Funciones
-- filtros por período, sucursal y estado;
-- totales de unidades, ingresos, costo y margen;
-- detalle por producto/cliente;
-- origen de la venta;
-- ajuste controlado de unidades;
-- motivo obligatorio;
-- refresco después del ajuste.
+- filtros por fecha/sucursal/estado;
+- lista de despachos;
+- detalle de líneas;
+- conciliación despacho vs venta;
+- carga parcial tolerada;
+- diagnóstico independiente.
 
-No se crea venta manual todavía.
+La lógica clínica por unidad/FEFO sigue fuera de esta versión.

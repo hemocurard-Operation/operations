@@ -1,24 +1,20 @@
-# Diagnóstico v0.5.0
+# Diagnóstico v0.6.0
 
-Secuencia:
-[HEMOCURA_ROUTER] sales
-[HEMOCURA_VIEW] sales
-[HEMOCURA_SALES] branches
-[HEMOCURA_SALES] daily_sales
-[HEMOCURA_SALES] módulo OK
+Esperado:
+[HEMOCURA_ROUTER] dispatches
+[HEMOCURA_VIEW] dispatches
+[HEMOCURA_DISPATCH] dispatches
+[HEMOCURA_DISPATCH_RECON]
+[HEMOCURA_DISPATCH] módulo OK
 
 Detalle:
-[HEMOCURA_SALES_DETAIL] <uuid>
+[HEMOCURA_DISPATCH_DETAIL]
 
-Ajuste:
-[HEMOCURA_SALES_ADJUST]
-
-Errores:
-[HEMOCURA_SALES_ERROR]
+Error:
+[HEMOCURA_DISPATCH_ERROR]
 
 Interpretación:
-- permission denied → RLS/grants.
-- relation does not exist → vista/tabla faltante.
-- function adjust_sale_line does not exist → función SQL no instalada.
-- La venta no está editable → estado/rol impide modificación.
-- Sin acceso → usuario sin acceso a sucursal.
+- relation does not exist → objeto SQL faltante;
+- permission denied → grants/RLS;
+- lista carga pero conciliación falla → vista vw_dispatch_vs_sale no disponible;
+- detalle falla → revisar dispatch_lines.
