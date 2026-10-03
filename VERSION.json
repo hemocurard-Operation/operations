@@ -1,0 +1,7 @@
+{
+  "project": "HemoCura Operations",
+  "version": "0.1.0-standard",
+  "structure": "github-static-modular",
+  "entry": "index.html",
+  "debug_tag": "HEMOCURA_BOOT"
+}
