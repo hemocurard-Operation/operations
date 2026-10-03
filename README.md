@@ -1,24 +1,30 @@
-# HemoCura Operations v0.18.0 RC
+# HemoCura Operations v0.19.0 RC
 
-Etapa: Runtime Evidence Collector.
+Etapa: Operational Acceptance & Sign-off.
 
 ## Nueva ruta
-`#evidence`
+`#acceptance`
 
 ## Objetivo
-Compilar en un solo reporte:
-- versión runtime;
-- frontend self-test;
-- QA runtime;
-- caché;
-- checklist Freeze;
-- checklist QA Release;
-- checklist Pre-Go-Live;
-- Promotion Gate;
-- sesión actual;
-- estado del Clinical Core.
+Completar la validación operativa por sucursal antes de v1.0.0.
+
+Sucursales:
+- Santiago
+- Puerto Plata
+- Tenares
+
+## Evalúa
+- módulos por sucursal;
+- responsable;
+- fecha;
+- turno;
+- observaciones;
+- primer día de operación;
+- sign-off de Gerencia Operativa y Calidad.
 
 ## Regla
-No promover a v1.0.0 si el reporte indica controles pendientes.
+v1.0.0 requiere:
+1. evidencia técnica (`#evidence`);
+2. aceptación operativa (`#acceptance`).
 
-El SAFE PATCH no incluye `js/config.js`.
+El SAFE PATCH no modifica `js/config.js`.

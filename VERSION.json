@@ -1,17 +1,14 @@
 {
   "project": "HemoCura Operations",
-  "version": "0.18.0",
-  "stage": "Runtime Evidence Collector",
+  "version": "0.19.0",
+  "stage": "Operational Acceptance & Sign-off",
   "release_channel": "RC",
   "production_target": "LIVE-LIMITED",
-  "promotion_rule": "EVIDENCE_REQUIRED_BEFORE_V1",
   "clinical_core": "SHADOW/BLOCKED",
-  "evidence_sources": [
-    "VERSION.json",
-    "frontend health",
-    "QA runtime",
-    "release checklist",
-    "promotion checklist",
-    "cache diagnostics"
+  "promotion_rule": "TECHNICAL_EVIDENCE_PLUS_OPERATIONAL_SIGNOFF",
+  "required_branches": [
+    "Santiago",
+    "Puerto Plata",
+    "Tenares"
   ]
 }

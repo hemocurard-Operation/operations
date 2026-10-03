@@ -12,6 +12,7 @@ export function renderView(route){
   if(route === 'release') return `<div id="release-root"></div>`;
   if(route === 'freeze') return `<div id="freeze-root"></div>`;
   if(route === 'evidence') return `<div id="evidence-root"></div>`;
+  if(route === 'acceptance') return `<div id="acceptance-root"></div>`;
 
   return `<section class="card module-placeholder"><h3>Módulo</h3><div class="status warn">Ruta no reconocida.</div></section>`;
 }

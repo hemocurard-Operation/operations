@@ -1,9 +1,9 @@
 # Changelog
 
-## 0.18.0 RC
-- Runtime Evidence Collector.
-- Consolidación de QA + frontend + checklists.
-- Reporte JSON copiable y descargable.
-- Nueva ruta #evidence.
-- Promotion Gate enlaza Runtime Evidence.
-- Sin lógica operativa nueva.
+## 0.19.0 RC
+- Aceptación operativa.
+- Sign-off por sucursal.
+- Validación del primer día.
+- Reporte JSON de aceptación.
+- Promotion Gate enlaza #acceptance.
+- Sin nueva lógica operativa.

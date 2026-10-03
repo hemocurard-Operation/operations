@@ -12,6 +12,7 @@ import { mountQA } from './qa.js';
 import { mountRelease } from './release.js';
 import { mountFreeze } from './freeze.js';
 import { mountEvidence } from './evidence.js';
+import { mountAcceptance } from './acceptance.js';
 import { signOut } from './auth.js';
 
 export function mountLayout(session){
@@ -24,7 +25,7 @@ export function mountLayout(session){
       <aside class="sidebar" id="sidebar">
         <div class="sidebar-brand">
           <div class="brand-mark">H</div>
-          <div><strong>HemoCura</strong><br><small>Operations v0.18.0 RC</small></div>
+          <div><strong>HemoCura</strong><br><small>Operations v0.19.0 RC</small></div>
         </div>
         <nav class="nav">${navItems}</nav>
       </aside>
@@ -84,6 +85,7 @@ export function mountLayout(session){
     if(route==='release') await mountRelease(document.getElementById('release-root'));
     if(route==='freeze') await mountFreeze(document.getElementById('freeze-root'));
     if(route==='evidence') await mountEvidence(document.getElementById('evidence-root'));
+    if(route==='acceptance') await mountAcceptance(document.getElementById('acceptance-root'));
   };
 
   window.addEventListener('hashchange',()=>render().catch(error=>{

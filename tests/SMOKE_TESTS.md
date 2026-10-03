@@ -1,13 +1,14 @@
-# Smoke Tests v0.18.0
+# Smoke Tests v0.19.0
 
-1. #evidence abre.
-2. runtime version se obtiene.
-3. frontend self-test ejecuta.
-4. QA runtime ejecuta.
-5. estado de caché se obtiene.
-6. checklists locales se leen.
-7. matriz se genera.
-8. reporte JSON se genera.
-9. copiar JSON funciona.
-10. descargar JSON funciona.
-11. SAFE PATCH no contiene js/config.js.
+1. #acceptance abre.
+2. Santiago aparece.
+3. Puerto Plata aparece.
+4. Tenares aparece.
+5. Estados por módulo persisten.
+6. Observaciones persisten.
+7. Primer día persiste.
+8. Sign-off persiste.
+9. Reporte JSON se genera.
+10. copiar reporte funciona.
+11. Promotion Gate enlaza #acceptance.
+12. SAFE PATCH no contiene js/config.js.
