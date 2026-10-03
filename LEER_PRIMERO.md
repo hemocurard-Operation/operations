@@ -1,11 +1,13 @@
-# PATCH HemoCura v0.4.0
+# PATCH HemoCura v0.5.0 — Ventas
 
-Este paquete contiene únicamente archivos nuevos/modificados sobre v0.3.0.
+Aplicar sobre v0.4.0 funcional.
 
-NO reemplaza:
-- `js/config.js`
-- `hemocura-core/auth.js`
-- `hemocura-core/supabase.js`
-- `login.html`
+No reemplazar:
+- js/config.js
+- hemocura-core/auth.js
+- hemocura-core/supabase.js
+- login.html
 
-Use el PATCH si v0.3.0 ya funciona correctamente.
+Nuevos:
+- hemocura-core/sales-data.js
+- hemocura-core/sales.js
