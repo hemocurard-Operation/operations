@@ -1,18 +1,7 @@
 {
-  "version": "0.17.0",
+  "version": "0.18.0",
   "channel": "RC",
   "generated_at": "2026-10-03",
-  "static_audit": {
-    "javascript_files_checked": 33,
-    "syntax": "PASS",
-    "missing_relative_imports": 0,
-    "invalid_json_files": 0,
-    "registered_routes": 11,
-    "route_views": "PASS",
-    "route_mounts": "PASS",
-    "html_note": "404.html /operations/ is an intentional absolute GitHub Pages route",
-    "blocking_finding": "full package config.js contains placeholders"
-  },
   "files": [
     {
       "path": "404.html",
@@ -20,11 +9,11 @@
     },
     {
       "path": "README.md",
-      "sha256": "c93585982acab6f691bf0c0c94e5989f78edf8c2e73078f58fab4ce36d3b6f46"
+      "sha256": "d38d8b5fa0132458df0b29d3ab0a7f78e5f00b83bfc520f9988293704ea8d796"
     },
     {
       "path": "VERSION.json",
-      "sha256": "617f0e5cdce9512bbf1583527cb86ec7e749306700a21b609d301079eae42874"
+      "sha256": "f4dddde5ca682b8de870d1837972bbbcda79d21072906832ec3fdcee97364eb4"
     },
     {
       "path": "assets/README.md",
@@ -36,7 +25,7 @@
     },
     {
       "path": "docs/CHANGELOG.md",
-      "sha256": "d0f79330b2e5217df9d111208d1141ec40cb170ae2429010653de0e164f88e26"
+      "sha256": "5dcf11651d6d5ee702abce299e28c55322210da31d4029c267a42ecdf824797b"
     },
     {
       "path": "docs/DEBUGGING.md",
@@ -77,6 +66,10 @@
     {
       "path": "docs/IMPLEMENTACION_0.17.0.md",
       "sha256": "bd8ea67be90bc8ce603b5af5d23ffc29f082582fed21f653cb61f82055c6ca19"
+    },
+    {
+      "path": "docs/IMPLEMENTACION_0.18.0.md",
+      "sha256": "621458a63126dea8b2589f7fc93256ee7c71c645b1fee04fbd9aa5805b9178df"
     },
     {
       "path": "docs/IMPLEMENTACION_0.3.0.md",
@@ -131,6 +124,10 @@
       "sha256": "bb6aa99f47319e1578dfa26369cddf59eaf0bd93280b12ebdc275c6c753ef7a6"
     },
     {
+      "path": "docs/RUNTIME_EVIDENCE_0.18.0.md",
+      "sha256": "9d29915b37eece2cce7ed2bff6a0368a85a657dda0ab9a0e71e78374ed554acb"
+    },
+    {
       "path": "docs/SAFE_DEPLOYMENT.md",
       "sha256": "15ba33000696746255e896b69b76ebcdb3158843117239867c59388b9829d8a7"
     },
@@ -171,6 +168,10 @@
       "sha256": "c38d78c1b85e9bbd9f4ccaf8af25e49a2d51fac276f96e18ae897dbe79bc5e03"
     },
     {
+      "path": "hemocura-core/evidence.js",
+      "sha256": "9d7d44f28d970d7405346e2b152d7da723df1b21d606980a5e01a45e55ce67ce"
+    },
+    {
       "path": "hemocura-core/freeze.js",
       "sha256": "9862ec6e9471263fbc25cd046220c32e61ef54b8e2589091e82dbd9a0b3d8c79"
     },
@@ -188,7 +189,7 @@
     },
     {
       "path": "hemocura-core/layout.js",
-      "sha256": "39ac7a1f855a19222718585a5aa0386cf8338e6158f4edaea35018d3a632e24d"
+      "sha256": "6ef27581091e111af6ef59397a4374c9562a3fefb16a7c45107af09728139a78"
     },
     {
       "path": "hemocura-core/planning-data.js",
@@ -220,7 +221,7 @@
     },
     {
       "path": "hemocura-core/router.js",
-      "sha256": "29b029b20619e2cb9b9e1a61b4f48541b568d8b4f177f7e53897514c9674b704"
+      "sha256": "e833ce3a6b312cae6e4018f613c99632db095a458c317953ede1077365620c04"
     },
     {
       "path": "hemocura-core/sales-data.js",
@@ -244,7 +245,7 @@
     },
     {
       "path": "hemocura-core/views.js",
-      "sha256": "c825626681e492598843691c01353ec0c2480f3a50973536dcbf8c7b3f7f6484"
+      "sha256": "13350b2e7e6e0f37f1ccb6e089f4dacd4ed49cee8efafabd001875073079a951"
     },
     {
       "path": "index.html",
@@ -284,7 +285,7 @@
     },
     {
       "path": "promotion.html",
-      "sha256": "120778dbdbcedf8dc8cb19467ecee2a10057c24035af409d573ad854f41bf33f"
+      "sha256": "c85afd628e55a7cb8e815d1c77a1a59823926900b969db339a263fc14f2dc847"
     },
     {
       "path": "sql/12_planning_forecast_v7_FIXED.sql",
@@ -304,7 +305,7 @@
     },
     {
       "path": "tests/SMOKE_TESTS.md",
-      "sha256": "fd3aa68dd272fe9db6ba2485422474a396802d408d400f0801786c429a9924fc"
+      "sha256": "08dc01f4d4277ab273b03fad6e1e579b326ba1e9a8412f291e6bec5e75f7c07c"
     },
     {
       "path": "vendor/README.md",

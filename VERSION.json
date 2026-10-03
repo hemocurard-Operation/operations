@@ -1,19 +1,17 @@
 {
   "project": "HemoCura Operations",
-  "version": "0.17.0",
-  "stage": "Promotion Gate",
+  "version": "0.18.0",
+  "stage": "Runtime Evidence Collector",
   "release_channel": "RC",
-  "deployment_policy": "SAFE_PATCH_PREFERRED",
   "production_target": "LIVE-LIMITED",
-  "promotion_rule": "NO_V1_WITHOUT_RUNTIME_QA",
-  "static_audit": {
-    "javascript_files_checked": 33,
-    "javascript_syntax": "PASS",
-    "relative_imports": "PASS",
-    "registered_routes": 11,
-    "route_view_alignment": "PASS",
-    "route_mount_alignment": "PASS",
-    "json_validity": "PASS",
-    "full_package_config": "PLACEHOLDER_REQUIRES_REPLACEMENT"
-  }
+  "promotion_rule": "EVIDENCE_REQUIRED_BEFORE_V1",
+  "clinical_core": "SHADOW/BLOCKED",
+  "evidence_sources": [
+    "VERSION.json",
+    "frontend health",
+    "QA runtime",
+    "release checklist",
+    "promotion checklist",
+    "cache diagnostics"
+  ]
 }

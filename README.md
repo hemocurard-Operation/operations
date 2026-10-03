@@ -1,19 +1,24 @@
-# HemoCura Operations v0.17.0 RC
+# HemoCura Operations v0.18.0 RC
 
-Etapa: Promotion Gate.
+Etapa: Runtime Evidence Collector.
 
-## Auditoría estática
-- 33 JS: PASS
-- imports relativos: PASS
-- JSON: PASS
-- 11 rutas: alineadas con views/layout
+## Nueva ruta
+`#evidence`
 
-## Nueva página
-`/operations/promotion.html`
+## Objetivo
+Compilar en un solo reporte:
+- versión runtime;
+- frontend self-test;
+- QA runtime;
+- caché;
+- checklist Freeze;
+- checklist QA Release;
+- checklist Pre-Go-Live;
+- Promotion Gate;
+- sesión actual;
+- estado del Clinical Core.
 
-## Política
-No declarar v1.0.0 sin:
-status → freeze → qa → release.
+## Regla
+No promover a v1.0.0 si el reporte indica controles pendientes.
 
-Para una instalación existente use:
-**v0.17.0 SAFE PATCH**
+El SAFE PATCH no incluye `js/config.js`.

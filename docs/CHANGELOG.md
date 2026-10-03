@@ -1,10 +1,9 @@
 # Changelog
 
-## 0.17.0 RC
-- Promotion Gate.
-- Auditoría estática profunda documentada.
-- Verificación de 33 JS.
-- Verificación de 11 rutas.
-- Gate visual previo a v1.0.0.
-- SAFE PATCH conserva config.js.
+## 0.18.0 RC
+- Runtime Evidence Collector.
+- Consolidación de QA + frontend + checklists.
+- Reporte JSON copiable y descargable.
+- Nueva ruta #evidence.
+- Promotion Gate enlaza Runtime Evidence.
 - Sin lógica operativa nueva.

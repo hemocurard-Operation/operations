@@ -1,9 +1,13 @@
-# Smoke Tests v0.17.0
+# Smoke Tests v0.18.0
 
-1. promotion.html abre.
-2. promotion.js carga.
-3. config placeholder => bloquea promoción.
-4. config personalizada => marca configuración OK.
-5. enlaces status/freeze/qa/release funcionan.
-6. checklist persiste.
-7. no se modifica js/config.js con SAFE PATCH.
+1. #evidence abre.
+2. runtime version se obtiene.
+3. frontend self-test ejecuta.
+4. QA runtime ejecuta.
+5. estado de caché se obtiene.
+6. checklists locales se leen.
+7. matriz se genera.
+8. reporte JSON se genera.
+9. copiar JSON funciona.
+10. descargar JSON funciona.
+11. SAFE PATCH no contiene js/config.js.

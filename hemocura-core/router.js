@@ -9,7 +9,8 @@ const ROUTES = {
   settings: {title:'Configuración', subtitle:'Parámetros del sistema'},
   qa: {title:'QA / Release', subtitle:'Estabilización y validación integral'},
   release: {title:'Pre-Go-Live', subtitle:'Liberación, rollback y contingencia'},
-  freeze: {title:'RC Freeze', subtitle:'Integridad del frontend y control de caché'}
+  freeze: {title:'RC Freeze', subtitle:'Integridad del frontend y control de caché'},
+  evidence: {title:'Runtime Evidence', subtitle:'Evidencia técnica para promoción'}
 };
 
 export function getRoute(){
