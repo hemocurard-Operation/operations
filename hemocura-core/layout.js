@@ -1,5 +1,6 @@
 import { routeList, getRoute, getRouteMeta, navigate } from './router.js';
 import { renderView } from './views.js';
+import { mountDashboard } from './dashboard.js';
 import { signOut } from './auth.js';
 
 export function mountLayout(session){
@@ -12,7 +13,7 @@ export function mountLayout(session){
       <aside class="sidebar" id="sidebar">
         <div class="sidebar-brand">
           <div class="brand-mark">H</div>
-          <div><strong>HemoCura</strong><br><small>Operations v0.3.0</small></div>
+          <div><strong>HemoCura</strong><br><small>Operations v0.4.0</small></div>
         </div>
         <nav class="nav">${navItems}</nav>
       </aside>
@@ -30,7 +31,6 @@ export function mountLayout(session){
         </header>
         <main class="content">
           <div id="view"></div>
-          <div class="debug-strip" id="debug-strip">[HEMOCURA_ROUTER] listo</div>
         </main>
       </section>
     </div>`;
@@ -38,24 +38,38 @@ export function mountLayout(session){
   document.querySelectorAll('[data-route]').forEach(btn=>{
     btn.addEventListener('click',()=>navigate(btn.dataset.route));
   });
+
   document.getElementById('logout-btn').addEventListener('click',async()=>{
     await signOut(); location.replace('./login.html');
   });
+
   document.getElementById('menu-btn')?.addEventListener('click',()=>{
     document.getElementById('sidebar').classList.toggle('open');
   });
 
-  const render=()=>{
+  const render=async()=>{
     const route=getRoute();
     const meta=getRouteMeta(route);
+
     document.getElementById('page-title').textContent=meta.title;
     document.getElementById('page-subtitle').textContent=meta.subtitle;
     document.getElementById('view').innerHTML=renderView(route);
-    document.querySelectorAll('[data-route]').forEach(btn=>btn.classList.toggle('active',btn.dataset.route===route));
-    document.getElementById('debug-strip').textContent=`[HEMOCURA_ROUTER] ${route} · [HEMOCURA_VIEW] OK`;
+
+    document.querySelectorAll('[data-route]').forEach(btn=>{
+      btn.classList.toggle('active',btn.dataset.route===route);
+    });
+
     document.getElementById('sidebar').classList.remove('open');
     console.info('[HEMOCURA_ROUTER]',route);
+
+    if(route === 'dashboard'){
+      await mountDashboard(document.getElementById('dashboard-root'));
+    }
   };
-  window.addEventListener('hashchange',render);
-  render();
+
+  window.addEventListener('hashchange',()=>render().catch(error=>{
+    console.error('[HEMOCURA_NAV_ERROR]',error);
+  }));
+
+  render().catch(error=>console.error('[HEMOCURA_NAV_ERROR]',error));
 }

@@ -1,26 +1,32 @@
-# HemoCura Operations v0.3.0
+# HemoCura Operations v0.4.0
 
-Etapa: Layout + navegación.
+Etapa: Dashboard operativo conectado a Supabase.
+
+## Fuentes reales
+
+- `vw_command_center_today`
+- `vw_open_management_alerts`
 
 ## Cadena
 
 index.html
 → js/app.js
-→ hemocura-core/bootstrap.js
+→ bootstrap.js
 → auth.js
 → layout.js
-→ router.js
 → views.js
+→ dashboard.js
+→ data.js
+→ supabase.js
+→ Supabase
 
-## Rutas
+## Regla de diagnóstico
 
-- #dashboard
-- #sales
-- #dispatches
-- #inventory
-- #costs
-- #quality
-- #planning
-- #settings
+Si el layout abre pero Dashboard falla:
+1. F12 → Console.
+2. Buscar `[HEMOCURA_DASHBOARD_ERROR]`.
+3. Revisar Network.
+4. Confirmar que las vistas existen.
+5. Confirmar grants y RLS.
 
-No conecta todavía datos reales de módulos.
+Los demás módulos siguen como placeholder.

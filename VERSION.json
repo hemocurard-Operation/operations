@@ -1,15 +1,19 @@
 {
   "project": "HemoCura Operations",
-  "version": "0.3.0",
-  "stage": "Layout + navegación",
+  "version": "0.4.0",
+  "stage": "Dashboard operativo conectado a Supabase",
   "entry": "index.html",
+  "data_sources": [
+    "vw_command_center_today",
+    "vw_open_management_alerts"
+  ],
   "debug_tags": [
     "HEMOCURA_BOOT",
-    "HEMOCURA_CONFIG",
     "HEMOCURA_SUPABASE",
     "HEMOCURA_AUTH",
     "HEMOCURA_ROUTER",
     "HEMOCURA_VIEW",
-    "HEMOCURA_NAV_ERROR"
+    "HEMOCURA_DASHBOARD",
+    "HEMOCURA_DASHBOARD_ERROR"
   ]
 }

@@ -1,18 +1,20 @@
-# Diagnóstico v0.3.0
+# Diagnóstico v0.4.0
 
-Secuencia:
-[HEMOCURA_BOOT]
-→ [HEMOCURA_AUTH]
-→ [HEMOCURA_ROUTER]
-→ [HEMOCURA_VIEW]
+Cadena correcta:
+[HEMOCURA_BOOT] OK
+[HEMOCURA_ROUTER] dashboard
+[HEMOCURA_VIEW] dashboard
+[HEMOCURA_DASHBOARD] consultando vw_command_center_today
+[HEMOCURA_DASHBOARD] consultando vw_open_management_alerts
+[HEMOCURA_DASHBOARD] datos OK
 
-Si el menú aparece pero una vista no:
-- revisar router.js
-- revisar views.js
+Errores:
+- `[HEMOCURA_DASHBOARD_ERROR] command center`
+- `[HEMOCURA_DASHBOARD_ERROR] alerts`
 
-Si no aparece layout:
-- revisar layout.js
-- revisar bootstrap.js
-
-Si vuelve a login:
-- revisar auth.js / Supabase
+Interpretación:
+- relation does not exist → SQL/vista faltante.
+- permission denied → grant/RLS.
+- Failed to fetch → red/conexión/config.
+- 401 → sesión/Auth.
+- 403 → RLS/permisos.

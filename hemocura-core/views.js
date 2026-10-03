@@ -1,22 +1,9 @@
-function card(label,value,note=''){
-  return `<section class="card"><div class="muted">${label}</div><div class="kpi">${value}</div><small>${note}</small></section>`;
-}
-
 export function renderView(route){
   console.info('[HEMOCURA_VIEW]',route);
+  if(route === 'dashboard'){
+    return `<div id="dashboard-root"></div>`;
+  }
   switch(route){
-    case 'dashboard':
-      return `
-        <div class="grid">
-          ${card('Ventas hoy','—','Se conecta en v0.4+')}
-          ${card('Despachos','—','Pendiente datos reales')}
-          ${card('Inventario crítico','—','Pendiente datos reales')}
-          ${card('Alertas','—','Pendiente datos reales')}
-        </div>
-        <section class="card module-placeholder">
-          <h3>Command Center</h3>
-          <p>El layout y la navegación están activos. Los KPI reales se conectarán en la siguiente iteración.</p>
-        </section>`;
     case 'sales': return placeholder('Ventas','Registro y consulta de ventas diarias.');
     case 'dispatches': return placeholder('Despachos','Gestión y conciliación de despachos.');
     case 'inventory': return placeholder('Inventario','Existencias, stock mínimo y alertas.');
