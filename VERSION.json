@@ -1,16 +1,17 @@
 {
   "project": "HemoCura Operations",
-  "version": "0.14.0",
-  "stage": "RC Freeze / Frontend Integrity",
-  "release_channel": "RC-FREEZE",
+  "version": "0.15.0",
+  "stage": "Deployment Verifier",
+  "release_channel": "RC",
   "entry": "index.html",
+  "public_diagnostic_entry": "status.html",
   "production_target": "LIVE-LIMITED",
   "clinical_core": "SHADOW/BLOCKED",
-  "frontend_controls": {
-    "version_banner": true,
-    "asset_integrity_manifest": true,
-    "frontend_selftest": true,
-    "cache_diagnostics": true,
-    "service_worker_registration": false
-  }
+  "purpose": [
+    "Verify GitHub Pages independently from app auth",
+    "Verify core static files",
+    "Verify runtime version",
+    "Detect stale deployment/cache",
+    "Provide copyable diagnostic report"
+  ]
 }

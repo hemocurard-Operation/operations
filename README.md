@@ -1,18 +1,24 @@
-# HemoCura Operations v0.14.0 RC-FREEZE
+# HemoCura Operations v0.15.0 RC
 
-Objetivo: congelar arquitectura y verificar integridad del frontend.
+Etapa: verificación externa del despliegue.
 
-## Nueva ruta
-`#freeze`
+## Nueva página
+`/operations/status.html`
 
-## Incluye
-- versión publicada visible;
-- self-test de archivos;
-- diagnóstico de caché;
-- limpieza manual de caches/Service Workers;
-- manifest de integridad;
-- checklist de freeze.
+No requiere login ni conexión exitosa con Supabase.
 
-## Importante
-No agrega lógica operativa.
-No promueve automáticamente a v1.0.0.
+## Objetivo
+Separar cuatro clases de problemas:
+
+1. GitHub Pages / publicación.
+2. Archivos/rutas.
+3. Caché/versiones antiguas.
+4. Supabase/Auth/RLS.
+
+## Secuencia recomendada
+Si la aplicación falla:
+
+1. Abrir `status.html`.
+2. Copiar el reporte.
+3. Si todo está OK, continuar con F12 y Supabase.
+4. Si un archivo falla, corregir únicamente despliegue/ruta.

@@ -1,14 +1,17 @@
-# Smoke Tests v0.14.0
+# Smoke Tests v0.15.0
 
-1. #freeze abre.
-2. VERSION.json se carga con no-store.
-3. index.html responde.
-4. login.html responde.
-5. css/app.css responde.
-6. js/app.js responde.
-7. bootstrap.js responde.
-8. layout.js responde.
-9. RELEASE_MANIFEST.json responde.
-10. diagnóstico de caché funciona.
-11. limpiar caché funciona.
-12. #qa y #release siguen funcionando.
+1. /operations/status.html abre sin login.
+2. VERSION.json devuelve 0.15.0.
+3. RELEASE_MANIFEST.json responde.
+4. index.html responde.
+5. login.html responde.
+6. app.css responde.
+7. app.js responde.
+8. login.js responde.
+9. bootstrap.js responde.
+10. layout.js responde.
+11. router.js responde.
+12. supabase.js responde.
+13. reporte JSON se genera.
+14. copiar reporte funciona.
+15. 404 vuelve a /operations/.

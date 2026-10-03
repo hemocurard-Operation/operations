@@ -1,10 +1,10 @@
 # Changelog
 
-## 0.14.0 RC-FREEZE
-- Frontend self-test.
-- Runtime VERSION.json.
-- Diagnóstico de caché.
-- Limpieza de Service Workers.
-- Service Worker inerte durante estabilización.
-- Checklist de freeze.
+## 0.15.0 RC
+- Página status.html independiente.
+- Verificación pública de archivos.
+- Detección de versión publicada.
+- Peticiones no-store / anti-cache.
+- Reporte copiable.
+- 404 redirige explícitamente a /operations/.
 - Sin lógica operativa nueva.

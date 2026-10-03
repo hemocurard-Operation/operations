@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>HemoCura — Estado del despliegue</title>
+  <link rel="stylesheet" href="./css/app.css">
+</head>
+<body>
+  <main class="status-page">
+    <section class="status-hero">
+      <div>
+        <div class="brand-mark">H</div>
+        <h1>HemoCura · Estado del despliegue</h1>
+        <p>Diagnóstico independiente de autenticación y Supabase.</p>
+      </div>
+      <a href="./" class="status-link">Volver a la aplicación</a>
+    </section>
+
+    <section class="card">
+      <div class="card-head">
+        <h2>Verificación pública</h2>
+        <button id="status-run">Ejecutar diagnóstico</button>
+      </div>
+      <div id="status-summary" class="status info">
+        Pulse “Ejecutar diagnóstico”.
+      </div>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr><th>Control</th><th>Estado</th><th>HTTP</th><th>Tiempo</th><th>Detalle</th></tr>
+          </thead>
+          <tbody id="status-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Versión detectada</h2>
+      <pre id="version-output" class="json-box">Pendiente.</pre>
+    </section>
+
+    <section class="card">
+      <div class="card-head">
+        <h2>Reporte</h2>
+        <button id="status-copy" class="secondary">Copiar reporte</button>
+      </div>
+      <pre id="status-report" class="json-box">Pendiente.</pre>
+    </section>
+
+    <section class="card">
+      <h2>Interpretación rápida</h2>
+      <div class="diagnostic-grid">
+        <div><strong>status.html falla</strong><span>GitHub Pages / ruta / publicación.</span></div>
+        <div><strong>index.html falla</strong><span>Despliegue incompleto.</span></div>
+        <div><strong>JS falla</strong><span>Archivo faltante o ruta incorrecta.</span></div>
+        <div><strong>Todo está OK pero app falla</strong><span>Revisar Auth, Supabase o RLS.</span></div>
+      </div>
+    </section>
+
+    <script type="module" src="./js/status.js"></script>
+  </main>
+</body>
+</html>
