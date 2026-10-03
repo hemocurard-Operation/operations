@@ -80,3 +80,25 @@ button.secondary{background:#eef2f7;color:var(--text)}
 .sev-low{background:#e5f3e8;color:var(--ok)}
 @media(max-width:1000px){.dashboard-kpis{grid-template-columns:1fr 1fr}}
 @media(max-width:700px){.dashboard-kpis{grid-template-columns:1fr}.alert-row{grid-template-columns:1fr}}
+
+/* v0.5.0 Ventas */
+.sales-toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.filters-card{margin-top:16px}
+.filter-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:12px}
+.filter-grid select,.filter-grid input,textarea{
+  width:100%;padding:9px 10px;border:1px solid #cfd7e3;border-radius:8px;background:var(--paper);color:var(--text)
+}
+.sales-kpis{grid-template-columns:repeat(4,minmax(0,1fr))}
+.sale-status{display:inline-block;padding:3px 8px;border-radius:999px;font-size:11px;font-weight:700}
+.sale-draft{background:#edf2f7;color:#475569}
+.sale-confirmed{background:#e5f3e8;color:var(--ok)}
+.sale-closed{background:#e8eef7;color:var(--navy)}
+.sale-reopened{background:#fff4d9;color:var(--warn)}
+.compact{padding:6px 9px;font-size:12px}
+.sales-dialog{width:min(520px,94vw);border:0;border-radius:12px;padding:0;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.sales-dialog form{padding:20px}
+.sales-dialog::backdrop{background:rgba(0,0,0,.45)}
+.dialog-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}
+.dialog-actions button{width:auto}
+@media(max-width:900px){.filter-grid,.sales-kpis{grid-template-columns:1fr 1fr}}
+@media(max-width:650px){.filter-grid,.sales-kpis{grid-template-columns:1fr}}

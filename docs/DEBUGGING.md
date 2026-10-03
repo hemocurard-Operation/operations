@@ -1,20 +1,24 @@
-# Diagnóstico v0.4.0
+# Diagnóstico v0.5.0
 
-Cadena correcta:
-[HEMOCURA_BOOT] OK
-[HEMOCURA_ROUTER] dashboard
-[HEMOCURA_VIEW] dashboard
-[HEMOCURA_DASHBOARD] consultando vw_command_center_today
-[HEMOCURA_DASHBOARD] consultando vw_open_management_alerts
-[HEMOCURA_DASHBOARD] datos OK
+Secuencia:
+[HEMOCURA_ROUTER] sales
+[HEMOCURA_VIEW] sales
+[HEMOCURA_SALES] branches
+[HEMOCURA_SALES] daily_sales
+[HEMOCURA_SALES] módulo OK
+
+Detalle:
+[HEMOCURA_SALES_DETAIL] <uuid>
+
+Ajuste:
+[HEMOCURA_SALES_ADJUST]
 
 Errores:
-- `[HEMOCURA_DASHBOARD_ERROR] command center`
-- `[HEMOCURA_DASHBOARD_ERROR] alerts`
+[HEMOCURA_SALES_ERROR]
 
 Interpretación:
-- relation does not exist → SQL/vista faltante.
-- permission denied → grant/RLS.
-- Failed to fetch → red/conexión/config.
-- 401 → sesión/Auth.
-- 403 → RLS/permisos.
+- permission denied → RLS/grants.
+- relation does not exist → vista/tabla faltante.
+- function adjust_sale_line does not exist → función SQL no instalada.
+- La venta no está editable → estado/rol impide modificación.
+- Sin acceso → usuario sin acceso a sucursal.

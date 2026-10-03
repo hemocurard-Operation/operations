@@ -1,19 +1,18 @@
 {
   "project": "HemoCura Operations",
-  "version": "0.4.0",
-  "stage": "Dashboard operativo conectado a Supabase",
+  "version": "0.5.0",
+  "stage": "Ventas operativas",
   "entry": "index.html",
   "data_sources": [
-    "vw_command_center_today",
-    "vw_open_management_alerts"
+    "daily_sales",
+    "vw_sale_lines_editable",
+    "branches",
+    "rpc:adjust_sale_line"
   ],
   "debug_tags": [
-    "HEMOCURA_BOOT",
-    "HEMOCURA_SUPABASE",
-    "HEMOCURA_AUTH",
-    "HEMOCURA_ROUTER",
-    "HEMOCURA_VIEW",
-    "HEMOCURA_DASHBOARD",
-    "HEMOCURA_DASHBOARD_ERROR"
+    "HEMOCURA_SALES",
+    "HEMOCURA_SALES_DETAIL",
+    "HEMOCURA_SALES_ADJUST",
+    "HEMOCURA_SALES_ERROR"
   ]
 }

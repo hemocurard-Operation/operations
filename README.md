@@ -1,32 +1,28 @@
-# HemoCura Operations v0.4.0
+# HemoCura Operations v0.5.0
 
-Etapa: Dashboard operativo conectado a Supabase.
+Etapa: Ventas operativas.
 
 ## Fuentes reales
-
-- `vw_command_center_today`
-- `vw_open_management_alerts`
+- `daily_sales`
+- `vw_sale_lines_editable`
+- `branches`
+- RPC `adjust_sale_line`
 
 ## Cadena
-
-index.html
-→ js/app.js
-→ bootstrap.js
-→ auth.js
-→ layout.js
+#sales
 → views.js
-→ dashboard.js
-→ data.js
+→ sales.js
+→ sales-data.js
 → supabase.js
 → Supabase
 
-## Regla de diagnóstico
+## Funciones
+- filtros por período, sucursal y estado;
+- totales de unidades, ingresos, costo y margen;
+- detalle por producto/cliente;
+- origen de la venta;
+- ajuste controlado de unidades;
+- motivo obligatorio;
+- refresco después del ajuste.
 
-Si el layout abre pero Dashboard falla:
-1. F12 → Console.
-2. Buscar `[HEMOCURA_DASHBOARD_ERROR]`.
-3. Revisar Network.
-4. Confirmar que las vistas existen.
-5. Confirmar grants y RLS.
-
-Los demás módulos siguen como placeholder.
+No se crea venta manual todavía.

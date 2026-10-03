@@ -1,6 +1,7 @@
 import { routeList, getRoute, getRouteMeta, navigate } from './router.js';
 import { renderView } from './views.js';
 import { mountDashboard } from './dashboard.js';
+import { mountSales } from './sales.js';
 import { signOut } from './auth.js';
 
 export function mountLayout(session){
@@ -13,7 +14,7 @@ export function mountLayout(session){
       <aside class="sidebar" id="sidebar">
         <div class="sidebar-brand">
           <div class="brand-mark">H</div>
-          <div><strong>HemoCura</strong><br><small>Operations v0.4.0</small></div>
+          <div><strong>HemoCura</strong><br><small>Operations v0.5.0</small></div>
         </div>
         <nav class="nav">${navItems}</nav>
       </aside>
@@ -29,9 +30,7 @@ export function mountLayout(session){
             <button id="logout-btn">Salir</button>
           </div>
         </header>
-        <main class="content">
-          <div id="view"></div>
-        </main>
+        <main class="content"><div id="view"></div></main>
       </section>
     </div>`;
 
@@ -40,7 +39,8 @@ export function mountLayout(session){
   });
 
   document.getElementById('logout-btn').addEventListener('click',async()=>{
-    await signOut(); location.replace('./login.html');
+    await signOut();
+    location.replace('./login.html');
   });
 
   document.getElementById('menu-btn')?.addEventListener('click',()=>{
@@ -62,9 +62,8 @@ export function mountLayout(session){
     document.getElementById('sidebar').classList.remove('open');
     console.info('[HEMOCURA_ROUTER]',route);
 
-    if(route === 'dashboard'){
-      await mountDashboard(document.getElementById('dashboard-root'));
-    }
+    if(route==='dashboard') await mountDashboard(document.getElementById('dashboard-root'));
+    if(route==='sales') await mountSales(document.getElementById('sales-root'));
   };
 
   window.addEventListener('hashchange',()=>render().catch(error=>{

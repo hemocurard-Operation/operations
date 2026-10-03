@@ -1,13 +1,16 @@
-# Smoke Tests v0.4.0
+# Smoke Tests v0.5.0
 
-1. Login válido.
-2. Dashboard abre.
-3. Console muestra HEMOCURA_DASHBOARD.
-4. vw_command_center_today responde.
-5. vw_open_management_alerts responde.
-6. Si no hay datos, Dashboard muestra 0 sin fallar.
-7. Si alertas falla, Command Center puede seguir mostrando datos.
-8. Botón Actualizar funciona.
-9. Cambiar a Ventas y volver a Dashboard recarga datos.
-10. RLS limita sucursales visibles.
-11. Logout funciona.
+1. #sales abre sin pantalla blanca.
+2. Sucursales se cargan.
+3. daily_sales responde.
+4. Filtro de fecha funciona.
+5. Filtro de sucursal funciona.
+6. Filtro de estado funciona.
+7. Detalle abre.
+8. vw_sale_lines_editable responde.
+9. Ajuste sin motivo se rechaza.
+10. Ajuste válido llama RPC.
+11. Totales se recalculan.
+12. Venta cerrada respeta restricciones.
+13. RLS limita ventas por sucursal.
+14. Volver a Dashboard funciona.

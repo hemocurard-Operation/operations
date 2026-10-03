@@ -1,10 +1,9 @@
 export function renderView(route){
   console.info('[HEMOCURA_VIEW]',route);
-  if(route === 'dashboard'){
-    return `<div id="dashboard-root"></div>`;
-  }
+  if(route === 'dashboard') return `<div id="dashboard-root"></div>`;
+  if(route === 'sales') return `<div id="sales-root"></div>`;
+
   switch(route){
-    case 'sales': return placeholder('Ventas','Registro y consulta de ventas diarias.');
     case 'dispatches': return placeholder('Despachos','Gestión y conciliación de despachos.');
     case 'inventory': return placeholder('Inventario','Existencias, stock mínimo y alertas.');
     case 'costs': return placeholder('Costos','Costeo mensual, precios y margen.');
