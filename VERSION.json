@@ -1,13 +1,15 @@
 {
   "project": "HemoCura Operations",
-  "version": "0.2.0",
-  "stage": "Supabase + Auth",
+  "version": "0.3.0",
+  "stage": "Layout + navegación",
   "entry": "index.html",
   "debug_tags": [
     "HEMOCURA_BOOT",
     "HEMOCURA_CONFIG",
     "HEMOCURA_SUPABASE",
     "HEMOCURA_AUTH",
-    "HEMOCURA_AUTH_ERROR"
+    "HEMOCURA_ROUTER",
+    "HEMOCURA_VIEW",
+    "HEMOCURA_NAV_ERROR"
   ]
 }

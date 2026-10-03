@@ -12,28 +12,19 @@
       <div class="brand-mark">H</div>
       <h1>HemoCura</h1>
       <p class="muted">Sistema de Gerencia de Operaciones</p>
-
       <div id="login-status" class="status info">Preparando autenticación…</div>
-
-      <form id="login-form" autocomplete="on">
-        <label>Correo
-          <input id="email" type="email" autocomplete="username" required>
-        </label>
-        <label>Contraseña
-          <input id="password" type="password" autocomplete="current-password" required>
-        </label>
+      <form id="login-form">
+        <label>Correo<input id="email" type="email" required autocomplete="username"></label>
+        <label>Contraseña<input id="password" type="password" required autocomplete="current-password"></label>
         <button id="login-button" type="submit">Entrar</button>
       </form>
-
       <button id="logout-button" type="button" class="secondary hidden">Cerrar sesión</button>
-
       <details class="debug-panel">
         <summary>Diagnóstico</summary>
         <pre id="debug-output">Sin eventos todavía.</pre>
       </details>
     </section>
   </main>
-
   <script type="module" src="./js/login.js"></script>
 </body>
 </html>

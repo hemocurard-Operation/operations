@@ -1,20 +1,18 @@
-# Diagnóstico estándar v0.2.0
+# Diagnóstico v0.3.0
 
-Buscar estas etiquetas en Console:
+Secuencia:
+[HEMOCURA_BOOT]
+→ [HEMOCURA_AUTH]
+→ [HEMOCURA_ROUTER]
+→ [HEMOCURA_VIEW]
 
-- `[HEMOCURA_BOOT]`
-- `[HEMOCURA_BOOT_ERROR]`
-- `[HEMOCURA_CONFIG]`
-- `[HEMOCURA_SUPABASE]`
-- `[HEMOCURA_LOGIN]`
-- `[HEMOCURA_AUTH]`
-- `[HEMOCURA_AUTH_ERROR]`
+Si el menú aparece pero una vista no:
+- revisar router.js
+- revisar views.js
 
-Secuencia correcta:
+Si no aparece layout:
+- revisar layout.js
+- revisar bootstrap.js
 
-HEMOCURA_LOGIN
-→ HEMOCURA_SUPABASE
-→ HEMOCURA_AUTH
-→ login OK
-→ HEMOCURA_BOOT
-→ HEMOCURA_BOOT OK
+Si vuelve a login:
+- revisar auth.js / Supabase

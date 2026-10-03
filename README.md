@@ -1,20 +1,26 @@
-# HemoCura Operations v0.2.0
+# HemoCura Operations v0.3.0
 
-Etapa: Supabase + Auth.
+Etapa: Layout + navegación.
 
-## Ruta crítica
+## Cadena
 
 index.html
 → js/app.js
 → hemocura-core/bootstrap.js
-→ hemocura-core/auth.js
-→ hemocura-core/supabase.js
-→ js/config.js
+→ auth.js
+→ layout.js
+→ router.js
+→ views.js
 
-Login:
-login.html
-→ js/login.js
-→ hemocura-core/auth.js
-→ Supabase
+## Rutas
 
-No avanzar a v0.3.0 hasta validar autenticación.
+- #dashboard
+- #sales
+- #dispatches
+- #inventory
+- #costs
+- #quality
+- #planning
+- #settings
+
+No conecta todavía datos reales de módulos.

@@ -1,2 +1,2 @@
 # SQL
-Se conserva la base Supabase ya instalada.
+Sin cambios en v0.3.0.

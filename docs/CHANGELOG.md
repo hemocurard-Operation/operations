@@ -1,9 +1,9 @@
 # Changelog
 
-## 0.2.0
-- Conexión Supabase desde navegador.
-- Login email/password.
-- Logout.
-- Persistencia de sesión.
-- Diagnóstico visible.
-- Error de configuración visible, no pantalla blanca.
+## 0.3.0
+- Layout responsivo.
+- Menú lateral.
+- Navegación hash.
+- Vistas placeholder.
+- Logout desde topbar.
+- Diagnóstico router/view.
