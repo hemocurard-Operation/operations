@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>HemoCura — Promotion Gate</title>
+  <link rel="stylesheet" href="./css/app.css">
+</head>
+<body>
+  <main class="status-page">
+    <section class="status-hero">
+      <div>
+        <div class="brand-mark">H</div>
+        <h1>HemoCura · Promotion Gate</h1>
+        <p>Control final previo a promoción v1.0.0.</p>
+      </div>
+      <a href="./" class="status-link">Volver a HemoCura</a>
+    </section>
+
+    <section class="card">
+      <h2>Estado de auditoría estática</h2>
+      <div class="grid sales-kpis">
+        <section class="card qa-pass"><div class="muted">JS revisados</div><div class="kpi">33</div></section>
+        <section class="card qa-pass"><div class="muted">Sintaxis</div><div class="kpi small-kpi">PASS</div></section>
+        <section class="card qa-pass"><div class="muted">Imports</div><div class="kpi small-kpi">PASS</div></section>
+        <section class="card qa-pass"><div class="muted">Rutas</div><div class="kpi">11</div></section>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Secuencia obligatoria</h2>
+      <div class="promotion-flow">
+        <a href="./status.html">1. status.html</a>
+        <span>→</span>
+        <a href="./#freeze">2. RC Freeze</a>
+        <span>→</span>
+        <a href="./#qa">3. QA</a>
+        <span>→</span>
+        <a href="./#release">4. Pre-Go-Live</a>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Gate de configuración</h2>
+      <div id="promotion-config" class="status info">Comprobando js/config.js…</div>
+    </section>
+
+    <section class="card">
+      <h2>Criterio v1.0.0</h2>
+      <div class="release-checklist" id="promotion-checklist">
+        <label><input type="checkbox" data-promotion="status"> status.html = OK</label>
+        <label><input type="checkbox" data-promotion="config"> config.js personalizado</label>
+        <label><input type="checkbox" data-promotion="freeze"> #freeze = OK</label>
+        <label><input type="checkbox" data-promotion="qa"> #qa = 0 fallos críticos</label>
+        <label><input type="checkbox" data-promotion="rls"> RLS validado</label>
+        <label><input type="checkbox" data-promotion="backup"> Backup confirmado</label>
+        <label><input type="checkbox" data-promotion="release"> #release = GO técnico</label>
+        <label><input type="checkbox" data-promotion="clinical"> Clinical Core sigue SHADOW/BLOCKED</label>
+      </div>
+      <div id="promotion-result" class="status warn">Promoción bloqueada hasta completar controles.</div>
+    </section>
+
+    <section class="card">
+      <h2>Hallazgo pendiente</h2>
+      <div class="status warn">
+        El ZIP completo contiene config.js de plantilla. Para una instalación ya configurada, use el SAFE PATCH.
+      </div>
+    </section>
+
+    <script type="module" src="./js/promotion.js"></script>
+  </main>
+</body>
+</html>

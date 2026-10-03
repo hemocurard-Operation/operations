@@ -1,12 +1,17 @@
 {
-  "version": "0.16.0",
+  "version": "0.17.0",
   "channel": "RC",
   "generated_at": "2026-10-03",
   "static_audit": {
-    "js_files_checked": 32,
+    "javascript_files_checked": 33,
     "syntax": "PASS",
-    "relative_imports": "PASS",
-    "critical_finding": "config placeholder in full package"
+    "missing_relative_imports": 0,
+    "invalid_json_files": 0,
+    "registered_routes": 11,
+    "route_views": "PASS",
+    "route_mounts": "PASS",
+    "html_note": "404.html /operations/ is an intentional absolute GitHub Pages route",
+    "blocking_finding": "full package config.js contains placeholders"
   },
   "files": [
     {
@@ -15,11 +20,11 @@
     },
     {
       "path": "README.md",
-      "sha256": "d88405fdb90acd2ba4410583ad54ae5246d6946bd49c0d7d0968fb30b583324c"
+      "sha256": "c93585982acab6f691bf0c0c94e5989f78edf8c2e73078f58fab4ce36d3b6f46"
     },
     {
       "path": "VERSION.json",
-      "sha256": "2f0ef004e92b9c2fcc8ab9128f3bcc9b48d7f4726a1a0093fd18af041d25584a"
+      "sha256": "617f0e5cdce9512bbf1583527cb86ec7e749306700a21b609d301079eae42874"
     },
     {
       "path": "assets/README.md",
@@ -27,11 +32,11 @@
     },
     {
       "path": "css/app.css",
-      "sha256": "4bd062bdf131ceab61dc00a7cedba69dead02063482aaec6bbd8e7d89c6c00cc"
+      "sha256": "5105fb0d2783f9648dca7d28860938b6eb98e2a043c631ca74a2060a3784ee66"
     },
     {
       "path": "docs/CHANGELOG.md",
-      "sha256": "e57f087bad2677af368ebd7113742839061d91cf4e23ea9d59f49e828d1a8323"
+      "sha256": "d0f79330b2e5217df9d111208d1141ec40cb170ae2429010653de0e164f88e26"
     },
     {
       "path": "docs/DEBUGGING.md",
@@ -70,6 +75,10 @@
       "sha256": "665289660f75734d9a8a6ef6702a6ec658e611125629f80e098cd0d42b4bf2cc"
     },
     {
+      "path": "docs/IMPLEMENTACION_0.17.0.md",
+      "sha256": "bd8ea67be90bc8ce603b5af5d23ffc29f082582fed21f653cb61f82055c6ca19"
+    },
+    {
       "path": "docs/IMPLEMENTACION_0.3.0.md",
       "sha256": "a6bec22e38d22561bc1207d306896f381b4d23046a81d78163fd4972a2ae0700"
     },
@@ -104,6 +113,10 @@
     {
       "path": "docs/POST_DEPLOY_VALIDATION.md",
       "sha256": "ea068e21f65ffb7cbe560ba02c0c48c51170965f5c4b55f37dc43763ce697986"
+    },
+    {
+      "path": "docs/PROMOTION_GATE_0.17.0.md",
+      "sha256": "c2d4775c4253e3225258dc18abf71914c0e31283e70404889426582247c68388"
     },
     {
       "path": "docs/RC_FREEZE.md",
@@ -254,6 +267,10 @@
       "sha256": "71032411ea93355f380950d3ded4d5196dd4c67c957ab771dbbbf5cf8eb5ea73"
     },
     {
+      "path": "js/promotion.js",
+      "sha256": "3da91155e54daf00bd3eb2bdbb249780d6cfe5d64194dbf209f3fc1643bae9a3"
+    },
+    {
       "path": "js/status.js",
       "sha256": "c986f1b13c9d1e39f02616343168561efba581dc810fd44868cbf3e405caa1d9"
     },
@@ -264,6 +281,10 @@
     {
       "path": "manifest.json",
       "sha256": "bcc7910cea4369d1d3acf28b3d6c9400b341f84d58ea80fa34d28f87bc61c38b"
+    },
+    {
+      "path": "promotion.html",
+      "sha256": "120778dbdbcedf8dc8cb19467ecee2a10057c24035af409d573ad854f41bf33f"
     },
     {
       "path": "sql/12_planning_forecast_v7_FIXED.sql",
@@ -283,7 +304,7 @@
     },
     {
       "path": "tests/SMOKE_TESTS.md",
-      "sha256": "5d99623cf06ddffa1df75efd1bda4c4f795ffa9e2d825f15ef9734e6d25fff6f"
+      "sha256": "fd3aa68dd272fe9db6ba2485422474a396802d408d400f0801786c429a9924fc"
     },
     {
       "path": "vendor/README.md",

@@ -190,3 +190,12 @@ code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
   .status-hero{align-items:flex-start;flex-direction:column}
   .diagnostic-grid{grid-template-columns:1fr}
 }
+
+/* v0.17.0 Promotion Gate */
+.promotion-flow{
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap
+}
+.promotion-flow a{
+  text-decoration:none;border:1px solid var(--line);border-radius:8px;
+  padding:10px 12px;color:var(--navy);font-weight:700
+}

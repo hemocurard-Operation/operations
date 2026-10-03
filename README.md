@@ -1,20 +1,19 @@
-# HemoCura Operations v0.16.0 RC
+# HemoCura Operations v0.17.0 RC
 
-Etapa: Static Audit + Safe Deployment Gate.
+Etapa: Promotion Gate.
 
-## Hallazgo de auditoría
-El código JS de v0.15.0 pasó:
-- sintaxis;
-- imports relativos;
-- archivos críticos.
+## Auditoría estática
+- 33 JS: PASS
+- imports relativos: PASS
+- JSON: PASS
+- 11 rutas: alineadas con views/layout
 
-Pero el ZIP completo contiene `js/config.js` de plantilla.
+## Nueva página
+`/operations/promotion.html`
 
-## Recomendación
-Si ya tienes Supabase configurado:
-**usa SAFE PATCH, no el ZIP completo**.
+## Política
+No declarar v1.0.0 sin:
+status → freeze → qa → release.
 
-## Diagnóstico
-`/operations/status.html`
-
-Ahora también valida que `js/config.js` no contenga placeholders.
+Para una instalación existente use:
+**v0.17.0 SAFE PATCH**

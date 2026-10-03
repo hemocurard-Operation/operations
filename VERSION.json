@@ -1,11 +1,19 @@
 {
   "project": "HemoCura Operations",
-  "version": "0.16.0",
-  "stage": "Static Audit + Safe Deployment Gate",
+  "version": "0.17.0",
+  "stage": "Promotion Gate",
   "release_channel": "RC",
-  "entry": "index.html",
-  "public_diagnostic_entry": "status.html",
-  "deployment_policy": "PATCH_PREFERRED",
-  "critical_guard": "BLOCK_RELEASE_IF_CONFIG_PLACEHOLDER",
-  "production_target": "LIVE-LIMITED"
+  "deployment_policy": "SAFE_PATCH_PREFERRED",
+  "production_target": "LIVE-LIMITED",
+  "promotion_rule": "NO_V1_WITHOUT_RUNTIME_QA",
+  "static_audit": {
+    "javascript_files_checked": 33,
+    "javascript_syntax": "PASS",
+    "relative_imports": "PASS",
+    "registered_routes": 11,
+    "route_view_alignment": "PASS",
+    "route_mount_alignment": "PASS",
+    "json_validity": "PASS",
+    "full_package_config": "PLACEHOLDER_REQUIRES_REPLACEMENT"
+  }
 }

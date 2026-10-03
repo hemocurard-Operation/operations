@@ -1,11 +1,9 @@
-# Smoke Tests v0.16.0
+# Smoke Tests v0.17.0
 
-1. status.html abre.
-2. VERSION.json = 0.16.0.
-3. Todos los archivos críticos responden.
-4. js/config.js sin placeholders => OK.
-5. js/config.js con placeholders => ERROR.
-6. No existe service_role en frontend.
-7. #freeze sigue funcionando.
-8. #qa sigue funcionando.
-9. #release sigue funcionando.
+1. promotion.html abre.
+2. promotion.js carga.
+3. config placeholder => bloquea promoción.
+4. config personalizada => marca configuración OK.
+5. enlaces status/freeze/qa/release funcionan.
+6. checklist persiste.
+7. no se modifica js/config.js con SAFE PATCH.
