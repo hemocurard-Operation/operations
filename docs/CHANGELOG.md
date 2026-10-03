@@ -1,11 +1,11 @@
 # Changelog
 
-## 0.12.0 RC
-- QA integral.
-- Matriz de salud por módulo.
-- Pruebas RLS de lectura.
-- Verificación de rutas.
-- Checklist persistente de liberación.
-- Reporte JSON copiable.
-- Preparación LIVE-LIMITED.
-- Sin activar Clinical Core.
+## 0.13.0 RC
+- Pre-Go-Live.
+- Preflight reutilizando QA.
+- Checklist de liberación.
+- Go/No-Go técnico.
+- Rollback documentado.
+- Incident response.
+- Post-deploy validation.
+- Sin nueva lógica operativa.

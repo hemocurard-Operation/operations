@@ -1,24 +1,22 @@
 {
   "project": "HemoCura Operations",
-  "version": "0.12.0",
-  "stage": "QA integral + Release Candidate",
+  "version": "0.13.0",
+  "stage": "Pre-Go-Live, Rollback y Respuesta a Incidentes",
   "release_channel": "RC",
   "entry": "index.html",
-  "scope": "LIVE-LIMITED",
+  "production_target": "LIVE-LIMITED",
   "clinical_core": "SHADOW/BLOCKED",
-  "qa": {
-    "smoke_tests": true,
-    "module_health_matrix": true,
-    "route_checks": true,
-    "rls_checks": true,
-    "release_checklist": true
+  "release_policy": {
+    "requires_qa_zero_critical_failures": true,
+    "requires_backup_confirmation": true,
+    "requires_rollback_plan": true,
+    "requires_post_deploy_validation": true
   },
   "debug_tags": [
-    "HEMOCURA_QA",
-    "HEMOCURA_QA_ROUTE",
-    "HEMOCURA_QA_MODULE",
-    "HEMOCURA_QA_RLS",
-    "HEMOCURA_QA_RELEASE",
-    "HEMOCURA_QA_ERROR"
+    "HEMOCURA_RELEASE",
+    "HEMOCURA_PREFLIGHT",
+    "HEMOCURA_ROLLBACK",
+    "HEMOCURA_POSTDEPLOY",
+    "HEMOCURA_RELEASE_ERROR"
   ]
 }

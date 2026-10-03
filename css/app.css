@@ -162,3 +162,7 @@ code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
 }
 .release-checklist input{width:auto;margin:2px 0 0}
 @media(max-width:700px){.release-checklist{grid-template-columns:1fr}}
+
+/* v0.13.0 Pre-Go-Live */
+.runbook-steps{line-height:1.7;padding-left:24px}
+.runbook-steps li{margin:6px 0}

@@ -1,37 +1,27 @@
-# HemoCura Operations v0.12.0 RC
+# HemoCura Operations v0.13.0 RC
 
-Etapa: estabilización y QA integral.
+Etapa: Pre-Go-Live, rollback y respuesta a incidentes.
 
-## Objetivo
-No agrega módulos operativos nuevos.
-Valida la arquitectura ya construida antes de LIVE-LIMITED.
+## No agrega lógica operativa nueva
+La funcionalidad de negocio sigue siendo la misma que v0.12.0.
 
-## Módulos incluidos
-- Dashboard
-- Ventas
-- Despachos
-- Inventario agregado
-- Costos
-- Calidad
-- Planificación
-- Configuración
-- QA / Release
+## Nueva ruta
+`#release`
 
-## Estado de producción
-- Operación administrativa: LIVE-LIMITED
+## Incluye
+- preflight técnico reutilizando QA;
+- checklist Pre-Go-Live;
+- decisión Go/No-Go técnica;
+- reporte de liberación;
+- procedimiento de rollback de frontend;
+- documentación de incidentes;
+- validación post-deploy.
+
+## Estado
+- Operación: LIVE-LIMITED target
 - Forecast: SHADOW
-- FEFO clínico por unidad: BLOCKED
+- FEFO clínico: BLOCKED
 - Cold chain blocking: BLOCKED
 - Donor-recipient traceability: SHADOW/BLOCKED
 
-## QA
-Ruta:
-`#qa`
-
-Incluye:
-- matriz de salud;
-- comprobación de acceso a objetos;
-- pruebas RLS de lectura;
-- rutas;
-- checklist de liberación;
-- reporte JSON copiable.
+v1.0.0 no debe declararse hasta ejecutar QA real y resolver hallazgos.

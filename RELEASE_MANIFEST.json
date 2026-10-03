@@ -1,5 +1,5 @@
 {
-  "version": "0.12.0",
+  "version": "0.13.0",
   "channel": "RC",
   "generated_at": "2026-10-03",
   "files": [
@@ -9,11 +9,11 @@
     },
     {
       "path": "README.md",
-      "sha256": "9ee2696aad856b62a3f8a5fb679e37357bc77e1645313a6a586b14e3ab707937"
+      "sha256": "e171431cc81242e721200a6d31df88796d8fddfb100a8466c22f5bf839d6bec8"
     },
     {
       "path": "VERSION.json",
-      "sha256": "41dd16fa7e18e84da0e28faeae312d3a3785cba20a9e31caeaf7f056d57ddc88"
+      "sha256": "d17c0f6229323ee82e1b233d2aa8113d0107327eb0e4396af1e59163f8889760"
     },
     {
       "path": "assets/README.md",
@@ -21,15 +21,19 @@
     },
     {
       "path": "css/app.css",
-      "sha256": "0ed6cd2d6686f07282ad383b09bace1b57e2496c0b064def24031148f79a1f5c"
+      "sha256": "471d4241b210257dbafa41b6840d61fed4d11dd9769378212fc2ff5b58e486c7"
     },
     {
       "path": "docs/CHANGELOG.md",
-      "sha256": "446d9af8d067bfa4ba7913c0175547fc1b88c4501d6877e06cd8439aa4b40b6e"
+      "sha256": "3f50c59cec1f2e9cac1028741c239ea7c127d20de8d0a84c8435ac0bd7a18373"
     },
     {
       "path": "docs/DEBUGGING.md",
       "sha256": "4c9a476f6e6c642a395d93a57397b32fadb7f0862a4fc109c4a6d25b9c926507"
+    },
+    {
+      "path": "docs/GO_LIVE_RUNBOOK.md",
+      "sha256": "517753f55ee7ffb99c39af0e1078a2eb9cc7dbcacf1b544ee9aa34f4b9e4729b"
     },
     {
       "path": "docs/IMPLEMENTACION_0.10.0.md",
@@ -42,6 +46,10 @@
     {
       "path": "docs/IMPLEMENTACION_0.12.0.md",
       "sha256": "20d526710cbd845457a92afc033ca0728118d466c92a0331a08bfe4a9631aa18"
+    },
+    {
+      "path": "docs/IMPLEMENTACION_0.13.0.md",
+      "sha256": "de3d3d5243c0231d099c34afb2d2fe0cae2bf13ea7093d2b52f27a4fcb5cfe25"
     },
     {
       "path": "docs/IMPLEMENTACION_0.3.0.md",
@@ -72,8 +80,20 @@
       "sha256": "8df6801648c0fee45e892819d6916d18aae0928a0500d452b58d7634e56b7cc6"
     },
     {
+      "path": "docs/INCIDENT_RESPONSE.md",
+      "sha256": "59a4832ef81cbef43ec3e6d2150e9c77751a6200bc601ff05764db1438f7b371"
+    },
+    {
+      "path": "docs/POST_DEPLOY_VALIDATION.md",
+      "sha256": "ea068e21f65ffb7cbe560ba02c0c48c51170965f5c4b55f37dc43763ce697986"
+    },
+    {
       "path": "docs/RELEASE_CHECKLIST.md",
       "sha256": "b69a3431bd93506026f3c98bd8144d137855a2675d5463b8e762fb630b0cb383"
+    },
+    {
+      "path": "docs/ROLLBACK.md",
+      "sha256": "bb6aa99f47319e1578dfa26369cddf59eaf0bd93280b12ebdc275c6c753ef7a6"
     },
     {
       "path": "hemocura-core/auth.js",
@@ -117,7 +137,7 @@
     },
     {
       "path": "hemocura-core/layout.js",
-      "sha256": "eb858a72fa8b26d873f8c4354c21b82ee26b87b809582d88985249a5458148b5"
+      "sha256": "75d01a34a6db2ec3ad31899162af125d8dfdc99825b1a7cb31455bc91f33910d"
     },
     {
       "path": "hemocura-core/planning-data.js",
@@ -144,8 +164,12 @@
       "sha256": "a73b5278fab8bceb10845295aafe2d5c87e0ee089990702493042f2d13f2f223"
     },
     {
+      "path": "hemocura-core/release.js",
+      "sha256": "7243827ccdc9a9f5c640db84a58b7d7359a8a3176bc764a43e11021f038b6dd2"
+    },
+    {
       "path": "hemocura-core/router.js",
-      "sha256": "aa3fecf69eaca9e9e44b255ee6693136a21779304c51548019e539b17e48cad5"
+      "sha256": "fc7a0d5325b500c24d21757655191050ca65bbea866961f34070692b6db8719a"
     },
     {
       "path": "hemocura-core/sales-data.js",
@@ -169,7 +193,7 @@
     },
     {
       "path": "hemocura-core/views.js",
-      "sha256": "250e0a77333de87bb5e855057bf1913c67150e86874dc834e7f3573732799650"
+      "sha256": "3bca9ca8134ccf85c61c42aeedd2f4f0f57a3014eda4f7f130ebbdb887a95ef3"
     },
     {
       "path": "index.html",
@@ -209,7 +233,7 @@
     },
     {
       "path": "tests/SMOKE_TESTS.md",
-      "sha256": "82da7acb4fd5f54c66699865e06fdfcc2b79b08491f9e13553dc29bf13b00778"
+      "sha256": "2702b6facbddec7a8e4e66bb864a0b7a54787fedf9076c1fbe9ac68092dbef83"
     },
     {
       "path": "vendor/README.md",

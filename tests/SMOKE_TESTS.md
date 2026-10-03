@@ -1,22 +1,12 @@
-# Smoke Tests v0.12.0
+# Smoke Tests v0.13.0
 
-1. login.html carga.
-2. login válido.
-3. sesión persiste.
-4. Dashboard abre.
-5. Ventas abre.
-6. Despachos abre.
-7. Inventario abre.
-8. Costos abre.
-9. Calidad abre.
-10. Planificación abre.
-11. Configuración abre.
-12. QA abre.
-13. QA completo ejecuta.
-14. Todos los módulos muestran OK o error localizado.
-15. Un error no tumba otras vistas.
-16. RLS checks ejecutan.
-17. Reporte JSON se genera.
-18. Checklist persiste con localStorage.
-19. logout funciona.
-20. Forecast continúa SHADOW.
+1. #release abre.
+2. Preflight ejecuta QA.
+3. Resultado QA se refleja en Go/No-Go.
+4. Checklist persiste.
+5. Reporte de liberación se genera.
+6. Copiar reporte funciona.
+7. Guardrails muestran SHADOW/BLOCKED.
+8. #qa sigue funcionando.
+9. Todos los módulos anteriores siguen accesibles.
+10. No se añadió service_role.
