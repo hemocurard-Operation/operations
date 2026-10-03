@@ -1,32 +1,34 @@
-# HemoCura Operations v0.7.0
+# HemoCura Operations v0.8.0
 
-Etapa: Inventario agregado y conteo físico.
+Etapa: Costos, precios y rentabilidad.
 
 ## Fuentes reales
-- vw_inventory_status
-- inventory_policies
-- inventory_movements
-- physical_inventory_counts
-- branches
+- monthly_cost_periods
+- monthly_cost_entries
+- vw_monthly_product_costs
+- price_versions
 - products
+- branches
+- RPC calculate_monthly_product_costs(uuid)
 
 ## Cadena
-#inventory
+#costs
 → views.js
-→ inventory.js
-→ inventory-data.js
+→ costs.js
+→ costs-data.js
 → supabase.js
 → Supabase
 
 ## Funciones
-- stock teórico;
-- último conteo físico;
-- variación físico vs teórico;
-- mínimo configurado;
-- semáforo de stock;
-- movimientos recientes;
-- registro/actualización de conteo físico.
+- períodos mensuales;
+- costo unitario por producto;
+- comparación contra costo previo;
+- precio vigente;
+- margen unitario y %;
+- señal de precio bajo costo;
+- detalle de entradas de costo;
+- recálculo del período vía RPC.
 
-## Alcance
-No implementa FEFO clínico por unidad.
-Ese módulo sigue en STAGING/SHADOW.
+## Importante
+Esta versión NO aprueba ni cierra períodos.
+La aprobación financiera sigue siendo una acción separada.

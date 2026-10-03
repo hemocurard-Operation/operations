@@ -1,13 +1,14 @@
-# Smoke Tests v0.7.0
+# Smoke Tests v0.8.0
 
-1. #inventory abre.
-2. vw_inventory_status responde.
-3. inventory_policies responde.
-4. movimientos cargan.
-5. semáforo crítico funciona.
-6. conteo físico abre.
-7. conteo se guarda.
-8. variance se actualiza.
-9. usuario sin rol de inventario no puede escribir si RLS lo bloquea.
-10. cambiar de sucursal filtra resultados.
-11. volver a Despachos/Ventas/Dashboard funciona.
+1. #costs abre.
+2. monthly_cost_periods responde.
+3. vw_monthly_product_costs responde.
+4. price_versions responde.
+5. filtros funcionan.
+6. precio vigente se cruza por producto.
+7. precio bajo costo se resalta.
+8. detalle de entradas abre.
+9. monthly_cost_entries responde.
+10. recalcular llama RPC.
+11. usuario no financiero respeta RLS.
+12. volver a Inventario/Despachos/Ventas/Dashboard funciona.

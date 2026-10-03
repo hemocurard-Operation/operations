@@ -116,3 +116,7 @@ button.secondary{background:#eef2f7;color:var(--text)}
 .stock-critical{background:#f9e3e3;color:var(--bad)}
 .stock-none{background:#eef2f7;color:#667085}
 .movement-pill{background:#eef2f7;color:var(--navy)}
+
+/* v0.8.0 Costos */
+.row-danger{background:#fff4f4}
+.row-danger td:first-child{border-left:4px solid var(--bad)}

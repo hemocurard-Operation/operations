@@ -1,9 +1,12 @@
 # Changelog
 
-## 0.7.0
-- Inventario agregado.
-- Semáforo de mínimo/warning.
-- Movimientos recientes.
-- Conteo físico.
-- Variación teórico vs físico.
-- FEFO clínico sigue fuera de producción.
+## 0.8.0
+- Módulo Costos.
+- Períodos mensuales.
+- Costos por producto.
+- Precio vigente.
+- Margen estimado.
+- Comparación costo previo.
+- Detalle de entradas.
+- Recalcular costos vía RPC.
+- No incluye aprobación/cierre.

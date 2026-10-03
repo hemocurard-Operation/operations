@@ -1,21 +1,23 @@
 {
   "project": "HemoCura Operations",
-  "version": "0.7.0",
-  "stage": "Inventario agregado y conteo físico",
+  "version": "0.8.0",
+  "stage": "Costos, precios y rentabilidad",
   "entry": "index.html",
   "data_sources": [
-    "vw_inventory_status",
-    "inventory_policies",
-    "inventory_movements",
-    "physical_inventory_counts",
+    "monthly_cost_periods",
+    "monthly_cost_entries",
+    "vw_monthly_product_costs",
+    "price_versions",
+    "cost_snapshots",
+    "products",
     "branches",
-    "products"
+    "rpc:calculate_monthly_product_costs"
   ],
-  "clinical_scope": "NO FEFO clínico por unidad en esta versión",
   "debug_tags": [
-    "HEMOCURA_INVENTORY",
-    "HEMOCURA_INVENTORY_COUNT",
-    "HEMOCURA_INVENTORY_MOVEMENTS",
-    "HEMOCURA_INVENTORY_ERROR"
+    "HEMOCURA_COSTS",
+    "HEMOCURA_COSTS_PERIOD",
+    "HEMOCURA_COSTS_RECALC",
+    "HEMOCURA_PRICING",
+    "HEMOCURA_COSTS_ERROR"
   ]
 }
