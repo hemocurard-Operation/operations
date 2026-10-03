@@ -1,27 +1,24 @@
 {
   "project": "HemoCura Operations",
-  "version": "0.11.0",
-  "stage": "Configuración, permisos y diagnóstico central",
+  "version": "0.12.0",
+  "stage": "QA integral + Release Candidate",
+  "release_channel": "RC",
   "entry": "index.html",
-  "security_model": "READ_ONLY_ADMIN_FRONTEND",
-  "data_sources": [
-    "profiles",
-    "roles",
-    "user_roles",
-    "branches",
-    "products",
-    "services",
-    "system_operating_mode",
-    "app_feature_flags",
-    "deployment_releases",
-    "deployment_events",
-    "rpc:production_healthcheck"
-  ],
+  "scope": "LIVE-LIMITED",
+  "clinical_core": "SHADOW/BLOCKED",
+  "qa": {
+    "smoke_tests": true,
+    "module_health_matrix": true,
+    "route_checks": true,
+    "rls_checks": true,
+    "release_checklist": true
+  },
   "debug_tags": [
-    "HEMOCURA_SETTINGS",
-    "HEMOCURA_PERMISSIONS",
-    "HEMOCURA_DIAGNOSTICS",
-    "HEMOCURA_PRODUCTION_CONTROL",
-    "HEMOCURA_SETTINGS_ERROR"
+    "HEMOCURA_QA",
+    "HEMOCURA_QA_ROUTE",
+    "HEMOCURA_QA_MODULE",
+    "HEMOCURA_QA_RLS",
+    "HEMOCURA_QA_RELEASE",
+    "HEMOCURA_QA_ERROR"
   ]
 }

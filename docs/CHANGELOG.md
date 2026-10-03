@@ -1,16 +1,11 @@
 # Changelog
 
-## 0.11.0
-- Configuración central.
-- Perfiles.
-- Roles y alcance por sucursal.
-- Catálogo de sucursales.
-- Catálogo de productos.
-- Detección de Producción Caliente.
-- Feature flags.
-- Modo operativo.
-- Healthcheck.
-- Releases.
-- Diagnóstico central por subsistema.
-- Export/copia del diagnóstico.
-- Sin service_role en frontend.
+## 0.12.0 RC
+- QA integral.
+- Matriz de salud por módulo.
+- Pruebas RLS de lectura.
+- Verificación de rutas.
+- Checklist persistente de liberación.
+- Reporte JSON copiable.
+- Preparación LIVE-LIMITED.
+- Sin activar Clinical Core.

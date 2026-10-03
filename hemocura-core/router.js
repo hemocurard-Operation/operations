@@ -6,7 +6,8 @@ const ROUTES = {
   costs: {title:'Costos', subtitle:'Costos, precios y rentabilidad'},
   quality: {title:'Calidad', subtitle:'Indicadores, NC y CAPA'},
   planning: {title:'Planificación', subtitle:'Plan vs Real y forecast'},
-  settings: {title:'Configuración', subtitle:'Parámetros del sistema'}
+  settings: {title:'Configuración', subtitle:'Parámetros del sistema'},
+  qa: {title:'QA / Release', subtitle:'Estabilización y validación integral'}
 };
 
 export function getRoute(){

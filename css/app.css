@@ -140,3 +140,25 @@ button.secondary{background:#eef2f7;color:var(--text)}
   overflow:auto;white-space:pre-wrap;word-break:break-word;font-size:12px
 }
 code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+
+/* v0.12.0 QA / Release Candidate */
+.qa-pass{border-left:4px solid var(--ok)}
+.qa-warn{border-left:4px solid var(--warn)}
+.qa-fail{border-left:4px solid var(--bad)}
+.release-checklist{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+  margin:12px 0
+}
+.release-checklist label{
+  display:flex;
+  gap:9px;
+  align-items:flex-start;
+  border:1px solid var(--line);
+  border-radius:8px;
+  padding:10px;
+  margin:0
+}
+.release-checklist input{width:auto;margin:2px 0 0}
+@media(max-width:700px){.release-checklist{grid-template-columns:1fr}}

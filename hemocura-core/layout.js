@@ -8,6 +8,7 @@ import { mountCosts } from './costs.js';
 import { mountQuality } from './quality.js';
 import { mountPlanning } from './planning.js';
 import { mountSettings } from './settings.js';
+import { mountQA } from './qa.js';
 import { signOut } from './auth.js';
 
 export function mountLayout(session){
@@ -20,7 +21,7 @@ export function mountLayout(session){
       <aside class="sidebar" id="sidebar">
         <div class="sidebar-brand">
           <div class="brand-mark">H</div>
-          <div><strong>HemoCura</strong><br><small>Operations v0.11.0</small></div>
+          <div><strong>HemoCura</strong><br><small>Operations v0.12.0 RC</small></div>
         </div>
         <nav class="nav">${navItems}</nav>
       </aside>
@@ -76,6 +77,7 @@ export function mountLayout(session){
     if(route==='quality') await mountQuality(document.getElementById('quality-root'));
     if(route==='planning') await mountPlanning(document.getElementById('planning-root'));
     if(route==='settings') await mountSettings(document.getElementById('settings-root'));
+    if(route==='qa') await mountQA(document.getElementById('qa-root'));
   };
 
   window.addEventListener('hashchange',()=>render().catch(error=>{

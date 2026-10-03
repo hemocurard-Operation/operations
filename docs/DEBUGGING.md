@@ -1,22 +1,25 @@
-# Diagnóstico v0.11.0
+# Diagnóstico v0.12.0
 
-Esperado:
-[HEMOCURA_ROUTER] settings
-[HEMOCURA_SETTINGS] profiles
-[HEMOCURA_PERMISSIONS] roles
-[HEMOCURA_PRODUCTION_CONTROL]
-[HEMOCURA_SETTINGS] módulo OK
+## Tags
+[HEMOCURA_QA]
+[HEMOCURA_QA_MODULE]
+[HEMOCURA_QA_RLS]
+[HEMOCURA_QA_ROUTE]
+[HEMOCURA_QA_RELEASE]
+[HEMOCURA_QA_ERROR]
 
-Al ejecutar diagnóstico:
-[HEMOCURA_DIAGNOSTICS] iniciando
-[HEMOCURA_DIAGNOSTICS] finalizado
+## Método
+Versión
+→ URL
+→ ruta
+→ módulo
+→ Console
+→ Network
+→ objeto Supabase
+→ RLS
+→ corrección puntual
+→ repetir QA
 
-Errores:
-[HEMOCURA_SETTINGS_ERROR]
-
-Interpretación:
-- profiles muestra solo el propio usuario → RLS funcionando según rol.
-- app_feature_flags no existe → Producción Caliente no instalado.
-- production_healthcheck no existe → paquete de control de producción no instalado.
-- permission denied → revisar grant/RLS del objeto específico.
-- una sola vista falla → corregir esa vista, no toda la aplicación.
+## Regla
+No modificar varios módulos a la vez.
+Un error de una vista no debe provocar reemplazo global del sistema.

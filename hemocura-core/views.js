@@ -8,6 +8,7 @@ export function renderView(route){
   if(route === 'quality') return `<div id="quality-root"></div>`;
   if(route === 'planning') return `<div id="planning-root"></div>`;
   if(route === 'settings') return `<div id="settings-root"></div>`;
+  if(route === 'qa') return `<div id="qa-root"></div>`;
 
   return `<section class="card module-placeholder"><h3>Módulo</h3><div class="status warn">Ruta no reconocida.</div></section>`;
 }

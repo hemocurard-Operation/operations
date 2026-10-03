@@ -1,39 +1,37 @@
-# HemoCura Operations v0.11.0
+# HemoCura Operations v0.12.0 RC
 
-Etapa: Configuración, permisos y diagnóstico central.
+Etapa: estabilización y QA integral.
 
-## Fuentes
-- profiles
-- roles
-- user_roles
-- branches
-- products
-- services
+## Objetivo
+No agrega módulos operativos nuevos.
+Valida la arquitectura ya construida antes de LIVE-LIMITED.
 
-Opcionales si Producción Caliente está instalada:
-- system_operating_mode
-- app_feature_flags
-- deployment_releases
-- deployment_events
-- production_healthcheck()
+## Módulos incluidos
+- Dashboard
+- Ventas
+- Despachos
+- Inventario agregado
+- Costos
+- Calidad
+- Planificación
+- Configuración
+- QA / Release
 
-## Cadena
-#settings
-→ views.js
-→ settings.js
-→ settings-data.js
-→ supabase.js
-→ Supabase
+## Estado de producción
+- Operación administrativa: LIVE-LIMITED
+- Forecast: SHADOW
+- FEFO clínico por unidad: BLOCKED
+- Cold chain blocking: BLOCKED
+- Donor-recipient traceability: SHADOW/BLOCKED
 
-## Seguridad
-El panel es de consulta.
-NO crea usuarios de auth.users.
-NO usa service_role.
-NO cambia roles desde el navegador.
+## QA
+Ruta:
+`#qa`
 
-## Diagnóstico central
-Prueba individualmente los objetos principales para identificar:
-- OK
-- ERROR
-- objeto no instalado
-- RLS/permisos
+Incluye:
+- matriz de salud;
+- comprobación de acceso a objetos;
+- pruebas RLS de lectura;
+- rutas;
+- checklist de liberación;
+- reporte JSON copiable.
