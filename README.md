@@ -1,21 +1,32 @@
-# HemoCura Operations v0.6.0
+# HemoCura Operations v0.7.0
 
-Etapa: Despachos operativos.
+Etapa: Inventario agregado y conteo físico.
+
+## Fuentes reales
+- vw_inventory_status
+- inventory_policies
+- inventory_movements
+- physical_inventory_counts
+- branches
+- products
 
 ## Cadena
-#dispatches
+#inventory
 → views.js
-→ dispatch.js
-→ dispatch-data.js
+→ inventory.js
+→ inventory-data.js
 → supabase.js
 → Supabase
 
 ## Funciones
-- filtros por fecha/sucursal/estado;
-- lista de despachos;
-- detalle de líneas;
-- conciliación despacho vs venta;
-- carga parcial tolerada;
-- diagnóstico independiente.
+- stock teórico;
+- último conteo físico;
+- variación físico vs teórico;
+- mínimo configurado;
+- semáforo de stock;
+- movimientos recientes;
+- registro/actualización de conteo físico.
 
-La lógica clínica por unidad/FEFO sigue fuera de esta versión.
+## Alcance
+No implementa FEFO clínico por unidad.
+Ese módulo sigue en STAGING/SHADOW.

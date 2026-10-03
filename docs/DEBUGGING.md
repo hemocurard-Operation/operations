@@ -1,20 +1,21 @@
-# Diagnóstico v0.6.0
+# Diagnóstico v0.7.0
 
 Esperado:
-[HEMOCURA_ROUTER] dispatches
-[HEMOCURA_VIEW] dispatches
-[HEMOCURA_DISPATCH] dispatches
-[HEMOCURA_DISPATCH_RECON]
-[HEMOCURA_DISPATCH] módulo OK
+[HEMOCURA_ROUTER] inventory
+[HEMOCURA_VIEW] inventory
+[HEMOCURA_INVENTORY] vw_inventory_status
+[HEMOCURA_INVENTORY] inventory_policies
+[HEMOCURA_INVENTORY_MOVEMENTS]
+[HEMOCURA_INVENTORY] módulo OK
 
-Detalle:
-[HEMOCURA_DISPATCH_DETAIL]
+Conteo:
+[HEMOCURA_INVENTORY_COUNT]
 
 Error:
-[HEMOCURA_DISPATCH_ERROR]
+[HEMOCURA_INVENTORY_ERROR]
 
 Interpretación:
-- relation does not exist → objeto SQL faltante;
-- permission denied → grants/RLS;
-- lista carga pero conciliación falla → vista vw_dispatch_vs_sale no disponible;
-- detalle falla → revisar dispatch_lines.
+- relation does not exist → objeto SQL faltante.
+- permission denied → RLS/grants.
+- physical_inventory_counts write denied → rol sin permiso.
+- físico no cambia → revisar fecha/sucursal/producto y upsert.

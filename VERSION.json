@@ -1,18 +1,21 @@
 {
   "project": "HemoCura Operations",
-  "version": "0.6.0",
-  "stage": "Despachos operativos",
+  "version": "0.7.0",
+  "stage": "Inventario agregado y conteo físico",
   "entry": "index.html",
   "data_sources": [
-    "dispatches",
-    "dispatch_lines",
+    "vw_inventory_status",
+    "inventory_policies",
+    "inventory_movements",
+    "physical_inventory_counts",
     "branches",
-    "vw_dispatch_vs_sale"
+    "products"
   ],
+  "clinical_scope": "NO FEFO clínico por unidad en esta versión",
   "debug_tags": [
-    "HEMOCURA_DISPATCH",
-    "HEMOCURA_DISPATCH_DETAIL",
-    "HEMOCURA_DISPATCH_RECON",
-    "HEMOCURA_DISPATCH_ERROR"
+    "HEMOCURA_INVENTORY",
+    "HEMOCURA_INVENTORY_COUNT",
+    "HEMOCURA_INVENTORY_MOVEMENTS",
+    "HEMOCURA_INVENTORY_ERROR"
   ]
 }

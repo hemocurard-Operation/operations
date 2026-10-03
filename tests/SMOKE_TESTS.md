@@ -1,12 +1,13 @@
-# Smoke Tests v0.6.0
+# Smoke Tests v0.7.0
 
-1. #dispatches abre.
-2. dispatches responde.
-3. filtros funcionan.
-4. detalle abre.
-5. dispatch_lines responde.
-6. conciliación carga.
-7. diferencias 0 muestran OK.
-8. diferencias != 0 muestran Revisar.
-9. fallo conciliación no tumba lista.
-10. volver a ventas/dashboard funciona.
+1. #inventory abre.
+2. vw_inventory_status responde.
+3. inventory_policies responde.
+4. movimientos cargan.
+5. semáforo crítico funciona.
+6. conteo físico abre.
+7. conteo se guarda.
+8. variance se actualiza.
+9. usuario sin rol de inventario no puede escribir si RLS lo bloquea.
+10. cambiar de sucursal filtra resultados.
+11. volver a Despachos/Ventas/Dashboard funciona.
