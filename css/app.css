@@ -132,3 +132,11 @@ button.secondary{background:#eef2f7;color:var(--text)}
 .plan-yellow{background:#fff4d9;color:var(--warn)}
 .plan-red{background:#f9e3e3;color:var(--bad)}
 .plan-na{background:#eef2f7;color:#667085}
+
+/* v0.11.0 Configuración y diagnóstico */
+.small-kpi{font-size:18px}
+.json-box{
+  background:#111827;color:#e5e7eb;border-radius:8px;padding:14px;
+  overflow:auto;white-space:pre-wrap;word-break:break-word;font-size:12px
+}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}

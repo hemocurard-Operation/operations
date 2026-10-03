@@ -1,21 +1,27 @@
 {
   "project": "HemoCura Operations",
-  "version": "0.10.0",
-  "stage": "Planificación, Plan vs Real y Forecast",
+  "version": "0.11.0",
+  "stage": "Configuración, permisos y diagnóstico central",
   "entry": "index.html",
-  "operating_mode": "FORECAST_SHADOW",
+  "security_model": "READ_ONLY_ADMIN_FRONTEND",
   "data_sources": [
-    "operational_plans",
-    "operational_plan_lines",
-    "forecast_snapshots",
-    "vw_plan_vs_actual_status",
-    "rpc:refresh_forecasts"
+    "profiles",
+    "roles",
+    "user_roles",
+    "branches",
+    "products",
+    "services",
+    "system_operating_mode",
+    "app_feature_flags",
+    "deployment_releases",
+    "deployment_events",
+    "rpc:production_healthcheck"
   ],
   "debug_tags": [
-    "HEMOCURA_PLANNING",
-    "HEMOCURA_PLAN_VS_ACTUAL",
-    "HEMOCURA_FORECAST",
-    "HEMOCURA_FORECAST_REFRESH",
-    "HEMOCURA_PLANNING_ERROR"
+    "HEMOCURA_SETTINGS",
+    "HEMOCURA_PERMISSIONS",
+    "HEMOCURA_DIAGNOSTICS",
+    "HEMOCURA_PRODUCTION_CONTROL",
+    "HEMOCURA_SETTINGS_ERROR"
   ]
 }

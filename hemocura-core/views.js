@@ -7,12 +7,7 @@ export function renderView(route){
   if(route === 'costs') return `<div id="costs-root"></div>`;
   if(route === 'quality') return `<div id="quality-root"></div>`;
   if(route === 'planning') return `<div id="planning-root"></div>`;
+  if(route === 'settings') return `<div id="settings-root"></div>`;
 
-  switch(route){
-    case 'settings': return placeholder('Configuración','Parámetros del sistema.');
-    default: return placeholder('Módulo','Ruta no reconocida.');
-  }
-}
-function placeholder(title,text){
-  return `<section class="card module-placeholder"><h3>${title}</h3><p>${text}</p><div class="status info">Módulo visible · lógica pendiente de conexión.</div></section>`;
+  return `<section class="card module-placeholder"><h3>Módulo</h3><div class="status warn">Ruta no reconocida.</div></section>`;
 }

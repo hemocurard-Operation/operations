@@ -1,32 +1,39 @@
-# HemoCura Operations v0.10.0
+# HemoCura Operations v0.11.0
 
-Etapa: Planificación, Plan vs Real y Forecast.
+Etapa: Configuración, permisos y diagnóstico central.
 
-## Fuentes reales
-- operational_plans
-- operational_plan_lines
-- forecast_snapshots
-- vw_plan_vs_actual_status
-- RPC refresh_forecasts(date)
+## Fuentes
+- profiles
+- roles
+- user_roles
+- branches
+- products
+- services
+
+Opcionales si Producción Caliente está instalada:
+- system_operating_mode
+- app_feature_flags
+- deployment_releases
+- deployment_events
+- production_healthcheck()
 
 ## Cadena
-#planning
+#settings
 → views.js
-→ planning.js
-→ planning-data.js
+→ settings.js
+→ settings-data.js
 → supabase.js
 → Supabase
 
-## Funciones
-- planes DAILY/WEEKLY/MONTHLY;
-- metas por métrica;
-- Plan vs Real;
-- semáforo GREEN/YELLOW/RED;
-- forecast 7/15/30 días;
-- refresco del forecast;
-- creación de plan DRAFT + primera línea.
+## Seguridad
+El panel es de consulta.
+NO crea usuarios de auth.users.
+NO usa service_role.
+NO cambia roles desde el navegador.
 
-## Forecast
-Modo: SHADOW.
-Método inicial: media móvil de 30 días y stock menos forecast.
-No usar para decisiones clínicas automáticas.
+## Diagnóstico central
+Prueba individualmente los objetos principales para identificar:
+- OK
+- ERROR
+- objeto no instalado
+- RLS/permisos

@@ -1,22 +1,22 @@
-# Diagnóstico v0.10.0
+# Diagnóstico v0.11.0
 
 Esperado:
-[HEMOCURA_ROUTER] planning
-[HEMOCURA_VIEW] planning
-[HEMOCURA_PLANNING] operational_plans
-[HEMOCURA_PLAN_VS_ACTUAL]
-[HEMOCURA_FORECAST]
-[HEMOCURA_PLANNING] módulo OK
+[HEMOCURA_ROUTER] settings
+[HEMOCURA_SETTINGS] profiles
+[HEMOCURA_PERMISSIONS] roles
+[HEMOCURA_PRODUCTION_CONTROL]
+[HEMOCURA_SETTINGS] módulo OK
 
-Actualizar:
-[HEMOCURA_FORECAST_REFRESH]
+Al ejecutar diagnóstico:
+[HEMOCURA_DIAGNOSTICS] iniciando
+[HEMOCURA_DIAGNOSTICS] finalizado
 
 Errores:
-[HEMOCURA_PLANNING_ERROR]
+[HEMOCURA_SETTINGS_ERROR]
 
 Interpretación:
-- relation does not exist → módulo planning SQL no instalado.
-- function refresh_forecasts does not exist → RPC no instalada.
-- permission denied → RLS/can_access_branch.
-- Plan vs Real N/A → métrica aún no soportada por la vista o meta = 0.
-- forecast vacío → no hay historial suficiente o no se ejecutó refresh_forecasts.
+- profiles muestra solo el propio usuario → RLS funcionando según rol.
+- app_feature_flags no existe → Producción Caliente no instalado.
+- production_healthcheck no existe → paquete de control de producción no instalado.
+- permission denied → revisar grant/RLS del objeto específico.
+- una sola vista falla → corregir esa vista, no toda la aplicación.

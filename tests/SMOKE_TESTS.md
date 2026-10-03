@@ -1,15 +1,16 @@
-# Smoke Tests v0.10.0
+# Smoke Tests v0.11.0
 
-1. #planning abre.
-2. operational_plans responde.
-3. vw_plan_vs_actual_status responde.
-4. forecast_snapshots responde.
-5. filtros por sucursal funcionan.
-6. semáforo GREEN/YELLOW/RED se muestra.
-7. refresh_forecasts ejecuta.
-8. aparecen horizontes 7/15/30.
-9. crear plan DRAFT funciona.
-10. primera línea se crea.
-11. RLS limita sucursales.
-12. Plan vs Real con métrica no implementada muestra N/A.
-13. volver a Calidad/Costos/Inventario/Despachos/Ventas/Dashboard funciona.
+1. #settings abre.
+2. profiles responde según RLS.
+3. roles responde.
+4. user_roles responde según rol.
+5. branches responde.
+6. products responde.
+7. si Producción Caliente existe, system_operating_mode responde.
+8. si existe, app_feature_flags responde.
+9. production_healthcheck responde o queda marcado no disponible.
+10. diagnóstico central ejecuta todos los checks.
+11. un objeto fallido no tumba la pantalla.
+12. copiar diagnóstico funciona.
+13. no hay service_role en código frontend.
+14. navegación a todos los módulos anteriores sigue funcionando.
