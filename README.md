@@ -1,24 +1,20 @@
-# HemoCura Operations v0.15.0 RC
+# HemoCura Operations v0.16.0 RC
 
-Etapa: verificación externa del despliegue.
+Etapa: Static Audit + Safe Deployment Gate.
 
-## Nueva página
+## Hallazgo de auditoría
+El código JS de v0.15.0 pasó:
+- sintaxis;
+- imports relativos;
+- archivos críticos.
+
+Pero el ZIP completo contiene `js/config.js` de plantilla.
+
+## Recomendación
+Si ya tienes Supabase configurado:
+**usa SAFE PATCH, no el ZIP completo**.
+
+## Diagnóstico
 `/operations/status.html`
 
-No requiere login ni conexión exitosa con Supabase.
-
-## Objetivo
-Separar cuatro clases de problemas:
-
-1. GitHub Pages / publicación.
-2. Archivos/rutas.
-3. Caché/versiones antiguas.
-4. Supabase/Auth/RLS.
-
-## Secuencia recomendada
-Si la aplicación falla:
-
-1. Abrir `status.html`.
-2. Copiar el reporte.
-3. Si todo está OK, continuar con F12 y Supabase.
-4. Si un archivo falla, corregir únicamente despliegue/ruta.
+Ahora también valida que `js/config.js` no contenga placeholders.

@@ -15,6 +15,22 @@ const CHECKS = [
 
 let lastReport = null;
 
+async function inspectConfig() {
+  try {
+    const response = await fetch(`./js/config.js?_hc=${Date.now()}`, {cache:'no-store'});
+    if (!response.ok) return {ok:false, detail:`HTTP ${response.status}`};
+    const text = await response.text();
+    const placeholder = text.includes('TU-PROYECTO') || text.includes('TU_CLAVE_PUBLICABLE');
+    return {
+      ok: !placeholder,
+      detail: placeholder ? 'CONFIG PLACEHOLDER DETECTADO' : 'Configuración personalizada detectada'
+    };
+  } catch(error) {
+    return {ok:false, detail:error.message};
+  }
+}
+
+
 function esc(v='') {
   return String(v ?? '').replace(/[&<>"']/g, c => ({
     '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'
@@ -92,6 +108,17 @@ async function run() {
       document.getElementById('version-output').textContent = error.message;
     }
 
+    const configCheck = await inspectConfig();
+    results.push({
+      label:'js/config.js',
+      url:'./js/config.js',
+      ok:configCheck.ok,
+      status:configCheck.ok ? 200 : null,
+      ms:0,
+      bytes:0,
+      contentType:'application/javascript',
+      detail:configCheck.detail
+    });
     body.innerHTML = results.map(r => `
       <tr>
         <td><code>${esc(r.label)}</code></td>

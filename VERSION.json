@@ -1,17 +1,11 @@
 {
   "project": "HemoCura Operations",
-  "version": "0.15.0",
-  "stage": "Deployment Verifier",
+  "version": "0.16.0",
+  "stage": "Static Audit + Safe Deployment Gate",
   "release_channel": "RC",
   "entry": "index.html",
   "public_diagnostic_entry": "status.html",
-  "production_target": "LIVE-LIMITED",
-  "clinical_core": "SHADOW/BLOCKED",
-  "purpose": [
-    "Verify GitHub Pages independently from app auth",
-    "Verify core static files",
-    "Verify runtime version",
-    "Detect stale deployment/cache",
-    "Provide copyable diagnostic report"
-  ]
+  "deployment_policy": "PATCH_PREFERRED",
+  "critical_guard": "BLOCK_RELEASE_IF_CONFIG_PLACEHOLDER",
+  "production_target": "LIVE-LIMITED"
 }

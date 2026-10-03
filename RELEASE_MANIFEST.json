@@ -1,7 +1,13 @@
 {
-  "version": "0.15.0",
+  "version": "0.16.0",
   "channel": "RC",
   "generated_at": "2026-10-03",
+  "static_audit": {
+    "js_files_checked": 32,
+    "syntax": "PASS",
+    "relative_imports": "PASS",
+    "critical_finding": "config placeholder in full package"
+  },
   "files": [
     {
       "path": "404.html",
@@ -9,11 +15,11 @@
     },
     {
       "path": "README.md",
-      "sha256": "69fc2a56f9438464c83a8d9f2efa333b94e6be40590eacb2f559e035ec829752"
+      "sha256": "d88405fdb90acd2ba4410583ad54ae5246d6946bd49c0d7d0968fb30b583324c"
     },
     {
       "path": "VERSION.json",
-      "sha256": "3fcf3ac9d1e5d892d9c69f84e5686508724d949cc9156a822cdd830753812a25"
+      "sha256": "2f0ef004e92b9c2fcc8ab9128f3bcc9b48d7f4726a1a0093fd18af041d25584a"
     },
     {
       "path": "assets/README.md",
@@ -25,7 +31,7 @@
     },
     {
       "path": "docs/CHANGELOG.md",
-      "sha256": "6f1f8597a97078c55a6a85a8b239a6f5273a21179ba141c45a0650f646981e66"
+      "sha256": "e57f087bad2677af368ebd7113742839061d91cf4e23ea9d59f49e828d1a8323"
     },
     {
       "path": "docs/DEBUGGING.md",
@@ -110,6 +116,14 @@
     {
       "path": "docs/ROLLBACK.md",
       "sha256": "bb6aa99f47319e1578dfa26369cddf59eaf0bd93280b12ebdc275c6c753ef7a6"
+    },
+    {
+      "path": "docs/SAFE_DEPLOYMENT.md",
+      "sha256": "15ba33000696746255e896b69b76ebcdb3158843117239867c59388b9829d8a7"
+    },
+    {
+      "path": "docs/STATIC_AUDIT_0.16.0.md",
+      "sha256": "27b6e79bae92cab1aea803eb0e243a36ecda17ddab033a7dc7bf37395527b637"
     },
     {
       "path": "hemocura-core/auth.js",
@@ -228,6 +242,10 @@
       "sha256": "15d9142c292af02794226962895ef6f64b1fb2337cac0ab4bc719e35d04d67dc"
     },
     {
+      "path": "js/config.example.js",
+      "sha256": "cb3ce0f606b8adeaeb4b4def5b7c350bb2d9e3dd8437a7be876e6a2e764b3474"
+    },
+    {
       "path": "js/config.js",
       "sha256": "cb3ce0f606b8adeaeb4b4def5b7c350bb2d9e3dd8437a7be876e6a2e764b3474"
     },
@@ -237,7 +255,7 @@
     },
     {
       "path": "js/status.js",
-      "sha256": "7872322f1aa897eb0e3cb9cdab6efacf7c9a58ad0986c37f13cd26f7930eba21"
+      "sha256": "c986f1b13c9d1e39f02616343168561efba581dc810fd44868cbf3e405caa1d9"
     },
     {
       "path": "login.html",
@@ -257,7 +275,7 @@
     },
     {
       "path": "status.html",
-      "sha256": "e40e4625c23ca2f15b66c942aab50d4dfa66d3f3c553c2c483d4d5956b2adb02"
+      "sha256": "ef0c3e6157b02127c4f2ca038875490892c19805d89b6a78308a9a41643b9367"
     },
     {
       "path": "sw.js",
@@ -265,7 +283,7 @@
     },
     {
       "path": "tests/SMOKE_TESTS.md",
-      "sha256": "274205a0f51b15f86279bf5b4092c6a0cc3cf86c96f09650b1ba6425a8dc86e6"
+      "sha256": "5d99623cf06ddffa1df75efd1bda4c4f795ffa9e2d825f15ef9734e6d25fff6f"
     },
     {
       "path": "vendor/README.md",
