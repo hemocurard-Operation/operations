@@ -1,5 +1,5 @@
 {
-  "version": "0.26.0",
+  "version": "0.27.0",
   "files": [
     {
       "path": "404.html",
@@ -7,11 +7,11 @@
     },
     {
       "path": "README.md",
-      "sha256": "14d9e65aaa53b078881fef466c0f0e49df7c2e2a6810ed17afb991dd4e90af9c"
+      "sha256": "918f9de90dfd885823d4bf8e17322aaf1030069d1b1c27d2698e1747980bb962"
     },
     {
       "path": "VERSION.json",
-      "sha256": "4bf78f15c8b95b4006e83c6a49fa415f7ae59d1048a16c7f4a7d62e4dcb45d84"
+      "sha256": "16627c0a1692a8da9474c8f179871edf37cefe9427781d76fea760e9753728a8"
     },
     {
       "path": "assets/README.md",
@@ -118,6 +118,10 @@
       "sha256": "8f44ce72ab3d5138ec700478bfed0a54190aa088c63ca171933ce2aa20e8cd4c"
     },
     {
+      "path": "docs/IMPLEMENTACION_0.27.0.md",
+      "sha256": "9bba219ee913245e7bbac6f5acbec4dbcb57e824d9588f5f4d534014ec49bdd9"
+    },
+    {
       "path": "docs/IMPLEMENTACION_0.3.0.md",
       "sha256": "a6bec22e38d22561bc1207d306896f381b4d23046a81d78163fd4972a2ae0700"
     },
@@ -148,6 +152,10 @@
     {
       "path": "docs/INCIDENT_RESPONSE.md",
       "sha256": "59a4832ef81cbef43ec3e6d2150e9c77751a6200bc601ff05764db1438f7b371"
+    },
+    {
+      "path": "docs/MODELO_AUDITORIA_v0_27.md",
+      "sha256": "7b5fd1c2420e83eb21c66d5ed56aafb8354c107d238726e76aa3399ee1b0456c"
     },
     {
       "path": "docs/MODELO_PLANIFICACION_v0_25.md",
@@ -240,6 +248,14 @@
     {
       "path": "hemocura-core/acceptance.js",
       "sha256": "5e98169ca801cc43f1942da0b170532e91386a215a1c4d407e905bb87b147aa9"
+    },
+    {
+      "path": "hemocura-core/audit-data.js",
+      "sha256": "6e6f5813a647a44dd3e7f12f723a5a14fc0e032ecb2be22ed5e50f7c33419286"
+    },
+    {
+      "path": "hemocura-core/audit.js",
+      "sha256": "14db05c86462ba70e9f35003e2b94a58399a4db872e71374652a57698d2dcd76"
     },
     {
       "path": "hemocura-core/auth.js",
@@ -343,7 +359,7 @@
     },
     {
       "path": "hemocura-core/layout.js",
-      "sha256": "3f5b3e59ef4abf1a184214be203c3010d1e781c09ec14e13e8c5c3fd7eb9ec3a"
+      "sha256": "f0bfd481da68d44e321096ab5a8181705a55dfbffff2fce35ea1c5b730cfbd76"
     },
     {
       "path": "hemocura-core/operational-sales.js",
@@ -351,7 +367,7 @@
     },
     {
       "path": "hemocura-core/ops-dashboard.js",
-      "sha256": "a04dc5feba2eeb2e97035ad1f4cbfb89ed783cae3a47e0ec8165782471bb1823"
+      "sha256": "4ef4eb09efda6c2f11d7bdc37071b541957f72e6f2f6d4c055067efb74a08ef3"
     },
     {
       "path": "hemocura-core/planning-data.js",
@@ -399,7 +415,7 @@
     },
     {
       "path": "hemocura-core/router.js",
-      "sha256": "40a9a2ba9579e7c1eb57eb0f29649e8e77b7efab723faaeb86e0c1e924f6c5b0"
+      "sha256": "2c4bc4c2a24a2656638c0f7890867a744ff1761971e3b075471ec49e892af913"
     },
     {
       "path": "hemocura-core/sales-data.js",
@@ -435,7 +451,7 @@
     },
     {
       "path": "hemocura-core/views.js",
-      "sha256": "e56c420afb845d62b61c4c9fd481579a9567ad7c1ed202806f288dd31593d372"
+      "sha256": "1c32e7ac8a0fa2cad21908563ec8795ae36e473a5716d22d367d0cd0e6658d88"
     },
     {
       "path": "index.html",
@@ -522,6 +538,10 @@
       "sha256": "f487581c6e230a02a8ece3ed8b69f7e4ce0fa130949a7c08bbd70a8ac55e4fae"
     },
     {
+      "path": "sql/27_AUDIT_TRACE_EXCEPTIONS_v0_27.sql",
+      "sha256": "4ec1c12a90fe36a86dd38d7a7bdb8dd263b7e5126d34adb822c48c241b7d8d9e"
+    },
+    {
       "path": "sql/README.md",
       "sha256": "241098b3bdf88ed1b88e0689fa82cf331bea230c868d00213cc329f1601bde72"
     },
@@ -552,6 +572,10 @@
     {
       "path": "tests/SMOKE_TESTS_0.26.0.md",
       "sha256": "e59f7d14328655a705f67d849e7c8675264027653e4d3951338e619effc8499e"
+    },
+    {
+      "path": "tests/SMOKE_TESTS_0.27.0.md",
+      "sha256": "9ff8a27d292d9f2451478616fab5b5751a9339f3da5d7357315aff066918e29f"
     },
     {
       "path": "tests/SMOKE_TESTS_DISPATCH_0.20.2.md",

@@ -1,25 +1,26 @@
 {
   "project": "HemoCura Operations Intelligence + QMS + Compliance",
-  "version": "0.26.0",
-  "stage": "Command Center and Daily Operational Close",
+  "version": "0.27.0",
+  "stage": "Audit Trail and Automated Exception Management",
   "release_channel": "RC",
   "scope": [
     "OPERATIONS",
     "BLOOD_FLOW",
-    "SUPPLY_PLANNING",
+    "SUPPLY",
     "DAILY_CLOSE",
-    "EXCEPTION_MANAGEMENT",
+    "EXCEPTIONS",
+    "AUDIT_TRAIL",
     "QMS",
     "COMPLIANCE",
     "BI",
     "PROJECT_MANAGEMENT"
   ],
   "clinical_core": "LIVE-LIMITED / CONTROLLED_RELEASE",
-  "management_model": "Daily close + exception management + action ownership",
+  "management_model": "Detect → Exception → Action → Evidence → Review → Close",
   "guardrails": [
     "No automatic clinical decisions",
-    "No automatic unit release",
-    "No automatic compatibility decision",
-    "Recommendations are operational and explainable"
+    "Automated exceptions are management signals only",
+    "Human confirmation required for closure",
+    "Audit log is append-only by application policy"
   ]
 }

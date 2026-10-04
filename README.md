@@ -1,12 +1,12 @@
-# HemoCura v0.26.0
+# HemoCura v0.27.0
 
-Añade Centro de Mando:
-- cierre operativo diario;
-- score gerencial por sucursal;
-- gestión por excepciones;
-- plan de acción;
-- conciliación del cierre;
-- integración con abastecimiento, SGC y proyectos.
+Añade:
+- bitácora de auditoría;
+- candidatos automáticos a excepción;
+- conversión controlada a excepción;
+- prevención de duplicados abiertos;
+- revisión semanal por sucursal;
+- portafolio de excepciones con edad/vencimiento;
+- trazabilidad de cierres, acciones y liberaciones.
 
-Modelo:
-dato → excepción → acción → responsable → evidencia → cierre.
+No automatiza decisiones clínicas.
