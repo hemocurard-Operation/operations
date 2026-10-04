@@ -1,29 +1,28 @@
 {
-  "project": "HemoCura Operations + Blood Inventory + QMS + Compliance",
-  "version": "0.23.0",
-  "stage": "Operational Blood Flow + BI + Project Management",
+  "project": "HemoCura Operations + Blood Supply Planning + QMS + Compliance + BI + PM",
+  "version": "0.25.0",
+  "stage": "Production Demand and Supply Planning",
   "release_channel": "RC",
   "scope": [
     "OPERATIONS",
-    "SALES_OUTFLOW_CONTROL",
     "DONORS",
     "SCREENING",
+    "CONTROLLED_RELEASE",
+    "PRODUCTION",
     "BLOOD_INVENTORY",
+    "SALES_OUTFLOW",
+    "SUPPLY_PLANNING",
+    "BI",
     "QMS",
     "COMPLIANCE",
-    "BI",
     "PROJECT_MANAGEMENT"
   ],
-  "excluded": [
-    "CRM",
-    "PROSPECTING",
-    "COMMERCIAL_PIPELINE",
-    "MULTICOMPANY"
-  ],
-  "clinical_core": "SHADOW/LIMITED",
+  "forecast_method": "Explainable moving averages and configurable targets",
+  "clinical_core": "LIVE-LIMITED / CONTROLLED_RELEASE",
   "guardrails": [
-    "No clinical eligibility decision automation",
-    "No automatic transfusion compatibility decision",
-    "Inventory availability is operational and must be verified by qualified staff"
+    "No automatic donor eligibility",
+    "No automatic unit release",
+    "No automatic compatibility decision",
+    "Forecast is planning support, not clinical instruction"
   ]
 }

@@ -1,9 +1,9 @@
-# HemoCura v0.23.0 SAFE PATCH
+# HemoCura v0.25.0 SAFE PATCH
 
-1. Subir sobre v0.22.0.
+1. Subir sobre v0.24.0.
 2. NO reemplaza js/config.js.
-3. Ejecutar `sql/23_BLOOD_OPERATIONS_BI_PM_v0_23.sql` en Supabase.
-4. Probar #sales, #donors, #screening, #bloodinventory, #bi, #projects.
+3. Ejecutar sql/25_PRODUCTION_DEMAND_SUPPLY_v0_25.sql.
+4. Probar #production, #supply, #bi.
 5. Ejecutar #qa.
 
-Ventas = control de salidas, no CRM.
+No use reglas de rendimiento como aprobadas hasta validarlas.

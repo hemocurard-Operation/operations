@@ -1,16 +1,13 @@
-# HemoCura v0.23.0
+# HemoCura v0.25.0
 
-Sistema integrado de:
-- Operaciones
-- Ventas/Salidas operativas
-- Donantes
-- Tamizaje
-- Inventario sanguíneo
-- Despachos
-- Insumos/Requisiciones
-- SGC
-- Compliance
-- Inteligencia de Negocios
-- Gestión de Proyectos
+Añade:
+- Producción
+- Objetivos mínimo/objetivo/máximo
+- Demanda histórica 30/60/90
+- Cobertura en días
+- Unidades requeridas
+- Donantes requeridos
+- Alertas de abastecimiento
+- BI de abastecimiento
 
-Excluye CRM y prospección.
+El modelo es explicable y de apoyo operativo.
