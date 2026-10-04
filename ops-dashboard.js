@@ -24,7 +24,7 @@ export async function mountOpsDashboard(root){
       <section class="card"><div class="muted">CAPA abiertas</div><div class="kpi">${open(capa.data)}</div></section>
     </div>
     <div class="scope-grid">
-      <a class="scope-card" href="#sales"><strong>Ventas / Salidas</strong><span>Despachos, facturación y cobranza</span></a><a class="scope-card" href="#donors"><strong>Donantes</strong><span>Origen del inventario sanguíneo</span></a><a class="scope-card" href="#screening"><strong>Tamizaje</strong><span>Pruebas y trazabilidad</span></a><a class="scope-card" href="#bloodinventory"><strong>Inventario Sangre</strong><span>Disponibilidad por componente</span></a>
+      <a class="scope-card" href="#sales"><strong>Ventas / Salidas</strong><span>Despachos, facturación y cobranza</span></a><a class="scope-card" href="#donors"><strong>Donantes</strong><span>Origen del inventario sanguíneo</span></a><a class="scope-card" href="#screening"><strong>Tamizaje</strong><span>Pruebas y trazabilidad</span></a><a class="scope-card" href="#bloodflow"><strong>Flujo Sanguíneo</strong><span>Trazabilidad y liberación</span></a><a class="scope-card" href="#bloodinventory"><strong>Inventario Sangre</strong><span>Disponibilidad por componente</span></a>
       <a class="scope-card" href="#requisitions"><strong>Requisiciones</strong><span>Insumos y abastecimiento</span></a>
       <a class="scope-card" href="#inspections"><strong>Inspecciones</strong><span>Cumplimiento por sucursal</span></a>
       <a class="scope-card" href="#quality"><strong>SGC</strong><span>Incidencias · NC · CAPA</span></a>

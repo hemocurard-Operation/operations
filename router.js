@@ -3,6 +3,7 @@ const ROUTES={
  sales:{title:'Ventas / Salidas',subtitle:'Control operativo de salidas y facturación'},
  donors:{title:'Donantes',subtitle:'Donantes y donaciones efectivas'},
  screening:{title:'Tamizaje',subtitle:'Pruebas, reactivos, lotes y resultados'},
+ bloodflow:{title:'Flujo Sanguíneo',subtitle:'Donación, tamizaje, liberación, inventario y salida'},
  bloodinventory:{title:'Inventario de Sangre',subtitle:'Disponibilidad por componente, ABO y Rh'},
  dispatches:{title:'Despachos',subtitle:'Despacho físico y conciliación'},
  inventory:{title:'Insumos',subtitle:'Inventario de reactivos y materiales'},
