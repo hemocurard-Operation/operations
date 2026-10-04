@@ -1,30 +1,30 @@
-# HemoCura Operations v0.19.0 RC
+# HemoCura Operations v0.20.0 RC
 
-Etapa: Operational Acceptance & Sign-off.
+Etapa: Supabase Bootstrap & Readiness.
 
-## Nueva ruta
-`#acceptance`
+## Nueva página
+`/operations/setup.html`
 
-## Objetivo
-Completar la validación operativa por sucursal antes de v1.0.0.
+## Incluye
+- instalador completo v7.2;
+- bootstrap del primer administrador;
+- SQL de verificación;
+- guía Supabase desde cero;
+- detector de URL/Publishable Key;
+- checklist de nivelación.
 
-Sucursales:
-- Santiago
-- Puerto Plata
-- Tenares
+## Seguridad
+Frontend:
+- Project URL
+- Publishable Key
 
-## Evalúa
-- módulos por sucursal;
-- responsable;
-- fecha;
-- turno;
-- observaciones;
-- primer día de operación;
-- sign-off de Gerencia Operativa y Calidad.
+Nunca frontend:
+- Secret Key
+- service_role
+- password de base de datos
 
-## Regla
-v1.0.0 requiere:
-1. evidencia técnica (`#evidence`);
-2. aceptación operativa (`#acceptance`).
+SAFE PATCH no incluye `js/config.js`.
 
-El SAFE PATCH no modifica `js/config.js`.
+
+## v0.20.1
+La guía Supabase ahora incluye enlaces directos a páginas y archivos SQL del paquete.

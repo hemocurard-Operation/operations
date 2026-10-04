@@ -1,4 +1,8 @@
-import { loadDispatchWorkspace, getDispatchLines } from './dispatch-data.js';
+import {
+  loadDispatchWorkspace,
+  getDispatchLines,
+  getProductsForDispatch
+} from './dispatch-data.js';
 import { getBranches } from './sales-data.js';
 
 const num = new Intl.NumberFormat('es-DO', {maximumFractionDigits:2});
@@ -25,41 +29,41 @@ function statusClass(s=''){
 }
 
 function dispatchRows(rows, branchMap){
-  if(!rows.length) return `<tr><td colspan="7" class="muted">No hay despachos para los filtros seleccionados.</td></tr>`;
+  if(!rows.length) return `<tr><td colspan="8" class="muted">No hay despachos para los filtros seleccionados.</td></tr>`;
   return rows.map(r=>`
     <tr>
       <td>${esc(r.dispatch_date)}</td>
       <td>${esc(branchMap[r.branch_id]?.name || r.branch_id)}</td>
       <td><span class="sale-status ${statusClass(r.status)}">${esc(r.status)}</span></td>
-      <td>${esc(r.reference || '—')}</td>
+      <td>${esc(r.dispatch_type || 'venta')}</td>
+      <td>${esc(r.shift || '—')}</td>
       <td>${esc(r.customer_id || '—')}</td>
       <td>${esc(r.notes || '')}</td>
       <td><button class="secondary compact" data-dispatch-id="${esc(r.id)}">Ver detalle</button></td>
     </tr>`).join('');
 }
 
-function lineRows(rows){
-  if(!rows.length) return `<tr><td colspan="6" class="muted">No hay líneas visibles.</td></tr>`;
+function lineRows(rows, productMap){
+  if(!rows.length) return `<tr><td colspan="5" class="muted">No hay líneas visibles.</td></tr>`;
   return rows.map(r=>`
     <tr>
-      <td>${esc(r.product_id)}</td>
-      <td>${esc(r.customer_id || '—')}</td>
+      <td>${esc(productMap[r.product_id]?.name || r.product_id)}</td>
       <td class="num">${num.format(Number(r.units||0))}</td>
-      <td class="num">${num.format(Number(r.unit_price||0))}</td>
-      <td class="num">${num.format(Number(r.total_amount||0))}</td>
-      <td>${esc(r.notes || '')}</td>
+      <td>${r.is_sale ? '<span class="stock-pill stock-ok">Venta</span>' : '<span class="stock-pill stock-warning">No venta</span>'}</td>
+      <td>${r.sale_generated ? '<span class="stock-pill stock-ok">Sí</span>' : '<span class="stock-pill stock-none">No</span>'}</td>
+      <td>${esc(r.created_at ? new Date(r.created_at).toLocaleString('es-DO') : '')}</td>
     </tr>`).join('');
 }
 
-function reconRows(rows){
+function reconRows(rows, branchMap, productMap){
   if(!rows.length) return `<tr><td colspan="7" class="muted">No hay datos de conciliación visibles.</td></tr>`;
   return rows.map(r=>`
     <tr>
-      <td>${esc(r.date || r.sale_date || r.dispatch_date || '')}</td>
-      <td>${esc(r.branch || r.branch_name || r.branch_id || '')}</td>
-      <td>${esc(r.product_name || r.product_code || r.product_id || '')}</td>
-      <td class="num">${num.format(Number(r.dispatched_units||0))}</td>
-      <td class="num">${num.format(Number(r.sold_units||0))}</td>
+      <td>${esc(r.dispatch_date || '')}</td>
+      <td>${esc(branchMap[r.branch_id]?.name || r.branch_id || '')}</td>
+      <td>${esc(productMap[r.product_id]?.name || productMap[r.product_id]?.code || r.product_id || '')}</td>
+      <td class="num">${num.format(Number(r.dispatched_sale_units||0))}</td>
+      <td class="num">${num.format(Number(r.recognized_sale_units||0))}</td>
       <td class="num">${num.format(Number(r.difference_units||0))}</td>
       <td>${Number(r.difference_units||0)===0 ? '<span class="status ok">OK</span>' : '<span class="status warn">Revisar</span>'}</td>
     </tr>`).join('');
@@ -71,15 +75,20 @@ export async function mountDispatches(root){
   root.innerHTML=`<section class="card"><h3>Despachos</h3><div class="status info">Cargando datos…</div></section>`;
 
   try{
-    const branches=await getBranches();
+    const [branches, products] = await Promise.all([
+      getBranches(),
+      getProductsForDispatch()
+    ]);
+
     const branchMap=Object.fromEntries(branches.map(b=>[b.id,b]));
-    const state={branches,branchMap,current:null};
+    const productMap=Object.fromEntries(products.map(p=>[p.id,p]));
+    const state={branches,branchMap,products,productMap,current:null};
 
     root.innerHTML=`
       <div class="sales-toolbar">
         <div>
           <h2 class="section-heading">Despachos operativos</h2>
-          <div class="muted">Separación explícita entre despacho físico y venta.</div>
+          <div class="muted">Despacho físico separado de venta reconocida.</div>
         </div>
         <button id="dispatch-refresh" class="secondary">Actualizar</button>
       </div>
@@ -113,7 +122,10 @@ export async function mountDispatches(root){
         <div class="card-head"><h3>Despachos</h3><span id="dispatch-count" class="muted"></span></div>
         <div class="table-wrap">
           <table class="data-table">
-            <thead><tr><th>Fecha</th><th>Sucursal</th><th>Estado</th><th>Referencia</th><th>Cliente</th><th>Notas</th><th></th></tr></thead>
+            <thead><tr>
+              <th>Fecha</th><th>Sucursal</th><th>Estado</th><th>Tipo</th>
+              <th>Turno</th><th>Cliente</th><th>Notas</th><th></th>
+            </tr></thead>
             <tbody id="dispatch-body"></tbody>
           </table>
         </div>
@@ -126,23 +138,32 @@ export async function mountDispatches(root){
         </div>
         <div class="table-wrap">
           <table class="data-table">
-            <thead><tr><th>Producto</th><th>Cliente</th><th>Unidades</th><th>Precio</th><th>Total</th><th>Notas</th></tr></thead>
+            <thead><tr>
+              <th>Producto</th><th>Unidades</th><th>Tipo</th>
+              <th>Venta generada</th><th>Creado</th>
+            </tr></thead>
             <tbody id="dispatch-lines-body"></tbody>
           </table>
         </div>
       </section>
 
       <section class="card">
-        <div class="card-head"><h3>Conciliación despacho vs venta</h3><span class="muted">Control operativo</span></div>
+        <div class="card-head">
+          <h3>Conciliación despacho vs venta</h3>
+          <span class="muted">vw_dispatch_sales_reconciliation</span>
+        </div>
         <div class="table-wrap">
           <table class="data-table">
-            <thead><tr><th>Fecha</th><th>Sucursal</th><th>Producto</th><th>Despachado</th><th>Vendido</th><th>Diferencia</th><th>Estado</th></tr></thead>
+            <thead><tr>
+              <th>Fecha</th><th>Sucursal</th><th>Producto</th>
+              <th>Despachado venta</th><th>Venta reconocida</th><th>Diferencia</th><th>Estado</th>
+            </tr></thead>
             <tbody id="recon-body"></tbody>
           </table>
         </div>
       </section>
 
-      <div class="debug-strip">[HEMOCURA_DISPATCH] listo</div>`;
+      <div class="debug-strip">[HEMOCURA_DISPATCH] schema v7.2 alineado</div>`;
 
     async function load(){
       const filters={
@@ -152,7 +173,7 @@ export async function mountDispatches(root){
         status:document.getElementById('dispatch-status').value
       };
 
-      document.getElementById('dispatch-body').innerHTML=`<tr><td colspan="7">Consultando…</td></tr>`;
+      document.getElementById('dispatch-body').innerHTML=`<tr><td colspan="8">Consultando…</td></tr>`;
       document.getElementById('recon-body').innerHTML=`<tr><td colspan="7">Consultando…</td></tr>`;
 
       const ws=await loadDispatchWorkspace(filters);
@@ -160,7 +181,7 @@ export async function mountDispatches(root){
 
       document.getElementById('dispatch-body').innerHTML=dispatchRows(ws.dispatches,branchMap);
       document.getElementById('dispatch-count').textContent=`${ws.dispatches.length} registro(s)`;
-      document.getElementById('recon-body').innerHTML=reconRows(ws.reconciliation);
+      document.getElementById('recon-body').innerHTML=reconRows(ws.reconciliation,branchMap,productMap);
 
       document.getElementById('dispatch-errors').innerHTML=ws.errors.length
         ? `<div class="status warn">Carga parcial: ${esc(ws.errors.join(' · '))}</div>`
@@ -176,7 +197,8 @@ export async function mountDispatches(root){
     async function openDetail(id){
       const card=document.getElementById('dispatch-detail-card');
       card.classList.remove('hidden');
-      document.getElementById('dispatch-lines-body').innerHTML=`<tr><td colspan="6">Cargando detalle…</td></tr>`;
+      document.getElementById('dispatch-lines-body').innerHTML=`<tr><td colspan="5">Cargando detalle…</td></tr>`;
+
       const item=state.current?.dispatches?.find(x=>x.id===id);
       document.getElementById('dispatch-detail-meta').textContent=item
         ? `${item.dispatch_date} · ${branchMap[item.branch_id]?.name || item.branch_id} · ${item.status}`
@@ -184,10 +206,10 @@ export async function mountDispatches(root){
 
       try{
         const lines=await getDispatchLines(id);
-        document.getElementById('dispatch-lines-body').innerHTML=lineRows(lines);
+        document.getElementById('dispatch-lines-body').innerHTML=lineRows(lines,productMap);
       }catch(error){
         document.getElementById('dispatch-lines-body').innerHTML=
-          `<tr><td colspan="6"><div class="status bad">${esc(error.message)}</div></td></tr>`;
+          `<tr><td colspan="5"><div class="status bad">${esc(error.message)}</div></td></tr>`;
       }
     }
 

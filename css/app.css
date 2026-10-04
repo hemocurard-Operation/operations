@@ -199,3 +199,11 @@ code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
   text-decoration:none;border:1px solid var(--line);border-radius:8px;
   padding:10px 12px;color:var(--navy);font-weight:700
 }
+
+/* v0.20.0 Supabase Bootstrap */
+.setup-sequence{
+  display:flex;gap:8px;align-items:center;flex-wrap:wrap
+}
+.setup-sequence span{
+  border:1px solid var(--line);border-radius:8px;padding:9px 11px;font-weight:700
+}

@@ -1,5 +1,5 @@
 {
-  "version": "0.19.0",
+  "version": "0.20.0",
   "channel": "RC",
   "generated_at": "2026-10-03",
   "files": [
@@ -9,11 +9,11 @@
     },
     {
       "path": "README.md",
-      "sha256": "9e6f7222799b95b2c3eb686609bed3dba04992b1a2a6162ac8729a1308f04d14"
+      "sha256": "593feee27cdc08e8b9b9322b3ff46c5b64ee96a283cb06c1e9c7efc4d911816a"
     },
     {
       "path": "VERSION.json",
-      "sha256": "d62e4e6a00b9434d20f698d1ebd30931f86d35febfc5a60f429c416844f8e79e"
+      "sha256": "08f4db3a9044fe694f95614dc300f51974dff525fd644638312078a280db513a"
     },
     {
       "path": "assets/README.md",
@@ -21,11 +21,11 @@
     },
     {
       "path": "css/app.css",
-      "sha256": "5105fb0d2783f9648dca7d28860938b6eb98e2a043c631ca74a2060a3784ee66"
+      "sha256": "9ab5cc72bc09a1e502f4e6eb90d2ffe43406a07a21d17faf7c94bbe400b18146"
     },
     {
       "path": "docs/CHANGELOG.md",
-      "sha256": "08edf797d9d17a84065fa641d80199c6424cd127b9126d4d6f17ac12ed87f446"
+      "sha256": "632102c81579d9c118290ef78f856b925f2080ef899d62a0ad93dad483d53f77"
     },
     {
       "path": "docs/DEBUGGING.md",
@@ -38,6 +38,10 @@
     {
       "path": "docs/GO_LIVE_RUNBOOK.md",
       "sha256": "517753f55ee7ffb99c39af0e1078a2eb9cc7dbcacf1b544ee9aa34f4b9e4729b"
+    },
+    {
+      "path": "docs/GUIA_SUPABASE_DESDE_CERO.html",
+      "sha256": "5f9c9b11497bf56868e2ef4da13e8278f6b2d6a4b2260548b146778040b10e12"
     },
     {
       "path": "docs/IMPLEMENTACION_0.10.0.md",
@@ -74,6 +78,10 @@
     {
       "path": "docs/IMPLEMENTACION_0.19.0.md",
       "sha256": "1e878b647edff9e5c2bef3af47aa3d3c8ce0c4cd82344e652ba6c713c7958a8d"
+    },
+    {
+      "path": "docs/IMPLEMENTACION_0.20.0.md",
+      "sha256": "4a3308e3e40f027dee67bb03a326def1b334b0882c139361d45b5d8d68b4be92"
     },
     {
       "path": "docs/IMPLEMENTACION_0.3.0.md",
@@ -284,6 +292,10 @@
       "sha256": "3da91155e54daf00bd3eb2bdbb249780d6cfe5d64194dbf209f3fc1643bae9a3"
     },
     {
+      "path": "js/setup.js",
+      "sha256": "2cfcbe5ab03d6a2c59c9c2ca8d3b1ffc553d1001ba223eb3c3be70d78c66095c"
+    },
+    {
       "path": "js/status.js",
       "sha256": "c986f1b13c9d1e39f02616343168561efba581dc810fd44868cbf3e405caa1d9"
     },
@@ -300,8 +312,24 @@
       "sha256": "dd869be5d83244f44c804b46c2bdf605ea110b023e5554b8bb25e8461bb50749"
     },
     {
+      "path": "setup.html",
+      "sha256": "4e5382de17b0006056e3b97948d71b9378dbcb00f549cbeffab825b1743b38ef"
+    },
+    {
+      "path": "sql/00_IMPLEMENT_SUPABASE_ALL_FIXED_v7_2.sql",
+      "sha256": "974c2aee26d6910547bd741bf663c52e8788eb12f2c26a95b5519ad1194d2610"
+    },
+    {
       "path": "sql/12_planning_forecast_v7_FIXED.sql",
       "sha256": "db93620c93f234fc5ffc3f4f4fc35076f86f992390ff23ef7696904e63ca04bd"
+    },
+    {
+      "path": "sql/20_BOOTSTRAP_FIRST_ADMIN.sql",
+      "sha256": "3839fe6c4dd1e1c9bfe8d620fead18defd13dae519faa1e63ee19a2111005a52"
+    },
+    {
+      "path": "sql/21_VERIFY_SUPABASE_INSTALL.sql",
+      "sha256": "841b0761c51a8ff546d37492b4db4ffb4245691ec1a6f4dc96f5479669a96199"
     },
     {
       "path": "sql/README.md",
@@ -317,7 +345,7 @@
     },
     {
       "path": "tests/SMOKE_TESTS.md",
-      "sha256": "7e43f1f0b9094a2f9525d5f111718879a14430c3591cc4f0799ab06f49ca6914"
+      "sha256": "88173783100f04bdf473e5079317fd4f33b52c95698242dd0b40b02eace2041f"
     },
     {
       "path": "vendor/README.md",

@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HemoCura — Supabase Setup</title>
+<link rel="stylesheet" href="./css/app.css">
+</head>
+<body>
+<main class="status-page">
+  <section class="status-hero">
+    <div>
+      <div class="brand-mark">H</div>
+      <h1>HemoCura · Supabase Setup</h1>
+      <p>Asistente de nivelación y preparación del backend.</p>
+    </div>
+    <a class="status-link" href="./">Volver a HemoCura</a>
+  </section>
+
+  <section class="card">
+    <h2>Estado de configuración del frontend</h2>
+    <div id="setup-config" class="status info">Comprobando js/config.js…</div>
+  </section>
+
+  <section class="card">
+    <h2>Orden correcto de implementación</h2>
+    <div class="setup-sequence">
+      <span>1 Proyecto</span><b>→</b><span>2 URL/Publishable Key</span><b>→</b>
+      <span>3 SQL v7.2</span><b>→</b><span>4 Usuario Auth</span><b>→</b>
+      <span>5 Perfil/Rol</span><b>→</b><span>6 RLS</span><b>→</b>
+      <span>7 GitHub config</span><b>→</b><span>8 QA</span>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Checklist</h2>
+    <div class="release-checklist" id="setup-checklist">
+      <label><input type="checkbox" data-setup="project"> Proyecto Supabase creado</label>
+      <label><input type="checkbox" data-setup="keys"> URL y Publishable Key identificadas</label>
+      <label><input type="checkbox" data-setup="installer"> SQL v7.2 ejecutado</label>
+      <label><input type="checkbox" data-setup="catalogs"> 3 sucursales / 9 roles / 6 productos verificados</label>
+      <label><input type="checkbox" data-setup="authuser"> Usuario creado en Authentication</label>
+      <label><input type="checkbox" data-setup="profile"> profiles creado</label>
+      <label><input type="checkbox" data-setup="role"> user_roles creado</label>
+      <label><input type="checkbox" data-setup="config"> js/config.js actualizado</label>
+      <label><input type="checkbox" data-setup="login"> Login HemoCura funciona</label>
+      <label><input type="checkbox" data-setup="qa"> status → freeze → qa ejecutados</label>
+    </div>
+    <div id="setup-progress" class="status info"></div>
+  </section>
+
+  <section class="card">
+    <h2>Archivos incluidos</h2>
+    <div class="diagnostic-grid">
+      <div><strong>Instalador completo</strong><span>sql/00_IMPLEMENT_SUPABASE_ALL_FIXED_v7_2.sql</span></div>
+      <div><strong>Primer administrador</strong><span>sql/20_BOOTSTRAP_FIRST_ADMIN.sql</span></div>
+      <div><strong>Verificación</strong><span>sql/21_VERIFY_SUPABASE_INSTALL.sql</span></div>
+      <div><strong>Guía</strong><span>docs/GUIA_SUPABASE_DESDE_CERO.html</span></div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Guardrail</h2>
+    <div class="status warn">
+      Nunca coloque una Secret Key, service_role o contraseña de base de datos en GitHub Pages.
+      El navegador usa únicamente la Publishable Key; RLS controla el acceso efectivo.
+    </div>
+  </section>
+
+  <script type="module" src="./js/setup.js"></script>
+</main>
+</body>
+</html>

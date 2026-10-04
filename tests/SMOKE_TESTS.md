@@ -1,14 +1,12 @@
-# Smoke Tests v0.19.0
+# Smoke Tests v0.20.0
 
-1. #acceptance abre.
-2. Santiago aparece.
-3. Puerto Plata aparece.
-4. Tenares aparece.
-5. Estados por módulo persisten.
-6. Observaciones persisten.
-7. Primer día persiste.
-8. Sign-off persiste.
-9. Reporte JSON se genera.
-10. copiar reporte funciona.
-11. Promotion Gate enlaza #acceptance.
-12. SAFE PATCH no contiene js/config.js.
+1. setup.html abre sin login.
+2. setup.js carga.
+3. config plantilla => error.
+4. URL + sb_publishable => OK.
+5. checklist persiste.
+6. instalador v7.2 está incluido.
+7. bootstrap first admin está incluido.
+8. verify SQL está incluido.
+9. guía HTML abre.
+10. SAFE PATCH no contiene js/config.js.

@@ -1,14 +1,22 @@
 {
   "project": "HemoCura Operations",
-  "version": "0.19.0",
-  "stage": "Operational Acceptance & Sign-off",
+  "version": "0.20.2",
+  "stage": "Dispatch Schema Hotfix",
   "release_channel": "RC",
   "production_target": "LIVE-LIMITED",
   "clinical_core": "SHADOW/BLOCKED",
-  "promotion_rule": "TECHNICAL_EVIDENCE_PLUS_OPERATIONAL_SIGNOFF",
-  "required_branches": [
-    "Santiago",
-    "Puerto Plata",
-    "Tenares"
-  ]
+  "setup_entry": "setup.html",
+  "deployment_policy": "SAFE_PATCH_PREFERRED",
+  "database_installer": "sql/00_IMPLEMENT_SUPABASE_ALL_FIXED_v7_2.sql",
+  "security": {
+    "frontend_key": "publishable",
+    "secret_keys_in_frontend": false,
+    "rls_required": true
+  },
+  "guide_navigation": "DIRECT_LINKS",
+  "hotfix": {
+    "dispatches_reference_removed": true,
+    "dispatch_lines_schema_aligned": true,
+    "reconciliation_view": "vw_dispatch_sales_reconciliation"
+  }
 }

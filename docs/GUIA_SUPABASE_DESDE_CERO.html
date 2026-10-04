@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HemoCura — Guía Supabase desde cero v0.20.1</title>
+<style>
+:root{--navy:#1A365D;--red:#8B0000;--ink:#18202a;--muted:#667085;--bg:#f6f8fb;--line:#d8dee8;--ok:#18794e;--warn:#9a6700}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--ink);line-height:1.55}
+header{background:linear-gradient(135deg,var(--navy),#10233e);color:#fff;padding:34px 24px}
+header .wrap,.wrap{max-width:1120px;margin:auto}h1{margin:0 0 8px;font-size:34px}h2{color:var(--navy);margin-top:34px}
+h3{color:#263d5c;margin-top:24px}.lead{font-size:18px;opacity:.94}.card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:20px;margin:18px 0}
+.step{display:grid;grid-template-columns:48px 1fr;gap:14px;align-items:start}.num{width:42px;height:42px;border-radius:50%;background:var(--navy);color:#fff;display:grid;place-items:center;font-weight:700}
+.ok,.warn,.danger{padding:13px 15px;border-radius:9px;margin:12px 0}.ok{background:#ecfdf3;border:1px solid #a6e2bf}.warn{background:#fff8e6;border:1px solid #ead08c}.danger{background:#fff0f0;border:1px solid #e7aaaa}
+code,pre{font-family:Consolas,Monaco,monospace}pre{background:#101827;color:#e8eef7;padding:16px;border-radius:9px;overflow:auto;white-space:pre-wrap}
+table{width:100%;border-collapse:collapse;background:#fff}th,td{border:1px solid var(--line);padding:10px;text-align:left;vertical-align:top}th{background:#eef3f8;color:var(--navy)}
+.toc a{display:inline-block;margin:4px 8px 4px 0;color:var(--navy)}.small{color:var(--muted);font-size:14px}
+.check{list-style:none;padding:0}.check li{padding:6px 0}.check li:before{content:"☐ ";font-weight:bold}
+.file-link,.app-link{display:inline-flex;align-items:center;gap:7px;text-decoration:none;font-weight:700;border-radius:8px;padding:9px 12px;margin:4px 6px 4px 0}
+.file-link{background:#eef3f8;color:var(--navy);border:1px solid #c7d2df}.app-link{background:var(--navy);color:#fff;border:1px solid var(--navy)}
+.file-link:hover,.app-link:hover{filter:brightness(.96)}
+.link-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.link-grid a{margin:0}
+footer{padding:28px;text-align:center;color:var(--muted)}
+@media(max-width:760px){.link-grid{grid-template-columns:1fr}.step{grid-template-columns:1fr}.num{margin-bottom:4px}}
+@media print{header{background:#fff;color:#000;border-bottom:2px solid #000}.card{break-inside:avoid}.toc{display:none}}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+<h1>HemoCura — Guía Supabase desde cero</h1>
+<p class="lead">Ruta única para nivelar proyecto, seguridad, usuarios, RLS, GitHub Pages y pruebas.</p>
+<p>Versión de guía: 0.20.1 · Objetivo: LIVE-LIMITED · Clinical Core: SHADOW/BLOCKED</p>
+</div></header>
+
+<main class="wrap">
+<div class="card toc">
+<strong>Contenido:</strong>
+<a href="#accesos">Accesos directos</a><a href="#mapa">Mapa</a><a href="#crear">Crear proyecto</a><a href="#keys">URL/Key</a>
+<a href="#sql">SQL</a><a href="#usuario">Usuario</a><a href="#perfil">Perfil/Rol</a>
+<a href="#rls">RLS</a><a href="#github">GitHub</a><a href="#pruebas">Pruebas</a>
+<a href="#errores">Errores</a><a href="#operacion">Rutina</a>
+</div>
+
+<h2 id="accesos">0. Accesos directos desde esta guía</h2>
+<div class="card">
+<p>Cuando esta guía está dentro del paquete HemoCura, estos enlaces abren directamente el archivo correspondiente.</p>
+<div class="link-grid">
+<a class="app-link" href="../setup.html">Abrir setup.html</a>
+<a class="app-link" href="../status.html">Abrir status.html</a>
+<a class="app-link" href="../index.html">Abrir HemoCura</a>
+<a class="app-link" href="../promotion.html">Abrir Promotion Gate</a>
+<a class="app-link" href="../index.html#freeze">Abrir #freeze</a>
+<a class="app-link" href="../index.html#qa">Abrir #qa</a>
+<a class="app-link" href="../index.html#release">Abrir #release</a>
+<a class="app-link" href="../index.html#evidence">Abrir #evidence</a>
+<a class="app-link" href="../index.html#acceptance">Abrir #acceptance</a>
+<a class="file-link" href="../sql/00_IMPLEMENT_SUPABASE_ALL_FIXED_v7_2.sql">Abrir instalador SQL v7.2</a>
+<a class="file-link" href="../sql/20_BOOTSTRAP_FIRST_ADMIN.sql">Abrir SQL primer ADMIN</a>
+<a class="file-link" href="../sql/21_VERIFY_SUPABASE_INSTALL.sql">Abrir SQL de verificación</a>
+<a class="file-link" href="../js/config.example.js">Abrir ejemplo config.js</a>
+</div>
+<div class="warn"><strong>Nota:</strong> si abre solamente este HTML aislado, los enlaces relativos no encontrarán los demás archivos. Para uso fuera de GitHub, utilice el ZIP “Guía + archivos enlazados”.</div>
+</div>
+
+<h2 id="mapa">1. Mapa único de implementación</h2>
+<div class="card">
+<pre>Supabase Project
+    ↓
+Project URL + Publishable Key
+    ↓
+SQL Editor → instalador HemoCura v7.2
+    ↓
+Verificar catálogos
+    ↓
+Authentication → crear usuario
+    ↓
+SQL Editor → profiles + user_roles
+    ↓
+RLS / grants
+    ↓
+GitHub → js/config.js
+    ↓
+status.html
+    ↓
+Login
+    ↓
+#freeze → #qa → #release → #evidence → #acceptance</pre>
+<div class="warn"><strong>Regla:</strong> no salte pasos. Cuando un paso falla, se corrige ese paso antes de avanzar.</div>
+</div>
+
+<h2 id="crear">2. Crear o identificar el proyecto Supabase</h2>
+<div class="card step"><div class="num">1</div><div>
+<h3>Crear proyecto</h3>
+<p>Entre a Supabase y cree un proyecto nuevo para HemoCura, o abra el proyecto existente que utilizará la aplicación.</p>
+<ul class="check">
+<li>Nombre del proyecto identificado.</li><li>Región seleccionada.</li>
+<li>Contraseña de base de datos guardada en un gestor seguro.</li><li>Proyecto terminó de aprovisionarse.</li>
+</ul>
+<div class="danger"><strong>No coloque la contraseña de base de datos en GitHub.</strong></div>
+</div></div>
+
+<h2 id="keys">3. Obtener Project URL y Publishable Key</h2>
+<div class="card step"><div class="num">2</div><div>
+<h3>Usar la clave correcta para navegador</h3>
+<p>En el Dashboard de Supabase, abra <strong>Connect</strong> o <strong>Settings → API Keys</strong>. Copie:</p>
+<ul><li>Project URL: <code>https://xxxxxxxx.supabase.co</code></li><li>Publishable Key: <code>sb_publishable_...</code></li></ul>
+<div class="ok">Para GitHub Pages use la <strong>Publishable Key</strong>. Es pública por diseño y queda limitada por RLS.</div>
+<div class="danger">Nunca use <code>sb_secret_...</code>, <code>service_role</code> ni una Secret Key en el navegador.</div>
+<p><a class="file-link" href="../js/config.example.js">Abrir ejemplo de config.js</a></p>
+</div></div>
+
+<h2 id="sql">4. Instalar la base HemoCura</h2>
+<div class="card step"><div class="num">3</div><div>
+<h3>SQL Editor</h3>
+<p>Abra <strong>SQL Editor</strong> en Supabase. Para una base nueva, ejecute:</p>
+<p><a class="file-link" href="../sql/00_IMPLEMENT_SUPABASE_ALL_FIXED_v7_2.sql">Abrir 00_IMPLEMENT_SUPABASE_ALL_FIXED_v7_2.sql</a></p>
+<div class="warn"><strong>No lo ejecute repetidamente sobre una base ya instalada.</strong> Si la ejecución se interrumpe, primero determine hasta qué punto llegó.</div>
+<h3>Qué debe sembrar automáticamente</h3>
+<table><tr><th>Objeto</th><th>Esperado</th></tr><tr><td>Sucursales</td><td>3: STI Santiago, POP Puerto Plata, TEN Tenares</td></tr><tr><td>Roles</td><td>9</td></tr><tr><td>Productos</td><td>6 productos sanguíneos iniciales</td></tr></table>
+<p>Después ejecute:</p>
+<p><a class="file-link" href="../sql/21_VERIFY_SUPABASE_INSTALL.sql">Abrir 21_VERIFY_SUPABASE_INSTALL.sql</a></p>
+</div></div>
+
+<h2 id="usuario">5. Crear el primer usuario de HemoCura</h2>
+<div class="card step"><div class="num">4</div><div>
+<h3>Authentication → Users</h3>
+<p>En Supabase vaya a <strong>Authentication → Users</strong>. Cree o invite al usuario inicial y copie su <strong>User UUID</strong>.</p>
+<div class="warn">Crear un usuario en Auth no crea automáticamente un registro en <code>public.profiles</code> en esta arquitectura.</div>
+</div></div>
+
+<h2 id="perfil">6. Vincular Auth → profiles → user_roles</h2>
+<div class="card step"><div class="num">5</div><div>
+<h3>Primer administrador</h3>
+<p><a class="file-link" href="../sql/20_BOOTSTRAP_FIRST_ADMIN.sql">Abrir 20_BOOTSTRAP_FIRST_ADMIN.sql</a></p>
+<p>Reemplace <code>REEMPLAZAR_USER_UUID</code> y <code>REEMPLAZAR_NOMBRE</code>. El script asigna inicialmente Santiago y rol ADMIN.</p>
+<h3>Roles disponibles</h3>
+<pre>ADMIN
+GERENCIA_OPERATIVA
+GERENCIA_GENERAL
+CALIDAD
+LABORATORIO
+INVENTARIO
+FINANZAS
+SUCURSAL
+CONSULTA</pre>
+</div></div>
+
+<h2 id="rls">7. Entender RLS antes de probar</h2>
+<div class="card step"><div class="num">6</div><div>
+<p>La Publishable Key identifica al frontend. Después del login, Supabase aplica Auth + grants + RLS.</p>
+<pre>current_branch_id()
+has_role(role_code)
+can_access_branch(target_branch)</pre>
+<div class="danger">No “solucione” un error RLS colocando una Secret Key en el frontend.</div>
+</div></div>
+
+<h2 id="github">8. Configurar GitHub Pages</h2>
+<div class="card step"><div class="num">7</div><div>
+<h3>Archivo único a modificar</h3>
+<p><a class="file-link" href="../js/config.example.js">Abrir config.example.js</a></p>
+<p>En GitHub debe editar <code>operations/js/config.js</code> y dejar:</p>
+<pre>export const CONFIG = {
+  SUPABASE_URL: 'https://TU-REFERENCIA-REAL.supabase.co',
+  SUPABASE_PUBLISHABLE_KEY: 'sb_publishable_TU_CLAVE_REAL',
+  APP_BASE: '/operations/'
+};</pre>
+<div class="ok">La Publishable Key puede estar en el navegador; la seguridad depende de Auth, grants y RLS.</div>
+<p><a class="app-link" href="../status.html">Abrir status.html después del commit</a></p>
+</div></div>
+
+<h2 id="pruebas">9. Secuencia de pruebas</h2>
+<div class="card step"><div class="num">8</div><div>
+<table>
+<tr><th>Orden</th><th>Abrir directamente</th><th>Qué valida</th></tr>
+<tr><td>1</td><td><a href="../setup.html">setup.html</a></td><td>Nivelación backend/config.</td></tr>
+<tr><td>2</td><td><a href="../status.html">status.html</a></td><td>Archivos y versión.</td></tr>
+<tr><td>3</td><td><a href="../index.html">HemoCura</a></td><td>Login y arranque.</td></tr>
+<tr><td>4</td><td><a href="../index.html#freeze">#freeze</a></td><td>Frontend/caché.</td></tr>
+<tr><td>5</td><td><a href="../index.html#qa">#qa</a></td><td>Objetos y RLS.</td></tr>
+<tr><td>6</td><td><a href="../index.html#release">#release</a></td><td>Pre-Go-Live.</td></tr>
+<tr><td>7</td><td><a href="../index.html#evidence">#evidence</a></td><td>Evidencia runtime.</td></tr>
+<tr><td>8</td><td><a href="../index.html#acceptance">#acceptance</a></td><td>Aceptación por sucursal.</td></tr>
+</table>
+</div></div>
+
+<h2 id="errores">10. Árbol de errores</h2>
+<div class="card">
+<table>
+<tr><th>Error</th><th>Causa probable</th><th>Acción</th></tr>
+<tr><td>SUPABASE_URL no configurada</td><td>config.js conserva plantilla</td><td>Abrir ejemplo y actualizar Project URL.</td></tr>
+<tr><td>SUPABASE_PUBLISHABLE_KEY no configurada</td><td>Falta Publishable Key</td><td>Copiar <code>sb_publishable_...</code>.</td></tr>
+<tr><td>Invalid API key</td><td>Clave incorrecta/proyecto distinto</td><td>Revisar API Keys.</td></tr>
+<tr><td>Invalid login credentials</td><td>Usuario/contraseña</td><td>Revisar Authentication → Users.</td></tr>
+<tr><td>Perfil vacío</td><td>Auth existe pero profiles no</td><td><a href="../sql/20_BOOTSTRAP_FIRST_ADMIN.sql">Abrir bootstrap ADMIN</a>.</td></tr>
+<tr><td>permission denied</td><td>Grant o RLS</td><td>Identificar objeto exacto en <a href="../index.html#qa">#qa</a>.</td></tr>
+<tr><td>relation does not exist</td><td>SQL incompleto</td><td><a href="../sql/21_VERIFY_SUPABASE_INSTALL.sql">Abrir verificación SQL</a>.</td></tr>
+<tr><td>404 JS/CSS</td><td>GitHub/ruta</td><td>Abrir <a href="../status.html">status.html</a>.</td></tr>
+</table>
+</div>
+
+<h2 id="operacion">11. Rutina recomendada</h2>
+<div class="card">
+<pre>Antes de cambiar:
+1. Identificar objeto exacto.
+2. Guardar SQL actual / backup.
+3. Definir cambio.
+4. Validar RLS/grants.
+5. Ejecutar cambio puntual.
+6. Probar en SQL Editor.
+7. Probar con usuario real.
+8. Ejecutar #qa.
+9. Documentar.
+10. No tocar módulos no relacionados.</pre>
+<div class="ok"><strong>Estándar HemoCura:</strong> un problema → un objeto → una corrección → una prueba → una evidencia.</div>
+</div>
+
+<h2>12. Checklist final</h2>
+<div class="card">
+<ul class="check">
+<li>Proyecto Supabase identificado.</li><li>Project URL correcta.</li><li>Publishable Key correcta.</li>
+<li>Instalador v7.2 ejecutado una sola vez en base nueva.</li><li>3 sucursales verificadas.</li><li>9 roles verificados.</li><li>6 productos verificados.</li>
+<li>Usuario Auth creado.</li><li>profiles creado.</li><li>user_roles creado.</li><li>config.js actualizado.</li>
+<li>status.html verde.</li><li>Login exitoso.</li><li>#qa sin bloqueos críticos.</li><li>Clinical Core permanece SHADOW/BLOCKED.</li>
+</ul>
+</div>
+</main>
+<footer>HemoCura Operations · Guía Supabase v0.20.1</footer>
+</body>
+</html>

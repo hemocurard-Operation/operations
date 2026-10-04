@@ -1,9 +1,11 @@
 # Changelog
 
-## 0.19.0 RC
-- Aceptación operativa.
-- Sign-off por sucursal.
-- Validación del primer día.
-- Reporte JSON de aceptación.
-- Promotion Gate enlaza #acceptance.
-- Sin nueva lógica operativa.
+## 0.20.0 RC
+- Supabase Bootstrap assistant.
+- setup.html.
+- Guía desde cero.
+- Instalador v7.2 incorporado al paquete.
+- Bootstrap primer ADMIN.
+- SQL de verificación.
+- Safe Patch conserva config.js.
+- Sin nueva lógica de negocio.
