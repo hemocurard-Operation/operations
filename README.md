@@ -1,17 +1,17 @@
-# HemoCura v0.31.0 — Aprobaciones y Segregación
+# HemoCura v0.32.0 — Gobierno QMS
+
+Integra aprobaciones con:
+- document_register
+- document_changes
+- capa
+- nonconformities
 
 Añade:
-- políticas de aprobación;
-- solicitudes;
-- decisiones;
-- firma operativa interna;
-- segregación solicitante/aprobador;
-- ejecución controlada;
-- auditoría;
-- bandeja #approvals.
+- solicitud formal de aprobación documental;
+- aprobación/ejecución separadas;
+- cierre CAPA condicionado a efectividad;
+- vistas de gobierno QMS;
+- módulo #qmsgov;
+- KPIs de revisiones y CAPA vencidas.
 
-Acciones con ejecución integrada:
-- UNIT_RELEASE
-- DAILY_CLOSE
-
-DOCUMENT_APPROVAL y CAPA_CLOSE quedan preparadas para integrar sin asumir columnas que aún no han sido verificadas.
+`js/config.js` continúa protegido.

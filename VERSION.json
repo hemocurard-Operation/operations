@@ -1,19 +1,15 @@
 {
   "project": "HemoCura Operations Intelligence + QMS + Compliance",
-  "version": "0.31.0",
-  "stage": "Approvals and Segregation of Duties",
+  "version": "0.32.0",
+  "stage": "Document Control and CAPA Approval Integration",
   "release_channel": "RC",
-  "config_policy": "PROTECTED_LOCAL_ENVIRONMENT_FILE",
   "protected_files": [
     "js/config.js"
   ],
-  "security_model": "Auth + RLS + permissions + approval workflow + segregation of duties",
-  "approval_model": "REQUEST → REVIEW → APPROVE/REJECT → EXECUTE → AUDIT",
-  "clinical_core": "LIVE-LIMITED / CONTROLLED_RELEASE",
-  "guardrails": [
-    "Approval does not replace clinical judgment",
-    "Critical clinical actions remain human decisions",
-    "Requester cannot self-approve when segregation policy requires a distinct approver",
-    "Execution occurs only after approval when using the controlled workflow"
-  ]
+  "qms_model": "Document lifecycle + NC/CAPA + approvals + audit",
+  "approval_integrations": [
+    "DOCUMENT_APPROVAL",
+    "CAPA_CLOSE"
+  ],
+  "clinical_core": "LIVE-LIMITED / CONTROLLED_RELEASE"
 }

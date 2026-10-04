@@ -26,7 +26,8 @@ const ROUTE_PERMISSION={
   qa:'RELEASE_GATE_VIEW',
   security:'ACCESS_ADMIN',
   diagnostics:'RELEASE_GATE_VIEW',
-  approvals:'APPROVAL_VIEW'
+  approvals:'APPROVAL_VIEW',
+  qmsgov:'QUALITY_VIEW'
 };
 
 let cache=null;

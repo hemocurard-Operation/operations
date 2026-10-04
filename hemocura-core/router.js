@@ -6,6 +6,7 @@ const ROUTES={
  security:{title:'Seguridad y Acceso',subtitle:'Roles, permisos, sucursal y RLS'},
  diagnostics:{title:'Diagnóstico',subtitle:'Configuración, red, Auth, perfil, RLS y migraciones'},
  approvals:{title:'Aprobaciones',subtitle:'Segregación de funciones y firma operativa'},
+ qmsgov:{title:'Gobierno QMS',subtitle:'Documentos, CAPA y aprobaciones'},
  sales:{title:'Ventas / Salidas',subtitle:'Control operativo de salidas y facturación'},
  donors:{title:'Donantes',subtitle:'Donantes y donaciones efectivas'},
  screening:{title:'Tamizaje',subtitle:'Pruebas, reactivos, lotes y resultados'},
