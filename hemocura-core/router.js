@@ -1,23 +1,23 @@
-const ROUTES = {
-  dashboard: {title:'Dashboard', subtitle:'Resumen operativo del día'},
-  sales: {title:'Ventas', subtitle:'Ventas diarias por sucursal'},
-  dispatches: {title:'Despachos', subtitle:'Despachos y conciliación'},
-  inventory: {title:'Inventario', subtitle:'Existencias y alertas'},
-  costs: {title:'Costos', subtitle:'Costos, precios y rentabilidad'},
-  quality: {title:'Calidad', subtitle:'Indicadores, NC y CAPA'},
-  planning: {title:'Planificación', subtitle:'Plan vs Real y forecast'},
-  settings: {title:'Configuración', subtitle:'Parámetros del sistema'},
-  qa: {title:'QA / Release', subtitle:'Estabilización y validación integral'},
-  release: {title:'Pre-Go-Live', subtitle:'Liberación, rollback y contingencia'},
-  freeze: {title:'RC Freeze', subtitle:'Integridad del frontend y control de caché'},
-  evidence: {title:'Runtime Evidence', subtitle:'Evidencia técnica para promoción'},
-  acceptance: {title:'Aceptación Operativa', subtitle:'Sign-off por sucursal y primer día'}
+const ROUTES={
+ dashboard:{title:'Centro de Operaciones',subtitle:'Operaciones, sangre, calidad y cumplimiento'},
+ sales:{title:'Ventas / Salidas',subtitle:'Control operativo de salidas y facturación'},
+ donors:{title:'Donantes',subtitle:'Donantes y donaciones efectivas'},
+ screening:{title:'Tamizaje',subtitle:'Pruebas, reactivos, lotes y resultados'},
+ bloodinventory:{title:'Inventario de Sangre',subtitle:'Disponibilidad por componente, ABO y Rh'},
+ dispatches:{title:'Despachos',subtitle:'Despacho físico y conciliación'},
+ inventory:{title:'Insumos',subtitle:'Inventario de reactivos y materiales'},
+ requisitions:{title:'Requisiciones',subtitle:'Solicitud y autorización de insumos'},
+ inspections:{title:'Inspecciones',subtitle:'Inspección de sucursal y hallazgos'},
+ planning:{title:'Planificación',subtitle:'Plan operativo y forecast SHADOW'},
+ quality:{title:'SGC',subtitle:'Incidencias, NC, CAPA y alertas'},
+ documents:{title:'Control Documental',subtitle:'Documentos y cambios'},
+ compliance:{title:'Compliance',subtitle:'Riesgos y cumplimiento'},
+ bi:{title:'Inteligencia de Negocios',subtitle:'Indicadores y análisis operativo'},
+ projects:{title:'Proyectos',subtitle:'Portafolio, avance y dependencias'},
+ settings:{title:'Administración',subtitle:'Usuarios, roles y diagnóstico'},
+ qa:{title:'QA Técnico',subtitle:'Validación integral'}
 };
-
-export function getRoute(){
-  const raw=(location.hash||'#dashboard').replace('#','').trim();
-  return ROUTES[raw] ? raw : 'dashboard';
-}
-export function getRouteMeta(route){ return ROUTES[route] || ROUTES.dashboard; }
-export function routeList(){ return Object.entries(ROUTES); }
-export function navigate(route){ location.hash=route; }
+export function routeList(){return Object.entries(ROUTES)}
+export function getRoute(){const k=(location.hash||'#dashboard').replace('#','').split('?')[0];return ROUTES[k]?k:'dashboard'}
+export function getRouteMeta(k){return ROUTES[k]||ROUTES.dashboard}
+export function navigate(k){location.hash=`#${ROUTES[k]?k:'dashboard'}`}

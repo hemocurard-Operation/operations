@@ -1,3 +1,4 @@
+import { mountQmsActionBoard } from './qms-action-board.js';
 import {
   loadQualityWorkspace,
   createNonconformity,
@@ -255,6 +256,7 @@ export async function mountQuality(root) {
         </form>
       </dialog>
 
+      <div id="qms-open-actions"></div>
       <div class="debug-strip">[HEMOCURA_QUALITY] listo</div>`;
 
     async function load() {
@@ -355,6 +357,7 @@ export async function mountQuality(root) {
     }
 
     await load();
+    await mountQmsActionBoard(document.getElementById('qms-open-actions'));
 
   } catch(error) {
     console.error('[HEMOCURA_QUALITY_ERROR]',error);

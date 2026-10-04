@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Formato de Requisición de Insumos — Hemocura</title>
+<style>
+  @page { size: letter; margin: 14mm 12mm; }
+  *{box-sizing:border-box;}
+  body{font-family:Arial,Helvetica,sans-serif;color:#1a1a1a;max-width:850px;margin:0 auto;padding:18px;font-size:13px;}
+  .toolbar{text-align:right;margin-bottom:10px;}
+  .toolbar button{background:#1f4e78;color:#fff;border:none;padding:8px 16px;border-radius:5px;font-size:13px;cursor:pointer;}
+  .toolbar button:hover{background:#163a5c;}
+
+  .doc{border:1.5px solid #1a1a1a;padding:0;}
+  .doc-header{display:flex;border-bottom:1.5px solid #1a1a1a;}
+  .doc-header .brand{flex:2;padding:10px 14px;border-right:1.5px solid #1a1a1a;display:flex;flex-direction:column;justify-content:center;}
+  .doc-header .brand .logo{font-size:20px;font-weight:bold;color:#1f4e78;letter-spacing:0.5px;}
+  .doc-header .brand .sub{font-size:12px;color:#444;margin-top:2px;}
+  .doc-header .title{flex:2;padding:10px 14px;border-right:1.5px solid #1a1a1a;display:flex;align-items:center;justify-content:center;text-align:center;font-weight:bold;font-size:15px;color:#1a1a1a;}
+  .doc-header .control{flex:1.4;font-size:10.5px;}
+  .doc-header .control table{width:100%;height:100%;border-collapse:collapse;}
+  .doc-header .control td{border-bottom:1px solid #1a1a1a;padding:3px 6px;}
+  .doc-header .control tr:last-child td{border-bottom:none;}
+  .doc-header .control .lbl{color:#555;}
+  .doc-header .control .val{font-weight:bold;text-align:right;}
+
+  .section-title{background:#1f4e78;color:#fff;font-weight:bold;font-size:12px;padding:5px 12px;text-transform:uppercase;letter-spacing:0.3px;}
+
+  .grid{display:grid;border-bottom:1.5px solid #1a1a1a;}
+  .cell{border-right:1px solid #1a1a1a;padding:6px 10px;}
+  .cell:last-child{border-right:none;}
+  .cell label{display:block;font-size:9.5px;color:#555;text-transform:uppercase;margin-bottom:3px;letter-spacing:0.2px;}
+  .cell .fillline{border-bottom:1px solid #999;min-height:16px;font-size:12.5px;}
+  .cell input[type=text], .cell input[type=date], .cell select{width:100%;border:none;border-bottom:1px solid #999;font-size:12.5px;padding:1px 0;font-family:inherit;background:transparent;}
+  .cell input:focus, .cell select:focus{outline:none;border-bottom:1.5px solid #1f4e78;}
+
+  .row4{grid-template-columns:1fr 1fr 1fr 1fr;}
+  .row3{grid-template-columns:1.3fr 1fr 1fr;}
+  .row2{grid-template-columns:2fr 1fr;}
+
+  .checks{display:flex;gap:16px;align-items:center;font-size:12.5px;flex-wrap:wrap;}
+  .checks label{display:flex;align-items:center;gap:5px;text-transform:none;font-size:12.5px;color:#1a1a1a;font-weight:normal;margin:0;}
+  .checks input[type=checkbox]{width:13px;height:13px;}
+
+  table.items{width:100%;border-collapse:collapse;}
+  table.items th{background:#d9e1f2;font-size:10.5px;text-transform:uppercase;padding:5px 4px;border:1px solid #1a1a1a;text-align:center;}
+  table.items td{border:1px solid #1a1a1a;padding:0;height:24px;}
+  table.items td.no{text-align:center;font-size:11px;color:#666;width:26px;}
+  table.items td input, table.items td select{width:100%;height:100%;border:none;font-size:11.5px;padding:2px 4px;font-family:inherit;background:transparent;}
+  table.items td input:focus, table.items td select:focus{outline:1px solid #1f4e78;}
+  table.items td.qty input{text-align:center;}
+
+  .justif{padding:8px 12px;}
+  .justif textarea{width:100%;border:none;border-bottom:1px solid #999;resize:none;font-family:inherit;font-size:12.5px;height:44px;}
+  .justif textarea:focus{outline:none;}
+
+  .signatures{display:grid;grid-template-columns:repeat(4,1fr);}
+  .sig{border-right:1px solid #1a1a1a;padding:26px 8px 8px;text-align:center;font-size:11px;}
+  .sig:last-child{border-right:none;}
+  .sig .line{border-top:1px solid #1a1a1a;margin-bottom:5px;padding-top:4px;font-weight:bold;}
+  .sig .role{color:#555;font-size:10px;}
+
+  .footnote{font-size:9.5px;color:#666;padding:6px 12px;border-top:1px solid #1a1a1a;display:flex;justify-content:space-between;}
+
+  .appendix{margin-top:26px;page-break-before:always;}
+  .appendix h2{color:#1f4e78;font-size:16px;border-bottom:2px solid #1f4e78;padding-bottom:6px;}
+  .appendix table{width:100%;border-collapse:collapse;font-size:11.5px;margin-top:8px;}
+  .appendix th{background:#d9e1f2;padding:5px 8px;border:1px solid #bbb;text-align:left;}
+  .appendix td{border:1px solid #ddd;padding:4px 8px;}
+  .appendix .cat{background:#f2f4f8;font-weight:bold;}
+
+  @media print{
+    .toolbar{display:none;}
+    body{padding:0;}
+  }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <button onclick="window.print()">Imprimir / Guardar como PDF</button>
+</div>
+
+<div class="doc">
+
+  <div class="doc-header">
+    <div class="brand">
+      <div class="logo">HEMOCURA</div>
+      <div class="sub">Banco de sangre y servicios de salud</div>
+    </div>
+    <div class="title">FORMATO DE<br>REQUISICIÓN DE INSUMOS</div>
+    <div class="control">
+      <table>
+        <tr><td class="lbl">Código</td><td class="val">HC-FOR-COM-001</td></tr>
+        <tr><td class="lbl">Versión</td><td class="val">01</td></tr>
+        <tr><td class="lbl">Fecha de emisión</td><td class="val">___/___/______</td></tr>
+        <tr><td class="lbl">Página</td><td class="val">1 de 1</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="section-title">I. Datos generales de la solicitud</div>
+  <div class="grid row4">
+    <div class="cell"><label>No. de requisición (folio)</label><input type="text" placeholder="REQ-2026-____"></div>
+    <div class="cell"><label>Fecha de solicitud</label><input type="date"></div>
+    <div class="cell"><label>Sucursal solicitante</label>
+      <select>
+        <option value="">Seleccionar…</option>
+        <option>Santiago</option>
+        <option>Puerto Plata</option>
+        <option>Tenares</option>
+        <option>San Francisco de Macorís</option>
+      </select>
+    </div>
+    <div class="cell"><label>Sucursal / almacén proveedor</label>
+      <select>
+        <option value="">Seleccionar…</option>
+        <option>Almacén central</option>
+        <option>Santiago</option>
+        <option>Puerto Plata</option>
+        <option>Tenares</option>
+        <option>San Francisco de Macorís</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="grid row3">
+    <div class="cell"><label>Solicitado por (nombre y cargo)</label><input type="text"></div>
+    <div class="cell"><label>Área / departamento</label><input type="text" placeholder="Ej. Laboratorio, Colecta, Banco de sangre"></div>
+    <div class="cell"><label>Prioridad</label>
+      <div class="checks">
+        <label><input type="checkbox"> Normal</label>
+        <label><input type="checkbox"> Urgente</label>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title">II. Detalle de insumos solicitados</div>
+  <table class="items">
+    <thead>
+      <tr>
+        <th style="width:26px;">No.</th>
+        <th style="width:22%;">Categoría</th>
+        <th style="width:34%;">Descripción del insumo</th>
+        <th style="width:10%;">Unidad</th>
+        <th style="width:10%;">Cant. solicitada</th>
+        <th style="width:10%;">Cant. autorizada</th>
+        <th>Observaciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- 15 filas en blanco para completar -->
+      <tr><td class="no">1</td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td class="qty"><input type="text"></td><td class="qty"><input type="text"></td><td><input type="text"></td></tr>
+      <tr><td class="no">2</td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td class="qty"><input type="text"></td><td class="qty"><input type="text"></td><td><input type="text"></td></tr>
+      <tr><td class="no">3</td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td class="qty"><input type="text"></td><td class="qty"><input type="text"></td><td><input type="text"></td></tr>
+      <tr><td class="no">4</td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td class="qty"><input type="text"></td><td class="qty"><input type="text"></td><td><input type="text"></td></tr>
+      <tr><td class="no">5</td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td class="qty"><input type="text"></td><td class="qty"><input type="text"></td><td><input type="text"></td></tr>
+      <tr><td class="no">6</td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td class="qty"><input type="text"></td><td class="qty"><input type="text"></td><td><input type="text"></td></tr>
+      <tr><td class="no">7</td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td class="qty"><input type="text"></td><td class="qty"><input type="text"></td><td><input type="text"></td></tr>
+      <tr><td class="no">8</td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td class="qty"><input type="text"></td><td class="qty"><input type="text"></td><td><input type="text"></td></tr>
+      <tr><td class="no">9</td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td class="qty"><input type="text"></td><td class="qty"><input type="text"></td><td><input type="text"></td></tr>
+      <tr><td class="no">10</td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td class="qty"><input type="text"></td><td class="qty"><input type="text"></td><td><input type="text"></td></tr>
+      <tr><td class="no">11</td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td class="qty"><input type="text"></td><td class="qty"><input type="text"></td><td><input type="text"></td></tr>
+      <tr><td class="no">12</td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td class="qty"><input type="text"></td><td class="qty"><input type="text"></td><td><input type="text"></td></tr>
+    </tbody>
+  </table>
+
+  <div class="section-title">III. Justificación (obligatoria si la prioridad es Urgente)</div>
+  <div class="justif">
+    <textarea placeholder="Describa el motivo de la requisición…"></textarea>
+  </div>
+
+  <div class="section-title">IV. Firmas de control</div>
+  <div class="signatures">
+    <div class="sig"><div class="line">&nbsp;</div>Solicitado por<div class="role">Encargado de área</div></div>
+    <div class="sig"><div class="line">&nbsp;</div>Revisado por<div class="role">Encargado de sucursal</div></div>
+    <div class="sig"><div class="line">&nbsp;</div>Autorizado por<div class="role">Gerencia Comercial y de Proyectos</div></div>
+    <div class="sig"><div class="line">&nbsp;</div>Recibido conforme<div class="role">Fecha de entrega: ___/___/____</div></div>
+  </div>
+
+  <div class="footnote">
+    <span>Elaborado por: Gerencia Comercial y de Proyectos — Hemocura</span>
+    <span>Este formato es un registro del sistema de gestión de calidad. Conservar copia archivada según SOP de control de registros.</span>
+  </div>
+
+</div>
+
+<div class="appendix">
+  <h2>Anexo — Catálogo de referencia de insumos gastables</h2>
+  <p style="color:#555;">Use esta tabla como referencia para completar correctamente la categoría, el nombre del insumo y la unidad de medida en el detalle de la requisición.</p>
+  <table>
+    <tr><th>Categoría</th><th>Insumo</th><th>Unidad</th></tr>
+
+    <tr class="cat"><td colspan="3">Colecta de sangre (flebotomía / donación)</td></tr>
+    <tr><td></td><td>Bolsa de recolección simple (450–500 mL)</td><td>unidad</td></tr>
+    <tr><td></td><td>Bolsa de recolección doble</td><td>unidad</td></tr>
+    <tr><td></td><td>Bolsa de recolección triple</td><td>unidad</td></tr>
+    <tr><td></td><td>Bolsa de recolección cuádruple</td><td>unidad</td></tr>
+    <tr><td></td><td>Aguja de flebotomía 16G–17G</td><td>unidad</td></tr>
+    <tr><td></td><td>Tubo piloto (muestra pretest)</td><td>unidad</td></tr>
+    <tr><td></td><td>Torniquete desechable</td><td>unidad</td></tr>
+    <tr><td></td><td>Gasa estéril 5x5 cm</td><td>unidad</td></tr>
+    <tr><td></td><td>Apósito / curita post-flebotomía</td><td>unidad</td></tr>
+    <tr><td></td><td>Solución antiséptica (clorhexidina/isopropílico)</td><td>mL</td></tr>
+    <tr><td></td><td>Sellador de tubing manual (clips)</td><td>unidad</td></tr>
+    <tr><td></td><td>Etiqueta de identificación de donante/unidad</td><td>unidad</td></tr>
+    <tr><td></td><td>Guantes de examen (nitrilo/látex)</td><td>par</td></tr>
+
+    <tr class="cat"><td colspan="3">Procesamiento de componentes sanguíneos</td></tr>
+    <tr><td></td><td>Filtro de leucorreducción</td><td>unidad</td></tr>
+    <tr><td></td><td>Bolsa satélite para plasma</td><td>unidad</td></tr>
+    <tr><td></td><td>Bolsa satélite para plaquetas</td><td>unidad</td></tr>
+    <tr><td></td><td>Bolsa para crioprecipitado</td><td>unidad</td></tr>
+    <tr><td></td><td>Solución aditiva SAGM / PAS</td><td>unidad</td></tr>
+    <tr><td></td><td>Cuchillas/consumibles de selladora eléctrica</td><td>unidad</td></tr>
+    <tr><td></td><td>Etiqueta de componente (GRE/Plasma/Plaquetas)</td><td>unidad</td></tr>
+    <tr><td></td><td>Bolsas de congelación (freezer bags)</td><td>unidad</td></tr>
+
+    <tr class="cat"><td colspan="3">Serología / tamizaje de enfermedades infecciosas</td></tr>
+    <tr><td></td><td>Kit ELISA VIH 1/2 (Ag/Ac)</td><td>kit</td></tr>
+    <tr><td></td><td>Kit ELISA Hepatitis B (HBsAg)</td><td>kit</td></tr>
+    <tr><td></td><td>Kit ELISA Hepatitis C (Anti-VHC)</td><td>kit</td></tr>
+    <tr><td></td><td>Kit serológico Sífilis (RPR/VDRL/TPHA)</td><td>kit</td></tr>
+    <tr><td></td><td>Kit Chagas (Anti-T. cruzi)</td><td>kit</td></tr>
+    <tr><td></td><td>Kit HTLV I/II</td><td>kit</td></tr>
+    <tr><td></td><td>Placas de microtitulación</td><td>unidad</td></tr>
+    <tr><td></td><td>Puntas de pipeta 10–1000 µL</td><td>unidad</td></tr>
+    <tr><td></td><td>Solución de lavado ELISA (buffer)</td><td>L</td></tr>
+    <tr><td></td><td>Controles positivos y negativos</td><td>unidad</td></tr>
+
+    <tr class="cat"><td colspan="3">Inmunohematología / banco de sangre</td></tr>
+    <tr><td></td><td>Tarjetas de gel ABO/Rh</td><td>unidad</td></tr>
+    <tr><td></td><td>Tarjetas de gel para prueba cruzada</td><td>unidad</td></tr>
+    <tr><td></td><td>Reactivo Anti-A</td><td>mL</td></tr>
+    <tr><td></td><td>Reactivo Anti-B</td><td>mL</td></tr>
+    <tr><td></td><td>Reactivo Anti-D (Rh)</td><td>mL</td></tr>
+    <tr><td></td><td>Suero de Coombs</td><td>mL</td></tr>
+    <tr><td></td><td>Panel de células para escrutinio de anticuerpos</td><td>kit</td></tr>
+    <tr><td></td><td>Solución de baja fuerza iónica (LISS)</td><td>mL</td></tr>
+    <tr><td></td><td>Células control A1 y B</td><td>unidad</td></tr>
+    <tr><td></td><td>Tubos de ensayo 12x75 mm</td><td>unidad</td></tr>
+    <tr><td></td><td>Pipetas Pasteur desechables</td><td>unidad</td></tr>
+
+    <tr class="cat"><td colspan="3">Aféresis</td></tr>
+    <tr><td></td><td>Kit desechable de plaquetaféresis</td><td>unidad</td></tr>
+    <tr><td></td><td>Kit desechable de plasmaféresis</td><td>unidad</td></tr>
+    <tr><td></td><td>Anticoagulante ACD-A</td><td>bolsa</td></tr>
+    <tr><td></td><td>Aguja de aféresis</td><td>unidad</td></tr>
+
+    <tr class="cat"><td colspan="3">Control de calidad y laboratorio general</td></tr>
+    <tr><td></td><td>Tiras/reactivo control de hemoglobina</td><td>unidad</td></tr>
+    <tr><td></td><td>Alcohol etílico/isopropílico 70%</td><td>L</td></tr>
+    <tr><td></td><td>Hipoclorito de sodio</td><td>L</td></tr>
+    <tr><td></td><td>Parafilm (papel de sellado)</td><td>unidad</td></tr>
+    <tr><td></td><td>Puntas de pipeta multicanal</td><td>unidad</td></tr>
+
+    <tr class="cat"><td colspan="3">Bioseguridad / EPP</td></tr>
+    <tr><td></td><td>Guantes de nitrilo (S/M/L)</td><td>par</td></tr>
+    <tr><td></td><td>Mascarilla quirúrgica</td><td>unidad</td></tr>
+    <tr><td></td><td>Bata desechable / gabacha</td><td>unidad</td></tr>
+    <tr><td></td><td>Gorro desechable</td><td>unidad</td></tr>
+    <tr><td></td><td>Protector ocular / careta facial</td><td>unidad</td></tr>
+    <tr><td></td><td>Contenedor de cortopunzantes</td><td>unidad</td></tr>
+    <tr><td></td><td>Bolsa roja para desechos biológicos</td><td>unidad</td></tr>
+
+    <tr class="cat"><td colspan="3">Etiquetado y administrativo</td></tr>
+    <tr><td></td><td>Etiquetas de código de barras (rollo)</td><td>rollo</td></tr>
+    <tr><td></td><td>Cinta/ribbon impresora térmica</td><td>unidad</td></tr>
+    <tr><td></td><td>Formulario de consentimiento informado</td><td>unidad</td></tr>
+    <tr><td></td><td>Formulario de historia clínica del donante</td><td>unidad</td></tr>
+  </table>
+</div>
+
+</body>
+</html>

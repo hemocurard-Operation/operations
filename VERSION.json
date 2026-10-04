@@ -1,21 +1,29 @@
 {
-  "project": "HemoCura Operations + SGC + Compliance",
-  "version": "0.21.0",
-  "stage": "Scope Reset",
+  "project": "HemoCura Operations + Blood Inventory + QMS + Compliance",
+  "version": "0.23.0",
+  "stage": "Operational Blood Flow + BI + Project Management",
   "release_channel": "RC",
   "scope": [
     "OPERATIONS",
+    "SALES_OUTFLOW_CONTROL",
+    "DONORS",
+    "SCREENING",
+    "BLOOD_INVENTORY",
     "QMS",
-    "COMPLIANCE"
+    "COMPLIANCE",
+    "BI",
+    "PROJECT_MANAGEMENT"
   ],
   "excluded": [
     "CRM",
-    "COMMERCIAL",
-    "SALES",
-    "PRICING",
-    "PROFITABILITY",
+    "PROSPECTING",
+    "COMMERCIAL_PIPELINE",
     "MULTICOMPANY"
   ],
-  "document_master": "HC-SGC-MC-01 v2.0",
-  "clinical_core": "SHADOW/BLOCKED"
+  "clinical_core": "SHADOW/LIMITED",
+  "guardrails": [
+    "No clinical eligibility decision automation",
+    "No automatic transfusion compatibility decision",
+    "Inventory availability is operational and must be verified by qualified staff"
+  ]
 }

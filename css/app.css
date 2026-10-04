@@ -207,3 +207,17 @@ code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
 .setup-sequence span{
   border:1px solid var(--line);border-radius:8px;padding:9px 11px;font-weight:700
 }
+
+/* v0.21.0 Operations + QMS + Compliance */
+.scope-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:16px 0}
+.scope-card{display:flex;flex-direction:column;gap:5px;padding:16px;border:1px solid var(--line);border-radius:10px;background:#fff;text-decoration:none;color:inherit}
+.scope-card strong{color:var(--navy);font-size:16px}.scope-card span{color:var(--muted);font-size:13px}
+.doc-open{text-decoration:none;display:inline-block}
+@media(max-width:900px){.scope-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.scope-grid{grid-template-columns:1fr}}
+
+/* v0.23 */
+.sales-dialog{max-width:640px;width:min(94vw,640px);border:0;border-radius:12px;padding:20px}
+.sales-dialog::backdrop{background:rgba(15,23,42,.55)}
+.sales-dialog form{display:grid;gap:10px}.sales-dialog label{display:grid;gap:4px;font-size:12px;font-weight:600}
+.sales-dialog input,.sales-dialog select,.sales-dialog textarea{width:100%}

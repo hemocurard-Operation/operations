@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HEMOCURA — Formulario de Inspección</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --red:        #C0222A;
+    --red-light:  #F9EAEA;
+    --red-mid:    #E8AAAD;
+    --green:      #1A8C5E;
+    --green-light:#E4F5EE;
+    --amber:      #B56A0F;
+    --amber-light:#FEF3DD;
+    --gray-900:   #1C1C1C;
+    --gray-700:   #444;
+    --gray-500:   #888;
+    --gray-200:   #E8E8E8;
+    --gray-100:   #F5F5F5;
+    --white:      #fff;
+    --radius:     8px;
+    --font:       'DM Sans', sans-serif;
+    --mono:       'DM Mono', monospace;
+  }
+
+  html { font-family: var(--font); background: #F0EFED; color: var(--gray-900); font-size: 15px; }
+
+  /* ── LAYOUT ── */
+  .app { max-width: 860px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+
+  /* ── HEADER ── */
+  .header { background: var(--red); border-radius: 12px; padding: 1.5rem 2rem; margin-bottom: 2rem; display: flex; align-items: center; justify-content: space-between; }
+  .header-left h1 { font-size: 1.6rem; font-weight: 600; color: var(--white); letter-spacing: -0.02em; }
+  .header-left p  { font-size: 0.8rem; color: rgba(255,255,255,0.7); margin-top: 2px; }
+  .header-badge { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); border-radius: 6px; padding: 6px 14px; font-size: 0.75rem; color: var(--white); font-family: var(--mono); }
+
+  /* ── CARDS ── */
+  .card { background: var(--white); border-radius: 10px; border: 1px solid var(--gray-200); margin-bottom: 1.25rem; overflow: hidden; }
+  .card-header { background: var(--red); padding: 0.6rem 1.25rem; display: flex; align-items: center; justify-content: space-between; }
+  .card-header h2 { font-size: 0.85rem; font-weight: 600; color: var(--white); letter-spacing: 0.01em; }
+  .card-header .badge-count { font-size: 0.7rem; color: rgba(255,255,255,0.75); font-family: var(--mono); }
+  .card-body { padding: 1.25rem; }
+
+  /* ── INFO GRID ── */
+  .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+  .field { display: flex; flex-direction: column; gap: 4px; }
+  .field label { font-size: 0.72rem; font-weight: 600; color: var(--gray-500); text-transform: uppercase; letter-spacing: 0.05em; }
+  .field input, .field select, .field textarea {
+    border: 1px solid var(--gray-200); border-radius: var(--radius);
+    padding: 8px 10px; font-family: var(--font); font-size: 0.875rem;
+    color: var(--gray-900); background: var(--gray-100);
+    transition: border-color 0.15s, background 0.15s;
+    outline: none;
+  }
+  .field input:focus, .field select:focus, .field textarea:focus {
+    border-color: var(--red); background: var(--white);
+    box-shadow: 0 0 0 3px rgba(192,34,42,0.08);
+  }
+  .field textarea { resize: vertical; min-height: 70px; line-height: 1.5; }
+  .field.full { grid-column: 1 / -1; }
+
+  /* ── TABLA DE CRITERIOS ── */
+  .criteria-table { width: 100%; border-collapse: collapse; }
+  .criteria-table th {
+    font-size: 0.68rem; font-weight: 600; color: var(--gray-500);
+    text-transform: uppercase; letter-spacing: 0.05em;
+    padding: 6px 8px; border-bottom: 2px solid var(--gray-200);
+    text-align: left;
+  }
+  .criteria-table th.center { text-align: center; }
+  .criteria-table tr.row { border-bottom: 1px solid var(--gray-200); }
+  .criteria-table tr.row:last-child { border-bottom: none; }
+  .criteria-table tr.row:hover { background: var(--gray-100); }
+  .criteria-table td { padding: 6px 8px; vertical-align: middle; }
+  .criteria-table td.num { font-size: 0.7rem; color: var(--gray-500); font-family: var(--mono); width: 32px; }
+  .criteria-table td.criterio-txt { font-size: 0.82rem; line-height: 1.4; }
+  .criteria-table td.obs-cell input {
+    width: 100%; border: 1px solid transparent; border-radius: 4px;
+    padding: 4px 6px; font-size: 0.78rem; font-family: var(--font);
+    color: var(--gray-700); background: transparent;
+  }
+  .criteria-table td.obs-cell input:focus {
+    border-color: var(--gray-200); background: var(--white); outline: none;
+  }
+
+  /* ── RADIO BUTTONS ── */
+  .radio-group { display: flex; gap: 4px; justify-content: center; }
+  .radio-group label {
+    width: 32px; height: 28px; display: flex; align-items: center; justify-content: center;
+    border-radius: 5px; border: 1px solid var(--gray-200);
+    font-size: 0.72rem; font-weight: 600; cursor: pointer;
+    transition: all 0.12s; color: var(--gray-500);
+    user-select: none;
+  }
+  .radio-group input[type=radio] { display: none; }
+  .radio-group input[type=radio]:checked + label.c  { background: var(--green-light); border-color: var(--green); color: var(--green); }
+  .radio-group input[type=radio]:checked + label.nc { background: var(--red-light);   border-color: var(--red);   color: var(--red); }
+  .radio-group input[type=radio]:checked + label.na { background: var(--gray-200);    border-color: var(--gray-500); color: var(--gray-700); }
+  .radio-group label:hover { border-color: var(--gray-500); }
+
+  /* ── RESUMEN / CAL ── */
+  .cal-group { display: flex; gap: 10px; }
+  .cal-opt { flex: 1; }
+  .cal-opt input[type=radio] { display: none; }
+  .cal-opt label {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 12px 8px; border-radius: var(--radius); border: 1.5px solid var(--gray-200);
+    cursor: pointer; font-size: 0.8rem; font-weight: 600; gap: 4px;
+    transition: all 0.15s; color: var(--gray-700); text-align: center;
+  }
+  .cal-opt label span { font-size: 0.68rem; font-weight: 400; color: var(--gray-500); }
+  .cal-opt.sat  input:checked + label { background: var(--green-light); border-color: var(--green); color: var(--green); }
+  .cal-opt.obs  input:checked + label { background: var(--amber-light); border-color: var(--amber); color: var(--amber); }
+  .cal-opt.crit input:checked + label { background: var(--red-light);   border-color: var(--red);   color: var(--red); }
+  .cal-opt label:hover { border-color: var(--gray-500); }
+
+  /* ── BTN GENERAR ── */
+  .btn-bar { display: flex; gap: 10px; margin-top: 1.5rem; }
+  .btn-pdf {
+    flex: 1; background: var(--red); color: var(--white);
+    border: none; border-radius: var(--radius); padding: 14px 24px;
+    font-family: var(--font); font-size: 0.95rem; font-weight: 600;
+    cursor: pointer; transition: background 0.15s, transform 0.1s;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .btn-pdf:hover  { background: #a51c23; }
+  .btn-pdf:active { transform: scale(0.98); }
+  .btn-reset {
+    background: var(--white); color: var(--gray-700);
+    border: 1px solid var(--gray-200); border-radius: var(--radius);
+    padding: 14px 20px; font-family: var(--font); font-size: 0.85rem;
+    cursor: pointer; transition: border-color 0.15s;
+  }
+  .btn-reset:hover { border-color: var(--gray-700); }
+
+  /* ── PROGRESS BAR ── */
+  .progress-bar { height: 3px; background: var(--gray-200); border-radius: 2px; margin-bottom: 1.5rem; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--red); border-radius: 2px; transition: width 0.3s; }
+
+  /* ── STATS ── */
+  .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 1.25rem; }
+  .stat-card { background: var(--white); border: 1px solid var(--gray-200); border-radius: var(--radius); padding: 10px 12px; text-align: center; }
+  .stat-val { font-size: 1.4rem; font-weight: 600; font-family: var(--mono); }
+  .stat-lbl { font-size: 0.68rem; color: var(--gray-500); margin-top: 1px; }
+  .stat-val.green { color: var(--green); }
+  .stat-val.red   { color: var(--red); }
+  .stat-val.gray  { color: var(--gray-500); }
+
+  @media (max-width: 600px) {
+    .info-grid { grid-template-columns: 1fr; }
+    .stats-row { grid-template-columns: repeat(2, 1fr); }
+    .cal-group { flex-direction: column; }
+  }
+
+  /* ── PRINT ── */
+  @media print { .app { padding: 0; } .btn-bar, .header-badge { display: none; } }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-left">
+      <h1>HEMOCURA</h1>
+      <p>Formulario de Inspección de Sucursal</p>
+    </div>
+    <div class="header-badge" id="fecha-badge">—</div>
+  </div>
+
+  <!-- Progress -->
+  <div class="progress-bar"><div class="progress-fill" id="progress" style="width:0%"></div></div>
+
+  <!-- Stats en tiempo real -->
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-val green" id="s-c">0</div><div class="stat-lbl">Conformes</div></div>
+    <div class="stat-card"><div class="stat-val red"   id="s-nc">0</div><div class="stat-lbl">No conformes</div></div>
+    <div class="stat-card"><div class="stat-val gray"  id="s-na">0</div><div class="stat-lbl">No aplica</div></div>
+    <div class="stat-card"><div class="stat-val"       id="s-pct">—</div><div class="stat-lbl">Cumplimiento</div></div>
+  </div>
+
+  <!-- 1. Información general -->
+  <div class="card">
+    <div class="card-header"><h2>Información General</h2></div>
+    <div class="card-body">
+      <div class="info-grid">
+        <div class="field"><label>Sucursal</label><input type="text" id="sucursal" placeholder="Ej. Santiago Centro"></div>
+        <div class="field"><label>Fecha de visita</label><input type="date" id="fecha"></div>
+        <div class="field"><label>Dirección</label><input type="text" id="direccion" placeholder="Calle, número, ciudad"></div>
+        <div class="field"><label>Hora</label><input type="time" id="hora"></div>
+        <div class="field"><label>Inspector</label><input type="text" id="inspector" placeholder="Nombre completo"></div>
+        <div class="field"><label>N° Visita</label><input type="text" id="numvisita" placeholder="001"></div>
+        <div class="field"><label>Responsable en Sitio</label><input type="text" id="responsable" placeholder="Nombre completo"></div>
+        <div class="field"><label>Tipo de visita</label>
+          <select id="tipo">
+            <option value="Rutina">Rutina</option>
+            <option value="Seguimiento">Seguimiento</option>
+            <option value="Apertura">Apertura</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Secciones de evaluación -->
+  <div id="secciones-container"></div>
+
+  <!-- 8. Resumen -->
+  <div class="card">
+    <div class="card-header"><h2>8. Resumen de la Visita</h2></div>
+    <div class="card-body">
+      <div class="info-grid">
+        <div class="field full"><label>Hallazgos positivos</label><textarea id="positivos" placeholder="Describe los puntos fuertes observados..."></textarea></div>
+        <div class="field full"><label>Hallazgos a corregir</label><textarea id="corregir" style="min-height:90px" placeholder="Lista los aspectos que requieren acción correctiva..."></textarea></div>
+        <div class="field full"><label>Compromisos acordados en visita</label><textarea id="compromisos" placeholder="Acciones concretas con fecha límite..."></textarea></div>
+        <div class="field"><label>Próxima visita sugerida</label><input type="date" id="proxima"></div>
+      </div>
+
+      <div style="margin-top:1.25rem">
+        <div style="font-size:0.72rem;font-weight:600;color:var(--gray-500);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;">Calificación Global</div>
+        <div class="cal-group">
+          <div class="cal-opt sat">
+            <input type="radio" name="calificacion" id="cal-sat" value="Satisfactorio">
+            <label for="cal-sat">✔ Satisfactorio<span>Sin hallazgos críticos</span></label>
+          </div>
+          <div class="cal-opt obs">
+            <input type="radio" name="calificacion" id="cal-obs" value="Con Observaciones">
+            <label for="cal-obs">⚠ Con Observaciones<span>Requiere seguimiento</span></label>
+          </div>
+          <div class="cal-opt crit">
+            <input type="radio" name="calificacion" id="cal-crit" value="Crítico">
+            <label for="cal-crit">✘ Crítico<span>Acción inmediata</span></label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Botones -->
+  <div class="btn-bar">
+    <button class="btn-pdf" onclick="generarPDF()">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg>
+      Generar PDF para imprimir
+    </button>
+    <button class="btn-reset" onclick="if(confirm('¿Limpiar todo el formulario?')) limpiar()">Limpiar</button>
+  </div>
+</div>
+
+<script>
+// ── DATOS DE SECCIONES ──────────────────────────────────────────────────────
+const SECCIONES = [
+  { num: 1, titulo: "Infraestructura e Instalaciones", criterios: [
+    "Fachada e identificación visual de la sucursal en buen estado",
+    "Área de recepción limpia, ordenada y funcional",
+    "Iluminación adecuada en todas las áreas",
+    "Ventilación / climatización operativa",
+    "Señalización de seguridad y emergencia visible",
+    "Baños limpios, funcionales y con suministros",
+    "Zonas de espera con asientos suficientes y en buen estado",
+    "Acceso para personas con movilidad reducida",
+    "Contenedores de residuos peligrosos correctamente ubicados",
+    "Condiciones generales de limpieza y orden",
+  ]},
+  { num: 2, titulo: "Equipos y Tecnología", criterios: [
+    "Equipos de banco de sangre en funcionamiento",
+    "Equipos de pruebas diagnósticas operativos",
+    "Cámara hiperbárica operativa (si aplica)",
+    "Calibración y mantenimiento preventivo al día",
+    "Registros de mantenimiento disponibles y actualizados",
+    "Equipos de frío (refrigeradoras, congeladores) a temperatura correcta",
+    "Sistema informático / software de gestión funcionando",
+    "Equipos de protección personal (EPP) disponibles",
+    "Plan de contingencia ante fallo de equipos documentado",
+  ]},
+  { num: 3, titulo: "Suministros e Inventario", criterios: [
+    "Stock de insumos básicos suficiente (bolsas, tubos, agujas, etc.)",
+    "Reactivos dentro de fecha de vencimiento",
+    "Registro de inventario actualizado",
+    "Condiciones de almacenamiento adecuadas",
+    "Insumos organizados y etiquetados correctamente",
+    "Pedidos pendientes gestionados con suplidores",
+  ]},
+  { num: 4, titulo: "Captación de Donantes / Banco de Sangre", criterios: [
+    "Material promocional de donación visible y actualizado",
+    "Personal capacitado en atención a donantes",
+    "Registro de donantes actualizado",
+    "Protocolos de selección de donantes aplicados correctamente",
+    "Alianzas activas con instituciones para captación",
+    "Meta mensual de donaciones en seguimiento",
+  ]},
+  { num: 5, titulo: "Atención al Cliente y Procesos Comerciales", criterios: [
+    "Personal uniformado y con identificación visible",
+    "Tiempo de espera dentro de parámetros aceptables",
+    "Tarifario de servicios visible y actualizado",
+    "Registro de quejas y sugerencias disponible",
+    "Cartera de clientes institucionales activa y en seguimiento",
+    "Acuerdos comerciales vigentes con instituciones de la zona",
+    "Materiales de ventas y portafolio de servicios disponibles",
+  ]},
+  { num: 6, titulo: "Cumplimiento Normativo y Bioseguridad", criterios: [
+    "Licencias y habilitaciones vigentes en exhibición",
+    "Protocolos de bioseguridad implementados",
+    "Manejo correcto de residuos bioinfecciosos",
+    "Personal con vacunas al día (hepatitis B, etc.)",
+    "Registro de incidentes / accidentes laborales al día",
+    "Protocolos de desinfección documentados y aplicados",
+  ]},
+  { num: 7, titulo: "Gestión Administrativa", criterios: [
+    "Expedientes de personal actualizados",
+    "Registro de asistencia al día",
+    "Reportes de producción/ventas enviados a Gerencia General",
+    "Caja y facturación en orden",
+    "Comunicaciones internas respondidas oportunamente",
+    "Indicadores de desempeño mensual visibles en sucursal",
+  ]},
+];
+
+// ── RENDER SECCIONES ────────────────────────────────────────────────────────
+function renderSecciones() {
+  const cont = document.getElementById('secciones-container');
+  SECCIONES.forEach(sec => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    const total = sec.criterios.length;
+    card.innerHTML = `
+      <div class="card-header">
+        <h2>${sec.num}. ${sec.titulo}</h2>
+        <span class="badge-count" id="badge-sec-${sec.num}">0 / ${total}</span>
+      </div>
+      <div class="card-body" style="padding:0">
+        <table class="criteria-table">
+          <thead>
+            <tr>
+              <th style="width:32px">#</th>
+              <th>Criterio</th>
+              <th class="center" style="width:110px">C &nbsp; NC &nbsp; NA</th>
+              <th style="width:200px">Observación</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-${sec.num}"></tbody>
+        </table>
+      </div>`;
+    cont.appendChild(card);
+
+    const tbody = document.getElementById(`tbody-${sec.num}`);
+    sec.criterios.forEach((crit, idx) => {
+      const id = `${sec.num}-${idx + 1}`;
+      const tr = document.createElement('tr');
+      tr.className = 'row';
+      tr.id = `row-${id}`;
+      tr.innerHTML = `
+        <td class="num">${sec.num}.${idx + 1}</td>
+        <td class="criterio-txt">${crit}</td>
+        <td>
+          <div class="radio-group">
+            <input type="radio" name="r-${id}" id="c-${id}"  value="C"  onchange="onRadio('${id}','C')">
+            <label for="c-${id}"  class="c">C</label>
+            <input type="radio" name="r-${id}" id="nc-${id}" value="NC" onchange="onRadio('${id}','NC')">
+            <label for="nc-${id}" class="nc">NC</label>
+            <input type="radio" name="r-${id}" id="na-${id}" value="NA" onchange="onRadio('${id}','NA')">
+            <label for="na-${id}" class="na">NA</label>
+          </div>
+        </td>
+        <td class="obs-cell"><input type="text" id="obs-${id}" placeholder="—"></td>`;
+      tbody.appendChild(tr);
+    });
+  });
+}
+
+// ── ACTUALIZAR STATS ─────────────────────────────────────────────────────────
+function onRadio(id, val) {
+  const row = document.getElementById(`row-${id}`);
+  row.style.background = val === 'NC' ? 'var(--red-light)' : '';
+  actualizarStats();
+}
+
+function actualizarStats() {
+  let c = 0, nc = 0, na = 0, total = 0;
+  SECCIONES.forEach(sec => {
+    let sc = 0, snc = 0;
+    sec.criterios.forEach((_, idx) => {
+      const id = `${sec.num}-${idx + 1}`;
+      const sel = document.querySelector(`input[name="r-${id}"]:checked`);
+      if (sel) {
+        total++;
+        if (sel.value === 'C')  { c++;  sc++; }
+        if (sel.value === 'NC') { nc++; snc++; }
+        if (sel.value === 'NA') { na++; }
+      }
+    });
+    const t = sec.criterios.length;
+    document.getElementById(`badge-sec-${sec.num}`).textContent =
+      `${sc + snc} / ${t} evaluados` + (snc ? ` · ${snc} NC` : '');
+  });
+
+  document.getElementById('s-c').textContent   = c;
+  document.getElementById('s-nc').textContent  = nc;
+  document.getElementById('s-na').textContent  = na;
+  const evaluated = c + nc;
+  document.getElementById('s-pct').textContent = evaluated ? Math.round(c / evaluated * 100) + '%' : '—';
+
+  const allTotal = SECCIONES.reduce((a, s) => a + s.criterios.length, 0);
+  document.getElementById('progress').style.width = Math.round(total / allTotal * 100) + '%';
+
+  const f = document.getElementById('fecha').value;
+  const suc = document.getElementById('sucursal').value;
+  document.getElementById('fecha-badge').textContent =
+    (suc || '—') + (f ? '  ·  ' + formatFecha(f) : '');
+}
+
+function formatFecha(iso) {
+  if (!iso) return '';
+  const [y, m, d] = iso.split('-');
+  return `${d}/${m}/${y}`;
+}
+
+document.getElementById('fecha').addEventListener('input', actualizarStats);
+document.getElementById('sucursal').addEventListener('input', actualizarStats);
+
+// ── LIMPIAR ─────────────────────────────────────────────────────────────────
+function limpiar() {
+  document.querySelectorAll('input, select, textarea').forEach(el => {
+    if (el.type === 'radio' || el.type === 'checkbox') el.checked = false;
+    else el.value = '';
+  });
+  document.querySelectorAll('tr.row').forEach(r => r.style.background = '');
+  actualizarStats();
+}
+
+// ── GENERAR PDF ──────────────────────────────────────────────────────────────
+function val(id) { return (document.getElementById(id)?.value || '').trim(); }
+
+function generarPDF() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' });
+  const W = 216, H = 279;
+  const margin = 12;
+  const usable = W - margin * 2;
+  let y = 0;
+
+  const ROJO     = [192, 34, 42];
+  const ROJO_L   = [249, 234, 234];
+  const VERDE    = [26, 140, 94];
+  const VERDE_L  = [228, 245, 238];
+  const AMBER    = [181, 106, 15];
+  const AMBER_L  = [254, 243, 221];
+  const GRAY_900 = [28, 28, 28];
+  const GRAY_600 = [100, 100, 100];
+  const GRAY_200 = [232, 232, 232];
+  const GRAY_100 = [245, 245, 245];
+  const WHITE    = [255, 255, 255];
+
+  const sucursal   = val('sucursal')    || 'Sin especificar';
+  const fecha      = val('fecha')       ? formatFecha(val('fecha')) : '—';
+  const hora       = val('hora')        || '—';
+  const direccion  = val('direccion')   || '—';
+  const inspector  = val('inspector')   || '—';
+  const responsable= val('responsable') || '—';
+  const numvisita  = val('numvisita')   || '—';
+  const tipo       = val('tipo')        || '—';
+  const proxima    = val('proxima')     ? formatFecha(val('proxima')) : '—';
+  const calOpt     = document.querySelector('input[name="calificacion"]:checked');
+  const calificacion = calOpt ? calOpt.value : '—';
+
+  // ── Header por página ─────────────────────────────────────────────────────
+  function drawHeader() {
+    doc.setFillColor(...ROJO);
+    doc.rect(0, 0, W, 14, 'F');
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(11);
+    doc.setTextColor(...WHITE);
+    doc.text('HEMOCURA', margin, 9);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(7);
+    doc.text(`Formulario de Inspección  |  ${sucursal}  |  Fecha: ${fecha}  |  Visita N° ${numvisita}`, W - margin, 6, { align: 'right' });
+    doc.text(`Inspector: ${inspector}`, W - margin, 11, { align: 'right' });
+    y = 18;
+  }
+
+  // ── Footer ────────────────────────────────────────────────────────────────
+  function drawFooter(pageNum) {
+    doc.setDrawColor(...ROJO);
+    doc.setLineWidth(0.4);
+    doc.line(margin, H - 10, W - margin, H - 10);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(6.5);
+    doc.setTextColor(...GRAY_600);
+    doc.text('HEMOCURA — Formulario de Inspección de Sucursal  |  Versión 1.0  |  Uso interno', margin, H - 6);
+    doc.text(`Página ${pageNum}`, W - margin, H - 6, { align: 'right' });
+  }
+
+  // ── Salto de página ───────────────────────────────────────────────────────
+  let pageNum = 1;
+  function checkPage(needed) {
+    if (y + needed > H - 15) {
+      drawFooter(pageNum);
+      doc.addPage();
+      pageNum++;
+      drawHeader();
+    }
+  }
+
+  // ── Inicio ────────────────────────────────────────────────────────────────
+  drawHeader();
+
+  // Tabla info general
+  const infoRows = [
+    ['Sucursal', sucursal,  'Fecha de visita', fecha],
+    ['Dirección', direccion, 'Hora',           hora],
+    ['Inspector', inspector, 'N° Visita',      numvisita],
+    ['Responsable', responsable, 'Tipo de visita', tipo],
+  ];
+  doc.autoTable({
+    startY: y, margin: { left: margin, right: margin },
+    head: [],
+    body: infoRows,
+    columnStyles: {
+      0: { fontStyle: 'bold', cellWidth: 28, fillColor: GRAY_100, fontSize: 8 },
+      1: { cellWidth: 65, fontSize: 8 },
+      2: { fontStyle: 'bold', cellWidth: 28, fillColor: GRAY_100, fontSize: 8 },
+      3: { cellWidth: 65, fontSize: 8 },
+    },
+    styles: { cellPadding: 2.5, lineColor: GRAY_200, lineWidth: 0.3, valign: 'middle' },
+    theme: 'grid',
+  });
+  y = doc.lastAutoTable.finalY + 4;
+
+  // Resumen de stats
+  let totalC = 0, totalNC = 0, totalNA = 0;
+  SECCIONES.forEach(sec => sec.criterios.forEach((_, idx) => {
+    const sel = document.querySelector(`input[name="r-${sec.num}-${idx+1}"]:checked`);
+    if (sel) {
+      if (sel.value === 'C')  totalC++;
+      if (sel.value === 'NC') totalNC++;
+      if (sel.value === 'NA') totalNA++;
+    }
+  }));
+  const totalEval = totalC + totalNC;
+  const pctGlobal = totalEval ? Math.round(totalC / totalEval * 100) : 0;
+
+  checkPage(14);
+  doc.autoTable({
+    startY: y, margin: { left: margin, right: margin },
+    head: [['Conformes', 'No Conformes', 'No Aplica', 'Cumplimiento Global']],
+    body: [[`${totalC}`, `${totalNC}`, `${totalNA}`, `${pctGlobal}%`]],
+    headStyles: { fillColor: ROJO, textColor: WHITE, fontSize: 8, fontStyle: 'bold', halign: 'center' },
+    bodyStyles: { halign: 'center', fontSize: 11, fontStyle: 'bold' },
+    columnStyles: {
+      0: { textColor: VERDE,    fillColor: VERDE_L },
+      1: { textColor: ROJO,     fillColor: ROJO_L  },
+      2: { textColor: GRAY_600, fillColor: GRAY_100 },
+      3: { textColor: GRAY_900, fillColor: GRAY_100 },
+    },
+    styles: { cellPadding: 3, lineColor: GRAY_200, lineWidth: 0.3 },
+    theme: 'grid',
+  });
+  y = doc.lastAutoTable.finalY + 5;
+
+  // ── Secciones de criterios ────────────────────────────────────────────────
+  SECCIONES.forEach(sec => {
+    checkPage(18);
+
+    // Conteo de la sección
+    let sC = 0, sNC = 0;
+    sec.criterios.forEach((_, idx) => {
+      const sel = document.querySelector(`input[name="r-${sec.num}-${idx+1}"]:checked`);
+      if (sel) { if (sel.value === 'C') sC++; if (sel.value === 'NC') sNC++; }
+    });
+    const sEval = sC + sNC;
+    const sPct  = sEval ? Math.round(sC / sEval * 100) : 0;
+
+    // Header sección
+    doc.setFillColor(...ROJO);
+    doc.roundedRect(margin, y, usable, 8, 1, 1, 'F');
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(8);
+    doc.setTextColor(...WHITE);
+    doc.text(`${sec.num}.  ${sec.titulo}`, margin + 3, y + 5.5);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(7);
+    doc.text(`${sPct}% cumplimiento  ·  ${sNC} no conforme${sNC !== 1 ? 's' : ''}`, W - margin - 3, y + 5.5, { align: 'right' });
+    y += 9;
+
+    const rows = sec.criterios.map((crit, idx) => {
+      const id  = `${sec.num}-${idx + 1}`;
+      const sel = document.querySelector(`input[name="r-${id}"]:checked`);
+      const res = sel ? sel.value : '';
+      const obs = val(`obs-${id}`);
+      const marca = res === 'C' ? '✔' : res === 'NC' ? '✘' : res === 'NA' ? '—' : '';
+      return [
+        `${sec.num}.${idx + 1}`,
+        crit,
+        res === 'C'  ? '✔' : '',
+        res === 'NC' ? '✘' : '',
+        res === 'NA' ? '—' : '',
+        obs || '',
+      ];
+    });
+
+    doc.autoTable({
+      startY: y, margin: { left: margin, right: margin },
+      head: [['#', 'Criterio de evaluación', 'Cumple', 'No cumple', 'N/A', 'Observaciones']],
+      body: rows,
+      headStyles: {
+        fillColor: [80, 80, 80], textColor: WHITE,
+        fontSize: 7, fontStyle: 'bold', halign: 'center',
+      },
+      columnStyles: {
+        0: { cellWidth: 10, halign: 'center', fontSize: 7, textColor: GRAY_600 },
+        1: { cellWidth: 72, fontSize: 7.5 },
+        2: { cellWidth: 16, halign: 'center', fontSize: 9, textColor: VERDE   },
+        3: { cellWidth: 18, halign: 'center', fontSize: 9, textColor: ROJO    },
+        4: { cellWidth: 10, halign: 'center', fontSize: 9, textColor: GRAY_600 },
+        5: { cellWidth: 62, fontSize: 7, textColor: GRAY_600, fontStyle: 'italic' },
+      },
+      styles: {
+        cellPadding: 2.2, lineColor: GRAY_200, lineWidth: 0.25,
+        overflow: 'linebreak', valign: 'middle',
+      },
+      theme: 'striped',
+      alternateRowStyles: { fillColor: GRAY_100 },
+      willDrawCell: (data) => {
+        if (data.section === 'body') {
+          const rowIdx = data.row.index;
+          const id = `${sec.num}-${rowIdx + 1}`;
+          const sel = document.querySelector(`input[name="r-${id}"]:checked`);
+          if (sel && sel.value === 'NC') {
+            data.cell.styles.fillColor = ROJO_L;
+          }
+        }
+      },
+    });
+    y = doc.lastAutoTable.finalY + 5;
+  });
+
+  // ── Resumen de visita ─────────────────────────────────────────────────────
+  checkPage(20);
+  doc.setFillColor(...ROJO);
+  doc.roundedRect(margin, y, usable, 8, 1, 1, 'F');
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(8.5);
+  doc.setTextColor(...WHITE);
+  doc.text('8.  Resumen de la Visita', margin + 3, y + 5.5);
+  y += 10;
+
+  const resRows = [
+    ['Hallazgos positivos',     val('positivos')   || '—'],
+    ['Hallazgos a corregir',    val('corregir')    || '—'],
+    ['Compromisos acordados',   val('compromisos') || '—'],
+    ['Próxima visita sugerida', proxima],
+  ];
+  doc.autoTable({
+    startY: y, margin: { left: margin, right: margin },
+    body: resRows,
+    columnStyles: {
+      0: { fontStyle: 'bold', cellWidth: 45, fillColor: GRAY_100, fontSize: 8 },
+      1: { fontSize: 8 },
+    },
+    styles: { cellPadding: 3, lineColor: GRAY_200, lineWidth: 0.3, overflow: 'linebreak', valign: 'top' },
+    theme: 'grid',
+  });
+  y = doc.lastAutoTable.finalY + 4;
+
+  // Calificación
+  checkPage(16);
+  const calColor = calificacion === 'Satisfactorio' ? VERDE : calificacion === 'Con Observaciones' ? AMBER : ROJO;
+  const calBg    = calificacion === 'Satisfactorio' ? VERDE_L : calificacion === 'Con Observaciones' ? AMBER_L : ROJO_L;
+  doc.autoTable({
+    startY: y, margin: { left: margin, right: margin },
+    body: [['Calificación Global de la Visita', calificacion.toUpperCase()]],
+    columnStyles: {
+      0: { fontStyle: 'bold', cellWidth: 100, fillColor: GRAY_100, fontSize: 8.5 },
+      1: { fontStyle: 'bold', halign: 'center', fillColor: calBg, textColor: calColor, fontSize: 11 },
+    },
+    styles: { cellPadding: 4, lineColor: calColor, lineWidth: 0.6 },
+    theme: 'grid',
+  });
+  y = doc.lastAutoTable.finalY + 8;
+
+  // ── Firmas ────────────────────────────────────────────────────────────────
+  checkPage(36);
+
+  doc.autoTable({
+    startY: y, margin: { left: margin, right: margin },
+    head: [['INSPECTOR', '', 'RESPONSABLE DE SUCURSAL']],
+    body: [
+      ['', '', ''],
+      ['', '', ''],
+      ['_______________________________', '', '_______________________________'],
+      ['Nombre y firma', '', 'Nombre y firma'],
+      ['Cargo: Gerente Comercial / Proyectos', '', 'Cargo: _______________________'],
+    ],
+    headStyles: { fillColor: ROJO, textColor: WHITE, fontSize: 8, fontStyle: 'bold', halign: 'center' },
+    columnStyles: {
+      0: { halign: 'center', fontSize: 7.5, cellWidth: 88 },
+      1: { cellWidth: 16 },
+      2: { halign: 'center', fontSize: 7.5, cellWidth: 88 },
+    },
+    styles: { cellPadding: 3, lineWidth: 0, valign: 'bottom' },
+    theme: 'plain',
+  });
+
+  drawFooter(pageNum);
+
+  // ── Guardar ───────────────────────────────────────────────────────────────
+  const nombre = `Inspeccion_HEMOCURA_${sucursal.replace(/\s+/g,'_')}_${val('fecha').replace(/-/g,'') || 'sin-fecha'}.pdf`;
+  doc.save(nombre);
+}
+
+// ── INIT ─────────────────────────────────────────────────────────────────────
+renderSecciones();
+actualizarStats();
+</script>
+</body>
+</html>

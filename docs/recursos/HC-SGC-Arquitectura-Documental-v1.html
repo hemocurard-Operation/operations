@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HemoCura · Arquitectura Documental del SGC v1.0</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#101820;
+  --slate:#4C5966;
+  --line:#D8DEE4;
+  --paper:#F6F7F8;
+  --white:#FFFFFF;
+  --hemo:#8E1B2C;
+  --hemo-soft:#F4E7E9;
+  --cold:#0F6E73;
+  --cold-soft:#E4F0F0;
+  --amber:#9A6700;
+  --amber-soft:#FBF1DA;
+  --r:3px;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,monospace;
+  --serif:"Newsreader",Georgia,"Times New Roman",serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--paper);color:var(--ink);
+  font-family:var(--sans);font-size:15px;line-height:1.55;
+}
+.wrap{max-width:1240px;margin:0 auto;padding:0 24px}
+
+/* ---------- encabezado ---------- */
+header.top{background:var(--ink);color:#EDF0F3;padding:34px 0 0}
+.brandline{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.brandline .mark{
+  font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;
+  color:#8FA0AE;
+}
+h1{
+  font-family:var(--serif);font-weight:500;font-size:clamp(28px,4.4vw,46px);
+  line-height:1.08;margin:10px 0 6px;letter-spacing:-.01em;
+}
+h1 em{font-style:normal;color:#E9A0AB}
+.sub{color:#9FAEBB;max-width:74ch;margin:0 0 26px;font-size:15px}
+.meta-strip{
+  display:flex;gap:0;flex-wrap:wrap;border-top:1px solid #23303C;
+}
+.meta-strip div{
+  padding:12px 22px 12px 0;margin-right:22px;border-right:1px solid #23303C;
+}
+.meta-strip div:last-child{border-right:0}
+.meta-strip b{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.12em;
+  text-transform:uppercase;color:#7E8F9E;font-weight:500}
+.meta-strip span{font-size:14px;color:#E4E9ED}
+
+/* ---------- navegación ---------- */
+nav.tabs{position:sticky;top:0;z-index:20;background:var(--ink);border-bottom:1px solid #23303C}
+nav.tabs .wrap{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
+nav.tabs .wrap::-webkit-scrollbar{display:none}
+nav.tabs button{
+  background:none;border:0;border-bottom:2px solid transparent;color:#8FA0AE;
+  font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;
+  padding:14px 16px;cursor:pointer;white-space:nowrap;
+}
+nav.tabs button:hover{color:#DCE3E9}
+nav.tabs button[aria-selected="true"]{color:#fff;border-bottom-color:var(--hemo)}
+nav.tabs button:focus-visible{outline:2px solid #E9A0AB;outline-offset:-2px}
+
+main{padding:38px 0 90px}
+section[role=tabpanel]{display:none;animation:fade .25s ease}
+section[role=tabpanel].on{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+h2{font-family:var(--serif);font-weight:500;font-size:27px;margin:0 0 4px;letter-spacing:-.01em}
+h3{font-size:15px;margin:30px 0 10px;letter-spacing:.01em}
+.lede{color:var(--slate);max-width:80ch;margin:0 0 26px}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--hemo);font-weight:600;margin:0 0 6px}
+
+.card{background:var(--white);border:1px solid var(--line);border-radius:var(--r);padding:20px 22px}
+.grid{display:grid;gap:14px}
+.g4{grid-template-columns:repeat(4,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g2{grid-template-columns:repeat(2,1fr)}
+@media(max-width:900px){.g4{grid-template-columns:repeat(2,1fr)}.g3,.g2{grid-template-columns:1fr}}
+@media(max-width:560px){.g4{grid-template-columns:1fr}}
+
+/* ---------- KPI ---------- */
+.kpi{background:var(--white);border:1px solid var(--line);border-left:3px solid var(--hemo);
+  border-radius:var(--r);padding:16px 18px}
+.kpi .n{font-family:var(--mono);font-size:32px;font-weight:600;line-height:1;letter-spacing:-.02em}
+.kpi .l{font-size:12.5px;color:var(--slate);margin-top:7px}
+.kpi.cold{border-left-color:var(--cold)}
+.kpi.amber{border-left-color:var(--amber)}
+
+/* ---------- barra de avance ---------- */
+.bar{height:7px;background:#E7EBEF;border-radius:99px;overflow:hidden;margin-top:8px}
+.bar i{display:block;height:100%;background:var(--hemo);border-radius:99px}
+.bar.cold i{background:var(--cold)}
+
+/* ---------- mapa de procesos ---------- */
+.band{border:1px solid var(--line);border-radius:var(--r);background:var(--white);margin-bottom:12px;overflow:hidden}
+.band > .hd{
+  display:flex;align-items:center;gap:10px;padding:9px 14px;background:#EEF1F4;
+  border-bottom:1px solid var(--line);font-family:var(--mono);font-size:11px;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--slate);font-weight:600
+}
+.band.mis > .hd{background:var(--hemo-soft);color:var(--hemo)}
+.band .row{display:flex;flex-wrap:wrap;gap:8px;padding:14px}
+.pnode{
+  flex:1 1 150px;min-width:130px;border:1px solid var(--line);border-radius:var(--r);
+  padding:10px 12px;background:var(--paper)
+}
+.pnode b{display:block;font-size:13.5px;font-weight:600}
+.pnode span{font-family:var(--mono);font-size:10.5px;color:var(--slate);letter-spacing:.06em}
+.band.mis .pnode{background:#fff;border-color:#E4C9CE}
+.flowline{display:flex;align-items:center;justify-content:space-between;gap:8px;
+  padding:8px 14px;font-family:var(--mono);font-size:11px;color:var(--slate);
+  background:#FBFCFC;border-top:1px dashed var(--line)}
+
+/* ---------- tablas ---------- */
+.tablewrap{border:1px solid var(--line);border-radius:var(--r);background:var(--white);overflow:auto}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{text-align:left;padding:9px 11px;border-bottom:1px solid #EAEEF1;vertical-align:top}
+th{
+  position:sticky;top:0;background:#EEF1F4;font-family:var(--mono);font-size:10.5px;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--slate);font-weight:600;z-index:2;
+  border-bottom:1px solid var(--line)
+}
+tbody tr:hover{background:#FAFBFC}
+td.cod{font-family:var(--mono);font-size:12px;white-space:nowrap;font-weight:500}
+td.norm{font-size:12px;color:var(--slate)}
+td.dep{font-family:var(--mono);font-size:11.5px;color:var(--slate)}
+
+.tag{display:inline-block;font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;
+  padding:2px 6px;border-radius:2px;border:1px solid var(--line);background:var(--paper);white-space:nowrap}
+.p1{background:var(--hemo);color:#fff;border-color:var(--hemo)}
+.p2{background:var(--hemo-soft);color:var(--hemo);border-color:#E4C9CE}
+.p3{background:var(--cold-soft);color:var(--cold);border-color:#C7DEDE}
+.p4{background:var(--paper);color:var(--slate)}
+
+/* ---------- filtros ---------- */
+.filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+.filters input,.filters select{
+  font-family:var(--sans);font-size:13px;padding:8px 10px;border:1px solid var(--line);
+  border-radius:var(--r);background:var(--white);color:var(--ink)
+}
+.filters input{min-width:230px;flex:1 1 230px}
+.filters input:focus,.filters select:focus{outline:2px solid var(--hemo);outline-offset:-1px}
+.count{font-family:var(--mono);font-size:12px;color:var(--slate);margin-left:auto}
+
+/* ---------- cronograma ---------- */
+.gantt{border:1px solid var(--line);border-radius:var(--r);background:var(--white);overflow:auto}
+.gantt table{font-size:13px}
+.gantt th.m{text-align:center;width:52px;font-size:10px;letter-spacing:.04em}
+.cell{padding:0;border-bottom:1px solid #EAEEF1}
+.chip{height:14px;border-radius:2px;background:#EDF0F3}
+.chip.on{background:var(--hemo)}
+.chip.on2{background:var(--cold)}
+.chip.on3{background:#C9AFB5}
+
+/* ---------- listas ---------- */
+ul.tight{margin:6px 0 0;padding-left:18px}
+ul.tight li{margin-bottom:6px;color:var(--slate)}
+ul.tight li b{color:var(--ink);font-weight:600}
+ol.steps{counter-reset:s;list-style:none;margin:0;padding:0}
+ol.steps li{
+  counter-increment:s;position:relative;padding:14px 0 14px 52px;border-bottom:1px solid var(--line)
+}
+ol.steps li:last-child{border-bottom:0}
+ol.steps li::before{
+  content:counter(s,decimal-leading-zero);position:absolute;left:0;top:15px;
+  font-family:var(--mono);font-size:13px;color:var(--hemo);font-weight:600
+}
+ol.steps b{display:block;font-size:15px}
+ol.steps span{color:var(--slate);font-size:13.5px}
+ol.steps code{font-family:var(--mono);font-size:12px;background:var(--paper);padding:1px 5px;border-radius:2px}
+
+.callout{border-left:3px solid var(--amber);background:var(--amber-soft);padding:14px 16px;
+  border-radius:0 var(--r) var(--r) 0;margin:18px 0;font-size:14px}
+.callout b{display:block;margin-bottom:3px}
+.callout.hemo{border-left-color:var(--hemo);background:var(--hemo-soft)}
+.pend{font-family:var(--mono);font-size:11px;color:var(--amber);background:var(--amber-soft);
+  padding:1px 5px;border-radius:2px;border:1px solid #E8D9AE}
+
+/* ---------- puntuaciones ---------- */
+.score{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--line)}
+.score:last-child{border-bottom:0}
+.score .nm{flex:1 1 auto;font-size:14px}
+.score .bar{flex:0 0 220px;margin:0}
+.score .v{font-family:var(--mono);font-size:13px;width:56px;text-align:right;font-weight:600}
+@media(max-width:640px){.score .bar{flex:0 0 100px}}
+
+footer{border-top:1px solid var(--line);padding:22px 0 60px;color:var(--slate);font-size:12.5px}
+footer code{font-family:var(--mono)}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <div class="brandline">
+      <span class="mark">HemoCura · Banco de Sangre</span>
+      <span class="mark">Doc. HC-SGC-MT-004 · v1.0 · Borrador</span>
+    </div>
+    <h1>Arquitectura documental del<br><em>Sistema de Gestión de Calidad</em></h1>
+    <p class="sub">Primera ejecución: mapa de procesos, lista maestra documental, priorización, dependencias, cronograma, los diez primeros documentos y auditoría inicial de brechas. Ningún documento ha sido redactado todavía — esto es el plano sobre el que se construye.</p>
+    <div class="meta-strip">
+      <div><b>Referencia principal</b><span>ISO 15189:2022</span></div>
+      <div><b>Marco legal RD</b><span>Ley 42-01 · Decreto 349-04</span></div>
+      <div><b>Sedes en alcance</b><span class="pend">PENDIENTE DE DEFINIR</span></div>
+      <div><b>Fase actual</b><span>Fase 1–4 · Arquitectura</span></div>
+    </div>
+  </div>
+</header>
+
+<nav class="tabs">
+  <div class="wrap" role="tablist">
+    <button role="tab" aria-selected="true" data-t="dash">Dashboard</button>
+    <button role="tab" aria-selected="false" data-t="mapa">Mapa de procesos</button>
+    <button role="tab" aria-selected="false" data-t="lista">Lista maestra</button>
+    <button role="tab" aria-selected="false" data-t="orden">Orden y dependencias</button>
+    <button role="tab" aria-selected="false" data-t="crono">Cronograma</button>
+    <button role="tab" aria-selected="false" data-t="top10">Primeros 10</button>
+    <button role="tab" aria-selected="false" data-t="brechas">Auditoría de brechas</button>
+    <button role="tab" aria-selected="false" data-t="reglas">Nomenclatura y reglas</button>
+  </div>
+</nav>
+
+<main class="wrap">
+
+<!-- ============ DASHBOARD ============ -->
+<section role="tabpanel" id="dash" class="on">
+  <p class="eyebrow">Dashboard de implementación</p>
+  <h2>Estado del sistema documental</h2>
+  <p class="lede">Los conteos se calculan sobre la lista maestra cargada en esta herramienta. El avance es 0 % por diseño: la Fase 1 entrega arquitectura, no documentos redactados.</p>
+
+  <div class="grid g4" id="kpis"></div>
+
+  <h3>Avance por bloque</h3>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th style="width:38%">Bloque</th><th>Requeridos</th><th>P1</th><th>Creados</th><th>Pendientes</th><th style="width:20%">% avance</th><th>Riesgo si no se ejecuta</th></tr></thead>
+      <tbody id="dashBody"></tbody>
+    </table>
+  </div>
+
+  <h3>Resumen ejecutivo</h3>
+  <div class="grid g2">
+    <div class="card">
+      <p class="eyebrow">Lo que este documento resuelve</p>
+      <ul class="tight">
+        <li><b>Una sola nomenclatura</b> para las cuatro sedes, evitando el escenario habitual de POE distintos por sucursal.</li>
+        <li><b>Dependencias explícitas:</b> ningún formulario se redacta antes que el procedimiento que lo gobierna.</li>
+        <li><b>Doble anclaje normativo:</b> cada documento apunta a ISO 15189:2022 y, cuando aplica, al Decreto 349-04 / Norma de Habilitación, que es lo que inspecciona la autoridad sanitaria.</li>
+        <li><b>Trazabilidad de extremo a extremo:</b> requisito → proceso → procedimiento → formulario → registro → indicador → riesgo → auditoría.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <p class="eyebrow">Lo que HemoCura debe decidir antes del Bloque 0</p>
+      <ul class="tight">
+        <li><b>Alcance:</b> ¿el SGC cubre solo banco de sangre, o también laboratorio especializado y oxigenoterapia hiperbárica? Cambia entre 15 y 40 documentos.</li>
+        <li><b>Modelo multisede:</b> ¿documentación única corporativa con anexos por sede, o sistemas independientes? La primera opción es la recomendada.</li>
+        <li><b>Meta:</b> ¿habilitación y cumplimiento normativo, o acreditación ISO 15189 formal? Determina la profundidad de los Bloques 8, 13 y 14.</li>
+        <li><b>Responsable del SGC</b> con tiempo asignado y autoridad para detener liberaciones.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============ MAPA ============ -->
+<section role="tabpanel" id="mapa">
+  <p class="eyebrow">Paso 1</p>
+  <h2>Mapa general de procesos</h2>
+  <p class="lede">Tres bandas. Los procesos misionales siguen la unidad de sangre desde que se capta al donante hasta que se cierra la trazabilidad con el receptor — ese es el hilo que la auditoría va a seguir.</p>
+
+  <div class="band">
+    <div class="hd">Procesos estratégicos · dirección</div>
+    <div class="row">
+      <div class="pnode"><b>Planificación estratégica</b><span>PE-01</span></div>
+      <div class="pnode"><b>Gestión del SGC</b><span>PE-02</span></div>
+      <div class="pnode"><b>Gestión de riesgos</b><span>PE-03</span></div>
+      <div class="pnode"><b>Cumplimiento normativo</b><span>PE-04</span></div>
+      <div class="pnode"><b>Revisión por la dirección</b><span>PE-05</span></div>
+      <div class="pnode"><b>Mejora continua</b><span>PE-06</span></div>
+    </div>
+  </div>
+
+  <div class="band mis">
+    <div class="hd">Procesos misionales · la unidad de sangre</div>
+    <div class="row">
+      <div class="pnode"><b>Captación y promoción</b><span>PM-01 · donante</span></div>
+      <div class="pnode"><b>Selección y evaluación</b><span>PM-02 · preanalítico</span></div>
+      <div class="pnode"><b>Extracción / aféresis</b><span>PM-03</span></div>
+      <div class="pnode"><b>Procesamiento</b><span>PM-04 · hemocomponentes</span></div>
+      <div class="pnode"><b>Tamizaje infeccioso</b><span>PM-05 · analítico</span></div>
+      <div class="pnode"><b>Inmunohematología</b><span>PM-06 · analítico</span></div>
+    </div>
+    <div class="row">
+      <div class="pnode"><b>Liberación y etiquetado</b><span>PM-07</span></div>
+      <div class="pnode"><b>Almacenamiento y cadena de frío</b><span>PM-08</span></div>
+      <div class="pnode"><b>Distribución y despacho</b><span>PM-09</span></div>
+      <div class="pnode"><b>Compatibilidad y servicio transfusional</b><span>PM-10 · postanalítico</span></div>
+      <div class="pnode"><b>Hemovigilancia</b><span>PM-11</span></div>
+      <div class="pnode"><b>Descarte y no conformes</b><span>PM-12</span></div>
+    </div>
+    <div class="flowline">
+      <span>Donante</span><span>→</span><span>Unidad</span><span>→</span><span>Hemocomponente</span><span>→</span><span>Liberación</span><span>→</span><span>Receptor</span><span>→</span><span>Look-back</span>
+    </div>
+  </div>
+
+  <div class="band">
+    <div class="hd">Procesos de apoyo</div>
+    <div class="row">
+      <div class="pnode"><b>Gestión documental</b><span>PA-01</span></div>
+      <div class="pnode"><b>Personal y competencia</b><span>PA-02</span></div>
+      <div class="pnode"><b>Instalaciones y bioseguridad</b><span>PA-03</span></div>
+      <div class="pnode"><b>Equipos y metrología</b><span>PA-04</span></div>
+      <div class="pnode"><b>Compras e inventario</b><span>PA-05</span></div>
+      <div class="pnode"><b>Sistemas de información</b><span>PA-06</span></div>
+      <div class="pnode"><b>Atención al donante y cliente</b><span>PA-07</span></div>
+      <div class="pnode"><b>Facturación y ARS</b><span>PA-08 · interfaz</span></div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <b>Nota de alcance</b>
+    PA-08 (facturación a ARS, e-CF, glosas) no es un proceso de ISO 15189, pero sí toca la trazabilidad del servicio y la satisfacción del cliente institucional. Se mantiene en el mapa como interfaz declarada, sin documentación propia dentro del SGC salvo el acuerdo de servicio con clientes institucionales.
+  </div>
+</section>
+
+<!-- ============ LISTA MAESTRA ============ -->
+<section role="tabpanel" id="lista">
+  <p class="eyebrow">Paso 2 y 3</p>
+  <h2>Lista maestra documental</h2>
+  <p class="lede">Filtre por bloque, tipo o prioridad. La columna «Depende de» es la restricción real del cronograma: un documento no puede iniciarse antes que su predecesor esté aprobado.</p>
+
+  <div class="filters">
+    <input id="q" type="search" placeholder="Buscar por código, nombre o proceso…" aria-label="Buscar documento">
+    <select id="fB" aria-label="Filtrar por bloque"><option value="">Todos los bloques</option></select>
+    <select id="fT" aria-label="Filtrar por tipo"><option value="">Todos los tipos</option></select>
+    <select id="fP" aria-label="Filtrar por prioridad">
+      <option value="">Todas las prioridades</option>
+      <option value="1">P1 — Crítica</option><option value="2">P2 — Alta</option>
+      <option value="3">P3 — Media</option><option value="4">P4 — Mejora</option>
+    </select>
+    <span class="count" id="cnt"></span>
+  </div>
+
+  <div class="tablewrap" style="max-height:70vh">
+    <table>
+      <thead><tr>
+        <th>Código</th><th style="min-width:230px">Documento</th><th>Tipo</th><th>Bloque</th>
+        <th>Prior.</th><th>Responsable</th><th>Norma</th><th>Depende de</th><th>Evidencia que genera</th>
+      </tr></thead>
+      <tbody id="lbody"></tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ============ ORDEN ============ -->
+<section role="tabpanel" id="orden">
+  <p class="eyebrow">Paso 4</p>
+  <h2>Orden lógico de implementación</h2>
+  <p class="lede">El orden no es por código. Es por dependencia: primero las reglas del juego, después los recursos que ejecutan los procesos, después los procesos misionales en el mismo sentido en que fluye la sangre, y al final los mecanismos que evalúan todo lo anterior.</p>
+
+  <div class="grid g3" id="blockCards"></div>
+
+  <h3>Reglas de dependencia que no se rompen</h3>
+  <div class="card">
+    <ul class="tight">
+      <li><b>Control de documentos antes que cualquier documento.</b> Si HC-SGC-PR-001 no existe, todo lo redactado después nace sin versión, sin aprobación y sin control de copias — y hay que rehacerlo.</li>
+      <li><b>Procedimiento antes que formulario.</b> El formulario es la salida del procedimiento, no al revés.</li>
+      <li><b>Matriz de riesgos antes que puntos de control.</b> Los controles de un POE deben derivar de un riesgo identificado, no de la costumbre.</li>
+      <li><b>Competencia antes que ejecución.</b> Ningún POE de proceso misional entra en vigencia sin que exista evidencia de entrenamiento del personal que lo ejecutará (HC-RRH-FR-002).</li>
+      <li><b>Equipos calificados antes que validación de método.</b> No se valida una técnica sobre un analizador sin calificación ni calibración vigente.</li>
+      <li><b>Todo el sistema antes que la auditoría interna.</b> Auditar bloques incompletos genera hallazgos falsos y desgasta al equipo.</li>
+    </ul>
+  </div>
+
+  <div class="callout hemo">
+    <b>Excepción deliberada: vía rápida de riesgo</b>
+    HemoCura ya está operando. Cinco controles no pueden esperar al orden lógico porque su ausencia expone al paciente hoy: monitoreo de temperatura con alarmas, identificación positiva del donante y del receptor, algoritmo de repetición de reactivos, registro de reacciones transfusionales y control de descarte. Se redactan en paralelo al Bloque 0 aunque su bloque natural sea posterior.
+  </div>
+</section>
+
+<!-- ============ CRONOGRAMA ============ -->
+<section role="tabpanel" id="crono">
+  <p class="eyebrow">Paso 5</p>
+  <h2>Cronograma recomendado · 12 meses</h2>
+  <p class="lede">Supuesto de capacidad: un responsable de calidad a medio tiempo más dueños de proceso aportando entre cuatro y seis horas semanales. Si la capacidad es menor, se extiende el calendario, no se recorta el contenido de los bloques críticos.</p>
+
+  <div class="gantt">
+    <table>
+      <thead><tr><th style="min-width:250px">Bloque</th><th class="m">M1</th><th class="m">M2</th><th class="m">M3</th><th class="m">M4</th><th class="m">M5</th><th class="m">M6</th><th class="m">M7</th><th class="m">M8</th><th class="m">M9</th><th class="m">M10</th><th class="m">M11</th><th class="m">M12</th></tr></thead>
+      <tbody id="gbody"></tbody>
+    </table>
+  </div>
+
+  <div class="grid g3" style="margin-top:18px">
+    <div class="card"><p class="eyebrow">Hito · Mes 3</p><b>Sistema gobernable</b><p style="color:var(--slate);margin:6px 0 0;font-size:13.5px">Existe control de documentos, control de registros, política, manual, responsabilidades y matriz de requisitos. A partir de aquí todo documento nace controlado.</p></div>
+    <div class="card"><p class="eyebrow">Hito · Mes 7</p><b>Cadena misional documentada</b><p style="color:var(--slate);margin:6px 0 0;font-size:13.5px">Donante, extracción, procesamiento, tamizaje e inmunohematología con POE aprobados, registros en uso y personal entrenado.</p></div>
+    <div class="card"><p class="eyebrow">Hito · Mes 12</p><b>Sistema auditable</b><p style="color:var(--slate);margin:6px 0 0;font-size:13.5px">Primera auditoría interna completa y primera revisión por la dirección con datos reales de indicadores, no con estimaciones.</p></div>
+  </div>
+</section>
+
+<!-- ============ TOP 10 ============ -->
+<section role="tabpanel" id="top10">
+  <p class="eyebrow">Paso 6</p>
+  <h2>Los primeros diez documentos</h2>
+  <p class="lede">Criterio de selección: habilitan la creación de todo lo demás, o cierran un riesgo que hoy está abierto. Ninguno depende de decisiones que HemoCura todavía no ha tomado.</p>
+
+  <div class="card">
+    <ol class="steps" id="topList"></ol>
+  </div>
+
+  <h3>Vía rápida de riesgo · en paralelo</h3>
+  <div class="card">
+    <ol class="steps" id="fastList"></ol>
+  </div>
+</section>
+
+<!-- ============ BRECHAS ============ -->
+<section role="tabpanel" id="brechas">
+  <p class="eyebrow">Paso 7 · Loop 1 y 2</p>
+  <h2>Auditoría de brechas sobre la estructura propuesta</h2>
+  <p class="lede">Esta auditoría no evalúa documentos — todavía no existen. Evalúa si la arquitectura, tal como está diseñada, permitiría sostener una inspección. Diez preguntas de control y las brechas que dejaron al descubierto.</p>
+
+  <div class="tablewrap" style="margin-bottom:26px">
+    <table>
+      <thead><tr><th style="width:44%">Pregunta de control</th><th style="width:14%">Resultado</th><th>Observación</th></tr></thead>
+      <tbody id="loop1"></tbody>
+    </table>
+  </div>
+
+  <h3>Matriz de brechas documentales</h3>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th style="width:23%">Brecha</th><th style="width:22%">Riesgo</th><th style="width:22%">Documento requerido</th><th>Prior.</th><th>Acción</th></tr></thead>
+      <tbody id="gapBody"></tbody>
+    </table>
+  </div>
+
+  <h3>Loop 4 · Validación de la arquitectura</h3>
+  <div class="card" id="scores"></div>
+
+  <div class="callout">
+    <b>Loop 5 — se requiere nueva iteración</b>
+    Cinco de las seis puntuaciones están por debajo de 90. Es el resultado esperado en Fase 1: la arquitectura está diseñada, pero la operatividad y la auditabilidad solo suben cuando los documentos existen, se entrenan y generan registros reales. La siguiente iteración es el Bloque 0.
+  </div>
+</section>
+
+<!-- ============ REGLAS ============ -->
+<section role="tabpanel" id="reglas">
+  <p class="eyebrow">Convenciones del proyecto</p>
+  <h2>Nomenclatura y reglas de ejecución</h2>
+  <p class="lede">La codificación propuesta amplía la del prompt maestro con un segmento de área funcional. Motivo: con más de ciento ochenta documentos y cuatro sedes, un consecutivo único bajo «SGC» se vuelve imposible de administrar y los dueños de proceso pierden de vista qué documentos les pertenecen.</p>
+
+  <div class="grid g2">
+    <div class="card">
+      <p class="eyebrow">Estructura del código</p>
+      <p style="font-family:var(--mono);font-size:19px;margin:6px 0 14px"><b>HC</b>-<b>ÁREA</b>-<b>TIPO</b>-<b>###</b></p>
+      <ul class="tight">
+        <li><b>HC</b> — HemoCura (constante).</li>
+        <li><b>ÁREA</b> — tres letras del área funcional dueña del documento.</li>
+        <li><b>TIPO</b> — naturaleza documental.</li>
+        <li><b>###</b> — consecutivo dentro del par área+tipo.</li>
+      </ul>
+      <p style="color:var(--slate);font-size:13.5px;margin-top:12px">Las sedes no entran en el código. Un documento es corporativo; cuando una sede requiere una variante, se documenta como anexo identificado (<code style="font-family:var(--mono)">-STI</code>, <code style="font-family:var(--mono)">-PP</code>, <code style="font-family:var(--mono)">-TEN</code>, <code style="font-family:var(--mono)">-SFM</code>) y nunca como documento nuevo.</p>
+    </div>
+    <div class="card">
+      <p class="eyebrow">Áreas y tipos</p>
+      <div class="grid g2" style="gap:20px">
+        <div><div id="areaList" style="font-size:13px"></div></div>
+        <div><div id="tipoList" style="font-size:13px"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <h3>Reglas que gobiernan todo el proyecto</h3>
+  <div class="card">
+    <ul class="tight">
+      <li><b>Requisito, recomendación o buena práctica</b> — cada exigencia dentro de un POE se etiqueta con su origen. Un hallazgo de auditoría solo puede levantarse contra un requisito.</li>
+      <li><b>Ningún dato inventado</b> — cuando falte información propia de HemoCura se escribe <span class="pend">[PENDIENTE DE DEFINIR POR HEMOCURA]</span>.</li>
+      <li><b>Todo registro tiene dueño y tiempo de conservación</b> — el período de retención de registros de donantes, tamizaje y trazabilidad se toma del Decreto 349-04 y la Norma de Habilitación, no de la práctica interna. <span class="pend">Verificar plazos exactos con la DNBS.</span></li>
+      <li><b>Validación previa a vigencia</b> — los documentos de los Bloques 6 a 11 requieren firma del director técnico o médico responsable antes de entrar en vigencia; los de facturación y acuerdos de servicio requieren revisión legal.</li>
+      <li><b>Control de duplicidad</b> — antes de crear se verifica si el contenido puede vivir como sección de un procedimiento existente. Tres documentos ya se consolidaron por esta regla: control de documentos externos dentro de HC-SGC-PR-001, alcance del SGC dentro del manual de calidad, y política de confidencialidad fusionada con protección de datos del donante.</li>
+      <li><b>La lista maestra se actualiza el mismo día que se aprueba un documento</b>, no al cierre del bloque.</li>
+    </ul>
+  </div>
+
+  <h3>Marco normativo de referencia</h3>
+  <div class="card">
+    <div class="grid g2">
+      <div>
+        <p class="eyebrow">Internacional</p>
+        <ul class="tight">
+          <li><b>ISO 15189:2022</b> — requisitos de calidad y competencia para laboratorios clínicos. Referencia estructural del SGC.</li>
+          <li><b>ISO 15190</b> — seguridad en el laboratorio médico.</li>
+          <li><b>ISO 22367</b> — reducción del error mediante gestión de riesgo.</li>
+          <li><b>AABB Standards</b> y guías OPS/OMS — buena práctica en banco de sangre, no requisito legal en RD.</li>
+        </ul>
+      </div>
+      <div>
+        <p class="eyebrow">República Dominicana</p>
+        <ul class="tight">
+          <li><b>Ley General de Salud 42-01.</b></li>
+          <li><b>Decreto 349-04</b> — Reglamento para la habilitación y funcionamiento de bancos de sangre y servicios de transfusión.</li>
+          <li><b>Norma de habilitación y requerimientos para la instalación y funcionamiento de bancos de sangre y servicios de transfusión</b> (SESPAS).</li>
+          <li><b>Manual de procedimientos operativos de inmunohematología</b> y <b>guía de uso clínico de sangre y hemoderivados</b>, MSP.</li>
+          <li><b>Dirección Nacional de Bancos de Sangre (DNBS)</b> — autoridad de vigilancia y notificación.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="callout" style="margin-bottom:0">
+      <b>Vigilancia legislativa activa</b>
+      El Senado ha estado unificando varios proyectos para una ley del Sistema Nacional de Sangre. Si se promulga, cambiarán requisitos de donación voluntaria no remunerada, clasificación de bancos y hemovigilancia. HC-SGC-MT-001 (matriz de requisitos normativos) debe incluir este seguimiento con revisión trimestral.
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="wrap">
+  Documento de trabajo generado como Fase 1 del proyecto de implementación del SGC. No constituye asesoría legal ni sustituye la validación del director técnico, del médico responsable ni de la autoridad sanitaria. Códigos, bloques y dependencias definidos aquí se mantienen sin cambios en los bloques siguientes.
+</footer>
+
+<script>
+/* ============ DATOS ============ */
+const BLOQUES=[
+ ["B0","Gobierno del sistema","Sin política, manual ni responsabilidades definidas, el SGC no tiene autoridad ni límites."],
+ ["B1","Gestión documental y de la información","Documentos sin control de versión: se opera con POE obsoletos en alguna sede."],
+ ["B2","Personal y competencia","Personal ejecutando procesos críticos sin evidencia de competencia — hallazgo mayor típico."],
+ ["B3","Instalaciones, bioseguridad y ambiente","Exposición ocupacional y contaminación cruzada sin control ni registro."],
+ ["B4","Equipos y metrología","Fallo de cadena de frío no detectado: pérdida de inventario y riesgo transfusional."],
+ ["B5","Proveedores, insumos e inventario","Reactivos fuera de especificación llegan a la corrida analítica."],
+ ["B6","Captación, selección y extracción","Donante inelegible aceptado o unidad mal identificada en origen."],
+ ["B7","Procesamiento de hemocomponentes","Hemocomponentes fuera de especificación liberados al inventario."],
+ ["B8","Laboratorio: tamizaje e inmunohematología","Unidad infecciosa o incompatible liberada. Riesgo máximo del sistema."],
+ ["B9","Almacenamiento, cadena de frío y distribución","Ruptura de cadena de frío no trazada entre sedes."],
+ ["B10","Servicio transfusional","Transfusión incompatible por error de identificación del receptor."],
+ ["B11","Hemovigilancia y biovigilancia","Reacción transfusional no investigada ni notificada a la DNBS."],
+ ["B12","Riesgos, no conformidades y CAPA","Los errores se repiten porque nunca se analiza la causa raíz."],
+ ["B13","Indicadores, satisfacción y mejora","La dirección decide sin datos; no hay evidencia de mejora."],
+ ["B14","Auditoría interna y revisión por la dirección","El sistema no se autoevalúa: las brechas las encuentra el inspector."],
+ ["B15","Sistemas de información y trazabilidad","Pérdida de datos de trazabilidad donante-receptor sin respaldo ni modo manual."]
+];
+
+const TIPOS={MC:"Manual",POL:"Política",PR:"Procedimiento",IT:"Instructivo",FR:"Formulario",
+ RG:"Registro",PL:"Plan",PG:"Programa",MT:"Matriz",LC:"Lista de chequeo",MP:"Mapa"};
+
+const AREAS={SGC:"Sistema de gestión de calidad",RRH:"Recursos humanos",INF:"Infraestructura y bioseguridad",
+ EQP:"Equipos y metrología",ABS:"Abastecimiento e inventario",DON:"Donantes",EXT:"Extracción",
+ PRO:"Procesamiento",LAB:"Laboratorio",ALM:"Almacenamiento y distribución",TRF:"Servicio transfusional",
+ HMV:"Hemovigilancia",TIC:"Sistemas de información"};
+
+/* [código, nombre, tipo, bloque, prioridad, responsable, norma, depende de, evidencia] */
+const D=[
+/* B0 */
+["HC-SGC-MP-001","Mapa de procesos","MP",0,1,"Gestión de Calidad","ISO 15189 §5.4","—","Mapa aprobado y difundido"],
+["HC-SGC-POL-001","Política de calidad","POL",0,1,"Dirección General","ISO 15189 §5.5","MP-001","Acta de aprobación y difusión"],
+["HC-SGC-POL-002","Política de confidencialidad y protección de datos del donante y paciente","POL",0,1,"Dirección General","ISO 15189 §4.2","POL-001","Acuerdos de confidencialidad firmados"],
+["HC-SGC-POL-003","Política de donación voluntaria, altruista y no remunerada","POL",0,1,"Dirección Técnica","Dec. 349-04","POL-001","Declaración institucional publicada"],
+["HC-SGC-POL-004","Política de bioseguridad y salud ocupacional","POL",0,1,"Dirección General","ISO 15190","POL-001","Acta de aprobación"],
+["HC-SGC-POL-005","Política de imparcialidad, ética y conflicto de intereses","POL",0,3,"Dirección General","ISO 15189 §4.1","POL-001","Declaraciones de conflicto de interés"],
+["HC-SGC-MC-001","Manual de calidad (incluye alcance y exclusiones)","MC",0,1,"Gestión de Calidad","ISO 15189 §8.2","POL-001; MP-001","Manual controlado vigente"],
+["HC-SGC-RG-001","Organigrama y estructura de gobierno","RG",0,1,"Dirección General","ISO 15189 §5.4","MC-001","Organigrama aprobado"],
+["HC-SGC-MT-003","Matriz de responsabilidades y autoridades (RACI)","MT",0,1,"Gestión de Calidad","ISO 15189 §5.4","RG-001","Matriz vigente firmada"],
+["HC-SGC-MT-001","Matriz de requisitos normativos aplicables","MT",0,1,"Gestión de Calidad","Ley 42-01; Dec. 349-04","MC-001","Matriz con revisión trimestral"],
+["HC-SGC-MT-002","Matriz de contexto y partes interesadas","MT",0,2,"Gestión de Calidad","ISO 15189 §5.3","MC-001","Análisis documentado"],
+["HC-SGC-FR-001","Objetivos de calidad y despliegue anual","FR",0,2,"Dirección General","ISO 15189 §5.5","POL-001","Objetivos con meta y responsable"],
+["HC-SGC-PL-001","Plan anual de calidad","PL",0,2,"Gestión de Calidad","ISO 15189 §8.5","FR-001","Plan aprobado y seguimiento"],
+["HC-SGC-PR-015","Constitución y funcionamiento de comités (calidad, bioseguridad, medicina transfusional)","PR",0,2,"Dirección General","Dec. 349-04","MT-003","Actas de comité"],
+/* B1 */
+["HC-SGC-PR-001","Control de documentos del sistema de gestión","PR",1,1,"Gestión de Calidad","ISO 15189 §8.3","MC-001","Lista maestra y copias controladas"],
+["HC-SGC-PR-002","Control de registros","PR",1,1,"Gestión de Calidad","ISO 15189 §8.4","PR-001","Lista maestra de registros con retención"],
+["HC-SGC-MT-004","Lista maestra de documentos","MT",1,1,"Gestión de Calidad","ISO 15189 §8.3","PR-001","Listado vigente con versión y estado"],
+["HC-SGC-MT-005","Lista maestra de registros y tiempos de conservación","MT",1,1,"Gestión de Calidad","ISO 15189 §8.4; Dec. 349-04","PR-002","Listado con custodio y plazo"],
+["HC-SGC-FR-002","Solicitud de elaboración o modificación de documento","FR",1,1,"Gestión de Calidad","ISO 15189 §8.3","PR-001","Solicitudes trazadas"],
+["HC-SGC-FR-003","Acta de difusión y entrenamiento en documento","FR",1,1,"Dueño de proceso","ISO 15189 §8.3","PR-001","Evidencia de lectura y comprensión"],
+["HC-SGC-RG-002","Registro de distribución y retiro de copias controladas","RG",1,1,"Gestión de Calidad","ISO 15189 §8.3","PR-001","Control de copias por sede"],
+["HC-SGC-PR-003","Gestión de cambios","PR",1,2,"Gestión de Calidad","ISO 15189 §8.5","PR-001","Evaluación de impacto documentada"],
+["HC-SGC-FR-004","Solicitud y evaluación de impacto de cambio","FR",1,2,"Dueño de proceso","ISO 15189 §8.5","PR-003","Cambios aprobados y verificados"],
+/* B2 */
+["HC-RRH-PR-001","Selección, contratación e inducción de personal","PR",2,2,"Recursos Humanos","ISO 15189 §6.2","MT-003","Expediente técnico del personal"],
+["HC-RRH-PR-002","Capacitación, evaluación y mantenimiento de la competencia","PR",2,1,"Recursos Humanos","ISO 15189 §6.2","MT-003","Evaluaciones de competencia"],
+["HC-RRH-PR-003","Autorización de funciones y control de firmas","PR",2,1,"Dirección Técnica","ISO 15189 §6.2","PR-002 (RRH)","Registro de firmas autorizadas"],
+["HC-RRH-MT-001","Matriz de competencias por puesto","MT",2,1,"Recursos Humanos","ISO 15189 §6.2","PR-002 (RRH)","Matriz vigente"],
+["HC-RRH-MT-002","Matriz de capacitación y brechas formativas","MT",2,2,"Recursos Humanos","ISO 15189 §6.2","MT-001 (RRH)","Brechas identificadas"],
+["HC-RRH-PL-001","Plan anual de capacitación","PL",2,2,"Recursos Humanos","ISO 15189 §6.2","MT-002 (RRH)","Plan con ejecución medida"],
+["HC-RRH-FR-001","Descripción de puesto","FR",2,2,"Recursos Humanos","ISO 15189 §6.2","MT-003","Descripciones firmadas"],
+["HC-RRH-FR-002","Evaluación de competencia por observación directa","FR",2,1,"Dueño de proceso","ISO 15189 §6.2","PR-002 (RRH)","Evidencia de competencia por proceso"],
+["HC-RRH-FR-003","Registro de asistencia y evaluación de capacitación","FR",2,2,"Recursos Humanos","ISO 15189 §6.2","PL-001 (RRH)","Asistencia y eficacia"],
+["HC-RRH-RG-001","Expediente técnico del personal","RG",2,1,"Recursos Humanos","ISO 15189 §6.2","PR-001 (RRH)","Expediente completo por colaborador"],
+["HC-RRH-RG-002","Registro de firmas, rúbricas e iniciales autorizadas","RG",2,1,"Dirección Técnica","ISO 15189 §6.2","PR-003 (RRH)","Listado vigente por sede"],
+/* B3 */
+["HC-INF-PR-001","Bioseguridad y uso de equipo de protección personal","PR",3,1,"Comité de Bioseguridad","ISO 15190","POL-004","Registro de dotación y cumplimiento"],
+["HC-INF-PR-002","Limpieza, desinfección y sanitización de áreas","PR",3,1,"Servicios Generales","ISO 15189 §6.3","PR-001 (INF)","Registro de limpieza por área"],
+["HC-INF-PR-003","Gestión de residuos biológico-infecciosos","PR",3,1,"Comité de Bioseguridad","Ley 42-01","PR-001 (INF)","Manifiestos de entrega"],
+["HC-INF-PR-004","Manejo de derrames biológicos y accidentes con exposición","PR",3,1,"Comité de Bioseguridad","ISO 15190","PR-001 (INF)","Reporte de accidente y seguimiento"],
+["HC-INF-PR-005","Control de condiciones ambientales y acceso a áreas restringidas","PR",3,2,"Gestión de Calidad","ISO 15189 §6.3","MC-001","Registro ambiental por área"],
+["HC-INF-PR-006","Salud ocupacional e inmunización del personal","PR",3,1,"Recursos Humanos","ISO 15190","POL-004","Esquema de vacunación verificado"],
+["HC-INF-PL-001","Plan de bioseguridad","PL",3,1,"Comité de Bioseguridad","ISO 15190","PR-001 (INF)","Plan aprobado y simulacros"],
+["HC-INF-PL-002","Plan de gestión de residuos","PL",3,2,"Comité de Bioseguridad","Ley 42-01","PR-003 (INF)","Plan y ruta de disposición"],
+["HC-INF-PL-003","Plan de contingencia y continuidad operativa","PL",3,1,"Dirección General","ISO 15189 §7.8","MC-001","Plan con escenarios y simulacros"],
+["HC-INF-LC-001","Lista de chequeo de apertura y cierre de área","LC",3,2,"Jefe de sede","ISO 15189 §6.3","PR-005 (INF)","Verificación diaria firmada"],
+["HC-INF-LC-002","Lista de chequeo de inspección de bioseguridad","LC",3,2,"Comité de Bioseguridad","ISO 15190","PL-001 (INF)","Inspecciones periódicas"],
+["HC-INF-FR-001","Registro de limpieza y desinfección","FR",3,1,"Servicios Generales","ISO 15189 §6.3","PR-002 (INF)","Trazabilidad de limpieza"],
+["HC-INF-FR-002","Reporte de accidente o exposición ocupacional","FR",3,1,"Recursos Humanos","ISO 15190","PR-004 (INF)","Investigación y profilaxis"],
+["HC-INF-FR-003","Manifiesto de entrega de residuos","FR",3,2,"Servicios Generales","Ley 42-01","PR-003 (INF)","Evidencia de disposición final"],
+["HC-INF-RG-001","Registro de condiciones ambientales","RG",3,2,"Gestión de Calidad","ISO 15189 §6.3","PR-005 (INF)","Histórico ambiental"],
+/* B4 */
+["HC-EQP-PR-001","Selección, recepción, instalación y calificación de equipos","PR",4,1,"Biomédico","ISO 15189 §6.4","MC-001","Protocolos IQ/OQ/PQ"],
+["HC-EQP-PR-002","Mantenimiento preventivo y correctivo","PR",4,1,"Biomédico","ISO 15189 §6.4","PR-001 (EQP)","Órdenes de trabajo cerradas"],
+["HC-EQP-PR-003","Calibración y verificación metrológica","PR",4,1,"Biomédico","ISO 15189 §6.5","PR-001 (EQP)","Certificados trazables"],
+["HC-EQP-PR-004","Monitoreo continuo de temperatura y gestión de alarmas","PR",4,1,"Jefe de Banco de Sangre","ISO 15189 §6.3; Dec. 349-04","PR-001 (EQP)","Registro continuo y respuesta a alarma"],
+["HC-EQP-PR-005","Manejo de equipo no conforme o fuera de servicio","PR",4,1,"Biomédico","ISO 15189 §6.4","PR-002 (EQP)","Rotulación, retiro y evaluación de impacto"],
+["HC-EQP-MT-001","Inventario maestro de equipos","MT",4,1,"Biomédico","ISO 15189 §6.4","PR-001 (EQP)","Inventario con criticidad"],
+["HC-EQP-MT-002","Matriz y plan de mantenimiento y calibración","MT",4,1,"Biomédico","ISO 15189 §6.5","MT-001 (EQP)","Programa anual con cumplimiento"],
+["HC-EQP-FR-001","Hoja de vida del equipo","FR",4,1,"Biomédico","ISO 15189 §6.4","MT-001 (EQP)","Historial por equipo"],
+["HC-EQP-FR-002","Orden de trabajo de mantenimiento","FR",4,2,"Biomédico","ISO 15189 §6.4","PR-002 (EQP)","Intervenciones trazadas"],
+["HC-EQP-LC-001","Verificación diaria de equipos críticos","LC",4,1,"Técnico responsable","ISO 15189 §6.4","PR-001 (EQP)","Checklist diario firmado"],
+["HC-EQP-RG-001","Registro de temperatura de equipos y ambientes controlados","RG",4,1,"Jefe de Banco de Sangre","Dec. 349-04","PR-004 (EQP)","Serie histórica auditable"],
+["HC-EQP-RG-002","Registro de calibraciones y verificaciones","RG",4,1,"Biomédico","ISO 15189 §6.5","PR-003 (EQP)","Trazabilidad metrológica"],
+["HC-EQP-IT-001","Operación de centrífuga refrigerada","IT",4,2,"Procesamiento","ISO 15189 §6.4","PR-001 (EQP)","Parámetros de corrida"],
+["HC-EQP-IT-002","Operación de extractor o prensa de plasma","IT",4,2,"Procesamiento","ISO 15189 §6.4","PR-001 (EQP)","Registro de fraccionamiento"],
+["HC-EQP-IT-003","Operación de agitador e incubadora de plaquetas","IT",4,2,"Procesamiento","ISO 15189 §6.4","PR-001 (EQP)","Condiciones de agitación"],
+["HC-EQP-IT-004","Operación de equipo de aféresis","IT",4,2,"Extracción","ISO 15189 §6.4","PR-001 (EQP)","Registro de procedimiento"],
+["HC-EQP-IT-005","Operación de analizador de tamizaje","IT",4,2,"Laboratorio","ISO 15189 §6.4","PR-001 (EQP)","Registro de corrida"],
+["HC-EQP-IT-006","Operación del sistema de monitoreo y alarmas de temperatura","IT",4,1,"Biomédico","ISO 15189 §6.3","PR-004 (EQP)","Configuración y prueba de alarma"],
+/* B5 */
+["HC-ABS-PR-001","Selección, evaluación y reevaluación de proveedores","PR",5,2,"Compras","ISO 15189 §6.8","MC-001","Evaluaciones periódicas"],
+["HC-ABS-PR-002","Compras y especificación de insumos críticos","PR",5,2,"Compras","ISO 15189 §6.6","PR-001 (ABS)","Especificaciones aprobadas"],
+["HC-ABS-PR-003","Recepción, cuarentena, verificación y liberación de reactivos e insumos","PR",5,1,"Laboratorio","ISO 15189 §6.6","PR-002 (ABS)","Acta de verificación de lote"],
+["HC-ABS-PR-004","Almacenamiento y control de inventario de insumos (FEFO)","PR",5,2,"Almacén","ISO 15189 §6.6","PR-003 (ABS)","Kardex y control de vencimientos"],
+["HC-ABS-PR-005","Acuerdos de servicio y laboratorios de referencia subcontratados","PR",5,1,"Dirección Técnica","ISO 15189 §6.7; §6.8","MC-001","Acuerdos firmados y evaluados"],
+["HC-ABS-MT-001","Matriz de proveedores críticos","MT",5,2,"Compras","ISO 15189 §6.8","PR-001 (ABS)","Clasificación por criticidad"],
+["HC-ABS-FR-001","Evaluación y reevaluación de proveedor","FR",5,2,"Compras","ISO 15189 §6.8","PR-001 (ABS)","Puntuación documentada"],
+["HC-ABS-FR-002","Acta de recepción y verificación de lote","FR",5,1,"Laboratorio","ISO 15189 §6.6","PR-003 (ABS)","Liberación o rechazo de lote"],
+["HC-ABS-LC-001","Chequeo de recepción con cadena de frío","LC",5,1,"Almacén","ISO 15189 §6.6","PR-003 (ABS)","Condición de llegada verificada"],
+["HC-ABS-RG-001","Registro de trazabilidad de lotes de insumos críticos","RG",5,1,"Laboratorio","ISO 15189 §6.6","PR-003 (ABS)","Lote vinculado a corrida y unidad"],
+["HC-ABS-RG-002","Kardex de inventario","RG",5,3,"Almacén","ISO 15189 §6.6","PR-004 (ABS)","Existencias y consumo"],
+/* B6 */
+["HC-DON-PR-001","Promoción, captación y jornadas móviles de donación","PR",6,2,"Gerencia Comercial","Dec. 349-04","POL-003","Programación y resultados de jornada"],
+["HC-DON-PR-002","Registro e identificación del donante","PR",6,1,"Atención al Donante","ISO 15189 §7.2","MC-001","Registro único de donante"],
+["HC-DON-PR-003","Información y consentimiento informado del donante","PR",6,1,"Atención al Donante","Dec. 349-04","PR-002 (DON)","Consentimiento firmado y archivado"],
+["HC-DON-PR-004","Entrevista, historia clínica, selección y diferimiento","PR",6,1,"Médico responsable","Dec. 349-04; Norma Hab.","PR-003 (DON)","Cuestionario y decisión de elegibilidad"],
+["HC-DON-PR-005","Examen físico predonación","PR",6,1,"Enfermería","Dec. 349-04","PR-004 (DON)","Signos vitales y hemoglobina"],
+["HC-DON-PR-006","Autoexclusión confidencial post-donación","PR",6,1,"Atención al Donante","Dec. 349-04","PR-004 (DON)","Registro confidencial"],
+["HC-DON-PR-007","Fidelización y convocatoria de donantes repetitivos","PR",6,3,"Gerencia Comercial","Buena práctica OPS","PR-001 (DON)","Base de donantes activos"],
+["HC-DON-PL-001","Programa anual de captación y donación voluntaria","PL",6,2,"Gerencia Comercial","Dec. 349-04","PR-001 (DON)","Metas y cumplimiento mensual"],
+["HC-DON-FR-001","Formulario de registro y consentimiento del donante","FR",6,1,"Atención al Donante","Dec. 349-04","PR-003 (DON)","Expediente del donante"],
+["HC-DON-FR-002","Cuestionario de selección y evaluación de riesgo","FR",6,1,"Médico responsable","Dec. 349-04","PR-004 (DON)","Evidencia de elegibilidad"],
+["HC-DON-FR-003","Registro de diferimiento temporal o permanente","FR",6,1,"Médico responsable","Dec. 349-04","PR-004 (DON)","Motivo y fecha de reingreso"],
+["HC-DON-RG-001","Registro maestro de donantes","RG",6,1,"Atención al Donante","Dec. 349-04","PR-002 (DON)","Base histórica con trazabilidad"],
+["HC-DON-RG-002","Registro de donantes diferidos y excluidos","RG",6,1,"Médico responsable","Dec. 349-04","FR-003 (DON)","Bloqueo verificado antes de extraer"],
+["HC-EXT-PR-001","Flebotomía y extracción de sangre total","PR",6,1,"Enfermería","Dec. 349-04; Norma Hab.","PR-005 (DON)","Registro de flebotomía"],
+["HC-EXT-PR-002","Procedimientos de aféresis","PR",6,1,"Enfermería","Dec. 349-04","PR-001 (EXT)","Registro de procedimiento de aféresis"],
+["HC-EXT-PR-003","Prevención y manejo de reacciones adversas del donante","PR",6,1,"Médico responsable","Dec. 349-04","PR-001 (EXT)","Reporte de reacción del donante"],
+["HC-EXT-PR-004","Identificación, etiquetado y trazabilidad de unidad y muestras","PR",6,1,"Extracción","ISO 15189 §7.2; Dec. 349-04","PR-001 (EXT)","Vínculo unidad-muestra-donante"],
+["HC-EXT-PR-005","Cuidados post-donación y observación","PR",6,2,"Enfermería","Dec. 349-04","PR-001 (EXT)","Registro de alta del donante"],
+["HC-EXT-FR-001","Registro de flebotomía","FR",6,1,"Enfermería","Dec. 349-04","PR-001 (EXT)","Volumen, tiempo e incidencias"],
+["HC-EXT-FR-002","Reporte de reacción adversa del donante","FR",6,1,"Médico responsable","Dec. 349-04","PR-003 (EXT)","Investigación y seguimiento"],
+["HC-EXT-LC-001","Chequeo de preparación de jornada o colecta móvil","LC",6,2,"Extracción","Buena práctica","PR-001 (DON)","Verificación previa firmada"],
+["HC-EXT-IT-001","Antisepsia del sitio de venopunción","IT",6,1,"Enfermería","Buena práctica AABB","PR-001 (EXT)","Técnica estandarizada"],
+["HC-EXT-IT-002","Identificación positiva del donante y doble verificación","IT",6,1,"Extracción","ISO 15189 §7.2","PR-004 (EXT)","Doble chequeo registrado"],
+/* B7 */
+["HC-PRO-PR-001","Fraccionamiento de sangre total en hemocomponentes","PR",7,1,"Procesamiento","Dec. 349-04; Norma Hab.","PR-004 (EXT)","Registro de producción"],
+["HC-PRO-PR-002","Producción de concentrado de plaquetas","PR",7,1,"Procesamiento","Dec. 349-04","PR-001 (PRO)","Registro de producción y CC"],
+["HC-PRO-PR-003","Producción de plasma fresco congelado y crioprecipitado","PR",7,1,"Procesamiento","Dec. 349-04","PR-001 (PRO)","Registro de congelación y tiempos"],
+["HC-PRO-PR-004","Procesos especiales: leucorreducción, lavado, irradiación","PR",7,2,"Procesamiento","Buena práctica AABB","PR-001 (PRO)","Registro de proceso especial"],
+["HC-PRO-PR-005","Etiquetado final y liberación de hemocomponentes","PR",7,1,"Dirección Técnica","Dec. 349-04","PR-002 (LAB); PR-005 (LAB)","Acta de liberación por lote/unidad"],
+["HC-PRO-PR-006","Control de calidad de hemocomponentes","PR",7,1,"Gestión de Calidad","Norma Hab.; AABB","PR-001 (PRO)","Resultados de muestreo periódico"],
+["HC-PRO-PL-001","Programa de control de calidad de hemocomponentes","PL",7,2,"Gestión de Calidad","Norma Hab.","PR-006 (PRO)","Plan de muestreo y cumplimiento"],
+["HC-PRO-FR-001","Registro de fraccionamiento y producción","FR",7,1,"Procesamiento","Dec. 349-04","PR-001 (PRO)","Trazabilidad unidad madre-hijas"],
+["HC-PRO-FR-002","Registro de control de calidad de hemocomponentes","FR",7,1,"Gestión de Calidad","Norma Hab.","PR-006 (PRO)","Conformidad por parámetro"],
+["HC-PRO-RG-001","Registro maestro de unidades producidas","RG",7,1,"Procesamiento","Dec. 349-04","PR-001 (PRO)","Inventario trazable"],
+["HC-PRO-IT-001","Programación y balanceo de centrífuga","IT",7,2,"Procesamiento","Buena práctica","IT-001 (EQP)","Parámetros validados"],
+["HC-PRO-IT-002","Sellado, segmentación y conservación de tubuladura","IT",7,2,"Procesamiento","Buena práctica AABB","PR-001 (PRO)","Segmentos disponibles para retesteo"],
+/* B8 */
+["HC-LAB-PR-001","Recepción, criterios de aceptación y rechazo de muestras","PR",8,1,"Laboratorio","ISO 15189 §7.2","MC-001","Registro de rechazo con causa"],
+["HC-LAB-PR-002","Tamizaje de marcadores infecciosos","PR",8,1,"Laboratorio","Dec. 349-04; Disp. MSP","PR-001 (LAB)","Resultados por unidad"],
+["HC-LAB-PR-003","Algoritmo de repetición y confirmación de resultados reactivos","PR",8,1,"Laboratorio","Dec. 349-04","PR-002 (LAB)","Registro de repetición y decisión"],
+["HC-LAB-PR-004","Notificación y consejería al donante con resultado reactivo","PR",8,1,"Médico responsable","Dec. 349-04; ISO 15189 §4.2","PR-003 (LAB)","Acta de consejería confidencial"],
+["HC-LAB-PR-005","Determinación de grupo ABO, RhD y fenotipo","PR",8,1,"Laboratorio","Manual Inmunohematología MSP","PR-001 (LAB)","Resultado con doble determinación"],
+["HC-LAB-PR-006","Rastreo e identificación de anticuerpos irregulares","PR",8,1,"Laboratorio","Manual Inmunohematología MSP","PR-005 (LAB)","Panel e identificación registrada"],
+["HC-LAB-PR-007","Control de calidad interno","PR",8,1,"Laboratorio","ISO 15189 §7.3.7","PR-002 (LAB)","Gráficas y reglas de rechazo"],
+["HC-LAB-PR-008","Evaluación externa de la calidad y comparaciones interlaboratorio","PR",8,1,"Gestión de Calidad","ISO 15189 §7.3.7.3","PR-007 (LAB)","Informes de desempeño y acciones"],
+["HC-LAB-PR-009","Verificación y validación de métodos analíticos","PR",8,1,"Laboratorio","ISO 15189 §7.3.3","PR-001 (EQP)","Informe de verificación aprobado"],
+["HC-LAB-PR-010","Emisión, revisión, corrección y archivo de informes de resultados","PR",8,1,"Laboratorio","ISO 15189 §7.4","PR-002 (LAB)","Informes trazables y enmiendas"],
+["HC-LAB-PR-011","Manejo de resultados críticos y comunicación urgente","PR",8,1,"Laboratorio","ISO 15189 §7.4.1","PR-010 (LAB)","Registro de notificación con hora"],
+["HC-LAB-MT-001","Matriz de métodos, controles y criterios de aceptación","MT",8,2,"Laboratorio","ISO 15189 §7.3","PR-009 (LAB)","Especificaciones por ensayo"],
+["HC-LAB-PL-001","Programa anual de control de calidad del laboratorio","PL",8,2,"Gestión de Calidad","ISO 15189 §7.3.7","PR-007 (LAB)","Plan y cumplimiento"],
+["HC-LAB-FR-001","Registro de corrida analítica y controles","FR",8,1,"Laboratorio","ISO 15189 §7.3.7","PR-007 (LAB)","Validación de corrida"],
+["HC-LAB-FR-002","Registro de resultados reactivos y confirmación","FR",8,1,"Laboratorio","Dec. 349-04","PR-003 (LAB)","Cadena de decisión documentada"],
+["HC-LAB-FR-003","Acta de consejería post-test","FR",8,1,"Médico responsable","Dec. 349-04","PR-004 (LAB)","Confidencialidad verificada"],
+["HC-LAB-RG-001","Registro de rechazo de muestras","RG",8,2,"Laboratorio","ISO 15189 §7.2","PR-001 (LAB)","Causa y acción"],
+["HC-LAB-RG-002","Registro de participación en evaluación externa","RG",8,2,"Gestión de Calidad","ISO 15189 §7.3.7.3","PR-008 (LAB)","Histórico de desempeño"],
+["HC-LAB-IT-001","Técnica inmunoenzimática o quimioluminiscencia para tamizaje","IT",8,2,"Laboratorio","ISO 15189 §7.3","PR-002 (LAB)","Ejecución estandarizada"],
+["HC-LAB-IT-002","Técnica en gel o microcolumna para inmunohematología","IT",8,2,"Laboratorio","Manual Inmunohematología MSP","PR-005 (LAB)","Ejecución estandarizada"],
+["HC-LAB-IT-003","Técnica en tubo y prueba de antiglobulina","IT",8,2,"Laboratorio","Manual Inmunohematología MSP","PR-006 (LAB)","Ejecución estandarizada"],
+/* B9 */
+["HC-ALM-PR-001","Almacenamiento y conservación de hemocomponentes","PR",9,1,"Jefe de Banco de Sangre","Dec. 349-04; Norma Hab.","PR-004 (EQP)","Registro de condiciones por producto"],
+["HC-ALM-PR-002","Gestión de cuarentena y segregación de unidades","PR",9,1,"Jefe de Banco de Sangre","Dec. 349-04","PR-001 (ALM)","Separación física y lógica verificada"],
+["HC-ALM-PR-003","Transporte y cadena de frío entre sedes y clientes","PR",9,1,"Logística","Dec. 349-04","PR-001 (ALM)","Registro de temperatura de transporte"],
+["HC-ALM-PR-004","Despacho y distribución de hemocomponentes","PR",9,1,"Jefe de Banco de Sangre","Dec. 349-04","PR-005 (PRO)","Guía de despacho trazable"],
+["HC-ALM-PR-005","Devolución y reingreso de unidades al inventario","PR",9,1,"Jefe de Banco de Sangre","Buena práctica AABB","PR-004 (ALM)","Criterios de reingreso documentados"],
+["HC-ALM-PR-006","Descarte de unidades y productos no conformes","PR",9,1,"Jefe de Banco de Sangre","Dec. 349-04; Ley 42-01","PR-002 (ALM)","Acta de descarte con testigo"],
+["HC-ALM-PR-007","Gestión de inventario de hemocomponentes y niveles de reserva","PR",9,2,"Jefe de Banco de Sangre","Buena práctica OPS","PR-001 (ALM)","Reporte de existencias y caducidad"],
+["HC-ALM-IT-001","Configuración y validación de contenedores de transporte","IT",9,1,"Logística","Buena práctica AABB","PR-003 (ALM)","Validación de perfil térmico"],
+["HC-ALM-LC-001","Verificación de empaque y contenedor previo a despacho","LC",9,1,"Logística","Dec. 349-04","PR-003 (ALM)","Checklist firmado"],
+["HC-ALM-FR-001","Guía de despacho y remisión de hemocomponentes","FR",9,1,"Jefe de Banco de Sangre","Dec. 349-04","PR-004 (ALM)","Trazabilidad de salida"],
+["HC-ALM-FR-002","Registro de temperatura de transporte","FR",9,1,"Logística","Dec. 349-04","PR-003 (ALM)","Evidencia de cadena de frío"],
+["HC-ALM-FR-003","Acta de descarte de unidades","FR",9,1,"Jefe de Banco de Sangre","Ley 42-01","PR-006 (ALM)","Disposición final documentada"],
+["HC-ALM-RG-001","Registro de existencias, caducidades y movimientos","RG",9,2,"Jefe de Banco de Sangre","Dec. 349-04","PR-007 (ALM)","Inventario auditable"],
+/* B10 */
+["HC-TRF-PR-001","Recepción de solicitud de transfusión y muestra pretransfusional","PR",10,1,"Servicio Transfusional","ISO 15189 §7.2; Dec. 349-04","PR-001 (LAB)","Solicitud validada y muestra rotulada"],
+["HC-TRF-PR-002","Pruebas de compatibilidad pretransfusional","PR",10,1,"Servicio Transfusional","Manual Inmunohematología MSP","PR-006 (LAB)","Registro de compatibilidad"],
+["HC-TRF-PR-003","Selección, reserva y transfusión de urgencia o emergencia","PR",10,1,"Médico responsable","Dec. 349-04","PR-002 (TRF)","Protocolo de emergencia documentado"],
+["HC-TRF-PR-004","Entrega de unidades al servicio clínico","PR",10,1,"Servicio Transfusional","Dec. 349-04","PR-002 (TRF)","Entrega firmada con hora"],
+["HC-TRF-PR-005","Acto transfusional y vigilancia del paciente","PR",10,1,"Médico responsable","Guía uso clínico MSP","PR-004 (TRF)","Hoja de acto transfusional"],
+["HC-TRF-PR-006","Uso clínico racional de sangre y comité de medicina transfusional","PR",10,2,"Comité de Medicina Transfusional","Guía uso clínico MSP","PR-015 (SGC)","Actas e indicadores de uso"],
+["HC-TRF-FR-001","Solicitud de transfusión","FR",10,1,"Servicio Transfusional","Dec. 349-04","PR-001 (TRF)","Justificación clínica registrada"],
+["HC-TRF-FR-002","Registro de pruebas de compatibilidad","FR",10,1,"Servicio Transfusional","Manual Inmunohematología MSP","PR-002 (TRF)","Resultado y unidad asignada"],
+["HC-TRF-FR-003","Consentimiento informado de transfusión","FR",10,1,"Médico responsable","Ley 42-01","PR-005 (TRF)","Consentimiento archivado"],
+["HC-TRF-FR-004","Hoja de acto transfusional","FR",10,1,"Enfermería clínica","Guía uso clínico MSP","PR-005 (TRF)","Signos vitales y evolución"],
+["HC-TRF-LC-001","Verificación pretransfusional junto al paciente","LC",10,1,"Enfermería clínica","Guía uso clínico MSP","PR-005 (TRF)","Doble verificación firmada"],
+["HC-TRF-RG-001","Registro maestro de transfusiones y trazabilidad donante-receptor","RG",10,1,"Servicio Transfusional","Dec. 349-04","PR-004 (TRF)","Vínculo completo de trazabilidad"],
+/* B11 */
+["HC-HMV-PR-001","Detección, investigación y clasificación de reacciones transfusionales","PR",11,1,"Comité de Medicina Transfusional","Dec. 349-04","RG-001 (TRF)","Informe de investigación"],
+["HC-HMV-PR-002","Retiro, recall y look-back de unidades","PR",11,1,"Dirección Técnica","Dec. 349-04","RG-001 (TRF)","Trazabilidad retrospectiva cerrada"],
+["HC-HMV-PR-003","Notificación a la autoridad sanitaria y biovigilancia","PR",11,1,"Dirección Técnica","Dec. 349-04; DNBS","PR-001 (HMV)","Constancia de notificación"],
+["HC-HMV-MT-001","Matriz de severidad e imputabilidad de reacciones","MT",11,2,"Comité de Medicina Transfusional","Buena práctica OPS","PR-001 (HMV)","Clasificación estandarizada"],
+["HC-HMV-FR-001","Reporte de reacción transfusional","FR",11,1,"Enfermería clínica","Dec. 349-04","PR-001 (HMV)","Notificación oportuna"],
+["HC-HMV-FR-002","Acta de investigación de reacción transfusional","FR",11,1,"Comité de Medicina Transfusional","Dec. 349-04","PR-001 (HMV)","Causa y clasificación"],
+["HC-HMV-FR-003","Notificación de look-back y recall","FR",11,1,"Dirección Técnica","Dec. 349-04","PR-002 (HMV)","Comunicación a receptores y autoridad"],
+["HC-HMV-RG-001","Registro maestro de hemovigilancia","RG",11,1,"Comité de Medicina Transfusional","Dec. 349-04","PR-001 (HMV)","Serie histórica y tasas"],
+/* B12 */
+["HC-SGC-PR-005","Gestión de riesgos del sistema y de los procesos","PR",12,1,"Gestión de Calidad","ISO 15189 §5.6; §8.5","MC-001","Matriz de riesgos viva"],
+["HC-SGC-PR-006","Gestión de no conformidades y trabajo no conforme","PR",12,1,"Gestión de Calidad","ISO 15189 §7.5; §8.7","PR-001 (SGC)","Registro maestro de NC"],
+["HC-SGC-PR-007","Acciones correctivas, análisis de causa raíz y CAPA","PR",12,1,"Gestión de Calidad","ISO 15189 §8.7","PR-006 (SGC)","Plan CAPA con eficacia verificada"],
+["HC-SGC-PR-008","Gestión de quejas, reclamos y sugerencias","PR",12,2,"Gerencia Comercial","ISO 15189 §7.7","PR-006 (SGC)","Registro y respuesta al reclamante"],
+["HC-SGC-PR-009","Gestión de eventos adversos e incidentes de seguridad del paciente","PR",12,1,"Dirección Técnica","ISO 15189 §7.5","PR-006 (SGC)","Análisis y notificación"],
+["HC-SGC-MT-006","Matriz de riesgos institucional","MT",12,1,"Gestión de Calidad","ISO 15189 §5.6","PR-005 (SGC)","Riesgos con control y responsable"],
+["HC-SGC-FR-005","Reporte de no conformidad","FR",12,1,"Cualquier colaborador","ISO 15189 §8.7","PR-006 (SGC)","Detección documentada"],
+["HC-SGC-FR-006","Análisis de causa raíz","FR",12,1,"Dueño de proceso","ISO 15189 §8.7","PR-007 (SGC)","Causa identificada, no síntoma"],
+["HC-SGC-FR-007","Plan CAPA y verificación de eficacia","FR",12,1,"Gestión de Calidad","ISO 15189 §8.7","PR-007 (SGC)","Cierre con evidencia de eficacia"],
+["HC-SGC-FR-008","Formulario de queja o reclamo","FR",12,2,"Gerencia Comercial","ISO 15189 §7.7","PR-008 (SGC)","Trazabilidad de la queja"],
+["HC-SGC-RG-003","Registro maestro de no conformidades y CAPA","RG",12,1,"Gestión de Calidad","ISO 15189 §8.7","PR-006 (SGC)","Tendencias y reincidencias"],
+["HC-SGC-RG-004","Registro de quejas y reclamos","RG",12,2,"Gerencia Comercial","ISO 15189 §7.7","PR-008 (SGC)","Histórico y tiempos de respuesta"],
+/* B13 */
+["HC-SGC-PR-010","Gestión de indicadores de calidad","PR",13,1,"Gestión de Calidad","ISO 15189 §8.8","FR-001 (SGC)","Tablero con periodicidad definida"],
+["HC-SGC-PR-011","Evaluación de satisfacción de donantes y clientes institucionales","PR",13,2,"Gerencia Comercial","ISO 15189 §8.8","PR-010 (SGC)","Resultados y plan de acción"],
+["HC-SGC-PR-012","Mejora continua","PR",13,2,"Gestión de Calidad","ISO 15189 §8.6","PR-007 (SGC)","Iniciativas con impacto medido"],
+["HC-SGC-MT-007","Matriz maestra de indicadores de calidad","MT",13,1,"Gestión de Calidad","ISO 15189 §8.8","PR-010 (SGC)","Ficha técnica por indicador"],
+["HC-SGC-FR-009","Encuesta de satisfacción del donante","FR",13,2,"Atención al Donante","ISO 15189 §8.8","PR-011 (SGC)","Medición periódica"],
+["HC-SGC-FR-010","Encuesta de satisfacción de clientes institucionales","FR",13,2,"Gerencia Comercial","ISO 15189 §8.8","PR-011 (SGC)","Medición periódica"],
+["HC-SGC-RG-005","Tablero de indicadores del SGC","RG",13,1,"Gestión de Calidad","ISO 15189 §8.8","MT-007 (SGC)","Serie histórica con alertas"],
+/* B14 */
+["HC-SGC-PR-013","Auditoría interna","PR",14,1,"Gestión de Calidad","ISO 15189 §8.8","PR-001 (SGC)","Informes de auditoría"],
+["HC-SGC-PR-014","Revisión por la dirección","PR",14,1,"Dirección General","ISO 15189 §8.9","PR-013 (SGC)","Acta con decisiones y recursos"],
+["HC-SGC-PG-001","Programa anual de auditorías internas","PG",14,1,"Gestión de Calidad","ISO 15189 §8.8","PR-013 (SGC)","Cobertura de todos los procesos"],
+["HC-SGC-LC-002","Lista de chequeo de auditoría interna ISO 15189","LC",14,1,"Auditor interno","ISO 15189","PR-013 (SGC)","Evidencia por requisito"],
+["HC-SGC-LC-003","Lista de chequeo de autoinspección de habilitación","LC",14,1,"Gestión de Calidad","Dec. 349-04; Norma Hab.","MT-001 (SGC)","Preparación ante inspección"],
+["HC-SGC-FR-011","Plan de auditoría","FR",14,1,"Gestión de Calidad","ISO 15189 §8.8","PR-013 (SGC)","Alcance y equipo auditor"],
+["HC-SGC-FR-012","Informe de auditoría y hallazgos","FR",14,1,"Auditor interno","ISO 15189 §8.8","PR-013 (SGC)","Hallazgos clasificados"],
+["HC-SGC-FR-013","Acta de revisión por la dirección","FR",14,1,"Dirección General","ISO 15189 §8.9","PR-014 (SGC)","Entradas, salidas y compromisos"],
+["HC-SGC-MT-008","Matriz de trazabilidad requisito-evidencia","MT",14,1,"Gestión de Calidad","ISO 15189","MT-001 (SGC)","Ningún requisito sin evidencia"],
+/* B15 */
+["HC-TIC-PR-001","Gestión del sistema de información del banco de sangre","PR",15,1,"TIC","ISO 15189 §7.6","MC-001","Configuración y soporte documentados"],
+["HC-TIC-PR-002","Respaldo, recuperación y conservación de datos","PR",15,1,"TIC","ISO 15189 §7.6","PR-001 (TIC)","Registro de respaldos y pruebas"],
+["HC-TIC-PR-003","Control de accesos, perfiles y confidencialidad","PR",15,1,"TIC","ISO 15189 §4.2; §7.6","POL-002","Matriz de accesos vigente"],
+["HC-TIC-PR-004","Validación de sistemas informáticos y control de cambios","PR",15,2,"TIC","ISO 15189 §7.6","PR-003 (SGC)","Protocolo de validación aprobado"],
+["HC-TIC-PL-001","Plan de contingencia de sistemas y operación en modo manual","PL",15,1,"TIC","ISO 15189 §7.8","PL-003 (INF)","Procedimiento manual probado"],
+["HC-TIC-MT-001","Matriz de accesos y perfiles de usuario","MT",15,1,"TIC","ISO 15189 §7.6","PR-003 (TIC)","Revisión periódica de accesos"],
+["HC-TIC-RG-001","Registro de respaldos y pruebas de restauración","RG",15,1,"TIC","ISO 15189 §7.6","PR-002 (TIC)","Evidencia de restauración exitosa"]
+];
+
+/* cronograma: bloque -> [mes inicio, mes fin, intensidad] */
+const CRONO=[[0,1,2,1],[1,1,3,1],[2,3,5,1],[3,3,5,2],[4,4,6,1],[5,5,7,2],[6,5,8,1],[7,7,9,1],
+ [8,6,9,1],[9,8,10,2],[10,9,11,1],[11,10,11,1],[12,2,4,3],[13,10,12,2],[14,11,12,1],[15,7,9,3]];
+
+const TOP10=[
+ ["HC-SGC-PR-001","Control de documentos","Es el único documento que puede crearse sin depender de otro. Define plantilla, codificación, ciclo de aprobación, vigencia, distribución por sede y retiro de obsoletos. Todo lo redactado antes de él hay que rehacerlo."],
+ ["HC-SGC-PR-002","Control de registros","Fija dónde vive cada evidencia, quién la custodia y cuánto tiempo se conserva. Sin esto, la trazabilidad donante-receptor depende de la memoria del personal."],
+ ["HC-SGC-MP-001","Mapa de procesos","Ya está propuesto en esta herramienta. Formalizarlo y aprobarlo fija los límites del sistema y los dueños de proceso."],
+ ["HC-SGC-POL-001","Política de calidad","Declaración de compromiso de la dirección. Corta, verificable y con objetivos derivados; no un párrafo decorativo."],
+ ["HC-SGC-MT-001","Matriz de requisitos normativos","Inventario de lo exigible: Ley 42-01, Decreto 349-04, Norma de Habilitación, disposiciones del MSP y requisitos de ISO 15189. Es la fuente contra la que se audita después."],
+ ["HC-SGC-MT-003","Matriz de responsabilidades (RACI)","Convierte el organigrama en autoridad operativa: quién aprueba, quién ejecuta, quién libera y quién puede detener una liberación."],
+ ["HC-SGC-MC-001","Manual de calidad","Integra alcance, exclusiones justificadas, estructura documental y la relación entre procesos. Se redacta después de los anteriores porque los referencia."],
+ ["HC-SGC-PR-006","Gestión de no conformidades","Abre el canal formal para que los errores se registren en lugar de resolverse en el pasillo. Habilita la medición real del sistema."],
+ ["HC-SGC-PR-007","Acciones correctivas y CAPA","Sin análisis de causa raíz, la no conformidad se cierra y vuelve a ocurrir. Se redacta junto al anterior, nunca después."],
+ ["HC-SGC-PR-005","Gestión de riesgos","Metodología única de valoración. Todos los POE de los bloques siguientes derivarán sus puntos de control de esta matriz, y sin ella cada dueño de proceso improvisa su propio criterio."]
+];
+
+const FAST=[
+ ["HC-EQP-PR-004 + RG-001","Monitoreo de temperatura y alarmas","Una nevera fuera de rango sin alarma documentada compromete todo el inventario y no es defendible ante inspección."],
+ ["HC-EXT-IT-002 + HC-TRF-LC-001","Identificación positiva de donante y receptor","El error de identificación es la causa principal de reacción hemolítica aguda por incompatibilidad ABO."],
+ ["HC-LAB-PR-003","Algoritmo de repetición de reactivos","Define qué se hace ante un resultado reactivo inicial. Su ausencia es riesgo directo de liberar una unidad infecciosa."],
+ ["HC-HMV-FR-001","Reporte de reacción transfusional","Formulario simple, disponible en el punto de uso. Si no existe, la reacción no se documenta ni se notifica."],
+ ["HC-ALM-PR-006 + FR-003","Descarte de unidades no conformes","Evita que una unidad segregada regrese al inventario disponible por error."]
+];
+
+const LOOP1=[
+ ["¿Existe algún requisito sin cubrir?","Parcial","ISO 15189 §5.6, §7.5 y §8.5 quedan cubiertos. Los requisitos específicos del Decreto 349-04 y de la Norma de Habilitación deben mapearse uno a uno en HC-SGC-MT-001 antes de cerrar el Bloque 0."],
+ ["¿Existe algún proceso sin procedimiento?","Sí","PA-08 (facturación e interfaz con ARS) y el manejo de la oxigenoterapia hiperbárica no tienen documentación asignada porque el alcance no está definido."],
+ ["¿Existe algún procedimiento sin registros?","No","Cada procedimiento de la lista maestra declara la evidencia que genera."],
+ ["¿Existe algún registro sin responsable?","No","Todos los registros tienen responsable asignado; falta asignar el custodio físico y el plazo de conservación."],
+ ["¿Existe algún proceso crítico sin indicador?","Sí","La matriz de indicadores existe como documento planificado, pero ningún indicador está definido todavía. Se resuelve en el Bloque 13."],
+ ["¿Existe algún riesgo sin control?","Sí","No hay matriz de riesgos poblada. La arquitectura la contempla, la organización aún no la tiene."],
+ ["¿Existe duplicidad documental?","Corregida","Tres consolidaciones aplicadas: documentos externos dentro del control de documentos, alcance dentro del manual, y confidencialidad fusionada con protección de datos."],
+ ["¿Existen contradicciones?","No detectadas","La dependencia entre liberación de hemocomponentes y cierre del tamizaje es coherente en toda la estructura."],
+ ["¿Las responsabilidades están claramente asignadas?","Parcial","A nivel de rol sí; falta nombrar a las personas y confirmar que el responsable del SGC tiene tiempo asignado."],
+ ["¿El sistema podría ser auditado con esta documentación?","No","Todavía no existe ningún documento redactado. La arquitectura es auditable como plan, no como sistema."]
+];
+
+const GAPS=[
+ ["Alcance del SGC sin definir","Se documentan procesos que quedarán fuera, o se omiten procesos que la autoridad sí inspecciona","HC-SGC-MC-001 §Alcance","P1","Decisión de dirección antes de iniciar el Bloque 0"],
+ ["Modelo multisede no resuelto","Cuatro sedes operando con versiones distintas del mismo POE","HC-SGC-PR-001 §Distribución","P1","Definir documentación corporativa única con anexos por sede"],
+ ["Plazos de conservación de registros no verificados","Destrucción anticipada de evidencia de trazabilidad","HC-SGC-MT-005","P1","Verificar plazos en el Decreto 349-04 y con la DNBS"],
+ ["Validación del sistema informático de banco de sangre no contemplada como prerrequisito","La trazabilidad electrónica no es defendible si el sistema nunca se validó","HC-TIC-PR-004","P1","Adelantar del Bloque 15 al Bloque 4 si el sistema ya está en producción"],
+ ["Laboratorios de referencia y pruebas subcontratadas sin acuerdo formal","Resultados de terceros usados para liberar unidades sin evaluación de competencia","HC-ABS-PR-005","P1","Inventariar subcontrataciones y formalizar acuerdos"],
+ ["Comité de medicina transfusional no constituido","Sin foro que evalúe uso clínico y reacciones, la hemovigilancia queda sin destino","HC-SGC-PR-015","P2","Constituir comités en el Bloque 0"],
+ ["Contingencia eléctrica y climática no dimensionada","Interrupción prolongada de energía compromete cadena de frío en todas las sedes","HC-INF-PL-003","P1","Incluir escenarios de apagón prolongado y temporada ciclónica"],
+ ["Indicadores sin línea base","Metas fijadas por intuición y no por desempeño real","HC-SGC-MT-007","P2","Medir tres meses antes de fijar metas"],
+ ["Bienestar y derechos del donante y del paciente sin documento propio","Requisito de ISO 15189 §4.3 disperso entre varios procedimientos","HC-SGC-POL-002 §Ampliación","P2","Ampliar la política o crear documento específico en el Bloque 0"],
+ ["Personal responsable del SGC sin dedicación formal","El proyecto avanza a ritmo de disponibilidad y se detiene en temporada alta","HC-SGC-MT-003","P1","Asignar dedicación explícita y respaldo de dirección"]
+];
+
+const SCORES=[["Cobertura documental",74],["Trazabilidad de la arquitectura",68],["Control de riesgos",35],
+ ["Operatividad",12],["Auditabilidad",22],["Madurez del sistema",28]];
+
+/* ============ RENDER ============ */
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const pTag=p=>`<span class="tag p${p}">P${p}</span>`;
+
+/* tabs */
+$$('nav.tabs button').forEach(b=>b.addEventListener('click',()=>{
+  $$('nav.tabs button').forEach(x=>x.setAttribute('aria-selected',x===b));
+  $$('section[role=tabpanel]').forEach(s=>s.classList.toggle('on',s.id===b.dataset.t));
+  window.scrollTo({top:0,behavior:'instant'});
+}));
+
+/* KPIs */
+const total=D.length, p1=D.filter(d=>d[4]===1).length, p2=D.filter(d=>d[4]===2).length;
+const nPR=D.filter(d=>d[2]==='PR').length, nFR=D.filter(d=>d[2]==='FR').length;
+$('#kpis').innerHTML=[
+ [total,"Documentos identificados"],[0,"Documentos creados"],[total,"Documentos pendientes"],
+ [p1,"Prioridad crítica pendiente"],[nPR,"Procedimientos"],[nFR,"Formularios"],
+ [GAPS.filter(g=>g[3]==='P1').length,"Brechas críticas abiertas"],["0 %","Avance global"]
+].map((k,i)=>`<div class="kpi ${i>3?'cold':''} ${i===6?'amber':''}"><div class="n">${k[0]}</div><div class="l">${k[1]}</div></div>`).join('');
+
+/* dashboard por bloque */
+$('#dashBody').innerHTML=BLOQUES.map((b,i)=>{
+  const req=D.filter(d=>d[3]===i).length, cr=D.filter(d=>d[3]===i&&d[4]===1).length;
+  return `<tr><td><b>${b[0]}</b> · ${b[1]}</td><td>${req}</td><td>${pTag(1)} ${cr}</td><td>0</td><td>${req}</td>
+  <td><div class="bar"><i style="width:0%"></i></div></td><td style="font-size:12.5px;color:var(--slate)">${b[2]}</td></tr>`;
+}).join('');
+
+/* selects */
+BLOQUES.forEach((b,i)=>$('#fB').insertAdjacentHTML('beforeend',`<option value="${i}">${b[0]} — ${b[1]}</option>`));
+Object.entries(TIPOS).forEach(([k,v])=>$('#fT').insertAdjacentHTML('beforeend',`<option value="${k}">${k} — ${v}</option>`));
+
+function paint(){
+  const q=$('#q').value.toLowerCase().trim(), fb=$('#fB').value, ft=$('#fT').value, fp=$('#fP').value;
+  const rows=D.filter(d=>{
+    if(fb!==''&&d[3]!=+fb) return false;
+    if(ft&&d[2]!==ft) return false;
+    if(fp&&d[4]!=+fp) return false;
+    if(q&&!(d[0]+' '+d[1]+' '+d[5]+' '+d[6]).toLowerCase().includes(q)) return false;
+    return true;
+  });
+  $('#cnt').textContent=`${rows.length} de ${total} documentos`;
+  $('#lbody').innerHTML=rows.map(d=>`<tr>
+    <td class="cod">${d[0]}</td><td>${d[1]}</td>
+    <td><span class="tag">${d[2]}</span></td>
+    <td style="font-family:var(--mono);font-size:11.5px">${BLOQUES[d[3]][0]}</td>
+    <td>${pTag(d[4])}</td><td style="font-size:12.5px">${d[5]}</td>
+    <td class="norm">${d[6]}</td><td class="dep">${d[7]}</td>
+    <td style="font-size:12.5px;color:var(--slate)">${d[8]}</td></tr>`).join('')
+    ||`<tr><td colspan="9" style="padding:26px;text-align:center;color:var(--slate)">Ningún documento coincide. Ajuste los filtros o borre la búsqueda.</td></tr>`;
+}
+['#q','#fB','#fT','#fP'].forEach(s=>$(s).addEventListener('input',paint));
+paint();
+
+/* tarjetas de bloque */
+$('#blockCards').innerHTML=BLOQUES.map((b,i)=>{
+  const req=D.filter(d=>d[3]===i).length;
+  const c=CRONO.find(c=>c[0]===i);
+  return `<div class="card"><p class="eyebrow">${b[0]} · Meses ${c[1]}–${c[2]}</p>
+  <b style="font-size:15px">${b[1]}</b>
+  <p style="color:var(--slate);font-size:13px;margin:6px 0 0">${req} documentos · ${D.filter(d=>d[3]===i&&d[4]===1).length} críticos</p></div>`;
+}).join('');
+
+/* gantt */
+$('#gbody').innerHTML=CRONO.map(c=>{
+  const b=BLOQUES[c[0]];
+  let cells='';
+  for(let m=1;m<=12;m++){
+    const on=m>=c[1]&&m<=c[2];
+    const cls=on?(c[3]===1?'on':c[3]===2?'on2':'on3'):'';
+    cells+=`<td class="cell"><div class="chip ${cls}"></div></td>`;
+  }
+  return `<tr><td><b style="font-family:var(--mono);font-size:11.5px">${b[0]}</b> · ${b[1]}</td>${cells}</tr>`;
+}).join('');
+
+/* top 10 */
+$('#topList').innerHTML=TOP10.map(t=>`<li><b>${t[1]} <code>${t[0]}</code></b><span>${t[2]}</span></li>`).join('');
+$('#fastList').innerHTML=FAST.map(t=>`<li><b>${t[1]} <code>${t[0]}</code></b><span>${t[2]}</span></li>`).join('');
+
+/* loop 1 */
+const badge=r=>{const m={"Sí":"p1","Parcial":"p2","No":"p1","No detectadas":"p3","Corregida":"p3"};return `<span class="tag ${m[r]||'p4'}">${r}</span>`;};
+$('#loop1').innerHTML=LOOP1.map(l=>`<tr><td>${l[0]}</td><td>${badge(l[1])}</td><td style="color:var(--slate);font-size:13px">${l[2]}</td></tr>`).join('');
+
+/* brechas */
+$('#gapBody').innerHTML=GAPS.map(g=>`<tr><td><b>${g[0]}</b></td><td style="color:var(--slate);font-size:13px">${g[1]}</td>
+ <td class="cod">${g[2]}</td><td>${pTag(g[3].replace('P',''))}</td><td style="font-size:13px">${g[4]}</td></tr>`).join('');
+
+/* scores */
+$('#scores').innerHTML=SCORES.map(s=>`<div class="score"><span class="nm">${s[0]}</span>
+ <div class="bar ${s[1]>=90?'cold':''}"><i style="width:${s[1]}%"></i></div>
+ <span class="v">${s[1]}/100</span></div>`).join('');
+
+/* nomenclatura */
+$('#areaList').innerHTML='<p class="eyebrow" style="margin-bottom:6px">Áreas</p>'+Object.entries(AREAS)
+ .map(([k,v])=>`<div style="margin-bottom:4px"><code style="font-family:var(--mono);color:var(--hemo)">${k}</code> ${v}</div>`).join('');
+$('#tipoList').innerHTML='<p class="eyebrow" style="margin-bottom:6px">Tipos</p>'+Object.entries(TIPOS)
+ .map(([k,v])=>`<div style="margin-bottom:4px"><code style="font-family:var(--mono);color:var(--hemo)">${k}</code> ${v}</div>`).join('');
+</script>
+</body>
+</html>

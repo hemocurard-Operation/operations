@@ -1,11 +1,16 @@
-# HemoCura v0.21.0 — Operaciones + SGC + Compliance
+# HemoCura v0.23.0
 
-## Alcance activo
-Centro de Operaciones · Despachos · Inventario · Requisiciones · Inspecciones ·
-Planificación operativa · SGC · Control Documental · Compliance · Administración/QA.
+Sistema integrado de:
+- Operaciones
+- Ventas/Salidas operativas
+- Donantes
+- Tamizaje
+- Inventario sanguíneo
+- Despachos
+- Insumos/Requisiciones
+- SGC
+- Compliance
+- Inteligencia de Negocios
+- Gestión de Proyectos
 
-## Fuera del sistema activo
-CRM · Prospección · Gestión comercial · Ventas · Pricing · Rentabilidad · Suite multiempresa · Plan personal 12 semanas.
-
-## Gobierno documental
-HC-SGC-MC-01 v2.0 es la fuente única de verdad.
+Excluye CRM y prospección.

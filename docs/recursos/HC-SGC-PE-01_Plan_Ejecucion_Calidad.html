@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HC-SGC-PE-01 · Plan de Ejecución del Sistema de Gestión de Calidad — HemoCura</title>
+<style>
+:root{
+  --ink:#16232B;
+  --ink-2:#3D4E58;
+  --muted:#6E7F8A;
+  --rule:#DDE3E7;
+  --paper:#FFFFFF;
+  --tint:#F5F7F8;
+  --burg:#8C1D2F;
+  --burg-soft:#F6ECEE;
+  --gold:#8A6D1F;
+  --green:#2C5F2D;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0;background:var(--paper);color:var(--ink);
+  font-family:"Calibri","Segoe UI",system-ui,sans-serif;
+  font-size:16px;line-height:1.62;
+}
+.wrap{display:grid;grid-template-columns:264px 1fr;}
+/* ---------- rail ---------- */
+.rail{
+  position:sticky;top:0;height:100vh;overflow-y:auto;
+  border-right:1px solid var(--rule);background:var(--tint);padding:26px 0;
+}
+.rail-head{padding:0 20px 18px;border-bottom:1px solid var(--rule);margin-bottom:14px;}
+.mark{display:flex;align-items:center;gap:9px;font-weight:700;font-size:19px;letter-spacing:-.2px;}
+.drop{width:13px;height:16px;background:var(--burg);border-radius:50% 50% 50% 50%/60% 60% 40% 40%;transform:rotate(-6deg);display:inline-block;}
+.sub{font-size:12px;color:var(--muted);margin-top:5px;letter-spacing:.3px;}
+.rail-label{font-size:10.5px;text-transform:uppercase;letter-spacing:1.3px;color:var(--muted);padding:0 20px 8px;}
+.rail a{
+  display:grid;grid-template-columns:64px 1fr;gap:8px;align-items:baseline;
+  padding:7px 20px;text-decoration:none;color:var(--ink-2);font-size:13.2px;
+  border-left:2px solid transparent;
+}
+.rail a:hover{background:#EBEFF1;color:var(--ink);}
+.rail a .c{font-size:10.5px;color:var(--muted);font-family:"Courier New",monospace;letter-spacing:.2px;}
+/* ---------- main ---------- */
+main{min-width:0;}
+.inner{max-width:900px;margin:0 auto;padding:0 44px 100px;}
+.hero{padding:64px 0 34px;border-bottom:2px solid var(--ink);}
+.eyebrow{font-size:11px;text-transform:uppercase;letter-spacing:1.6px;color:var(--burg);font-weight:700;}
+h1{font-family:"Cambria",Georgia,serif;font-size:38px;line-height:1.16;margin:12px 0 14px;letter-spacing:-.5px;}
+.lede{font-size:17.5px;color:var(--ink-2);margin:0 0 26px;}
+.stamp{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--rule);border:1px solid var(--rule);}
+.stamp>div{background:var(--paper);padding:11px 13px;font-size:13px;}
+.stamp b{display:block;font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-weight:700;margin-bottom:3px;}
+section{padding:46px 0 8px;border-bottom:1px solid var(--rule);}
+.sec-head{display:grid;grid-template-columns:96px 1fr;gap:16px;align-items:start;}
+.sec-code{font-family:"Courier New",monospace;font-size:11.5px;color:var(--burg);padding-top:9px;letter-spacing:.4px;}
+h2{font-family:"Cambria",Georgia,serif;font-size:26px;line-height:1.24;margin:0 0 10px;letter-spacing:-.3px;}
+h3{font-size:15px;text-transform:uppercase;letter-spacing:1.1px;color:var(--ink);margin:26px 0 10px;font-weight:700;}
+h4{font-size:15.5px;margin:18px 0 6px;color:var(--burg);}
+p{margin:0 0 13px;}
+ul,ol{margin:0 0 14px;padding-left:20px;}
+li{margin-bottom:6px;}
+table{width:100%;border-collapse:collapse;margin:14px 0 20px;font-size:13.6px;}
+th,td{border:1px solid var(--rule);padding:8px 10px;text-align:left;vertical-align:top;}
+th{background:var(--tint);font-size:11px;text-transform:uppercase;letter-spacing:.9px;color:var(--ink-2);font-weight:700;}
+td.n{font-family:"Courier New",monospace;font-size:12.5px;white-space:nowrap;}
+.chip{display:inline-block;font-size:10.5px;text-transform:uppercase;letter-spacing:.8px;padding:2px 7px;border:1px solid var(--rule);border-radius:2px;font-weight:700;}
+.chip.leg{background:#FDF3F4;border-color:#E8C9CE;color:var(--burg);}
+.chip.iso{background:#EEF3F6;border-color:#CBD9E2;color:#2A5871;}
+.chip.bp{background:#F1F5EE;border-color:#D0DEC7;color:var(--green);}
+.chip.est{background:#FAF5E9;border-color:#E4D8B8;color:var(--gold);}
+.note{border-left:3px solid var(--burg);background:var(--burg-soft);padding:13px 16px;margin:16px 0;font-size:14.6px;}
+.note b{color:var(--burg);}
+.box{border:1px solid var(--rule);background:var(--tint);padding:15px 17px;margin:16px 0;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.card{border:1px solid var(--rule);padding:14px 16px;background:var(--paper);}
+.card b{display:block;font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:5px;}
+.kpi{font-family:"Cambria",Georgia,serif;font-size:32px;color:var(--burg);line-height:1.1;}
+.gate{border:1px dashed var(--burg);background:#FFF;padding:12px 15px;margin:14px 0;font-size:14.2px;}
+.gate b{color:var(--burg);text-transform:uppercase;font-size:11px;letter-spacing:1px;display:block;margin-bottom:4px;}
+.foot{padding:40px 0 0;color:var(--muted);font-size:12.5px;}
+@media print{
+  .rail{display:none;} .wrap{display:block;} .inner{max-width:none;padding:0 10mm;}
+  section{page-break-inside:avoid;} body{font-size:11pt;}
+}
+@media(max-width:900px){
+  .wrap{display:block;}
+  .rail{position:static;height:auto;border-right:none;border-bottom:1px solid var(--rule);}
+  .rail a{grid-template-columns:1fr;}
+  .rail a .c{display:none;}
+  .inner{padding:0 20px 60px;}
+  .stamp{grid-template-columns:1fr 1fr;}
+  .grid2{grid-template-columns:1fr;}
+  .sec-head{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<aside class="rail">
+  <div class="rail-head">
+    <div class="mark"><span class="drop"></span>HemoCura</div>
+    <div class="sub">HC-SGC-PE-01 · Plan de Ejecución · v1.0</div>
+  </div>
+  <div class="rail-label">Contenido</div>
+  <nav>
+    <a href="#s0"><span class="c">§00</span><span>Ficha y control</span></a>
+    <a href="#s1"><span class="c">§01</span><span>Condensado de decisiones</span></a>
+    <a href="#s2"><span class="c">§02</span><span>Objeto y alcance dual</span></a>
+    <a href="#s3"><span class="c">§03</span><span>Gobierno del proyecto</span></a>
+    <a href="#s4"><span class="c">§04</span><span>Arquitectura documental</span></a>
+    <a href="#s5"><span class="c">§05</span><span>Fases de ejecución</span></a>
+    <a href="#s6"><span class="c">§06</span><span>Cronograma e hitos</span></a>
+    <a href="#s7"><span class="c">§07</span><span>Competencia y capacitación</span></a>
+    <a href="#s8"><span class="c">§08</span><span>Comunicación interna</span></a>
+    <a href="#s9"><span class="c">§09</span><span>Indicadores del SGC</span></a>
+    <a href="#s10"><span class="c">§10</span><span>Riesgos y contingencias</span></a>
+    <a href="#s11"><span class="c">§11</span><span>Estructura presupuestaria</span></a>
+    <a href="#s12"><span class="c">§12</span><span>Puertas de decisión</span></a>
+    <a href="#s13"><span class="c">§13</span><span>Arranque: primeros 14 días</span></a>
+  </nav>
+</aside>
+
+<main>
+<div class="inner">
+
+<div class="hero">
+  <div class="eyebrow">Documento controlado · Comité de Calidad</div>
+  <h1>Plan de Ejecución del Sistema de Gestión de Calidad</h1>
+  <p class="lede">Ruta operativa para llevar el laboratorio de HemoCura a la acreditación ISO 15189:2022 y el banco de sangre al cumplimiento verificable del marco regulatorio dominicano, bajo un sistema documental único y dos alcances diferenciados.</p>
+  <div class="stamp">
+    <div><b>Código</b>HC-SGC-PE-01</div>
+    <div><b>Versión</b>1.0 — borrador para aprobación</div>
+    <div><b>Horizonte</b>22 meses desde F0</div>
+    <div><b>Sedes</b>Santiago · Puerto Plata · Tenares · SFM</div>
+  </div>
+</div>
+
+<section id="s0">
+<div class="sec-head"><div class="sec-code">HC-SGC-PE-00</div><div>
+<h2>Ficha del documento y reglas de lectura</h2>
+<p>Este plan deriva del <b>Plan Maestro HemoCura 2026–2027</b> y lo convierte en secuencia ejecutable. Donde el Plan Maestro describe <i>qué</i> debe existir, este documento define <i>cuándo</i>, <i>quién</i> y <i>con qué evidencia se da por cumplido</i>.</p>
+
+<table>
+<tr><th>Campo</th><th>Contenido</th></tr>
+<tr><td>Elaborado por</td><td>Gerencia Comercial y de Proyectos</td></tr>
+<tr><td>Revisa</td><td>Responsable de Calidad (a designar en F0) · Dirección Técnica</td></tr>
+<tr><td>Aprueba</td><td>Consejo de Socios / Alta Dirección</td></tr>
+<tr><td>Documentos de entrada</td><td>Plan Maestro 2026–2027 (31 secciones) · GAP Analysis ISO 15189 · Matriz de riesgos (22) · Matriz RACI · Programa de capacitación (6 niveles)</td></tr>
+<tr><td>Distribución</td><td>Copia controlada: Socios, Dirección Técnica, Calidad, Coordinación de Operaciones, Encargados de sede</td></tr>
+</table>
+
+<p>Cada acción se etiqueta según su naturaleza, porque el tratamiento presupuestario y la negociabilidad son distintos:</p>
+<p>
+<span class="chip leg">Obligación legal RD</span>
+<span class="chip iso">Requisito ISO 15189</span>
+<span class="chip bp">Buena práctica</span>
+<span class="chip est">Recomendación estratégica</span>
+</p>
+<p>Lo etiquetado como obligación legal no se somete a votación ni a análisis de retorno: se cumple. Lo etiquetado como recomendación estratégica sí admite ser diferido, y este plan indica el costo de diferirlo.</p>
+</div></div>
+</section>
+
+<section id="s1">
+<div class="sec-head"><div class="sec-code">HC-SGC-PE-01</div><div>
+<h2>Condensado: las seis decisiones que ya están tomadas</h2>
+<p>Todo el trabajo previo sobre el sistema de calidad converge en seis conclusiones. El resto de este plan es su consecuencia operativa.</p>
+
+<h4>1. El alcance es dual, no único</h4>
+<p>ISO 15189 acredita <b>laboratorios médicos</b>, no establecimientos productores de hemocomponentes. Intentar incluir colecta, fraccionamiento y despacho en el alcance de acreditación vuelve el proyecto inviable. La formulación correcta es: el <b>laboratorio</b> se acredita bajo ISO 15189:2022; el <b>banco de sangre</b> se opera bajo Decreto 349-04 y Resolución 000017-2019, con estándares AABB como referencia técnica. Un solo sistema documental; dos alcances. Esta corrección reduce el esfuerzo del proyecto entre 40 % y 60 %.</p>
+
+<h4>2. La concentración de funciones gerenciales es un hallazgo de auditoría</h4>
+<p>La cláusula 4 de ISO 15189 exige imparcialidad. Quien ejerce la función comercial no puede aprobar la liberación técnica de resultados ni tener a Calidad reportándole jerárquicamente. Hoy las funciones de dirección general, dirección comercial y dirección de proyectos están concentradas en una sola persona. <b>La corrección tiene costo cero y es la decisión número uno del plan.</b></p>
+
+<h4>3. El nodo de la ruta crítica es una contratación, no un documento</h4>
+<p>El Coordinador de Operaciones es el único recurso que desbloquea simultáneamente la redacción documental, la estandarización entre sedes y la liberación de tiempo gerencial. Mientras esa posición no exista, todo cronograma de acreditación es aspiracional.</p>
+
+<h4>4. El organismo acreditador debe confirmarse por escrito antes de presupuestar</h4>
+<p>El esquema publicado por ODAC para laboratorios clínicos aún refiere ISO 15189:<b>2012</b>, con una consulta pública sin respuesta sobre la versión 2022. El sistema se construye contra 2022 de todos modos —es lo técnicamente correcto y evita retrabajo—, pero la versión contra la cual se evaluará debe constar por escrito antes de comprometer partidas.</p>
+
+<h4>5. Existe un riesgo legislativo que domina el modelo de negocio</h4>
+<p>La unificación de proyectos de ley sobre el Sistema Nacional de Sangre en la Comisión de Salud Pública del Senado contemplaría, según lo reportado, prohibir el lucro en la obtención, procesamiento o distribución de sangre. Para un banco de sangre privado eso no es un detalle normativo: es una variable de modelo. Se gestiona como Riesgo R-01 y Proyecto 11, y requiere obtener el <b>texto oficial</b>, no versiones de prensa.</p>
+
+<h4>6. El sistema se construye sobre procedimientos técnicos reales, no sobre plantillas</h4>
+<p>Los procedimientos ya trabajados —rastreo de anticuerpos irregulares por antiglobulina indirecta, flebotomía terapéutica con criterios de aceptación, consentimiento informado y registro de descarte— son el modelo del resto: cada POE nace de la práctica real, se valida, y arrastra consigo sus registros y su criterio de aceptación.</p>
+
+<div class="note"><b>Consecuencia para socios:</b> la inversión que este plan solicita no compra un certificado. Compra la separación de funciones, un coordinador operativo, un sistema documental único y la capacidad de sostener contratos con ARS e instituciones que ya exigen evidencia de calidad. El certificado es el subproducto verificable de eso.</div>
+</div></div>
+</section>
+
+<section id="s2">
+<div class="sec-head"><div class="sec-code">HC-SGC-PE-02</div><div>
+<h2>Objeto, alcance y exclusiones</h2>
+
+<h3>Objeto</h3>
+<p>Implantar un Sistema de Gestión de Calidad único para HemoCura que satisfaga simultáneamente: (a) los requisitos de acreditación ISO 15189:2022 para el laboratorio clínico; (b) las obligaciones regulatorias dominicanas aplicables al banco de sangre; y (c) las exigencias documentales de los clientes institucionales —centros médicos, ARS y empresas del programa de donantes.</p>
+
+<h3>Alcance A — Laboratorio clínico</h3>
+<table>
+<tr><th>Elemento</th><th>Definición</th></tr>
+<tr><td>Norma</td><td>ISO 15189:2022 <span class="chip iso">ISO</span></td></tr>
+<tr><td>Sede de acreditación inicial</td><td>Santiago (sede procesadora)</td></tr>
+<tr><td>Áreas incluidas</td><td>Inmunohematología, serología de tamizaje, hematología, química clínica según cartera declarada</td></tr>
+<tr><td>Ensayos</td><td>Lista cerrada a definir en F1; se acredita lo que se domina, no todo lo que se ofrece</td></tr>
+<tr><td>Extensión posterior</td><td>Sedes restantes por ampliación de alcance, no en el ciclo inicial</td></tr>
+</table>
+
+<h3>Alcance B — Banco de sangre</h3>
+<table>
+<tr><th>Elemento</th><th>Definición</th></tr>
+<tr><td>Marco</td><td>Decreto 349-04 · Resolución 000017-2019 · Ley 42-01 <span class="chip leg">Legal</span></td></tr>
+<tr><td>Referencia técnica</td><td>Estándares AABB (no acreditación en este ciclo) <span class="chip bp">Buena práctica</span></td></tr>
+<tr><td>Procesos</td><td>Promoción y captación, selección de donantes, colecta, fraccionamiento, tamizaje, almacenamiento, despacho, hemovigilancia</td></tr>
+<tr><td>Objetivo del ciclo</td><td>Cumplimiento verificable y trazabilidad completa unidad–donante–receptor</td></tr>
+</table>
+
+<h3>Exclusiones declaradas</h3>
+<ul>
+<li>La unidad de terapia hiperbárica no forma parte del alcance de acreditación en este ciclo; se le aplica el sistema documental general y su normativa específica.</li>
+<li>No se persigue certificación ISO 9001 en paralelo: duplicaría esfuerzo documental sin agregar valor frente al cliente institucional del sector salud.</li>
+<li>No se incluye acreditación del banco de sangre bajo esquema internacional en este horizonte.</li>
+</ul>
+</div></div>
+</section>
+
+<section id="s3">
+<div class="sec-head"><div class="sec-code">HC-SGC-PE-03</div><div>
+<h2>Gobierno del proyecto</h2>
+
+<h3>Órganos</h3>
+<table>
+<tr><th>Órgano</th><th>Composición</th><th>Frecuencia</th><th>Decide sobre</th></tr>
+<tr><td><b>Consejo de Socios</b></td><td>Socios</td><td>Trimestral</td><td>Presupuesto, puertas de decisión, alcance, contrataciones de dirección</td></tr>
+<tr><td><b>Comité de Calidad</b></td><td>Dirección Técnica, Responsable de Calidad, Coordinador de Operaciones, Gerencia Comercial</td><td>Mensual</td><td>Aprobación documental, no conformidades mayores, plan de auditorías, indicadores</td></tr>
+<tr><td><b>Célula de implantación</b></td><td>Responsable de Calidad + un referente por sede</td><td>Semanal</td><td>Avance documental, incidencias de implantación, capacitación</td></tr>
+<tr><td><b>Revisión por la Dirección</b></td><td>Socios + Comité de Calidad</td><td>Semestral</td><td>Adecuación, suficiencia y eficacia del SGC <span class="chip iso">ISO</span></td></tr>
+</table>
+
+<h3>Roles críticos y regla de imparcialidad</h3>
+<div class="note"><b>Regla estructural no negociable:</b> el Responsable de Calidad reporta a la Dirección Técnica o directamente al Consejo de Socios; <b>nunca</b> a la Gerencia Comercial. La liberación técnica de resultados es potestad exclusiva de la Dirección Técnica o del profesional delegado por escrito. Ninguna meta comercial puede condicionar un criterio técnico, y esa independencia debe estar declarada en documento firmado. <span class="chip iso">ISO cláusula 4</span></div>
+
+<table>
+<tr><th>Rol</th><th>Responsabilidad primaria en el SGC</th><th>Estado</th></tr>
+<tr><td>Dirección Técnica</td><td>Autoridad técnica final; liberación de resultados; aprobación de POE técnicos</td><td>Existe — formalizar delegaciones por escrito</td></tr>
+<tr><td>Responsable de Calidad</td><td>Custodia del sistema documental, auditorías internas, no conformidades y CAPA, indicadores</td><td><b>A designar en F0</b></td></tr>
+<tr><td>Coordinador de Operaciones</td><td>Estandarización entre sedes, ejecución del cronograma, control de recursos</td><td><b>A contratar en F1 — nodo de ruta crítica</b></td></tr>
+<tr><td>Gerencia Comercial</td><td>Requisitos del cliente, contratos, satisfacción; sin autoridad sobre liberación técnica</td><td>Existe — acotar funciones</td></tr>
+<tr><td>Encargado de sede</td><td>Cumplimiento local, registros, primer nivel de no conformidad</td><td>Designar uno por sede en F1</td></tr>
+</table>
+
+<h3>RACI resumido de los entregables mayores</h3>
+<table>
+<tr><th>Entregable</th><th>R</th><th>A</th><th>C</th><th>I</th></tr>
+<tr><td>Política y objetivos de calidad</td><td>Calidad</td><td>Socios</td><td>Dir. Técnica</td><td>Todo el personal</td></tr>
+<tr><td>Mapa de procesos y manual del SGC</td><td>Calidad</td><td>Dir. Técnica</td><td>Coord. Operaciones</td><td>Encargados de sede</td></tr>
+<tr><td>POE técnicos de laboratorio</td><td>Analistas responsables</td><td>Dir. Técnica</td><td>Calidad</td><td>Personal técnico</td></tr>
+<tr><td>POE de banco de sangre</td><td>Coord. Operaciones</td><td>Dir. Técnica</td><td>Calidad</td><td>Personal de colecta</td></tr>
+<tr><td>Programa de capacitación y evaluación de competencia</td><td>Calidad</td><td>Dir. Técnica</td><td>Encargados de sede</td><td>Personal</td></tr>
+<tr><td>Auditorías internas</td><td>Auditor interno formado</td><td>Calidad</td><td>Dir. Técnica</td><td>Comité</td></tr>
+<tr><td>Expediente de solicitud de acreditación</td><td>Calidad</td><td>Socios</td><td>Dir. Técnica</td><td>Comité</td></tr>
+<tr><td>Vigilancia legislativa (R-01)</td><td>Gerencia Comercial</td><td>Socios</td><td>Asesor legal externo</td><td>Comité</td></tr>
+</table>
+</div></div>
+</section>
+
+<section id="s4">
+<div class="sec-head"><div class="sec-code">HC-SGC-PE-04</div><div>
+<h2>Arquitectura documental</h2>
+<p>Un solo sistema, cuatro niveles, codificación única. Los documentos del banco de sangre y los del laboratorio conviven en la misma jerarquía y comparten los procedimientos de gestión —control de documentos, no conformidades, competencia—, diferenciándose sólo en los procedimientos técnicos y en la norma de referencia que citan.</p>
+
+<table>
+<tr><th>Nivel</th><th>Tipo</th><th>Código</th><th>Contenido</th><th>Aprueba</th></tr>
+<tr><td>I</td><td>Manual del SGC</td><td class="n">HC-MAN-xx</td><td>Alcance, política, mapa de procesos, estructura, compromiso de imparcialidad</td><td>Socios</td></tr>
+<tr><td>II</td><td>Procedimientos de gestión</td><td class="n">HC-PRG-xx</td><td>Control documental, registros, no conformidades, CAPA, auditoría interna, revisión por la dirección, quejas, riesgos</td><td>Dir. Técnica</td></tr>
+<tr><td>III</td><td>Procedimientos operativos estándar</td><td class="n">HC-POE-xx</td><td>Técnicas analíticas, colecta, fraccionamiento, tamizaje, almacenamiento, despacho, transporte</td><td>Dir. Técnica</td></tr>
+<tr><td>IV</td><td>Registros, formatos e instructivos</td><td class="n">HC-REG-xx / HC-FOR-xx</td><td>Evidencia de ejecución: bitácoras, hojas de trabajo, controles, temperaturas, capacitación</td><td>Calidad</td></tr>
+</table>
+
+<h3>Procedimientos de gestión mínimos (Nivel II) — los diez primeros</h3>
+<ol>
+<li>Control de documentos y datos</li>
+<li>Control de registros</li>
+<li>Gestión de no conformidades y trabajo no conforme</li>
+<li>Acciones correctivas y análisis de causa raíz</li>
+<li>Auditorías internas</li>
+<li>Revisión por la dirección</li>
+<li>Gestión de riesgos y oportunidades de mejora</li>
+<li>Competencia, formación y evaluación del personal</li>
+<li>Gestión de equipos: calibración, verificación y mantenimiento</li>
+<li>Quejas, reclamaciones y satisfacción del cliente</li>
+</ol>
+
+<div class="box"><b>Criterio de suficiencia:</b> un procedimiento está terminado cuando (1) alguien distinto de quien lo redactó puede ejecutarlo sin preguntar, (2) genera al menos un registro con criterio de aceptación explícito, y (3) el personal que lo aplica ha sido evaluado en él. Un documento aprobado que nadie usa no cuenta como avance y no debe reportarse como tal.</div>
+</div></div>
+</section>
+
+<section id="s5">
+<div class="sec-head"><div class="sec-code">HC-SGC-PE-05</div><div>
+<h2>Fases de ejecución</h2>
+<p>Seis fases con solape controlado. Cada una cierra con una puerta de decisión (§12); no se financia la siguiente fase sin evidencia de cierre de la anterior.</p>
+
+<h4>Fase 0 — Decisión y gobernanza · Semanas 1 a 4</h4>
+<p>Objetivo: eliminar los obstáculos estructurales que ningún documento puede resolver.</p>
+<table>
+<tr><th>Acción</th><th>Evidencia de cierre</th><th>Etiqueta</th></tr>
+<tr><td>Acta de compromiso de la Dirección con el SGC y con la imparcialidad</td><td>Acta firmada por los socios</td><td><span class="chip iso">ISO</span></td></tr>
+<tr><td>Separación formal de funciones gerenciales y técnicas</td><td>Organigrama y descripciones de puesto actualizadas</td><td><span class="chip iso">ISO</span></td></tr>
+<tr><td>Designación del Responsable de Calidad con dedicación y línea de reporte definidas</td><td>Carta de designación</td><td><span class="chip iso">ISO</span></td></tr>
+<tr><td>Consulta escrita a ODAC sobre versión de norma y esquema vigente</td><td>Comunicación enviada con acuse</td><td><span class="chip est">Estratégico</span></td></tr>
+<tr><td>Obtención del texto oficial del proyecto de ley del Sistema Nacional de Sangre</td><td>Documento oficial en expediente R-01</td><td><span class="chip est">Estratégico</span></td></tr>
+<tr><td>Aprobación de este plan y del presupuesto de F1</td><td>Acta del Consejo de Socios</td><td><span class="chip est">Estratégico</span></td></tr>
+</table>
+
+<h4>Fase 1 — Cimientos · Meses 1 a 3</h4>
+<table>
+<tr><th>Acción</th><th>Evidencia de cierre</th></tr>
+<tr><td>Contratación del Coordinador de Operaciones</td><td>Contrato firmado e incorporación efectiva</td></tr>
+<tr><td>Política y objetivos de calidad medibles</td><td>Documento Nivel I aprobado y difundido</td></tr>
+<tr><td>Mapa de procesos y matriz de interacción</td><td>HC-MAN aprobado</td></tr>
+<tr><td>Inventario documental existente y listado maestro</td><td>Listado maestro con estado por documento</td></tr>
+<tr><td>Definición de la lista cerrada de ensayos a acreditar</td><td>Anexo de alcance aprobado por Dir. Técnica</td></tr>
+<tr><td>Matriz de competencias por puesto y sede</td><td>Matriz aprobada</td></tr>
+<tr><td>Designación de referentes de calidad por sede</td><td>Cartas de designación (4)</td></tr>
+<tr><td>Procedimiento de control de documentos operativo</td><td>HC-PRG-01 aprobado y en uso</td></tr>
+</table>
+
+<h4>Fase 2 — Construcción documental y técnica · Meses 3 a 8</h4>
+<table>
+<tr><th>Acción</th><th>Evidencia de cierre</th></tr>
+<tr><td>Redacción y aprobación de los diez procedimientos de gestión</td><td>10 documentos Nivel II vigentes</td></tr>
+<tr><td>Redacción de POE técnicos del alcance de acreditación</td><td>POE por ensayo, con criterios de aceptación</td></tr>
+<tr><td>Redacción de POE del banco de sangre</td><td>POE de colecta, fraccionamiento, tamizaje, almacenamiento, despacho, hemovigilancia</td></tr>
+<tr><td>Verificación y validación de métodos analíticos</td><td>Informes de verificación con criterios cumplidos</td></tr>
+<tr><td>Plan metrológico: inventario, calibración y verificación de equipos</td><td>Programa anual y certificados vigentes</td></tr>
+<tr><td>Control interno de calidad con reglas de aceptación y rechazo definidas</td><td>Registros de CIC con gráficos y decisiones</td></tr>
+<tr><td>Inscripción en programa de evaluación externa de la calidad</td><td>Contrato de participación y primer envío</td></tr>
+<tr><td>Sistema de trazabilidad unidad–donante–receptor verificado</td><td>Prueba de trazabilidad retrospectiva documentada</td></tr>
+<tr><td>Gestión de proveedores críticos y control de reactivos</td><td>Lista de proveedores evaluados; control de lotes</td></tr>
+</table>
+
+<h4>Fase 3 — Implantación y generación de evidencia · Meses 7 a 13</h4>
+<table>
+<tr><th>Acción</th><th>Evidencia de cierre</th></tr>
+<tr><td>Despliegue de POE en las cuatro sedes con capacitación asociada</td><td>Registros de difusión y evaluación por sede</td></tr>
+<tr><td>Operación real del ciclo de no conformidades y CAPA</td><td>Al menos un ciclo completo cerrado con análisis de causa</td></tr>
+<tr><td>Registro sistemático de indicadores</td><td>Tablero mensual con al menos seis meses de serie</td></tr>
+<tr><td>Gestión documentada de quejas y satisfacción del cliente</td><td>Registro de quejas con respuesta y cierre</td></tr>
+<tr><td>Evaluación de competencia de todo el personal técnico</td><td>Expedientes individuales completos</td></tr>
+<tr><td>Estandarización efectiva entre sedes</td><td>Informe de verificación cruzada por Coordinación de Operaciones</td></tr>
+</table>
+
+<h4>Fase 4 — Verificación interna · Meses 12 a 16</h4>
+<table>
+<tr><th>Acción</th><th>Evidencia de cierre</th></tr>
+<tr><td>Formación de auditores internos</td><td>Al menos dos auditores certificados en ISO 15189</td></tr>
+<tr><td>Primer ciclo completo de auditoría interna sobre todas las cláusulas</td><td>Informe de auditoría con hallazgos clasificados</td></tr>
+<tr><td>Cierre de hallazgos con verificación de eficacia</td><td>Registro CAPA cerrado y verificado</td></tr>
+<tr><td>Primera revisión por la dirección formal</td><td>Acta con entradas y salidas conforme a la norma</td></tr>
+<tr><td>Auditoría de segunda parte o preauditoría externa opcional</td><td>Informe externo con plan de acción</td></tr>
+</table>
+
+<h4>Fase 5 — Acreditación · Meses 16 a 22</h4>
+<table>
+<tr><th>Acción</th><th>Evidencia de cierre</th></tr>
+<tr><td>Solicitud formal ante el organismo acreditador</td><td>Expediente admitido</td></tr>
+<tr><td>Evaluación documental</td><td>Informe con observaciones atendidas</td></tr>
+<tr><td>Evaluación in situ</td><td>Informe de evaluación</td></tr>
+<tr><td>Cierre de no conformidades del proceso de evaluación</td><td>Evidencias aceptadas por el evaluador</td></tr>
+<tr><td>Otorgamiento del certificado y plan de mantenimiento</td><td>Certificado y programa de vigilancia anual</td></tr>
+</table>
+
+<div class="note"><b>Sobre el horizonte:</b> 22 meses es un plazo realista para una organización multisede que parte de un sistema documental incompleto. Comprimirlo por debajo de 18 meses exige recursos dedicados a tiempo completo y externalización de la redacción documental; extenderlo más allá de 24 meses erosiona el compromiso del personal, que es el activo más frágil del proyecto.</div>
+</div></div>
+</section>
+
+<section id="s6">
+<div class="sec-head"><div class="sec-code">HC-SGC-PE-06</div><div>
+<h2>Cronograma resumido e hitos verificables</h2>
+<table>
+<tr><th>Mes</th><th>Hito</th><th>Responsable</th><th>Verificación</th></tr>
+<tr><td class="n">M0</td><td>Acta de compromiso y separación de funciones</td><td>Socios</td><td>Acta firmada</td></tr>
+<tr><td class="n">M1</td><td>Responsable de Calidad designado</td><td>Socios</td><td>Carta de designación</td></tr>
+<tr><td class="n">M2</td><td>Coordinador de Operaciones incorporado</td><td>Gerencia</td><td>Contrato</td></tr>
+<tr><td class="n">M3</td><td>Política, mapa de procesos y alcance cerrado</td><td>Calidad</td><td>Nivel I aprobado</td></tr>
+<tr><td class="n">M5</td><td>Cinco procedimientos de gestión vigentes</td><td>Calidad</td><td>Listado maestro</td></tr>
+<tr><td class="n">M8</td><td>Sistema documental completo en versión 1</td><td>Calidad</td><td>Listado maestro al 100 %</td></tr>
+<tr><td class="n">M9</td><td>Métodos verificados y CIC operando</td><td>Dir. Técnica</td><td>Informes de verificación</td></tr>
+<tr><td class="n">M11</td><td>Primer envío de evaluación externa evaluado</td><td>Dir. Técnica</td><td>Informe del programa</td></tr>
+<tr><td class="n">M13</td><td>Seis meses continuos de indicadores</td><td>Calidad</td><td>Tablero</td></tr>
+<tr><td class="n">M15</td><td>Primera auditoría interna completa cerrada</td><td>Calidad</td><td>Informe y CAPA</td></tr>
+<tr><td class="n">M16</td><td>Primera revisión por la dirección</td><td>Socios</td><td>Acta</td></tr>
+<tr><td class="n">M17</td><td>Solicitud de acreditación presentada</td><td>Calidad</td><td>Expediente admitido</td></tr>
+<tr><td class="n">M20</td><td>Evaluación in situ</td><td>Organismo acreditador</td><td>Informe</td></tr>
+<tr><td class="n">M22</td><td>Acreditación otorgada</td><td>—</td><td>Certificado</td></tr>
+</table>
+
+<div class="grid2">
+<div class="card"><b>Ruta crítica</b><p style="margin:0">Designación de Calidad → Contratación de Coordinación de Operaciones → Sistema documental v1 → Seis meses de evidencia → Auditoría interna → Solicitud. Un retraso en los dos primeros nodos desplaza el hito final mes por mes.</p></div>
+<div class="card"><b>Holgura</b><p style="margin:0">La verificación de métodos y el programa de evaluación externa admiten adelanto y son independientes de la contratación. Conviene arrancarlos temprano para no concentrarlos con la fase documental.</p></div>
+</div>
+</div></div>
+</section>
+
+<section id="s7">
+<div class="sec-head"><div class="sec-code">HC-SGC-PE-07</div><div>
+<h2>Competencia y programa de capacitación</h2>
+<p>La norma no pide asistencia a charlas: pide <b>competencia demostrada y evaluada</b> para cada tarea, con expediente individual. El programa se organiza en seis niveles acumulativos.</p>
+
+<table>
+<tr><th>Nivel</th><th>Contenido</th><th>Dirigido a</th><th>Evidencia</th></tr>
+<tr><td class="n">N1</td><td>Inducción al SGC: política, mapa de procesos, qué cambia en el día a día</td><td>Todo el personal</td><td>Registro de asistencia y evaluación escrita</td></tr>
+<tr><td class="n">N2</td><td>Bioseguridad, manejo de residuos y respuesta a incidentes</td><td>Todo el personal operativo</td><td>Evaluación teórico-práctica</td></tr>
+<tr><td class="n">N3</td><td>Documentación y registros: cómo se llena, corrige y archiva un registro</td><td>Personal que genera registros</td><td>Observación directa supervisada</td></tr>
+<tr><td class="n">N4</td><td>POE específicos del puesto</td><td>Personal técnico por área</td><td>Lista de verificación de desempeño por POE</td></tr>
+<tr><td class="n">N5</td><td>Control de calidad, no conformidades y análisis de causa raíz</td><td>Analistas, encargados de sede</td><td>Caso resuelto documentado</td></tr>
+<tr><td class="n">N6</td><td>Auditoría interna ISO 15189</td><td>Auditores designados</td><td>Certificado externo + auditoría acompañada</td></tr>
+</table>
+
+<div class="box"><b>Regla de reevaluación:</b> competencia inicial al incorporarse, reevaluación a los seis meses en el primer año y anual en adelante. Cualquier no conformidad atribuible a desempeño dispara reevaluación inmediata del POE implicado —no es sanción, es control de proceso, y debe comunicarse así al personal.</div>
+</div></div>
+</section>
+
+<section id="s8">
+<div class="sec-head"><div class="sec-code">HC-SGC-PE-08</div><div>
+<h2>Plan de comunicación interna</h2>
+<p>El 70 % de los fracasos de implantación de sistemas de calidad son problemas de comunicación disfrazados de problemas técnicos. El personal resiste lo que percibe como vigilancia y adopta lo que percibe como protección.</p>
+
+<table>
+<tr><th>Momento</th><th>Acción</th><th>Audiencia</th><th>Mensaje central</th></tr>
+<tr><td>Semana 1</td><td>Presentación de lanzamiento (HC-SGC-PR-02)</td><td>Todo el personal, por sede</td><td>Qué es, qué cambia, qué se espera de cada quien</td></tr>
+<tr><td>Semana 2</td><td>Reunión por área con el encargado de sede</td><td>Equipos operativos</td><td>Traducción a tareas concretas del puesto</td></tr>
+<tr><td>Mensual</td><td>Boletín de una página: avance, un POE nuevo explicado, una mejora lograda</td><td>Todo el personal</td><td>El sistema avanza y produce resultados visibles</td></tr>
+<tr><td>Trimestral</td><td>Reconocimiento a aportes de mejora del personal</td><td>Todo el personal</td><td>Reportar un problema tiene consecuencias positivas</td></tr>
+<tr><td>Semestral</td><td>Comunicación de resultados de la revisión por la dirección</td><td>Todo el personal</td><td>La dirección responde con decisiones, no sólo con exigencias</td></tr>
+</table>
+
+<div class="note"><b>Mensaje que debe evitarse:</b> «esto es para pasar la auditoría». Instala en el personal la idea de que el sistema es un teatro temporal y garantiza el deterioro de los registros apenas termine la evaluación. El mensaje correcto es que el sistema existe para que un error no llegue al paciente y para que nadie quede solo frente a un problema.</div>
+</div></div>
+</section>
+
+<section id="s9">
+<div class="sec-head"><div class="sec-code">HC-SGC-PE-09</div><div>
+<h2>Indicadores del sistema</h2>
+<p>Doce indicadores, tres familias. Se reportan mensualmente al Comité de Calidad y trimestralmente al Consejo de Socios. Las metas se fijan tras el primer trimestre de línea base; fijarlas antes produce números inventados.</p>
+
+<h3>Familia A — Avance del proyecto</h3>
+<table>
+<tr><th>Indicador</th><th>Fórmula</th><th>Frecuencia</th></tr>
+<tr><td>Avance documental</td><td>Documentos vigentes ÷ documentos planificados</td><td>Mensual</td></tr>
+<tr><td>Cumplimiento de hitos</td><td>Hitos cerrados en fecha ÷ hitos programados</td><td>Mensual</td></tr>
+<tr><td>Cobertura de competencia</td><td>Personal con evaluación vigente ÷ personal total</td><td>Mensual</td></tr>
+</table>
+
+<h3>Familia B — Calidad técnica</h3>
+<table>
+<tr><th>Indicador</th><th>Fórmula</th><th>Frecuencia</th></tr>
+<tr><td>Desempeño en evaluación externa</td><td>Resultados dentro de criterio ÷ resultados evaluados</td><td>Por ciclo</td></tr>
+<tr><td>Control interno de calidad</td><td>Corridas aceptadas ÷ corridas realizadas</td><td>Mensual</td></tr>
+<tr><td>Rechazo de muestras</td><td>Muestras rechazadas ÷ muestras recibidas, con causa</td><td>Mensual</td></tr>
+<tr><td>Tiempo de respuesta</td><td>Resultados dentro del TAT comprometido ÷ total</td><td>Mensual</td></tr>
+<tr><td>Equipos con calibración vigente</td><td>Equipos conformes ÷ equipos críticos</td><td>Mensual</td></tr>
+<tr><td>Trazabilidad de hemocomponentes</td><td>Unidades con cadena completa donante–receptor ÷ unidades despachadas</td><td>Mensual · meta 100 %</td></tr>
+</table>
+
+<h3>Familia C — Sistema y cliente</h3>
+<table>
+<tr><th>Indicador</th><th>Fórmula</th><th>Frecuencia</th></tr>
+<tr><td>Cierre de no conformidades</td><td>NC cerradas con eficacia verificada ÷ NC abiertas</td><td>Mensual</td></tr>
+<tr><td>Tiempo medio de cierre de CAPA</td><td>Días promedio desde apertura hasta verificación</td><td>Mensual</td></tr>
+<tr><td>Quejas de clientes institucionales</td><td>Quejas recibidas y días hasta respuesta</td><td>Mensual</td></tr>
+</table>
+
+<div class="box"><b>Advertencia de lectura:</b> un número bajo de no conformidades en los primeros meses no es una buena noticia; es la señal más común de que el personal no está reportando. El indicador saludable en fase temprana es que las no conformidades <i>suban</i> y su tiempo de cierre <i>baje</i>.</div>
+</div></div>
+</section>
+
+<section id="s10">
+<div class="sec-head"><div class="sec-code">HC-SGC-PE-10</div><div>
+<h2>Riesgos críticos del plan</h2>
+<p>Extracto de la matriz de 22 riesgos del Plan Maestro, limitado a los que pueden detener la ejecución.</p>
+
+<table>
+<tr><th>Cód.</th><th>Riesgo</th><th>Impacto</th><th>Respuesta</th><th>Dueño</th></tr>
+<tr><td class="n">R-01</td><td>Aprobación de legislación que prohíba el lucro en obtención, procesamiento o distribución de sangre</td><td>Existencial sobre el modelo de negocio</td><td>Obtener texto oficial; asesoría legal especializada; participación gremial; escenario de reconversión hacia servicios de laboratorio y terapia hiperbárica</td><td>Socios</td></tr>
+<tr><td class="n">R-02</td><td>No contratación o rotación temprana del Coordinador de Operaciones</td><td>Desplaza todo el cronograma</td><td>Perfil y banda salarial definidos antes de publicar; proceso con terna; plan de retención a 24 meses</td><td>Gerencia</td></tr>
+<tr><td class="n">R-03</td><td>Persistencia de la concentración de funciones gerenciales</td><td>Hallazgo mayor de imparcialidad; bloquea la acreditación</td><td>Corrección formal en F0 con acta y organigrama; verificación en auditoría interna</td><td>Socios</td></tr>
+<tr><td class="n">R-04</td><td>Cambio de norma o esquema del organismo acreditador</td><td>Retrabajo documental y presupuestario</td><td>Consulta escrita previa; construir contra 2022; cláusula de revisión presupuestaria</td><td>Calidad</td></tr>
+<tr><td class="n">R-05</td><td>Sistema documental aprobado pero no aplicado en sedes</td><td>Falsa sensación de avance; hallazgos en auditoría</td><td>Verificación cruzada entre sedes; indicador de avance basado en uso, no en aprobación</td><td>Coord. Operaciones</td></tr>
+<tr><td class="n">R-06</td><td>Resistencia o desgaste del personal por percepción de carga administrativa</td><td>Registros incompletos, subreporte de no conformidades</td><td>Plan de comunicación §08; simplificación de formatos; reconocimiento trimestral</td><td>Calidad</td></tr>
+<tr><td class="n">R-07</td><td>Interrupción del suministro de reactivos o materiales de control</td><td>Detiene verificación de métodos y CIC</td><td>Evaluación y homologación de proveedores; existencia de seguridad para reactivos críticos</td><td>Coord. Operaciones</td></tr>
+<tr><td class="n">R-08</td><td>Presupuesto insuficiente en fase intermedia</td><td>Proyecto detenido con costo hundido</td><td>Puertas de decisión §12; presupuesto aprobado por fase, no global</td><td>Socios</td></tr>
+</table>
+</div></div>
+</section>
+
+<section id="s11">
+<div class="sec-head"><div class="sec-code">HC-SGC-PE-11</div><div>
+<h2>Estructura presupuestaria</h2>
+<div class="note"><b>Sin cifras estimadas.</b> Este plan no propone montos porque no dispone de la información de costos reales de HemoCura. Un número de aspecto profesional en esta sección se convierte en un compromiso que después no se sostiene. Lo que sigue es la estructura de partidas: la Gerencia debe completarla con cotizaciones reales antes de la aprobación de F1.</div>
+
+<table>
+<tr><th>Partida</th><th>Naturaleza</th><th>Fase</th><th>Fuente del dato</th></tr>
+<tr><td>Coordinador de Operaciones (salario y cargas)</td><td>Recurrente</td><td>F1 en adelante</td><td>Banda salarial de mercado local</td></tr>
+<tr><td>Responsable de Calidad (dedicación o contratación)</td><td>Recurrente</td><td>F0 en adelante</td><td>Interno o mercado</td></tr>
+<tr><td>Consultoría de implantación ISO 15189</td><td>Puntual, por fase</td><td>F1–F4</td><td>Cotización de al menos tres firmas</td></tr>
+<tr><td>Formación de auditores internos</td><td>Puntual</td><td>F4</td><td>Cotización de entidad formadora</td></tr>
+<tr><td>Programa de evaluación externa de la calidad</td><td>Recurrente anual</td><td>F2 en adelante</td><td>Cotización del proveedor del programa</td></tr>
+<tr><td>Calibración y verificación de equipos</td><td>Recurrente anual</td><td>F2 en adelante</td><td>Inventario de equipos críticos × tarifa</td></tr>
+<tr><td>Materiales de control y reactivos de verificación</td><td>Recurrente</td><td>F2 en adelante</td><td>Consumo estimado por ensayo</td></tr>
+<tr><td>Adecuación de infraestructura y flujo de trabajo</td><td>Puntual</td><td>F2–F3</td><td>Levantamiento por sede</td></tr>
+<tr><td>Sistema de información y trazabilidad</td><td>Puntual + licencia</td><td>F2</td><td>Evaluar ampliación del sistema actual antes de comprar</td></tr>
+<tr><td>Tasas del organismo acreditador y evaluación</td><td>Puntual + vigilancia anual</td><td>F5</td><td>Tarifario oficial, tras confirmación escrita</td></tr>
+<tr><td>Asesoría legal para R-01</td><td>Puntual</td><td>F0–F1</td><td>Cotización de firma especializada en salud</td></tr>
+</table>
+
+<p>Tres datos internos faltan para cerrar el caso económico y están en la facturación de los últimos doce meses: ticket promedio por línea de servicio, mezcla de ingresos entre banco de sangre, laboratorio y terapia hiperbárica, y proporción de ingresos proveniente de clientes institucionales que ya exigen o exigirán evidencia de acreditación.</p>
+</div></div>
+</section>
+
+<section id="s12">
+<div class="sec-head"><div class="sec-code">HC-SGC-PE-12</div><div>
+<h2>Puertas de decisión</h2>
+<p>El presupuesto se aprueba por fase. En cada puerta el Consejo de Socios decide continuar, corregir o detener, con criterios definidos de antemano para que la decisión no dependa del ánimo de la reunión.</p>
+
+<div class="gate"><b>Puerta 1 — fin de F0</b>Continuar sólo si: acta de compromiso firmada, separación de funciones formalizada, Responsable de Calidad designado y consulta a ODAC enviada. Si la separación de funciones no se ejecuta, el proyecto se detiene: no existe ruta a la acreditación con ese hallazgo abierto.</div>
+
+<div class="gate"><b>Puerta 2 — fin de F1</b>Continuar sólo si: Coordinador de Operaciones incorporado, alcance de ensayos cerrado y política aprobada. Si la contratación no se concretó, se difiere F2 en lugar de iniciarla con recursos prestados de la operación diaria.</div>
+
+<div class="gate"><b>Puerta 3 — fin de F2</b>Continuar sólo si: sistema documental completo en versión 1, métodos verificados y participación en evaluación externa activa. Avance documental por debajo del 80 % obliga a replanificar antes de desplegar.</div>
+
+<div class="gate"><b>Puerta 4 — fin de F3</b>Continuar sólo si: seis meses continuos de indicadores, al menos un ciclo CAPA cerrado con verificación de eficacia y evidencia de uso real en las cuatro sedes.</div>
+
+<div class="gate"><b>Puerta 5 — fin de F4</b>Presentar solicitud sólo si: auditoría interna completa cerrada sin hallazgos mayores abiertos y revisión por la dirección realizada. Presentarse antes de esto convierte una evaluación externa en una consultoría cara y desmoralizante.</div>
+
+<div class="gate"><b>Puerta transversal — R-01</b>En cualquier momento: si el texto oficial del proyecto de ley confirma la prohibición de lucro, se convoca sesión extraordinaria del Consejo. El SGC no se detiene —conserva valor bajo cualquier escenario, incluido el de reconversión—, pero el caso económico y la prioridad de las líneas de servicio se rehacen.</div>
+</div></div>
+</section>
+
+<section id="s13">
+<div class="sec-head"><div class="sec-code">HC-SGC-PE-13</div><div>
+<h2>Arranque: los primeros catorce días</h2>
+<p>Once acciones. Ninguna requiere presupuesto aprobado y todas son ejecutables por la Gerencia con los recursos actuales.</p>
+
+<table>
+<tr><th>Día</th><th>Acción</th><th>Resultado tangible</th></tr>
+<tr><td class="n">1–2</td><td>Convocar al Consejo de Socios y presentar HC-SGC-PR-01</td><td>Fecha de decisión agendada</td></tr>
+<tr><td class="n">2</td><td>Redactar el acta de compromiso de la Dirección</td><td>Borrador listo para firma</td></tr>
+<tr><td class="n">3</td><td>Redactar la consulta escrita al organismo acreditador</td><td>Comunicación enviada</td></tr>
+<tr><td class="n">3–4</td><td>Solicitar el texto oficial del proyecto de ley en el Senado</td><td>Solicitud radicada</td></tr>
+<tr><td class="n">4–5</td><td>Definir perfil, funciones y banda salarial del Coordinador de Operaciones</td><td>Descripción de puesto aprobada</td></tr>
+<tr><td class="n">5</td><td>Identificar candidatos internos y externos para Responsable de Calidad</td><td>Terna preliminar</td></tr>
+<tr><td class="n">6–7</td><td>Levantar el inventario de documentos y registros existentes por sede</td><td>Listado inicial con estado</td></tr>
+<tr><td class="n">8</td><td>Levantar el inventario de equipos críticos y su estado de calibración</td><td>Inventario metrológico inicial</td></tr>
+<tr><td class="n">9–10</td><td>Solicitar cotizaciones de consultoría, evaluación externa y formación de auditores</td><td>Tres cotizaciones por rubro en curso</td></tr>
+<tr><td class="n">11–12</td><td>Extraer los tres datos de facturación pendientes del caso económico</td><td>Ticket promedio, mezcla e ingresos institucionales</td></tr>
+<tr><td class="n">13–14</td><td>Presentar HC-SGC-PR-02 al personal, por sede</td><td>Registro de difusión firmado</td></tr>
+</table>
+
+<div class="note"><b>Secuencia recomendada:</b> presentar primero a los socios y sólo después al personal. Comunicar al personal un proyecto que aún no tiene respaldo formal de la Dirección produce expectativa sin ejecución, y la segunda vez que se convoque nadie creerá.</div>
+</div></div>
+</section>
+
+<div class="foot">
+<p><b>HC-SGC-PE-01 · v1.0</b> — Documento controlado. Deriva del Plan Maestro HemoCura 2026–2027. Requiere aprobación del Consejo de Socios antes de entrar en vigor. Toda copia impresa se considera copia no controlada salvo sello en contrario.</p>
+<p>Documentos asociados: HC-SGC-PR-01 (presentación a socios) · HC-SGC-PR-02 (presentación al personal).</p>
+</div>
+
+</div>
+</main>
+</div>
+</body>
+</html>

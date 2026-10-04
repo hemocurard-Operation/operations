@@ -1,11 +1,11 @@
 # Changelog
 
-## 0.20.0 RC
-- Supabase Bootstrap assistant.
-- setup.html.
-- Guía desde cero.
-- Instalador v7.2 incorporado al paquete.
-- Bootstrap primer ADMIN.
-- SQL de verificación.
-- Safe Patch conserva config.js.
-- Sin nueva lógica de negocio.
+## 0.22.0
+- Migración SQL integrada Operaciones/SGC/Compliance.
+- Requisiciones persistentes.
+- Inspecciones y hallazgos persistentes.
+- Registro documental y cambios.
+- Registro de riesgos de SGC/Compliance.
+- Vista unificada de acciones abiertas del SGC.
+- Calidad incorpora tablero de acciones abiertas.
+- Sin módulos comerciales.

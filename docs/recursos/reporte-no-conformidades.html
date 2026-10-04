@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HEMOCURA — Reporte de No Conformidades</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap');
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --bg:#f8f7f4; --card:#fff; --text:#1a1a1a; --label:#4a4a4a; --border:#d4d0c8; --input-bg:#fff; --accent:#8b0000; --accent2:#a31515; --muted:#7a7a7a; }
+  @media(prefers-color-scheme:dark){ :root { --bg:#111; --card:#1a1a1a; --text:#e8e8e8; --label:#aaa; --border:#333; --input-bg:#222; --accent:#ff4d4d; --accent2:#ff6b6b; --muted:#888; }}
+  body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text); padding:24px 16px; }
+  .container { max-width:640px; margin:0 auto; }
+  .card { background:var(--card); border-radius:14px; padding:28px 24px; box-shadow:0 1px 4px rgba(0,0,0,.06); }
+  .header { text-align:center; margin-bottom:28px; }
+  .logo { display:inline-flex; align-items:center; gap:10px; margin-bottom:6px; }
+  .logo-circle { width:36px; height:36px; border-radius:50%; background:var(--accent); display:flex; align-items:center; justify-content:center; color:#fff; font-size:18px; font-weight:700; }
+  .logo-text { font-size:15px; font-weight:700; letter-spacing:.08em; }
+  h1 { font-size:20px; font-weight:700; margin:4px 0; }
+  .subtitle { font-size:13px; color:var(--muted); }
+  .section-title { font-size:12px; font-weight:700; color:var(--accent); text-transform:uppercase; letter-spacing:.1em; margin:28px 0 16px; padding-bottom:8px; border-bottom:2px solid var(--accent); }
+  .section-title:first-of-type { margin-top:0; }
+  .field { margin-bottom:18px; }
+  .field label { display:block; font-size:13px; font-weight:600; color:var(--label); margin-bottom:6px; letter-spacing:.02em; }
+  .field label .req { color:#dc2626; }
+  input, select, textarea { width:100%; padding:10px 12px; border:1.5px solid var(--border); border-radius:8px; font-size:14px; background:var(--input-bg); color:var(--text); font-family:inherit; outline:none; transition:border-color .2s; }
+  input:focus, select:focus, textarea:focus { border-color:var(--accent); }
+  textarea { resize:vertical; }
+  .row { display:grid; gap:0 16px; }
+  .row-2 { grid-template-columns:1fr 1fr; }
+  .row-3 { grid-template-columns:1fr 1fr 1fr; }
+  .sev-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .sev-btn { padding:10px 12px; border-radius:8px; cursor:pointer; text-align:left; border:1.5px solid var(--border); background:var(--input-bg); transition:all .15s; }
+  .sev-btn.active { border-width:2px; }
+  .sev-label { font-size:13px; font-weight:600; }
+  .sev-desc { font-size:11px; color:var(--muted); margin-top:2px; }
+  .toggle-group { display:flex; gap:8px; }
+  .toggle-btn { flex:1; padding:10px 0; border-radius:8px; cursor:pointer; font-weight:600; font-size:13px; border:1.5px solid var(--border); background:var(--input-bg); color:var(--text); transition:all .15s; text-align:center; }
+  .toggle-btn.active { border:2px solid var(--accent); background:var(--accent); color:#fff; }
+  .img-upload { border:2px dashed var(--border); border-radius:10px; padding:20px; text-align:center; cursor:pointer; transition:border-color .2s; position:relative; }
+  .img-upload:hover { border-color:var(--accent); }
+  .img-upload input { position:absolute; inset:0; opacity:0; cursor:pointer; }
+  .img-upload .icon { font-size:28px; margin-bottom:6px; }
+  .img-upload .label { font-size:13px; color:var(--muted); }
+  .img-preview { margin-top:10px; display:flex; gap:8px; flex-wrap:wrap; }
+  .img-preview img { width:80px; height:80px; object-fit:cover; border-radius:8px; border:1px solid var(--border); }
+  .img-preview .remove { position:absolute; top:-6px; right:-6px; width:20px; height:20px; border-radius:50%; background:#ef4444; color:#fff; border:none; font-size:12px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+  .img-thumb { position:relative; display:inline-block; }
+  .error-msg { background:#fef2f2; border:1px solid #fca5a5; border-radius:8px; padding:10px 14px; font-size:12px; color:#b91c1c; margin-bottom:16px; }
+  .err { border-color:#ef4444 !important; }
+  .btn-primary { width:100%; padding:14px 0; border-radius:10px; border:none; background:var(--accent); color:#fff; font-size:15px; font-weight:700; cursor:pointer; letter-spacing:.02em; transition:opacity .2s; }
+  .btn-primary:hover { opacity:.9; }
+  .actions-bar { display:flex; gap:10px; margin-top:16px; }
+  .btn-action { flex:1; padding:12px 0; border-radius:8px; border:none; cursor:pointer; font-weight:600; font-size:13px; display:flex; align-items:center; justify-content:center; gap:6px; transition:opacity .2s; }
+  .btn-action:hover { opacity:.85; }
+  .btn-wa { background:#25D366; color:#fff; }
+  .success-card { background:#f0fdf4; border:2px solid #86efac; border-radius:16px; padding:40px; text-align:center; }
+  @media(prefers-color-scheme:dark){ .success-card { background:#1a2e1a; border-color:#2d5a2d; } .error-msg { background:#2a1010; border-color:#7f1d1d; color:#fca5a5; }}
+  .summary { background:var(--card); border-radius:10px; padding:20px; text-align:left; font-size:13px; line-height:1.8; margin:16px 0; }
+  .note { text-align:center; font-size:11px; color:var(--muted); margin-top:12px; }
+  @media(max-width:500px){ .row-2,.row-3 { grid-template-columns:1fr; } .sev-grid { grid-template-columns:1fr; } }
+  .hidden { display:none; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div class="logo"><div class="logo-circle">H</div><span class="logo-text">HEMOCURA</span></div>
+    <h1>Reporte de No Conformidades</h1>
+    <p class="subtitle">Post-entrega de Hemocomponentes a Centros de Salud</p>
+  </div>
+
+  <!-- FORM -->
+  <div class="card" id="formCard">
+    <div class="section-title" style="margin-top:0">1. Información General</div>
+    <div class="row row-2">
+      <div class="field"><label>Fecha <span class="req">*</span></label><input type="date" id="fecha"></div>
+      <div class="field"><label>Hora</label><input type="time" id="hora"></div>
+    </div>
+    <div class="field"><label>Sucursal HEMOCURA <span class="req">*</span></label>
+      <select id="sucursal"><option value="">Seleccionar...</option><option>Santiago</option><option>Puerto Plata</option><option>Tenares</option><option>San Francisco de Macorís</option></select>
+    </div>
+    <div class="field"><label>Centro de Salud Receptor <span class="req">*</span></label><input id="centroSalud" placeholder="Nombre del centro de salud"></div>
+    <div class="row row-2">
+      <div class="field"><label>Nombre del Paciente <span class="req">*</span></label><input id="nombrePaciente" placeholder="Nombre completo del paciente"></div>
+      <div class="field"><label>Hora de Entrega <span class="req">*</span></label><input type="time" id="horaEntrega"></div>
+    </div>
+
+    <div class="section-title">Datos de quien reporta</div>
+    <div class="row row-2">
+      <div class="field"><label>Nombre Completo <span class="req">*</span></label><input id="nombreReportante" placeholder="Nombre de quien llena el formulario"></div>
+      <div class="field"><label>Cargo <span class="req">*</span></label><input id="cargoReportante" placeholder="Ej: Bioanalista, Enfermera"></div>
+    </div>
+    <div class="field"><label>Teléfono <span class="req">*</span></label><input type="tel" id="telReportante" placeholder="Ej: 809-000-0000"></div>
+
+    <div class="section-title">2. Datos del Hemocomponente</div>
+    <div class="field"><label>Tipo de Hemocomponente <span class="req">*</span></label>
+      <select id="hemocomponente"><option value="">Seleccionar...</option>
+        <option>Paquete de Sangre Total</option><option>Paquete Globular</option><option>Hematíes lavados</option>
+        <option>Plasma Congelado</option><option>Plasma Fresco</option><option>Plaqueta por aféresis</option><option>Plasma por aféresis</option>
+      </select>
+    </div>
+    <div class="row row-3">
+      <div class="field"><label>Nº Unidades <span class="req">*</span></label><input type="number" min="1" id="unidades" placeholder="Cantidad"></div>
+      <div class="field"><label>Grupo Sanguíneo <span class="req">*</span></label>
+        <select id="grupoSanguineo"><option value="">Seleccionar...</option><option>A</option><option>B</option><option>AB</option><option>O</option></select>
+      </div>
+      <div class="field"><label>Factor Rh <span class="req">*</span></label>
+        <select id="factorRh"><option value="">Seleccionar...</option><option>Positivo (+)</option><option>Negativo (−)</option></select>
+      </div>
+    </div>
+    <div class="field"><label>Código / Nº de Identificación del Producto</label><input id="codigoProducto" placeholder="Código de bolsa o identificación interna"></div>
+    <div class="row row-2">
+      <div class="field"><label>Fecha de Extracción</label><input type="date" id="fechaExtraccion"></div>
+      <div class="field"><label>Fecha de Vencimiento</label><input type="date" id="fechaVencimiento"></div>
+    </div>
+    <div class="row row-2">
+      <div class="field"><label>Volumen (ml)</label><input type="number" min="1" id="volumenMl" placeholder="Ej: 300"></div>
+      <div class="field"><label>Procedencia</label>
+        <select id="procedencia"><option value="">Seleccionar...</option><option>Donación voluntaria</option><option>Donación por reposición</option><option>Aféresis</option></select>
+      </div>
+    </div>
+
+    <div class="section-title">3. No Conformidad Detectada</div>
+    <div class="field"><label>Categoría de No Conformidad <span class="req">*</span></label>
+      <select id="categoriaNC" onchange="updateSubNC()">
+        <option value="">Seleccionar categoría...</option>
+        <option value="cadena_frio">Cadena de Frío y Temperatura</option>
+        <option value="integridad">Integridad Física del Producto</option>
+        <option value="etiquetado">Etiquetado e Identificación</option>
+        <option value="documentacion">Documentación y Trazabilidad</option>
+        <option value="compatibilidad">Compatibilidad y Seguridad Transfusional</option>
+        <option value="aspecto">Aspecto Visual del Hemocomponente</option>
+        <option value="transporte">Transporte y Logística</option>
+        <option value="volumen">Volumen y Cantidad</option>
+        <option value="otro">Otro</option>
+      </select>
+    </div>
+    <div class="field hidden" id="subNCField"><label>Tipo Específico <span class="req">*</span></label>
+      <select id="tipoNC" onchange="toggleOtro()"><option value="">Seleccionar tipo...</option></select>
+    </div>
+    <div class="field hidden" id="otroField"><label>Especifique <span class="req">*</span></label><input id="tipoNCOtro"></div>
+    <div class="field hidden" id="tempFields">
+      <div class="row row-2">
+        <div class="field"><label>Temp. Registrada (°C)</label><input id="tempReg" placeholder="Ej: 12°C"></div>
+        <div class="field"><label>Temp. Esperada (°C)</label><input id="tempEsp" placeholder="Ej: 2-6°C"></div>
+      </div>
+    </div>
+
+    <div class="field"><label>Nivel de Severidad <span class="req">*</span></label>
+      <div class="sev-grid" id="sevGrid">
+        <div class="sev-btn" data-val="leve" onclick="setSev(this)"><div class="sev-label" style="color:#f59e0b">Leve</div><div class="sev-desc">Sin impacto clínico</div></div>
+        <div class="sev-btn" data-val="moderada" onclick="setSev(this)"><div class="sev-label" style="color:#f97316">Moderada</div><div class="sev-desc">Requiere seguimiento</div></div>
+        <div class="sev-btn" data-val="grave" onclick="setSev(this)"><div class="sev-label" style="color:#ef4444">Grave</div><div class="sev-desc">Impacto clínico potencial</div></div>
+        <div class="sev-btn" data-val="critica" onclick="setSev(this)"><div class="sev-label" style="color:#dc2626">Crítica</div><div class="sev-desc">Riesgo vital inmediato</div></div>
+      </div>
+      <input type="hidden" id="severidad">
+    </div>
+
+    <div class="field"><label>Descripción Detallada <span class="req">*</span></label><textarea rows="3" id="descripcion" placeholder="Describa la no conformidad detectada..."></textarea></div>
+
+    <div class="section-title">4. Evidencia Fotográfica</div>
+    <div class="row row-2">
+      <div class="field">
+        <label>Foto del Paquete</label>
+        <div class="img-upload" id="dropPaquete">
+          <input type="file" accept="image/*" capture="environment" onchange="handleImg(event,'paquete')">
+          <div class="icon">📦</div>
+          <div class="label">Toque para capturar o subir</div>
+        </div>
+        <div class="img-preview" id="prevPaquete"></div>
+      </div>
+      <div class="field">
+        <label>Foto de la Tarjeta</label>
+        <div class="img-upload" id="dropTarjeta">
+          <input type="file" accept="image/*" capture="environment" onchange="handleImg(event,'tarjeta')">
+          <div class="icon">🏷️</div>
+          <div class="label">Toque para capturar o subir</div>
+        </div>
+        <div class="img-preview" id="prevTarjeta"></div>
+      </div>
+    </div>
+
+    <div class="section-title">5. Acciones y Disposición</div>
+    <div class="field"><label>Acción Inmediata Tomada <span class="req">*</span></label><textarea rows="2" id="accionInmediata" placeholder="Describa la acción correctiva inmediata..."></textarea></div>
+    <div class="row row-2">
+      <div class="field"><label>¿Producto devuelto? <span class="req">*</span></label>
+        <div class="toggle-group"><button class="toggle-btn" onclick="setToggle('productoDevuelto','Sí',this)">Sí</button><button class="toggle-btn" onclick="setToggle('productoDevuelto','No',this)">No</button></div>
+        <input type="hidden" id="productoDevuelto">
+      </div>
+      <div class="field"><label>¿Médico notificado?</label>
+        <div class="toggle-group"><button class="toggle-btn" onclick="setToggle('notificadoMedico','Sí',this)">Sí</button><button class="toggle-btn" onclick="setToggle('notificadoMedico','No',this)">No</button></div>
+        <input type="hidden" id="notificadoMedico">
+      </div>
+    </div>
+    <div class="field"><label>Observaciones Adicionales</label><textarea rows="2" id="observaciones" placeholder="Notas adicionales..."></textarea></div>
+
+    <div id="errorBox" class="error-msg hidden">Complete todos los campos obligatorios marcados con *</div>
+    <button class="btn-primary" onclick="submitForm()">Registrar No Conformidad</button>
+    <p class="note">Este reporte será archivado según los protocolos de gestión de calidad de HEMOCURA.</p>
+  </div>
+
+  <!-- SUCCESS -->
+  <div id="successCard" class="hidden">
+    <div class="success-card">
+      <div style="font-size:48px;margin-bottom:12px">✓</div>
+      <h2 style="font-size:22px;margin-bottom:4px">Reporte Registrado</h2>
+      <p class="subtitle" id="successSub"></p>
+      <div class="summary" id="summaryBox"></div>
+      <div class="actions-bar">
+        <button class="btn-action btn-wa" onclick="shareWA()">💬 Enviar por WhatsApp</button>
+      </div>
+      <div class="actions-bar">
+        <button class="btn-action" style="background:var(--border);color:var(--text)" onclick="resetForm()">Nuevo Reporte</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const sevColors = { leve:'#f59e0b', moderada:'#f97316', grave:'#ef4444', critica:'#dc2626' };
+const sevLabels = { leve:'Leve', moderada:'Moderada', grave:'Grave', critica:'Crítica' };
+let imgData = { paquete: null, tarjeta: null };
+let formData = {};
+
+const subNCOptions = {
+  cadena_frio: [
+    "Temperatura superior al rango permitido al momento de la recepción",
+    "Temperatura inferior al rango permitido (congelación no esperada)",
+    "Ruptura de cadena de frío durante el transporte",
+    "Contenedor de transporte sin gel refrigerante o hielo seco",
+    "Termómetro o indicador de temperatura ausente o no funcional",
+    "Registro de temperatura del transporte incompleto o ausente"
+  ],
+  integridad: [
+    "Bolsa con fuga visible o micro-perforación",
+    "Bolsa con rotura del puerto de entrada/salida",
+    "Sistema de tubuladura dañado o desconectado",
+    "Sello de seguridad roto, ausente o manipulado",
+    "Bolsa colapsada o deformada",
+    "Contaminación visible en la superficie externa de la bolsa"
+  ],
+  etiquetado: [
+    "Etiqueta ilegible, borrosa o desprendida",
+    "Datos del donante incompletos en la etiqueta",
+    "Grupo sanguíneo y/o Rh no visible o ilegible",
+    "Fecha de extracción o vencimiento ausente",
+    "Fecha de vencimiento expirada",
+    "Código de barras dañado o no escaneable",
+    "Etiqueta no coincide con la documentación adjunta",
+    "Falta etiqueta de pruebas serológicas realizadas"
+  ],
+  documentacion: [
+    "Formulario de solicitud transfusional incompleto",
+    "Ausencia de consentimiento informado del paciente",
+    "Resultados de pruebas de compatibilidad no adjuntos",
+    "Discrepancia entre la orden médica y el producto entregado",
+    "Falta de registro de liberación del producto por el banco de sangre",
+    "Documentación de trazabilidad incompleta (lote, código, origen)",
+    "Ausencia de resultados serológicos del donante"
+  ],
+  compatibilidad: [
+    "Grupo ABO del producto no coincide con el del paciente",
+    "Factor Rh incompatible con el requerimiento del paciente",
+    "Prueba cruzada no realizada o con resultado incompatible",
+    "Producto entregado no corresponde al paciente indicado",
+    "Anticuerpos irregulares no considerados en la selección",
+    "Producto irradiado entregado sin indicación o viceversa"
+  ],
+  aspecto: [
+    "Hemólisis visible (coloración rojiza del plasma/sobrenadante)",
+    "Lipemia marcada (aspecto lechoso o turbio)",
+    "Presencia de coágulos o agregados visibles",
+    "Coloración anormal del hemocomponente (verdoso, oscuro, marrón)",
+    "Presencia de burbujas de aire excesivas",
+    "Turbidez no esperada sugestiva de contaminación bacteriana",
+    "Separación anormal de fases del producto"
+  ],
+  transporte: [
+    "Tiempo de transporte excedió el máximo permitido",
+    "Contenedor de transporte inadecuado o no validado",
+    "Producto expuesto a luz solar directa durante el traslado",
+    "Producto recibido sin acompañamiento del personal autorizado",
+    "Vehículo de transporte sin condiciones sanitarias adecuadas",
+    "Producto sometido a vibración o golpes excesivos durante el traslado"
+  ],
+  volumen: [
+    "Volumen del producto inferior al rango esperado",
+    "Volumen del producto superior al rango esperado",
+    "Cantidad de unidades entregadas no coincide con lo solicitado",
+    "Producto con volumen residual insuficiente para transfusión"
+  ],
+  otro: ["Otro (especifique a continuación)"]
+};
+
+const catLabels = { cadena_frio:'Cadena de Frío y Temperatura', integridad:'Integridad Física del Producto', etiquetado:'Etiquetado e Identificación', documentacion:'Documentación y Trazabilidad', compatibilidad:'Compatibilidad y Seguridad Transfusional', aspecto:'Aspecto Visual del Hemocomponente', transporte:'Transporte y Logística', volumen:'Volumen y Cantidad', otro:'Otro' };
+
+function updateSubNC(){
+  const cat = document.getElementById('categoriaNC').value;
+  const subSel = document.getElementById('tipoNC');
+  const subField = document.getElementById('subNCField');
+  subSel.innerHTML = '<option value="">Seleccionar tipo...</option>';
+  if(cat && subNCOptions[cat]){
+    subNCOptions[cat].forEach(o => { const opt = document.createElement('option'); opt.textContent = o; opt.value = o; subSel.appendChild(opt); });
+    subField.classList.remove('hidden');
+  } else {
+    subField.classList.add('hidden');
+  }
+  document.getElementById('otroField').classList.add('hidden');
+  document.getElementById('tempFields').classList.add('hidden');
+}
+
+function val(id){ return document.getElementById(id).value.trim(); }
+
+function toggleOtro(){
+  const v = val('tipoNC');
+  const cat = val('categoriaNC');
+  document.getElementById('otroField').classList.toggle('hidden', cat !== 'otro');
+  document.getElementById('tempFields').classList.toggle('hidden', cat !== 'cadena_frio');
+}
+
+function setSev(el){
+  document.querySelectorAll('.sev-btn').forEach(b => { b.classList.remove('active'); b.style.borderColor = ''; b.style.background = ''; });
+  const v = el.dataset.val;
+  el.classList.add('active');
+  el.style.borderColor = sevColors[v];
+  el.style.background = sevColors[v] + '18';
+  document.getElementById('severidad').value = v;
+}
+
+function setToggle(id, value, btn){
+  document.getElementById(id).value = value;
+  btn.parentElement.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function handleImg(e, type){
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev){
+    imgData[type] = ev.target.result;
+    const container = document.getElementById(type === 'paquete' ? 'prevPaquete' : 'prevTarjeta');
+    container.innerHTML = `<div class="img-thumb"><img src="${ev.target.result}"><button class="remove" onclick="removeImg('${type}',this)">×</button></div>`;
+  };
+  reader.readAsDataURL(file);
+}
+
+function removeImg(type, btn){
+  imgData[type] = null;
+  btn.parentElement.remove();
+}
+
+function submitForm(){
+  const required = ['fecha','sucursal','centroSalud','nombrePaciente','horaEntrega','nombreReportante','cargoReportante','telReportante','hemocomponente','unidades','grupoSanguineo','factorRh','categoriaNC','tipoNC','severidad','descripcion','accionInmediata','productoDevuelto'];
+  let hasErr = false;
+  required.forEach(id => {
+    const el = document.getElementById(id);
+    if(!el.value.trim()){ el.classList.add('err'); hasErr = true; } else { el.classList.remove('err'); }
+  });
+  if(val('categoriaNC') === 'otro' && !val('tipoNCOtro')){ document.getElementById('tipoNCOtro').classList.add('err'); hasErr = true; }
+  document.getElementById('errorBox').classList.toggle('hidden', !hasErr);
+  if(hasErr) return;
+
+  formData = {
+    fecha: val('fecha'), hora: val('hora'), sucursal: val('sucursal'),
+    centroSalud: val('centroSalud'), nombrePaciente: val('nombrePaciente'), horaEntrega: val('horaEntrega'),
+    nombreReportante: val('nombreReportante'), cargoReportante: val('cargoReportante'), telReportante: val('telReportante'),
+    hemocomponente: val('hemocomponente'), unidades: val('unidades'),
+    grupoSanguineo: val('grupoSanguineo'), factorRh: val('factorRh'),
+    codigoProducto: val('codigoProducto'), fechaExtraccion: val('fechaExtraccion'),
+    fechaVencimiento: val('fechaVencimiento'), volumenMl: val('volumenMl'), procedencia: val('procedencia'),
+    categoriaNC: val('categoriaNC'),
+    tipoNC: val('categoriaNC') === 'otro' ? val('tipoNCOtro') : val('tipoNC'),
+    severidad: val('severidad'), tempReg: val('tempReg'), tempEsp: val('tempEsp'),
+    descripcion: val('descripcion'), accionInmediata: val('accionInmediata'),
+    productoDevuelto: val('productoDevuelto'), notificadoMedico: val('notificadoMedico'),
+    observaciones: val('observaciones')
+  };
+
+  const s = formData.severidad;
+  document.getElementById('successSub').innerHTML = `No conformidad de severidad <strong style="color:${sevColors[s]}">${sevLabels[s]}</strong> registrada.`;
+  document.getElementById('summaryBox').innerHTML = `
+    <div><strong>Fecha:</strong> ${formData.fecha} — ${formData.hora}</div>
+    <div><strong>Sucursal:</strong> ${formData.sucursal}</div>
+    <div><strong>Centro de Salud:</strong> ${formData.centroSalud}</div>
+    <div><strong>Paciente:</strong> ${formData.nombrePaciente}</div>
+    <div><strong>Hora de Entrega:</strong> ${formData.horaEntrega}</div>
+    <div><strong>Reportado por:</strong> ${formData.nombreReportante} — ${formData.cargoReportante} — Tel: ${formData.telReportante}</div>
+    <div><strong>Hemocomponente:</strong> ${formData.hemocomponente} — ${formData.unidades} ud.</div>
+    <div><strong>Grupo/Rh:</strong> ${formData.grupoSanguineo} ${formData.factorRh}</div>
+    ${formData.codigoProducto ? `<div><strong>Código:</strong> ${formData.codigoProducto}</div>` : ''}
+    <div><strong>Categoría NC:</strong> ${catLabels[formData.categoriaNC] || formData.categoriaNC}</div>
+    <div><strong>Tipo NC:</strong> ${formData.tipoNC}</div>
+    <div><strong>Severidad:</strong> ${sevLabels[s]}</div>
+    <div><strong>Descripción:</strong> ${formData.descripcion}</div>
+    <div><strong>Acción Inmediata:</strong> ${formData.accionInmediata}</div>
+    <div><strong>Producto devuelto:</strong> ${formData.productoDevuelto}</div>
+    ${formData.notificadoMedico ? `<div><strong>Médico notificado:</strong> ${formData.notificadoMedico}</div>` : ''}
+    ${formData.observaciones ? `<div><strong>Observaciones:</strong> ${formData.observaciones}</div>` : ''}
+    ${imgData.paquete ? '<div><strong>📦 Foto del paquete:</strong> Adjunta</div>' : ''}
+    ${imgData.tarjeta ? '<div><strong>🏷️ Foto de la tarjeta:</strong> Adjunta</div>' : ''}
+  `;
+  document.getElementById('formCard').classList.add('hidden');
+  document.getElementById('successCard').classList.remove('hidden');
+}
+
+function getReportText(){
+  const d = formData;
+  return `HEMOCURA — REPORTE DE NO CONFORMIDAD\n` +
+    `${'═'.repeat(40)}\n` +
+    `Fecha: ${d.fecha} — ${d.hora}\nSucursal: ${d.sucursal}\nCentro de Salud: ${d.centroSalud}\n` +
+    `Paciente: ${d.nombrePaciente}\nHora de Entrega: ${d.horaEntrega}\n` +
+    `Reportado por: ${d.nombreReportante} — ${d.cargoReportante}\nTeléfono: ${d.telReportante}\n\n` +
+    `HEMOCOMPONENTE\nTipo: ${d.hemocomponente}\nUnidades: ${d.unidades}\nGrupo/Rh: ${d.grupoSanguineo} ${d.factorRh}\n` +
+    (d.codigoProducto ? `Código: ${d.codigoProducto}\n` : '') +
+    (d.fechaExtraccion ? `Fecha Extracción: ${d.fechaExtraccion}\n` : '') +
+    (d.fechaVencimiento ? `Fecha Vencimiento: ${d.fechaVencimiento}\n` : '') +
+    (d.volumenMl ? `Volumen: ${d.volumenMl} ml\n` : '') +
+    (d.procedencia ? `Procedencia: ${d.procedencia}\n` : '') + `\n` +
+    `NO CONFORMIDAD\nCategoría: ${catLabels[d.categoriaNC] || d.categoriaNC}\nTipo: ${d.tipoNC}\nSeveridad: ${sevLabels[d.severidad]}\n` +
+    (d.tempReg ? `Temp. Registrada: ${d.tempReg}\nTemp. Esperada: ${d.tempEsp}\n` : '') +
+    `Descripción: ${d.descripcion}\n\n` +
+    `ACCIONES\nAcción Inmediata: ${d.accionInmediata}\nProducto devuelto: ${d.productoDevuelto}\n` +
+    `Médico notificado: ${d.notificadoMedico || 'N/A'}\n` +
+    (d.observaciones ? `Observaciones: ${d.observaciones}\n` : '');
+}
+
+function shareWA(){
+  const text = encodeURIComponent(getReportText());
+  window.open(`https://wa.me/18492723556?text=${text}`);
+}
+
+function resetForm(){
+  document.getElementById('formCard').classList.remove('hidden');
+  document.getElementById('successCard').classList.add('hidden');
+  document.querySelectorAll('input:not([type=hidden]),select,textarea').forEach(el => el.value = '');
+  document.querySelectorAll('.toggle-btn,.sev-btn').forEach(b => { b.classList.remove('active'); b.style.borderColor=''; b.style.background=''; });
+  document.querySelectorAll('input[type=hidden]').forEach(el => el.value = '');
+  document.getElementById('prevPaquete').innerHTML = '';
+  document.getElementById('prevTarjeta').innerHTML = '';
+  imgData = { paquete: null, tarjeta: null };
+  const now = new Date();
+  document.getElementById('fecha').value = now.toISOString().slice(0,10);
+  document.getElementById('hora').value = now.toTimeString().slice(0,5);
+  document.getElementById('horaEntrega').value = now.toTimeString().slice(0,5);
+}
+
+// Init date/time
+document.getElementById('fecha').value = new Date().toISOString().slice(0,10);
+document.getElementById('hora').value = new Date().toTimeString().slice(0,5);
+document.getElementById('horaEntrega').value = new Date().toTimeString().slice(0,5);
+</script>
+</body>
+</html>

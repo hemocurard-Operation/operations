@@ -1,96 +1,28 @@
-import { routeList, getRoute, getRouteMeta, navigate } from './router.js';
+import { routeList,getRoute,getRouteMeta,navigate } from './router.js';
 import { renderView } from './views.js';
-import { mountDashboard } from './dashboard.js';
-import { mountSales } from './sales.js';
+import { mountOpsDashboard } from './ops-dashboard.js';
+import { mountOperationalSales } from './operational-sales.js';
+import { mountDonors } from './donors.js';
+import { mountScreening } from './screening.js';
+import { mountBloodInventory } from './blood-inventory.js';
 import { mountDispatches } from './dispatch.js';
 import { mountInventory } from './inventory.js';
-import { mountCosts } from './costs.js';
-import { mountQuality } from './quality.js';
+import { mountRequisitions } from './requisitions.js';
+import { mountInspections } from './inspections.js';
 import { mountPlanning } from './planning.js';
+import { mountQuality } from './quality.js';
+import { mountDocuments } from './documents.js';
+import { mountCompliance } from './compliance.js';
+import { mountBI } from './bi.js';
+import { mountProjects } from './projects.js';
 import { mountSettings } from './settings.js';
 import { mountQA } from './qa.js';
-import { mountRelease } from './release.js';
-import { mountFreeze } from './freeze.js';
-import { mountEvidence } from './evidence.js';
-import { mountAcceptance } from './acceptance.js';
 import { signOut } from './auth.js';
-
 export function mountLayout(session){
-  const app=document.getElementById('app');
-  const navItems=routeList().map(([key,meta])=>`
-    <button data-route="${key}">${meta.title}</button>`).join('');
-
-  app.innerHTML=`
-    <div class="app-layout">
-      <aside class="sidebar" id="sidebar">
-        <div class="sidebar-brand">
-          <div class="brand-mark">H</div>
-          <div><strong>HemoCura</strong><br><small>Operations v0.19.0 RC</small></div>
-        </div>
-        <nav class="nav">${navItems}</nav>
-      </aside>
-      <section class="main-shell">
-        <header class="topbar">
-          <div>
-            <button class="mobile-toggle secondary" id="menu-btn">☰</button>
-            <strong id="page-title">Dashboard</strong>
-            <div class="muted" id="page-subtitle"></div>
-          </div>
-          <div class="topbar-actions">
-            <span class="muted">${session.user?.email || 'Usuario'}</span>
-            <button id="logout-btn">Salir</button>
-          </div>
-        </header>
-        <main class="content"><div id="view"></div></main>
-      </section>
-    </div>`;
-
-  document.querySelectorAll('[data-route]').forEach(btn=>{
-    btn.addEventListener('click',()=>navigate(btn.dataset.route));
-  });
-
-  document.getElementById('logout-btn').addEventListener('click',async()=>{
-    await signOut();
-    location.replace('./login.html');
-  });
-
-  document.getElementById('menu-btn')?.addEventListener('click',()=>{
-    document.getElementById('sidebar').classList.toggle('open');
-  });
-
-  const render=async()=>{
-    const route=getRoute();
-    const meta=getRouteMeta(route);
-
-    document.getElementById('page-title').textContent=meta.title;
-    document.getElementById('page-subtitle').textContent=meta.subtitle;
-    document.getElementById('view').innerHTML=renderView(route);
-
-    document.querySelectorAll('[data-route]').forEach(btn=>{
-      btn.classList.toggle('active',btn.dataset.route===route);
-    });
-
-    document.getElementById('sidebar').classList.remove('open');
-    console.info('[HEMOCURA_ROUTER]',route);
-
-    if(route==='dashboard') await mountDashboard(document.getElementById('dashboard-root'));
-    if(route==='sales') await mountSales(document.getElementById('sales-root'));
-    if(route==='dispatches') await mountDispatches(document.getElementById('dispatch-root'));
-    if(route==='inventory') await mountInventory(document.getElementById('inventory-root'));
-    if(route==='costs') await mountCosts(document.getElementById('costs-root'));
-    if(route==='quality') await mountQuality(document.getElementById('quality-root'));
-    if(route==='planning') await mountPlanning(document.getElementById('planning-root'));
-    if(route==='settings') await mountSettings(document.getElementById('settings-root'));
-    if(route==='qa') await mountQA(document.getElementById('qa-root'));
-    if(route==='release') await mountRelease(document.getElementById('release-root'));
-    if(route==='freeze') await mountFreeze(document.getElementById('freeze-root'));
-    if(route==='evidence') await mountEvidence(document.getElementById('evidence-root'));
-    if(route==='acceptance') await mountAcceptance(document.getElementById('acceptance-root'));
-  };
-
-  window.addEventListener('hashchange',()=>render().catch(error=>{
-    console.error('[HEMOCURA_NAV_ERROR]',error);
-  }));
-
-  render().catch(error=>console.error('[HEMOCURA_NAV_ERROR]',error));
+ const app=document.getElementById('app'),nav=routeList().map(([k,m])=>`<button data-route="${k}">${m.title}</button>`).join('');
+ app.innerHTML=`<div class="app-layout"><aside class="sidebar" id="sidebar"><div class="sidebar-brand"><div class="brand-mark">H</div><div><strong>HemoCura</strong><br><small>Operaciones · Sangre · SGC</small></div></div><nav class="nav">${nav}</nav></aside><section class="main-shell"><header class="topbar"><div><button class="mobile-toggle secondary" id="menu-btn">☰</button><strong id="page-title">Centro de Operaciones</strong><div class="muted" id="page-subtitle"></div></div><div class="topbar-actions"><span class="muted">${session.user?.email||'Usuario'}</span><button id="logout-btn">Salir</button></div></header><main class="content"><div id="view"></div></main></section></div>`;
+ document.querySelectorAll('[data-route]').forEach(b=>b.onclick=()=>navigate(b.dataset.route));document.getElementById('logout-btn').onclick=async()=>{await signOut();location.replace('./login.html')};document.getElementById('menu-btn')?.addEventListener('click',()=>document.getElementById('sidebar').classList.toggle('open'));
+ const render=async()=>{const r=getRoute(),m=getRouteMeta(r);document.getElementById('page-title').textContent=m.title;document.getElementById('page-subtitle').textContent=m.subtitle;document.getElementById('view').innerHTML=renderView(r);document.querySelectorAll('[data-route]').forEach(b=>b.classList.toggle('active',b.dataset.route===r));document.getElementById('sidebar').classList.remove('open');
+ const mounts={dashboard:()=>mountOpsDashboard(document.getElementById('ops-dashboard-root')),sales:()=>mountOperationalSales(document.getElementById('sales-root')),donors:()=>mountDonors(document.getElementById('donors-root')),screening:()=>mountScreening(document.getElementById('screening-root')),bloodinventory:()=>mountBloodInventory(document.getElementById('bloodinventory-root')),dispatches:()=>mountDispatches(document.getElementById('dispatch-root')),inventory:()=>mountInventory(document.getElementById('inventory-root')),requisitions:()=>mountRequisitions(document.getElementById('requisitions-root')),inspections:()=>mountInspections(document.getElementById('inspections-root')),planning:()=>mountPlanning(document.getElementById('planning-root')),quality:()=>mountQuality(document.getElementById('quality-root')),documents:()=>mountDocuments(document.getElementById('documents-root')),compliance:()=>mountCompliance(document.getElementById('compliance-root')),bi:()=>mountBI(document.getElementById('bi-root')),projects:()=>mountProjects(document.getElementById('projects-root')),settings:()=>mountSettings(document.getElementById('settings-root')),qa:()=>mountQA(document.getElementById('qa-root'))};if(mounts[r])await mounts[r]();};
+ window.addEventListener('hashchange',()=>render().catch(e=>console.error('[HEMOCURA_NAV_ERROR]',e)));render().catch(e=>console.error('[HEMOCURA_NAV_ERROR]',e));
 }

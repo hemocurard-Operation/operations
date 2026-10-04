@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HemoCura · Auditoría del SGC y Adecuación al Código Penal (Ley 74-25)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#101820;--slate:#4C5966;--line:#D8DEE4;--paper:#F6F7F8;--white:#fff;
+  --hemo:#8E1B2C;--hemo-soft:#F4E7E9;--cold:#0F6E73;--cold-soft:#E4F0F0;
+  --amber:#9A6700;--amber-soft:#FBF1DA;--law:#2B3A67;--law-soft:#E8EBF4;
+  --r:3px;--sans:"IBM Plex Sans",system-ui,sans-serif;--mono:"IBM Plex Mono",ui-monospace,monospace;
+  --serif:"Newsreader",Georgia,serif;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.55}
+.wrap{max-width:1260px;margin:0 auto;padding:0 24px}
+header.top{background:var(--law);color:#EDF0F3;padding:34px 0 0}
+.brandline{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.brandline .mark{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:#9AA6C4}
+h1{font-family:var(--serif);font-weight:500;font-size:clamp(27px,4.2vw,44px);line-height:1.1;margin:10px 0 6px;letter-spacing:-.01em}
+h1 em{font-style:normal;color:#F0B7C0}
+.sub{color:#AEB8D2;max-width:80ch;margin:0 0 24px;font-size:15px}
+.meta-strip{display:flex;flex-wrap:wrap;border-top:1px solid #3B4A78}
+.meta-strip div{padding:12px 22px 12px 0;margin-right:22px;border-right:1px solid #3B4A78}
+.meta-strip div:last-child{border-right:0}
+.meta-strip b{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#8B98BC;font-weight:500}
+.meta-strip span{font-size:14px;color:#E4E9ED}
+nav.tabs{position:sticky;top:0;z-index:20;background:var(--law);border-bottom:1px solid #3B4A78}
+nav.tabs .wrap{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
+nav.tabs .wrap::-webkit-scrollbar{display:none}
+nav.tabs button{background:none;border:0;border-bottom:2px solid transparent;color:#9AA6C4;font-family:var(--mono);font-size:11.5px;letter-spacing:.07em;text-transform:uppercase;padding:14px 13px;cursor:pointer;white-space:nowrap}
+nav.tabs button:hover{color:#DCE3E9}
+nav.tabs button[aria-selected="true"]{color:#fff;border-bottom-color:#F0B7C0}
+nav.tabs button:focus-visible{outline:2px solid #F0B7C0;outline-offset:-2px}
+main{padding:36px 0 90px}
+section[role=tabpanel]{display:none;animation:fade .22s ease}
+section[role=tabpanel].on{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+h2{font-family:var(--serif);font-weight:500;font-size:26px;margin:0 0 4px;letter-spacing:-.01em}
+h3{font-size:15px;margin:30px 0 10px}
+.lede{color:var(--slate);max-width:82ch;margin:0 0 24px}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--law);font-weight:600;margin:0 0 6px}
+.eyebrow.h{color:var(--hemo)}
+.card{background:var(--white);border:1px solid var(--line);border-radius:var(--r);padding:20px 22px}
+.grid{display:grid;gap:14px}
+.g4{grid-template-columns:repeat(4,1fr)}.g3{grid-template-columns:repeat(3,1fr)}.g2{grid-template-columns:repeat(2,1fr)}
+@media(max-width:920px){.g4{grid-template-columns:repeat(2,1fr)}.g3,.g2{grid-template-columns:1fr}}
+@media(max-width:560px){.g4{grid-template-columns:1fr}}
+.kpi{background:var(--white);border:1px solid var(--line);border-left:3px solid var(--law);border-radius:var(--r);padding:16px 18px}
+.kpi .n{font-family:var(--mono);font-size:30px;font-weight:600;line-height:1;letter-spacing:-.02em}
+.kpi .l{font-size:12.5px;color:var(--slate);margin-top:7px}
+.kpi.crit{border-left-color:var(--hemo)}.kpi.warn{border-left-color:var(--amber)}.kpi.ok{border-left-color:var(--cold)}
+.tablewrap{border:1px solid var(--line);border-radius:var(--r);background:var(--white);overflow:auto}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{text-align:left;padding:9px 11px;border-bottom:1px solid #EAEEF1;vertical-align:top}
+th{position:sticky;top:0;background:#EEF1F4;font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--slate);font-weight:600;z-index:2;border-bottom:1px solid var(--line)}
+tbody tr:hover{background:#FAFBFC}
+td.cod{font-family:var(--mono);font-size:12px;white-space:nowrap;font-weight:500}
+td.sm{font-size:12.5px;color:var(--slate)}
+.tag{display:inline-block;font-family:var(--mono);font-size:10.5px;letter-spacing:.05em;padding:2px 7px;border-radius:2px;border:1px solid var(--line);background:var(--paper);white-space:nowrap}
+.rC{background:var(--hemo);color:#fff;border-color:var(--hemo)}
+.rA{background:#C4622D;color:#fff;border-color:#C4622D}
+.rM{background:var(--amber-soft);color:var(--amber);border-color:#E8D9AE}
+.rB{background:var(--cold-soft);color:var(--cold);border-color:#C7DEDE}
+.tLegal{background:var(--law-soft);color:var(--law);border-color:#C6CEE4}
+.tSan{background:var(--hemo-soft);color:var(--hemo);border-color:#E4C9CE}
+.tIso{background:var(--cold-soft);color:var(--cold);border-color:#C7DEDE}
+.tBP{background:var(--paper);color:var(--slate)}
+.tOK{background:var(--cold-soft);color:var(--cold);border-color:#C7DEDE}
+.tPar{background:var(--amber-soft);color:var(--amber);border-color:#E8D9AE}
+.tNo{background:var(--hemo-soft);color:var(--hemo);border-color:#E4C9CE}
+.tNew{background:var(--law-soft);color:var(--law);border-color:#C6CEE4}
+.callout{border-left:3px solid var(--amber);background:var(--amber-soft);padding:14px 16px;border-radius:0 var(--r) var(--r) 0;margin:18px 0;font-size:14px}
+.callout b{display:block;margin-bottom:3px}
+.callout.hemo{border-left-color:var(--hemo);background:var(--hemo-soft)}
+.callout.law{border-left-color:var(--law);background:var(--law-soft)}
+.callout.cold{border-left-color:var(--cold);background:var(--cold-soft)}
+ul.tight{margin:6px 0 0;padding-left:18px}
+ul.tight li{margin-bottom:6px;color:var(--slate)}
+ul.tight li b{color:var(--ink);font-weight:600}
+ol.steps{counter-reset:s;list-style:none;margin:0;padding:0}
+ol.steps li{counter-increment:s;position:relative;padding:14px 0 14px 52px;border-bottom:1px solid var(--line)}
+ol.steps li:last-child{border-bottom:0}
+ol.steps li::before{content:counter(s,decimal-leading-zero);position:absolute;left:0;top:15px;font-family:var(--mono);font-size:13px;color:var(--hemo);font-weight:600}
+ol.steps b{display:block;font-size:15px}
+ol.steps span{color:var(--slate);font-size:13.5px}
+ol.steps code{font-family:var(--mono);font-size:12px;background:var(--paper);padding:1px 5px;border-radius:2px}
+details.esc{border:1px solid var(--line);border-radius:var(--r);background:var(--white);margin-bottom:10px}
+details.esc summary{cursor:pointer;padding:13px 16px;font-weight:600;font-size:14px;display:flex;gap:10px;align-items:baseline;list-style:none}
+details.esc summary::-webkit-details-marker{display:none}
+details.esc summary .no{font-family:var(--mono);color:var(--hemo);font-size:12px}
+details.esc[open] summary{border-bottom:1px solid var(--line)}
+details.esc .body{padding:14px 16px;display:grid;gap:10px;grid-template-columns:repeat(2,1fr)}
+@media(max-width:760px){details.esc .body{grid-template-columns:1fr}}
+details.esc .cell b{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--slate);margin-bottom:3px}
+details.esc .cell{font-size:13.5px;color:#2A333B}
+.riskGrid{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;max-width:420px}
+.riskGrid .c{aspect-ratio:1;border-radius:2px;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;color:#fff;font-weight:600;position:relative}
+.riskGrid .lbl{aspect-ratio:auto;background:none;color:var(--slate);font-size:10px}
+.timeline{border-left:2px solid var(--law);margin:10px 0 0 8px;padding-left:22px}
+.timeline .ev{position:relative;padding-bottom:18px}
+.timeline .ev::before{content:"";position:absolute;left:-28px;top:5px;width:10px;height:10px;border-radius:99px;background:var(--law);border:2px solid var(--paper)}
+.timeline .ev.alert::before{background:var(--hemo)}
+.timeline .ev b{font-family:var(--mono);font-size:12px;color:var(--law)}
+.timeline .ev.alert b{color:var(--hemo)}
+.timeline .ev p{margin:2px 0 0;font-size:13.5px;color:var(--slate)}
+.filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+.filters select,.filters input{font-family:var(--sans);font-size:13px;padding:8px 10px;border:1px solid var(--line);border-radius:var(--r);background:var(--white)}
+.filters input{min-width:220px;flex:1 1 220px}
+.count{font-family:var(--mono);font-size:12px;color:var(--slate);margin-left:auto}
+.phase{border:1px solid var(--line);border-radius:var(--r);background:var(--white);margin-bottom:14px;overflow:hidden}
+.phase>.hd{padding:11px 16px;background:var(--law-soft);border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px}
+.phase>.hd b{font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--law)}
+.phase>.hd span{font-size:13px;color:var(--slate)}
+footer{border-top:1px solid var(--line);padding:22px 0 60px;color:var(--slate);font-size:12.5px}
+.src{font-size:12px;color:var(--slate)}
+.src a{color:var(--law)}
+.conf{font-family:var(--mono);font-size:10.5px;padding:1px 6px;border-radius:2px}
+.confH{background:var(--cold-soft);color:var(--cold)}.confM{background:var(--amber-soft);color:var(--amber)}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <div class="brandline">
+      <span class="mark">HemoCura · Banco de Sangre</span>
+      <span class="mark">Doc. HC-CMP-AUD-001 · v1.0 · Base de Arquitectura Documental V2</span>
+    </div>
+    <h1>Auditoría del SGC y adecuación al<br><em>nuevo Código Penal dominicano</em></h1>
+    <p class="sub">Revisión integral de la Arquitectura Documental V1 (202 documentos, 16 bloques) frente a la Ley 74-25 — vigente desde el 3 de agosto de 2026 — con diccionario de nomenclatura, TOP 20 de riesgos penales, 20 escenarios de responsabilidad, matriz proceso–riesgo–documento, el nuevo Bloque 16 de Cumplimiento Penal y el plan 30/60/90/180/365.</p>
+    <div class="meta-strip">
+      <div><b>Norma penal</b><span>Ley 74-25 + Ley 44-26</span></div>
+      <div><b>Vigencia</b><span>3–5 ago 2026 (ya vigente)</span></div>
+      <div><b>RPJ · Arts. 8–11</b><span>Aplican ≈ 5 nov 2026</span></div>
+      <div><b>Ventana de HemoCura</b><span class="tag rC">≈ 90 días</span></div>
+    </div>
+  </div>
+</header>
+
+<nav class="tabs">
+  <div class="wrap" role="tablist">
+    <button role="tab" aria-selected="true" data-t="resumen">Resumen ejecutivo</button>
+    <button role="tab" aria-selected="false" data-t="nomen">Nomenclatura</button>
+    <button role="tab" aria-selected="false" data-t="arq">Arquitectura</button>
+    <button role="tab" aria-selected="false" data-t="ley">Marco jurídico</button>
+    <button role="tab" aria-selected="false" data-t="top20">Top 20 riesgos</button>
+    <button role="tab" aria-selected="false" data-t="esc">20 escenarios</button>
+    <button role="tab" aria-selected="false" data-t="matriz">Proceso–riesgo–doc</button>
+    <button role="tab" aria-selected="false" data-t="b16">Bloque 16 · V2</button>
+    <button role="tab" aria-selected="false" data-t="raci">RACI · Capacitación</button>
+    <button role="tab" aria-selected="false" data-t="kpi">25 KPIs</button>
+    <button role="tab" aria-selected="false" data-t="plan">Plan 30–365</button>
+  </div>
+</nav>
+
+<main class="wrap">
+
+<!-- ===================== RESUMEN ===================== -->
+<section role="tabpanel" id="resumen" class="on">
+  <p class="eyebrow">Secciones 1, 2, 17 y 19 del informe</p>
+  <h2>Resumen ejecutivo y dashboard de riesgo</h2>
+  <p class="lede">El hallazgo central: la Arquitectura V1 es sólida como sistema de calidad, pero fue diseñada antes de que existiera responsabilidad penal de las personas jurídicas en República Dominicana. Desde noviembre de 2026, un programa de prevención de riesgos penales conforme al artículo 8, párrafo IV de la Ley 74-25 deja de ser buena práctica y se convierte en la única vía de exención o atenuación de responsabilidad penal para HemoCura como empresa. V1 cubre ~70 % de ese programa sin saberlo; el 30 % restante es el nuevo Bloque 16.</p>
+
+  <div class="grid g4">
+    <div class="kpi crit"><div class="n" id="kCrit">—</div><div class="l">Riesgos críticos 🔴 (P×I ≥ 15)</div></div>
+    <div class="kpi warn"><div class="n" id="kAlto">—</div><div class="l">Riesgos altos 🟠 (10–14)</div></div>
+    <div class="kpi"><div class="n" id="kMed">—</div><div class="l">Riesgos medios 🟡 (5–9)</div></div>
+    <div class="kpi ok"><div class="n" id="kBajo">—</div><div class="l">Riesgos bajos 🟢 (&lt; 5)</div></div>
+    <div class="kpi"><div class="n">17</div><div class="l">Documentos nuevos · Bloque 16</div></div>
+    <div class="kpi warn"><div class="n">9</div><div class="l">Documentos V1 que requieren refuerzo penal</div></div>
+    <div class="kpi ok"><div class="n">~70 %</div><div class="l">Del programa art. 8 §IV ya cubierto por V1</div></div>
+    <div class="kpi crit"><div class="n">≈ 5 nov</div><div class="l">Los arts. 8–11 (RPJ) comienzan a aplicarse</div></div>
+  </div>
+
+  <h3>Hallazgos críticos</h3>
+  <div class="card">
+    <ol class="steps">
+      <li><b>La empresa misma es ahora imputable — incluso por negligencia.</b><span>El art. 8 §VII de la Ley 74-25 hace penalmente responsable a la persona jurídica cuando la acción u omisión atribuible a ella deriva de imprudencia, negligencia, inadvertencia o inobservancia de reglamentos. Para un banco de sangre, casi todo evento adverso grave encaja en esa descripción. Sanciones: multas (el doble de la aplicable a personas físicas), confiscación, cierre temporal o definitivo, revocación de licencias y disolución. <em>Requisito del Código Penal.</em></span></li>
+      <li><b>El homicidio culposo multiplicó su pena mínima y añadió la culpa consciente.</b><span>Muerte por torpeza, imprudencia o negligencia: 2–3 años (art. 112); si se actuó «a sabiendas de las consecuencias» (equipo defectuoso conocido, alarma ignorada, turno insuficiente pese a incidentes): 3–5 años. El art. 114 extiende la muerte culposa a la persona jurídica. <em>Requisito del Código Penal.</em></span></li>
+      <li><b>La comisión por omisión convierte los cargos técnicos en garantes.</b><span>El art. 12 imputa el resultado a quien, siendo garante y pudiendo evitarlo, no lo evita. El director técnico que no detiene una liberación dudosa, el responsable de calidad que conoce una desviación de temperatura y no actúa, quedan expuestos por omisión. Este artículo está impugnado por el CMD ante el TC — vigente mientras no se decida. <em>Requisito del Código Penal, con litigio constitucional pendiente.</em></span></li>
+      <li><b>V1 no tiene canal de denuncias, órgano de cumplimiento ni régimen disciplinario vinculado.</b><span>Son tres de los cuatro elementos mínimos del programa de prevención del art. 8 §IV. Sin ellos, HemoCura no puede invocar la eximente aunque su SGC funcione. <em>Requisito del Código Penal para acceder a la eximente.</em></span></li>
+      <li><b>El papel es la defensa.</b><span>En el nuevo régimen, la culpa se prueba — y se desmiente — con registros. Cada registro de V1 (temperatura, doble verificación, competencia, liberación, consejería) pasa de ser evidencia de calidad a ser evidencia de descargo penal. Un registro faltante ya no es una no conformidad: es un vacío probatorio. <em>Control interno derivado.</em></span></li>
+      <li><b>Certificados y registros falsos tienen tipo penal específico.</b><span>El art. 354 sanciona expedir certificados falsos sobre enfermedad, lesión o causa de muerte (1–2 años, agravado 2–3, más multa) — alcanza la certificación de aptitud del donante y cualquier «arreglo» retroactivo de registros de temperatura, mantenimiento o resultados. <em>Requisito del Código Penal.</em></span></li>
+      <li><b>La divulgación de datos del paciente/donante se agravó.</b><span>Arts. 195, 196 y 325: divulgar información de salud sin consentimiento, ahora 15 días–1 año; la negligencia organizacional en protección de datos puede activar responsabilidad corporativa. El resultado reactivo de un donante es el dato más sensible que maneja HemoCura. <em>Requisito del Código Penal + Ley 172-13.</em></span></li>
+    </ol>
+  </div>
+
+  <h3>Los 10 riesgos que requieren intervención inmediata</h3>
+  <div class="tablewrap"><table><thead><tr><th>#</th><th>Riesgo</th><th>Nivel</th><th>Primera acción</th></tr></thead><tbody id="top10body"></tbody></table></div>
+
+  <h3>Top 10 acciones inmediatas (sección 19)</h3>
+  <div class="card"><ol class="steps" id="acc10"></ol></div>
+
+  <div class="callout hemo">
+    <b>Aviso profesional</b>
+    Este informe es un instrumento de gestión, no una opinión legal. Los artículos citados fueron verificados contra fuentes oficiales y doctrina dominicana reciente, pero el código lleva días en vigor, existe disputa interpretativa sobre la fecha exacta de vigencia (3 vs. 5 de agosto, según la publicación de la Ley 44-26) y hay un recurso de inconstitucionalidad del CMD pendiente contra los arts. 8, 9, 12 y 354. Toda decisión con consecuencias penales debe validarse con un abogado penalista dominicano. Las secciones marcadas como inferencia lo declaran expresamente.
+  </div>
+</section>
+
+<!-- ===================== NOMENCLATURA ===================== -->
+<section role="tabpanel" id="nomen">
+  <p class="eyebrow">Secciones 3 y 4 · Fases 1–2</p>
+  <h2>Diccionario de nomenclaturas y guía oficial de codificación</h2>
+  <p class="lede">Inventario completo de los códigos usados en la Arquitectura V1. Todos los códigos de tipo y área están definidos explícitamente en el archivo fuente — no hubo que inferir significados, con dos excepciones que se señalan. La lógica real del sistema es <b>HC-ÁREA-TIPO-###</b> y se conserva en V2 por ser superior al formato genérico HC-SGC-TIPO-###: distribuye la propiedad documental entre 13 áreas en lugar de un consecutivo único inmanejable.</p>
+
+  <h3>Estructura del código — decodificación</h3>
+  <div class="card">
+    <p style="font-family:var(--mono);font-size:20px;margin:0 0 12px"><b style="color:var(--hemo)">HC</b>-<b style="color:var(--law)">LAB</b>-<b style="color:var(--cold)">PR</b>-<b>003</b> <span style="color:var(--slate);font-size:14px">→ HemoCura · Laboratorio · Procedimiento · nº 3: «Algoritmo de repetición y confirmación de resultados reactivos»</span></p>
+    <ul class="tight">
+      <li><b>Segmento 1 · HC</b> — prefijo institucional constante (HemoCura).</li>
+      <li><b>Segmento 2 · ÁREA</b> — tres letras del área funcional dueña del documento (13 áreas definidas).</li>
+      <li><b>Segmento 3 · TIPO</b> — naturaleza documental (11 tipos definidos en V1 + 1 nuevo en V2).</li>
+      <li><b>Segmento 4 · ###</b> — consecutivo dentro del par área+tipo, con ceros a la izquierda.</li>
+      <li><b>Sedes</b> — nunca en el código. Variantes locales son anexos: <code style="font-family:var(--mono)">-STI</code> Santiago, <code style="font-family:var(--mono)">-PP</code> Puerto Plata, <code style="font-family:var(--mono)">-TEN</code> Tenares, <code style="font-family:var(--mono)">-SFM</code> San Fco. de Macorís.</li>
+      <li><b>Versión, fecha, estado, responsable, aprobador y período de revisión</b> — viven en el encabezado controlado del documento y en la lista maestra (HC-SGC-MT-004), no en el código. Recomendación V2: citar como <code style="font-family:var(--mono)">HC-LAB-PR-003 v2.1</code> cuando la versión sea relevante.</li>
+    </ul>
+  </div>
+
+  <h3>Tabla maestra de tipos documentales</h3>
+  <div class="tablewrap"><table><thead><tr><th>Código</th><th>Significado</th><th>Nivel documental</th><th>Propósito en lenguaje sencillo</th><th>Ejemplo</th><th>Origen</th></tr></thead><tbody id="tiposBody"></tbody></table></div>
+
+  <h3>Tabla maestra de áreas funcionales</h3>
+  <div class="tablewrap"><table><thead><tr><th>Código</th><th>Área</th><th>Departamento responsable típico</th><th>Ámbito</th><th>Origen</th></tr></thead><tbody id="areasBody"></tbody></table></div>
+
+  <div class="callout law">
+    <b>Dos códigos requieren formalización en V2</b>
+    <b>AUD</b> (este documento, HC-CMP-AUD-001) no existe como tipo en V1 — es una <span class="conf confM">inferencia</span> introducida aquí para «Informe de auditoría/diagnóstico». Recomendación: incorporarlo como tipo oficial nº 12 (nivel 4 — evidencia). <b>CMP</b> (Cumplimiento) tampoco existe como área en V1 — se propone como área nº 14, dueña del Bloque 16. Ambos se declaran con nivel de confianza alto porque siguen exactamente la gramática del sistema existente. Las siglas POE, REG, FOR, MAN, RRHH, TI, ADM, COM y DIR del prompt de auditoría <b>no aparecen en V1</b>: sus equivalentes reales son PR, RG, FR, MC, RRH, TIC, SGC y las áreas funcionales — no debe crearse un segundo vocabulario paralelo.
+  </div>
+</section>
+
+<!-- ===================== ARQUITECTURA ===================== -->
+<section role="tabpanel" id="arq">
+  <p class="eyebrow">Secciones 5, 6 y 13 · Fases 3, 9 y 10</p>
+  <h2>Arquitectura documental: actual, conformidad y árbol</h2>
+  <p class="lede">Los 202 documentos de V1 se distribuyen limpiamente en los cuatro niveles clásicos. La evaluación de conformidad compara la arquitectura contra ISO 15189, la legislación sanitaria (Ley 42-01, Decreto 349-04, Norma de Habilitación) y — la dimensión nueva — la Ley 74-25.</p>
+
+  <div class="grid g4">
+    <div class="kpi"><div class="n">7</div><div class="l">Nivel 1 · Gobierno — MC, POL, MP (V1: 5 POL + 1 MC + 1 MP)</div></div>
+    <div class="kpi"><div class="n">92</div><div class="l">Nivel 2 · Procesos — 82 PR + 9 PL + 1 PG</div></div>
+    <div class="kpi"><div class="n">14</div><div class="l">Nivel 3 · Instrucciones — IT</div></div>
+    <div class="kpi"><div class="n">89</div><div class="l">Nivel 4 · Evidencias — 43 FR + 21 RG + 16 MT + 9 LC</div></div>
+  </div>
+
+  <h3>Árbol documental por área (documentos V1 → V2)</h3>
+  <div class="tablewrap"><table><thead><tr><th>Rama</th><th>Área</th><th>V1</th><th>Nuevos V2</th><th>Estado de la rama frente a Ley 74-25</th></tr></thead><tbody id="treeBody"></tbody></table></div>
+
+  <h3>Evaluación de conformidad — Fase 9</h3>
+  <div class="tablewrap"><table><thead><tr><th style="min-width:240px">Elemento evaluado</th><th>ISO 15189</th><th>Ley sanitaria</th><th>Ley 74-25</th><th>Observación</th></tr></thead><tbody id="confBody"></tbody></table></div>
+
+  <div class="callout cold">
+    <b>Duplicados: ninguno detectado</b>
+    La verificación programática de la lista maestra V1 (202 códigos) no arrojó códigos duplicados, y las tres consolidaciones documentales de la Fase 1 siguen vigentes. El riesgo de duplicidad en V2 está en el Bloque 16: el canal de denuncias <b>no</b> debe duplicar el formulario de no conformidad (HC-SGC-FR-005) — se integran declarando que toda denuncia con contenido de calidad genera una NC, y toda NC con posible relevancia penal escala al órgano de cumplimiento.
+  </div>
+</section>
+
+<!-- ===================== MARCO JURÍDICO ===================== -->
+<section role="tabpanel" id="ley">
+  <p class="eyebrow">Secciones 7, 8 y 9 · Fase 5 · Loop 3 ejecutado</p>
+  <h2>Marco jurídico verificado y su impacto sobre HemoCura</h2>
+  <p class="lede">Verificación de vigencia realizada contra fuentes oficiales y prensa jurídica dominicana el 7 de agosto de 2026 — cuatro días después de la entrada en vigor. Se distingue expresamente lo promulgado, lo publicado, lo vigente y lo pendiente.</p>
+
+  <h3>Cronología de vigencia</h3>
+  <div class="card">
+    <div class="timeline">
+      <div class="ev"><b>3 AGO 2025</b><p>Promulgación de la Ley 74-25, Código Penal de la República Dominicana. Vacatio legis de 12 meses (art. 393). Deroga el código de 1884.</p></div>
+      <div class="ev"><b>2026 (pre-vigencia)</b><p>Ley 44-26 modifica varios artículos (libertad de expresión y otros) antes de la entrada en vigor. Su art. 30 dispone vigencia concomitante con la 74-25.</p></div>
+      <div class="ev alert"><b>3–5 AGO 2026</b><p><b>Entrada en vigencia — ya ocurrió.</b> Existe disputa interpretativa pública: la Consultoría Jurídica del Poder Ejecutivo sostiene el 3 de agosto; el director de Persecución del Ministerio Público, el 5, por la fecha de publicación de la Ley 44-26. Incertidumbre declarada; irrelevante a efectos de este plan — el código rige hoy.</p></div>
+      <div class="ev alert"><b>≈ 5 NOV 2026</b><p><b>Los artículos 8, 9, 10 y 11 — responsabilidad penal de las personas jurídicas — comienzan a aplicarse</b> tres meses después del 5 de agosto, por el art. 31 de la Ley 44-26. Esta es la fecha límite real del programa de cumplimiento de HemoCura.</p></div>
+      <div class="ev"><b>Pendiente</b><p>Recurso de inconstitucionalidad del Colegio Médico Dominicano ante el TC contra los arts. 8, 9, 12 y 354. Mientras no haya sentencia, los artículos rigen. También pendiente: el proyecto de Ley del Sistema Nacional de Sangre en el Senado (seguimiento ya asignado a HC-SGC-MT-001).</p></div>
+    </div>
+  </div>
+
+  <h3>Disposiciones con impacto directo sobre HemoCura</h3>
+  <div class="tablewrap"><table><thead><tr><th>Conducta</th><th>Norma / artículo</th><th>Posible responsable</th><th>Ejemplo en HemoCura</th><th>Consecuencia</th><th>Control preventivo (documento)</th></tr></thead><tbody id="leyBody"></tbody></table></div>
+
+  <h3>El programa de prevención del art. 8 §IV — los 4 requisitos y su cobertura en V1</h3>
+  <div class="tablewrap"><table><thead><tr><th>Requisito legal del programa</th><th>Cobertura V1</th><th>Brecha</th><th>Documento V2 que la cierra</th></tr></thead><tbody id="progBody"></tbody></table></div>
+
+  <h3>Fuentes utilizadas</h3>
+  <div class="card src">
+    <p style="margin-top:0">Texto oficial: <a href="https://transparencia.poderjudicial.gob.do/observatorio//documentos/PDF/normativas//NOR_enal_de_la_Republica_Dominicana.pdf">Ley 74-25 — PDF del Poder Judicial RD</a> · <a href="https://presidencia.gob.do/leyes/74-25">Presidencia de la República — Ley 74-25</a>. Vigencia y Ley 44-26: <a href="https://www.diariolibre.com/actualidad/justicia/2026/08/03/codigo-penal-republica-dominicana-entra-en-vigor/3618551">Diario Libre 03-08-2026</a>. RPJ y directivos: <a href="https://www.diariolibre.com/actualidad/justicia/2026/04/24/codigo-penal-amplia-sancion-penal-a-empresas-y-a-sus-directivos/3512548">Diario Libre 24-04-2026</a> · <a href="https://aba.org.do/articulos-perspectivas/ley-74-25-nuevo-codigo-penal-responsabilidad-justicia-rd/">ABA — implicaciones clave</a>. Sector salud: <a href="https://diariosalud.do/la-accion-del-cmd-y-la-ley-74-25-lo-que-el-sector-salud-debe-entender-antes-del-3-de-agosto">Diario Salud — arts. 112 y 114</a> · <a href="https://www.objiolegal.com/blog/compliance-penal-medico-ley-74-25">Objio Legal — compliance penal médico</a>. Marco sanitario: Ley 42-01, Decreto 349-04 y Norma de Habilitación (repositorio MSP), ya incorporados en V1. Las fuentes secundarias se usaron como apoyo doctrinal, nunca como única base de un artículo citado.</p>
+  </div>
+</section>
+
+<!-- ===================== TOP 20 ===================== -->
+<section role="tabpanel" id="top20">
+  <p class="eyebrow">Sección 10 · Fase 6</p>
+  <h2>TOP 20 riesgos penales · matriz Probabilidad × Impacto</h2>
+  <p class="lede">Escala 1–5 en ambos ejes. Probabilidad estimada para un banco de sangre privado multisede en operación, con SGC en implementación; impacto combina daño a personas y exposición penal. 🔴 ≥ 15 · 🟠 10–14 · 🟡 5–9 · 🟢 &lt; 5. La calificación es criterio profesional, no dato empírico — se recalibra cuando existan indicadores reales.</p>
+
+  <div class="grid g2" style="align-items:start">
+    <div class="card">
+      <p class="eyebrow">Mapa de calor · distribución de los 20 riesgos</p>
+      <div class="riskGrid" id="heat"></div>
+      <p style="font-size:12px;color:var(--slate);margin:10px 0 0">Eje vertical: impacto 5→1. Eje horizontal: probabilidad 1→5. El número en cada celda es la cantidad de riesgos ubicados ahí.</p>
+    </div>
+    <div class="card">
+      <p class="eyebrow">Lectura gerencial</p>
+      <ul class="tight">
+        <li><b>Los tres críticos comparten patrón:</b> error humano en identificación o liberación + registro débil = muerte de paciente + imputación corporativa. La inversión de mayor retorno penal es la doble verificación documentada (IT-002 EXT, LC-001 TRF) y el bloqueo informático de liberación.</li>
+        <li><b>El riesgo 4 es el único puramente organizacional:</b> no tener el programa del art. 8 §IV. No mata a nadie, pero convierte cualquier otro riesgo materializado en condena corporativa sin defensa.</li>
+        <li><b>Los riesgos documentales (5, 16) son los más baratos de cerrar</b> y los que un fiscal encuentra primero.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="filters" style="margin-top:22px">
+    <select id="fNivel"><option value="">Todos los niveles</option><option value="C">🔴 Crítico</option><option value="A">🟠 Alto</option><option value="M">🟡 Medio</option><option value="B">🟢 Bajo</option></select>
+    <input id="qR" type="search" placeholder="Buscar riesgo, artículo o documento…">
+    <span class="count" id="cntR"></span>
+  </div>
+  <div class="tablewrap"><table><thead><tr><th>#</th><th style="min-width:210px">Riesgo / escenario</th><th>P</th><th>I</th><th>Nivel</th><th>Base legal</th><th>Área</th><th>Controles existentes (V1)</th><th>Controles faltantes → acción</th></tr></thead><tbody id="r20body"></tbody></table></div>
+</section>
+
+<!-- ===================== ESCENARIOS ===================== -->
+<section role="tabpanel" id="esc">
+  <p class="eyebrow">Sección 12 · Fase 7 · Loops 6 y 7 aplicados</p>
+  <h2>20 escenarios de responsabilidad</h2>
+  <p class="lede">Cada escenario se analizó con la pregunta del auditor externo — «¿puede HemoCura demostrar documentalmente que actuó correctamente?» — y con la mirada del fiscal, del abogado del paciente y de la aseguradora. La columna «registros que prueban cumplimiento» es la defensa documental; si esos registros no existen o no están al día, el escenario está abierto hoy.</p>
+  <div id="escList"></div>
+</section>
+
+<!-- ===================== MATRIZ ===================== -->
+<section role="tabpanel" id="matriz">
+  <p class="eyebrow">Sección 11 · Fase 8 · Loop 5 verificado</p>
+  <h2>Matriz proceso – riesgo – requisito – documento – evidencia</h2>
+  <p class="lede">La cadena completa RIESGO → CONTROL → PROCEDIMIENTO → RESPONSABLE → REGISTRO → EVIDENCIA → KPI, verificada para cada proceso crítico. Donde la columna «documento faltante» no dice «—», la cadena está rota y el SGC no funciona aún como defensa documental para ese proceso.</p>
+  <div class="filters">
+    <input id="qM" type="search" placeholder="Buscar proceso, riesgo o documento…">
+    <span class="count" id="cntM"></span>
+  </div>
+  <div class="tablewrap" style="max-height:70vh"><table><thead><tr><th>Proceso</th><th>Riesgo principal</th><th>Requisito legal</th><th>Documento actual (V1)</th><th>Documento faltante</th><th>Responsable</th><th>Evidencia de descargo</th><th>KPI</th></tr></thead><tbody id="mBody"></tbody></table></div>
+</section>
+
+<!-- ===================== B16 / V2 ===================== -->
+<section role="tabpanel" id="b16">
+  <p class="eyebrow">Secciones 6, 13 y 20 · Fase 10</p>
+  <h2>Bloque 16 — Cumplimiento penal · y la Arquitectura V2</h2>
+  <p class="lede">Diecisiete documentos nuevos bajo el área <b>CMP</b>, más nueve refuerzos a documentos V1 existentes. Con esto, la Arquitectura V2 queda en <b>219 documentos y 17 bloques (B0–B16)</b>, manteniendo intactos los códigos, dependencias y cronograma de V1. El Bloque 16 se ejecuta en la vía rápida: no espera su turno en la secuencia lógica porque su fecha límite es legal, no metodológica.</p>
+
+  <h3>Documentos nuevos — Bloque 16</h3>
+  <div class="tablewrap"><table><thead><tr><th>Código</th><th style="min-width:240px">Documento</th><th>Tipo</th><th>Prior.</th><th>Fundamento</th><th>Depende de</th><th>Evidencia que genera</th></tr></thead><tbody id="b16Body"></tbody></table></div>
+
+  <h3>Refuerzos a documentos V1 existentes</h3>
+  <div class="tablewrap"><table><thead><tr><th>Documento V1</th><th>Refuerzo requerido</th><th>Motivo penal</th></tr></thead><tbody id="refBody"></tbody></table></div>
+
+  <h3>Estructura final de la Arquitectura V2</h3>
+  <div class="card">
+    <ul class="tight">
+      <li><b>Bloques B0–B15</b> — sin cambios de contenido; nueve documentos reciben los refuerzos listados arriba dentro de su ciclo normal de elaboración.</li>
+      <li><b>Bloque B16 — Cumplimiento penal</b> — 17 documentos nuevos, área CMP, prioridad global P1, ventana de ejecución agosto–octubre 2026.</li>
+      <li><b>Nomenclatura</b> — se añade el área <b>CMP</b> (nº 14) y el tipo <b>AUD</b> (nº 12, informes de auditoría y diagnóstico). Todo lo demás intacto.</li>
+      <li><b>Dashboard V2</b> — los KPIs de la pestaña «25 KPIs» sustituyen y amplían la matriz de indicadores planificada en B13; los 8 primeros son de cumplimiento penal y reportan mensualmente a Gerencia.</li>
+      <li><b>Gobernanza</b> — el órgano de cumplimiento (HC-CMP-PR-002) reporta a la Dirección General con línea directa, autónoma de Operaciones — condición expresa del art. 8 §IV numeral 2 («poderes autónomos»).</li>
+      <li><b>Regla de integración</b> — nada del Bloque 16 duplica al SGC: la matriz de riesgos penales es una vista de la matriz institucional (HC-SGC-MT-006) con eje legal añadido; el canal de denuncias desemboca en NC/CAPA cuando el contenido es de calidad; la investigación interna usa el mismo análisis de causa raíz (HC-SGC-FR-006) con custodia probatoria añadida.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ===================== RACI + CAPACITACIÓN ===================== -->
+<section role="tabpanel" id="raci">
+  <p class="eyebrow">Secciones 14 y 15 · Fases 11 y 13</p>
+  <h2>Matriz RACI y plan de capacitación</h2>
+  <p class="lede">R = Responsable de ejecutar · A = Aprueba y responde por el resultado · C = Consultado · I = Informado. La columna «Cumplimiento» es el rol nuevo — mientras no se nombre al oficial de cumplimiento, sus responsabilidades recaen provisionalmente en Gestión de Calidad con acta que lo documente.</p>
+
+  <h3>RACI de las actividades críticas</h3>
+  <div class="tablewrap"><table><thead><tr><th style="min-width:220px">Actividad</th><th>Gerencia Gral.</th><th>Dir. Médica/Técnica</th><th>Calidad</th><th>Cumplimiento</th><th>Operaciones</th><th>Laboratorio</th><th>RRHH</th><th>Comercial</th><th>TI</th></tr></thead><tbody id="raciBody"></tbody></table></div>
+
+  <h3>Plan de capacitación por cargo</h3>
+  <div class="tablewrap"><table><thead><tr><th>Cargo</th><th style="min-width:260px">Capacitación</th><th>Frecuencia</th><th>Prior.</th><th>Evidencia</th></tr></thead><tbody id="capBody"></tbody></table></div>
+</section>
+
+<!-- ===================== KPI ===================== -->
+<section role="tabpanel" id="kpi">
+  <p class="eyebrow">Sección 16 · Fase 14</p>
+  <h2>25 indicadores de control</h2>
+  <p class="lede">Los ocho primeros son indicadores de cumplimiento penal y alimentan el reporte mensual a Gerencia; el resto son los indicadores de calidad y operación que además funcionan como evidencia de diligencia debida. Meta y alerta son valores de arranque — se recalibran con tres meses de línea base, según la regla ya fijada en la Fase 1.</p>
+  <div class="tablewrap"><table><thead><tr><th>#</th><th style="min-width:210px">Indicador</th><th>Fórmula</th><th>Frec.</th><th>Meta</th><th>Alerta</th><th>Responsable</th></tr></thead><tbody id="kpiBody"></tbody></table></div>
+</section>
+
+<!-- ===================== PLAN ===================== -->
+<section role="tabpanel" id="plan">
+  <p class="eyebrow">Sección 18 · Fase 12</p>
+  <h2>Plan de implementación 30 / 60 / 90 / 180 / 365 días</h2>
+  <p class="lede">Día 0 = 7 de agosto de 2026. La restricción dura del plan: los artículos 8–11 comienzan a aplicarse alrededor del 5 de noviembre — día 90. Todo lo que constituye el programa de prevención debe existir y estar operando antes de esa fecha; lo demás sigue el cronograma de V1.</p>
+  <div id="planBody"></div>
+</section>
+
+</main>
+
+<footer class="wrap">
+  HC-CMP-AUD-001 v1.0 · Elaborado como diagnóstico y hoja de ruta; requiere validación de abogado penalista dominicano, del director médico y de la Dirección General antes de adoptar decisiones. Este informe constituye la base formal de la <b>Arquitectura Documental HemoCura SGC V2</b>. Se ejecutaron los loops 1–9 del protocolo: tres ciclos completos de revisión de inventario, arquitectura, marco legal, riesgos, trazabilidad, simulación de auditoría, simulación jurídica, priorización y revisión final.
+</footer>
+
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+$$('nav.tabs button').forEach(b=>b.addEventListener('click',()=>{
+ $$('nav.tabs button').forEach(x=>x.setAttribute('aria-selected',x===b));
+ $$('section[role=tabpanel]').forEach(s=>s.classList.toggle('on',s.id===b.dataset.t));
+ window.scrollTo({top:0,behavior:'instant'});
+}));
+const nivel=v=>v>=15?['C','🔴 Crítico','rC']:v>=10?['A','🟠 Alto','rA']:v>=5?['M','🟡 Medio','rM']:['B','🟢 Bajo','rB'];
+const fTag=t=>({L:'<span class="tag tLegal">Código Penal</span>',S:'<span class="tag tSan">Sanitario</span>',I:'<span class="tag tIso">ISO 15189</span>',B:'<span class="tag tBP">Buena práctica</span>',C:'<span class="tag tBP">Control interno</span>'}[t]);
+
+/* ---------- NOMENCLATURA ---------- */
+const TIPOS=[
+["MC","Manual","1 · Gobierno","El libro maestro: qué es el sistema, hasta dónde llega y cómo se relacionan sus partes.","HC-SGC-MC-001 Manual de calidad","V1"],
+["POL","Política","1 · Gobierno","Compromiso de la dirección sobre un tema; corta, verificable, origina objetivos.","HC-SGC-POL-001 Política de calidad","V1"],
+["MP","Mapa","1 · Gobierno","Representación gráfica de procesos y sus interacciones.","HC-SGC-MP-001 Mapa de procesos","V1"],
+["PR","Procedimiento","2 · Procesos","El «qué, quién y cuándo» de un proceso completo, con responsables y puntos de control.","HC-LAB-PR-002 Tamizaje de marcadores","V1"],
+["PL","Plan","2 · Procesos","Actividades programadas en el tiempo con metas y recursos.","HC-RRH-PL-001 Plan anual de capacitación","V1"],
+["PG","Programa","2 · Procesos","Conjunto plurianual o sistemático de planes sobre un mismo fin.","HC-SGC-PG-001 Programa de auditorías","V1"],
+["IT","Instructivo","3 · Instrucciones","El «cómo» detallado de una tarea concreta, paso a paso, en el puesto de trabajo.","HC-EXT-IT-002 Identificación positiva del donante","V1"],
+["FR","Formulario","4 · Evidencias","Plantilla en blanco para capturar información estandarizada.","HC-TRF-FR-001 Solicitud de transfusión","V1"],
+["RG","Registro","4 · Evidencias","El formulario ya llenado y conservado: la prueba de que el proceso ocurrió.","HC-EQP-RG-001 Registro de temperatura","V1"],
+["MT","Matriz","4 · Evidencias","Tabla de gestión que cruza dos o más dimensiones (riesgos, competencias, requisitos).","HC-SGC-MT-006 Matriz de riesgos","V1"],
+["LC","Lista de chequeo","4 · Evidencias","Verificación ítem por ítem antes o después de una actividad crítica.","HC-TRF-LC-001 Verificación pretransfusional","V1"],
+["AUD","Informe de auditoría","4 · Evidencias","Resultado documentado de una auditoría o diagnóstico. <span class='conf confM'>Nuevo en V2 — inferido</span>","HC-CMP-AUD-001 (este documento)","V2"]];
+$('#tiposBody').innerHTML=TIPOS.map(t=>`<tr><td class="cod">${t[0]}</td><td>${t[1]}</td><td class="sm">${t[2]}</td><td class="sm">${t[3]}</td><td class="cod">${t[4]}</td><td><span class="tag ${t[5]==='V2'?'tNew':'tOK'}">${t[5]}</span></td></tr>`).join('');
+
+const AREAS=[
+["SGC","Sistema de gestión de calidad","Gestión de Calidad","Gobierno, documental, riesgos, NC/CAPA, indicadores, auditoría","V1"],
+["RRH","Recursos humanos","Recursos Humanos","Competencia, capacitación, expedientes, firmas autorizadas","V1"],
+["INF","Infraestructura y bioseguridad","Comité de Bioseguridad / Serv. Generales","Instalaciones, limpieza, residuos, contingencias, salud ocupacional","V1"],
+["EQP","Equipos y metrología","Biomédico","Calificación, mantenimiento, calibración, temperatura y alarmas","V1"],
+["ABS","Abastecimiento e inventario","Compras / Almacén","Proveedores, insumos críticos, recepción, subcontratación","V1"],
+["DON","Donantes","Atención al Donante / Médico responsable","Captación, selección, consentimiento, diferimiento","V1"],
+["EXT","Extracción","Enfermería","Flebotomía, aféresis, reacciones del donante, identificación","V1"],
+["PRO","Procesamiento","Procesamiento","Fraccionamiento, hemocomponentes, control de calidad de producto","V1"],
+["LAB","Laboratorio","Laboratorio","Tamizaje, inmunohematología, CCI/EEC, informes","V1"],
+["ALM","Almacenamiento y distribución","Jefe de Banco de Sangre / Logística","Cadena de frío, cuarentena, despacho, transporte, descarte","V1"],
+["TRF","Servicio transfusional","Servicio Transfusional / Médico","Compatibilidad, entrega, acto transfusional, consentimiento","V1"],
+["HMV","Hemovigilancia","Comité de Medicina Transfusional","Reacciones, look-back, recall, notificación a la DNBS","V1"],
+["TIC","Sistemas de información","TI","Sistema de banco de sangre, respaldos, accesos, validación","V1"],
+["CMP","Cumplimiento","Oficial de Cumplimiento (nuevo)","Prevención penal, ética, denuncias, investigación, datos personales. <span class='conf confM'>Nueva en V2</span>","V2"]];
+$('#areasBody').innerHTML=AREAS.map(a=>`<tr><td class="cod">${a[0]}</td><td>${a[1]}</td><td class="sm">${a[2]}</td><td class="sm">${a[3]}</td><td><span class="tag ${a[4]==='V2'?'tNew':'tOK'}">${a[4]}</span></td></tr>`).join('');
+
+/* ---------- ÁRBOL ---------- */
+const TREE=[
+["Dirección","SGC (gobierno B0, B12–B14)",30,"—","⚠ Falta código de ética y política de cumplimiento — se cierran en B16"],
+["Calidad","SGC (documental B1)",9,"—","✅ Columna vertebral intacta; refuerzo: retención probatoria de registros"],
+["Cumplimiento","CMP (B16)",0,"17","➕ Rama completa nueva — obligatoria para la eximente del art. 8"],
+["Donantes","DON + EXT (B6)",23,"—","⚠ Consentimiento y confidencialidad del reactivo requieren refuerzo penal"],
+["Laboratorio","LAB (B8)",21,"—","⚠ Algoritmo de reactivos y consejería: ahora también defensa penal"],
+["Procesamiento","PRO (B7)",12,"—","✅ Adecuada; liberación requiere doble firma reforzada"],
+["Almacenamiento / Distribución","ALM (B9)",13,"—","⚠ Descarte y transporte: actas con valor probatorio"],
+["Transfusión","TRF (B10)",12,"—","🔴 Rama de mayor exposición: identificación del receptor y consentimiento"],
+["Hemovigilancia","HMV (B11)",8,"—","⚠ Notificación a DNBS pasa de sanitaria a penalmente relevante (omisión)"],
+["Recursos Humanos","RRH (B2)",11,"—","⚠ Competencia = defensa contra culpa in eligendo/vigilando"],
+["Equipos","EQP (B4)",18,"—","⚠ Alarma ignorada = culpa consciente; bitácora de respuesta obligatoria"],
+["Compras","ABS (B5)",11,"—","⚠ Falta debida diligencia de terceros y cláusulas anticorrupción"],
+["Tecnología","TIC (B15)",7,"—","⚠ Datos del donante: arts. 195/196/325 + Ley 172-13"],
+["Seguridad / Instalaciones","INF (B3)",15,"—","✅ Adecuada; vincular accidentes a lesiones culposas"],
+["Comercial / Finanzas","Interfaz PA-08 (fuera del SGC)",0,"1","➕ Acuerdo de servicio con cláusulas de cumplimiento; facturación ARS con control antifraude"],
+["Jurídico","CMP (externo)",0,"—","➕ Asesoría penalista externa permanente — sin documento propio, con contrato"]];
+$('#treeBody').innerHTML=TREE.map(t=>`<tr><td><b>${t[0]}</b></td><td class="cod">${t[1]}</td><td>${t[2]}</td><td>${t[3]}</td><td class="sm">${t[4]}</td></tr>`).join('');
+
+/* ---------- CONFORMIDAD ---------- */
+const CONF=[
+["Gobierno del sistema (B0)","✅","✅","⚠","Falta código de ética, política de cumplimiento y comités con función de vigilancia penal"],
+["Gestión documental (B1)","✅","✅","⚠","Añadir regla de intangibilidad de registros y retención con criterio probatorio (prescripción penal)"],
+["Personal y competencia (B2)","✅","✅","⚠","La evaluación de competencia debe cubrir expresamente deberes de garante del cargo"],
+["Equipos y temperatura (B4)","✅","✅","⚠","Falta bitácora de respuesta a alarmas con tiempos — insumo directo contra culpa consciente"],
+["Selección del donante y consentimiento (B6)","✅","✅","⚠","Consentimiento V1 correcto; reforzar información de riesgos y capacidad — arts. 158–160 castigan actuar sin consentimiento válido"],
+["Tamizaje y algoritmo de reactivos (B8)","✅","✅","✅","Diseño correcto; la ejecución y sus registros son la defensa"],
+["Liberación de hemocomponentes (B7)","✅","✅","⚠","Añadir bloqueo informático + doble firma; error de liberación = art. 112/114"],
+["Identificación del receptor (B10)","✅","✅","⚠","LC-001 existe; hacerla infranqueable (sin unidad no verificada que salga del banco)"],
+["Hemovigilancia y notificación (B11)","✅","✅","⚠","Definir plazos internos de notificación a DNBS; la omisión del garante es imputable (art. 12)"],
+["Protección de datos (B15 + POL-002)","⚠","✅","❌","No existe procedimiento de gestión de datos personales conforme Ley 172-13 ni respuesta a brechas — arts. 195/196/325"],
+["Canal de denuncias","❌","—","❌","No existe en V1 — requisito práctico del programa art. 8 §IV numeral 3","➕"],
+["Órgano de cumplimiento autónomo","❌","—","❌","No existe — requisito expreso art. 8 §IV numeral 2","➕"],
+["Investigación interna y preservación de evidencia","⚠","—","❌","El análisis de causa raíz existe; falta custodia probatoria y regla de no destrucción"],
+["Antifraude / anticorrupción","❌","—","❌","Sin política; facturación a ARS y compras son las superficies de riesgo"],
+["Matriz de riesgos penales","⚠","—","❌","La matriz institucional (MT-006) no tiene eje legal-penal — numeral 1 del art. 8 §IV"]];
+$('#confBody').innerHTML=CONF.map(c=>{
+ const m=v=>v==='✅'?'<span class="tag tOK">✅ Conforme</span>':v==='⚠'?'<span class="tag tPar">⚠ Parcial</span>':v==='❌'?'<span class="tag tNo">❌ No conforme</span>':v==='➕'?'<span class="tag tNew">➕ Faltante</span>':'<span class="tag tBP">n/a</span>';
+ return `<tr><td><b>${c[0]}</b></td><td>${m(c[1])}</td><td>${m(c[2])}</td><td>${m(c[3])}</td><td class="sm">${c[4]}</td></tr>`}).join('');
+
+/* ---------- LEY ---------- */
+const LEY=[
+["Muerte culposa (torpeza, imprudencia, negligencia)","Art. 112 · pena base 2–3 años; culpa consciente 3–5","Médico, bioanalista, enfermería, técnico; garantes por omisión (art. 12)","Paciente fallece por unidad incompatible o infecciosa","Prisión + inhabilitación; responsabilidad civil","HC-TRF-LC-001, HC-EXT-IT-002, HC-LAB-PR-003 + registros al día"],
+["Muerte culposa atribuible a la persona jurídica","Art. 114 (con arts. 8–11)","HemoCura como empresa","El mismo evento, cuando deriva de fallas organizacionales","Multa doble, cierre, revocación de licencia, disolución","Programa de prevención B16 completo y operando (eximente/atenuante)"],
+["Lesiones culposas","Arts. 150–151 · hasta 2 años + multa; RPJ","Personal técnico y la empresa","Receptor sufre reacción grave no fatal; donante lesionado en flebotomía","Prisión menor + multa; RPJ","HC-EXT-PR-003, HC-HMV-PR-001 + evidencia de competencia"],
+["Comisión por omisión (garante)","Art. 12","Director técnico, responsable de calidad, jefes","Conocer una desviación crítica y no detener la liberación","El resultado se imputa como si se hubiera causado","HC-SGC-MT-003 (RACI) + autoridad de paro documentada"],
+["Certificado falso / alteración de registros","Art. 354 y régimen de falsedades","Médico certificante; quien altera; quien usa","Certificar aptitud sin examen; «corregir» temperatura retroactivamente","1–2 años (agravado 2–3) + multa","HC-CMP-POL-001 §integridad + intangibilidad de registros (B1 reforzado)"],
+["Divulgación de datos de salud","Arts. 195, 196, 325 + Ley 172-13","Cualquier empleado; la empresa por negligencia organizacional","Filtrar serología reactiva de un donante; acceso indebido al sistema","15 días–1 año + RPJ posible","HC-CMP-POL-005, HC-TIC-PR-003, HC-CMP-PR-007 (brechas)"],
+["Procedimientos sin consentimiento válido","Arts. 158–160 (ámbito biomédico)","Médico, dirección; la empresa (hasta disolución)","Aféresis o procedimiento sin consentimiento informado válido","Penas graves escalonadas por resultado; disolución posible","HC-DON-PR-003, HC-TRF-FR-003 reforzados"],
+["Estafa / fraude","Régimen de estafa (incl. medios digitales)","Quien factura; directivos que lo toleran","Facturar a ARS servicios no prestados o unidades no entregadas","Prisión + multa + RPJ","HC-CMP-POL-003 + conciliación facturación-trazabilidad"],
+["Soborno / corrupción privada y pública","Régimen anticorrupción del nuevo código","Compras, comercial, directivos","Pago indebido para ganar contrato institucional o acelerar habilitación","Prisión + multa + inhabilitación para contratar","HC-CMP-POL-003, HC-CMP-PR-006 (debida diligencia)"],
+["Obstrucción / destrucción de evidencia","Tipos de obstrucción de justicia (nuevos)","Quien destruye; quien ordena","Borrar registros tras un evento adverso grave","Prisión; agrava todo lo demás","HC-CMP-PR-005 (preservación y legal hold)"],
+["Residuos y daño ambiental","Ley 64-00 + tipos ambientales del código","Empresa y responsables de área","Disposición ilegal de residuos biológico-infecciosos","Multa, prisión, RPJ","HC-INF-PR-003, PL-002 + manifiestos al día"],
+["Acoso laboral y sexual","Tipos nuevos del código","Individuos; empresa por tolerancia","Denuncia interna sin canal ni investigación","Prisión + multa; responsabilidad organizacional","HC-CMP-PR-003 (canal) + HC-CMP-PR-004 (investigación)"]];
+$('#leyBody').innerHTML=LEY.map(l=>`<tr><td><b>${l[0]}</b></td><td class="cod" style="white-space:normal">${l[1]}</td><td class="sm">${l[2]}</td><td class="sm">${l[3]}</td><td class="sm">${l[4]}</td><td class="cod" style="white-space:normal">${l[5]}</td></tr>`).join('');
+
+const PROG=[
+["1 · Identificación expresa de ámbitos con riesgos penales","Parcial — MT-006 (matriz institucional) prevista, sin eje penal","La matriz no mapea conductas a tipos penales ni a responsables","HC-CMP-MT-001 Matriz de riesgos penales"],
+["2 · Órgano con poderes autónomos de control y supervisión","Ausente — Calidad existe pero depende de Operaciones para recursos","Sin autonomía formal no cumple el numeral 2","HC-CMP-PR-002 Órgano de cumplimiento + acta de nombramiento"],
+["3 · Protocolo de actuación ante detección de riesgo + sistema disciplinario","Parcial — NC/CAPA (PR-006/007) cubre detección de calidad","Falta canal de denuncias, investigación con custodia y régimen disciplinario vinculado","HC-CMP-PR-003, PR-004 + reglamento disciplinario (RRH)"],
+["4 · Revisión periódica del modelo y actualización","Parcial — revisión por la dirección (PR-014) prevista en B14","Debe incluir expresamente el programa penal como entrada","HC-CMP-PL-001 + entrada fija en HC-SGC-FR-013"]];
+$('#progBody').innerHTML=PROG.map(p=>`<tr><td><b>${p[0]}</b></td><td class="sm">${p[1]}</td><td class="sm">${p[2]}</td><td class="cod" style="white-space:normal">${p[3]}</td></tr>`).join('');
+
+/* ---------- TOP 20 ---------- */
+/* [n, riesgo, P, I, base, área, existentes, faltantes] */
+const R20=[
+[1,"Transfusión incompatible por error de identificación del receptor — muerte",4,5,"Arts. 112/114; 12 (garante)","TRF","LC-001 verificación pretransfusional; IT-002 doble verificación (diseñados)","Implantar y entrenar YA; bloqueo de entrega sin checklist; simulacro trimestral"],
+[2,"Liberación de unidad reactiva o en cuarentena — transmisión infecciosa",3,5,"Arts. 112/114; 150/151","LAB/PRO","PR-003 algoritmo de reactivos; PR-005 liberación con doble control (diseñados)","Bloqueo informático de liberación (TIC); segregación física verificada diario"],
+[3,"Ruptura de cadena de frío conocida + uso de la unidad",3,5,"Art. 112 §I culpa consciente; 114","EQP/ALM","PR-004 monitoreo y alarmas; RG-001 temperatura (vía rápida V1)","Bitácora de respuesta a alarmas con tiempos; regla dura de descarte ante duda"],
+[4,"Ausencia de programa de prevención penal al 5-nov-2026",4,4,"Arts. 8–11","CMP","≈70 % del contenido existe disperso en el SGC","Bloque 16 completo: matriz penal, órgano, canal, disciplinario, revisión"],
+[5,"Alteración retroactiva de registros (temperatura, resultados, mantenimiento)",3,4,"Art. 354; falsedades; obstrucción","SGC/Todas","PR-001/002 control documental y de registros","Regla de intangibilidad: corrección solo por adenda firmada; logs inmutables en TIC"],
+[6,"Muerte o lesión grave de donante por reacción mal manejada",3,4,"Arts. 112/150","EXT","PR-003 reacciones del donante; PR-005 observación","Carro de emergencia verificado por turno (LC); entrenamiento RCP vigente"],
+[7,"Divulgación del resultado reactivo de un donante",3,4,"Arts. 195/196/325; Ley 172-13","LAB/TIC","POL-002 confidencialidad; PR-004 consejería; TIC-PR-003 accesos","POL-005 datos personales; PR-007 respuesta a brechas; acuerdos de confidencialidad firmados"],
+[8,"Omisión de notificación de reacción grave a la DNBS",3,4,"Art. 12 + Dec. 349-04","HMV","PR-003 notificación (diseñado)","Plazos internos definidos y responsable único con suplente; registro de constancias"],
+[9,"Personal sin competencia evaluada ejecutando procesos críticos",3,4,"Arts. 112/150 + culpa in vigilando","RRH","PR-002/FR-002 competencia; RG-002 firmas (diseñados)","Ninguna vigencia de POE sin evidencia de entrenamiento; bloqueo de firmas no autorizadas"],
+[10,"Equipo crítico sin mantenimiento/calibración que causa daño",3,4,"Art. 112 §I si se conocía; 114","EQP","PR-002/003; MT-002 programa (diseñados)","Semáforo de vencimientos con paro automático de uso; hoja de vida al día"],
+[11,"Procedimiento sin consentimiento informado válido",2,5,"Arts. 158–160","DON/TRF","PR-003 consentimiento donante; FR-003 consentimiento transfusión","Refuerzo de contenido (riesgos, capacidad, revocabilidad); verificación en LC-001"],
+[12,"Destrucción de evidencia tras evento adverso",2,5,"Obstrucción de justicia","CMP","Ninguno","PR-005 preservación de evidencias y legal hold; sanción disciplinaria expresa"],
+[13,"Error de etiquetado unidad–muestra en origen",2,5,"Arts. 112/114","EXT","PR-004 identificación y trazabilidad (vía rápida V1)","Verificación cruzada a dos personas registrada; auditoría de trazabilidad mensual"],
+[14,"Fraude en facturación a ARS",2,4,"Estafa (incl. agravada contra varias personas)","Comercial","Ninguno en el SGC (interfaz PA-08)","POL-003 antifraude; conciliación mensual facturación ↔ registro de despacho"],
+[15,"Soborno en compras o frente a funcionarios",2,4,"Anticorrupción","ABS/Comercial","PR-001 evaluación de proveedores","POL-003/004; PR-006 debida diligencia; cláusulas anticorrupción en contratos"],
+[16,"Registros de descargo inexistentes al momento de una investigación",3,3,"Transversal — vacío probatorio","SGC","Lista maestra de registros MT-005 (diseñada)","Auditoría de registros críticos al día 30; KPI de completitud documental"],
+[17,"Accidente ocupacional con exposición por bioseguridad omitida",3,3,"Arts. 150/151; normativa laboral","INF","PR-001/004/006 (diseñados)","Dotación EPP registrada; profilaxis post-exposición con reloj de tiempos"],
+[18,"Disposición ilegal de residuos biológico-infecciosos",2,4,"Ley 64-00 + tipos ambientales","INF","PR-003; PL-002; FR-003 manifiestos","Verificar licencia del gestor externo (debida diligencia CMP-PR-006)"],
+[19,"Transporte inter-sedes sin control térmico con daño al receptor",2,4,"Arts. 112/150","ALM","PR-003 transporte; FR-002 registro de temperatura","Validación de contenedores (IT-001) ejecutada, no solo escrita"],
+[20,"Acoso laboral o sexual sin canal ni investigación",2,3,"Tipos nuevos del código","RRH/CMP","Ninguno","Canal de denuncias PR-003 con vía confidencial; protocolo específico en PR-004"]];
+let critC=0,altoC=0,medC=0,bajoC=0;
+R20.forEach(r=>{const v=r[2]*r[3];const n=nivel(v)[0];if(n==='C')critC++;else if(n==='A')altoC++;else if(n==='M')medC++;else bajoC++;});
+$('#kCrit').textContent=critC;$('#kAlto').textContent=altoC;$('#kMed').textContent=medC;$('#kBajo').textContent=bajoC;
+
+function paintR(){
+ const f=$('#fNivel').value,q=$('#qR').value.toLowerCase().trim();
+ const rows=R20.filter(r=>{const v=r[2]*r[3],n=nivel(v)[0];
+  if(f&&n!==f)return false;
+  if(q&&!(r[1]+' '+r[4]+' '+r[5]+' '+r[6]+' '+r[7]).toLowerCase().includes(q))return false;
+  return true;});
+ $('#cntR').textContent=`${rows.length} de 20 riesgos`;
+ $('#r20body').innerHTML=rows.map(r=>{const v=r[2]*r[3],[k,lbl,cls]=nivel(v);
+  return `<tr><td class="cod">${String(r[0]).padStart(2,'0')}</td><td><b>${r[1]}</b></td><td>${r[2]}</td><td>${r[3]}</td><td><span class="tag ${cls}">${lbl} · ${v}</span></td><td class="cod" style="white-space:normal">${r[4]}</td><td class="cod">${r[5]}</td><td class="sm">${r[6]}</td><td class="sm">${r[7]}</td></tr>`}).join('');
+}
+$('#fNivel').addEventListener('input',paintR);$('#qR').addEventListener('input',paintR);paintR();
+
+/* heat map */
+(()=>{const grid={};R20.forEach(r=>{const k=r[3]+'-'+r[2];grid[k]=(grid[k]||0)+1});
+ let html='';
+ for(let i=5;i>=1;i--){for(let p=1;p<=5;p++){const v=i*p,n=grid[i+'-'+p]||0,[k]=nivel(v);
+  const bg=k==='C'?'var(--hemo)':k==='A'?'#C4622D':k==='M'?'#C9A227':'#5E8F93';
+  html+=`<div class="c" style="background:${bg};opacity:${n?1:.28}" title="P${p}×I${i}=${v}${n?' · '+n+' riesgo(s)':''}">${n||''}</div>`;}}
+ $('#heat').innerHTML=html;})();
+
+/* top10 riesgos en resumen */
+$('#top10body').innerHTML=R20.map(r=>({r,v:r[2]*r[3]})).sort((a,b)=>b.v-a.v).slice(0,10)
+ .map((o,i)=>{const[,lbl,cls]=nivel(o.v);return `<tr><td class="cod">${String(i+1).padStart(2,'0')}</td><td><b>${o.r[1]}</b></td><td><span class="tag ${cls}">${lbl} · ${o.v}</span></td><td class="sm">${o.r[7]}</td></tr>`}).join('');
+
+/* acciones inmediatas */
+const ACC=[
+["Confirmar con abogado penalista la interpretación de fechas y el estado del recurso del CMD","Antes de comprometer el calendario, validar el 5-nov como fecha dura de los arts. 8–11. Responsable: Gerencia General. Semana 1."],
+["Nombrar por acta al responsable de cumplimiento con autonomía y reporte a Gerencia","Aunque sea interino en Calidad; sin órgano no hay eximente. Semana 1."],
+["Emitir comunicado interno de intangibilidad de registros y prohibición de destrucción de evidencia","Una página, firmada por Gerencia; convierte la alteración en falta grave desde ya. Semana 1."],
+["Activar la vía rápida V1 completa","Temperatura+alarmas, identificación donante/receptor, algoritmo de reactivos, reporte de reacciones, descarte. Ya priorizada — ahora tiene fecha penal. Semanas 1–4."],
+["Redactar HC-CMP-MT-001, matriz de riesgos penales","Punto de partida: la columna «base legal» del Top 20. Cumple el numeral 1 del art. 8 §IV. Semanas 2–4."],
+["Abrir canal de denuncias mínimo viable","Buzón + correo dedicado + registro; el procedimiento formal viene después. Semanas 2–4."],
+["Auditar la completitud de los registros de descargo de los últimos 12 meses","Temperatura, liberación, competencia, consentimientos. Lo que falte, se documenta como hallazgo — nunca se reconstruye retroactivamente. Semanas 3–6."],
+["Redactar el paquete B16 crítico","POL-001 cumplimiento, POL-002 ética, PR-002 órgano, PR-003 canal, PR-004 investigación, PR-005 preservación. Semanas 4–10."],
+["Capacitar a directivos y garantes en el nuevo régimen","Gerencia, direcciones, jefes de sede y de área: RPJ, culpa consciente, deber de garante, art. 354. Semanas 6–10."],
+["Sesión formal de adopción del programa por la Dirección antes del 31-oct","Acta que aprueba el programa, asigna recursos y activa la revisión periódica — el papel que sostiene la eximente. Semana 12."]];
+$('#acc10').innerHTML=ACC.map(a=>`<li><b>${a[0]}</b><span>${a[1]}</span></li>`).join('');
+
+/* ---------- ESCENARIOS ---------- */
+const ESC=[
+["Unidad incorrecta entregada por error de identificación del paciente","Homónimos en piso; la enfermera retira la unidad sin cotejo junto a la cama; reacción hemolítica fatal","HC-TRF-PR-004/005 + LC-001 verificación pretransfusional","Hoja de acto transfusional, LC firmada, registro de entrega con hora, compatibilidad FR-002","Enfermería (ejecutor), servicio transfusional (entrega), dirección médica (garante), HemoCura (art. 114)","Penal: arts. 112/114. Civil: indemnización. Sanitario: DNBS. Reputacional: severo","Checklist infranqueable a dos personas junto al paciente; sin LC firmada la unidad no se cuelga"],
+["Etiquetado cruzado de tubos en extracción","Dos donantes simultáneos; etiquetas impresas por adelantado; el tamizaje se asigna al donante equivocado","HC-EXT-PR-004 + IT-002","Registro de flebotomía con verificación cruzada, trazabilidad unidad-muestra","Técnico de extracción; jefe de sede; la empresa si el método lo permitía","Arts. 112/114 si hay daño; falsedad si se encubre","Etiquetado junto al donante, uno a la vez, verificación a dos personas registrada"],
+["Unidad reactiva liberada desde cuarentena","Segregación solo «lógica» en el sistema; un técnico toma la unidad físicamente disponible","HC-ALM-PR-002 + HC-PRO-PR-005","Acta de liberación con doble firma, registro de cuarentena, log del sistema","Técnico, responsable de liberación, director técnico (garante), empresa","Arts. 112/114; 150/151","Cuarentena física con llave + bloqueo informático de despacho sin liberación"],
+["Alarma de temperatura ignorada durante la madrugada","La alarma suena, nadie responde, el inventario pasa 6 h fuera de rango y se usa igual","HC-EQP-PR-004 + IT-006","Registro continuo, bitácora de respuesta a alarmas con tiempos y decisión","Técnico de turno, jefe de banco, biomédico; culpa consciente para quien decidió usar","Art. 112 §I (3–5 años) — el registro prueba que se sabía","Escalamiento automático de alarma; regla dura: fuera de rango sin evaluación documentada = descarte"],
+["Tamizaje con lote de reactivo vencido","Presión de inventario; el CCI falla y se «repite hasta que pasa»","HC-ABS-PR-003 + HC-LAB-PR-007","Acta de verificación de lote, registro de corrida con controles, trazabilidad de lote","Bioanalista, jefe de laboratorio, compras","Arts. 112/150 si hay daño; 354/falsedad si se maquilla el CCI","Bloqueo de lotes vencidos en sistema; reglas de rechazo de corrida sin excepciones"],
+["Resultado reactivo comunicado al empleador del donante","Un colaborador comenta el resultado; el donante pierde el empleo y demanda","HC-LAB-PR-004 + POL-002 + POL-005 (V2)","Acta de consejería confidencial, matriz de accesos, acuerdos de confidencialidad","Quien divulga; la empresa por negligencia organizacional","Arts. 195/196/325; Ley 172-13; civil","Acceso a serología restringido por perfil; consejería solo por médico designado"],
+["Reacción transfusional grave no notificada a la DNBS","El hospital cliente informa la reacción; nadie en HemoCura la registra ni notifica","HC-HMV-PR-001/003","Reporte FR-001, investigación FR-002, constancia de notificación","Responsable de hemovigilancia, dirección técnica (garante — art. 12)","Omisión imputable + sanción sanitaria","Plazos internos con responsable y suplente; acuse del cliente institucional en el contrato"],
+["Donante se desmaya, cae y sufre trauma craneal","Sin observación post-donación; sin registro de alta","HC-EXT-PR-003/005","Registro de flebotomía con incidencias, reporte de reacción, registro de alta","Enfermería, médico responsable","Arts. 150/151","Área de observación obligatoria con tiempo mínimo y alta firmada"],
+["Consentimiento de aféresis firmado sin explicación","El donante alega que no supo los riesgos; hubo complicación","HC-DON-PR-003 reforzado (V2)","Consentimiento con constancia de información, versión vigente, firma y testigo","Médico que debió informar; la empresa","Arts. 158–160 en el extremo; civil seguro","Consentimiento con verificación de comprensión; nunca en blanco ni post-hoc"],
+["Registro de temperatura «completado» al final de la semana","Se llenan de memoria los huecos de tres días","HC-SGC-PR-002 + regla de intangibilidad (V2)","El registro original — con huecos honestos y NC abierta","Quien falsifica; quien lo ordena o tolera","Art. 354/falsedad; destruye toda la defensa documental futura","Monitoreo automático; regla: hueco = NC, jamás relleno; adendas firmadas como única corrección"],
+["Contratación de técnico sin verificar título ni referencias","El técnico comete un error grave; se descubre que su certificación era falsa","HC-RRH-PR-001 + RG-001 expediente","Expediente con verificación de credenciales documentada","RRHH; dirección que autorizó; culpa in eligendo de la empresa","Agrava arts. 112/150 contra la organización","Verificación de credenciales en fuente + evaluación de competencia antes de autorizar firmas"],
+["Compra directa a proveedor vinculado a un directivo","Sobreprecio en insumo crítico; el conflicto nunca se declaró","HC-CMP-POL-004 + PR-006 (V2)","Declaraciones de conflicto, expediente de compra, evaluación de proveedor","Directivo; compras; potencial administración fraudulenta","Tipos societarios y de corrupción privada del nuevo código","Declaración anual de conflictos + umbrales de aprobación escalonados"],
+["Centrífuga con mantenimiento vencido causa pérdida de componentes","Se conocía el vencimiento; «no había presupuesto»; el hemocomponente transfundido estaba fuera de especificación","HC-EQP-PR-002 + MT-002","Hoja de vida, órdenes de trabajo, semáforo de vencimientos, decisión documentada","Biomédico, gerencia que negó el recurso (¡decisión registrada la protege o la condena!)","Art. 112 §I si hubo daño con conocimiento","Paro de uso automático al vencimiento; decisión de prórroga solo con evaluación de riesgo firmada"],
+["Pipetas y termómetros sin calibración trazable","Hemoglobina predonación mal medida; donante anémica extraída","HC-EQP-PR-003 + RG-002","Certificados de calibración, verificaciones intermedias","Biomédico; laboratorio","Arts. 150/151","Inventario metrológico con vencimientos; verificación diaria LC-001 EQP"],
+["Transporte a SFM en contenedor no validado","Verano; 4 horas de ruta; los glóbulos llegan a 14 °C y se transfunden","HC-ALM-PR-003 + IT-001 + FR-002","Registro de temperatura de transporte, validación del contenedor, LC de despacho","Logística, jefe de banco receptor que aceptó la unidad","Arts. 112/150 si hay daño","Data-logger en cada envío + criterio de aceptación en recepción sin excepciones"],
+["Descarte anotado pero unidad reaparece en inventario","El acta de descarte se firmó; la destrucción física nunca ocurrió","HC-ALM-PR-006 + FR-003","Acta con testigo, manifiesto del gestor de residuos, conciliación de inventario","Quien firmó sin verificar; jefe de banco","Falsedad + arts. 112/114 si se usa","Descarte con testigo presencial y conciliación física mensual RG-001 ALM"],
+["Sistema caído tres días; operación manual sin control","Se transfunde sin acceso al histórico de anticuerpos del receptor","HC-TIC-PL-001 + PR-002","Procedimiento manual probado, formularios de contingencia, registro de restauración","TI, dirección técnica","Arts. 112/150; negligencia organizacional","Modo manual ensayado en simulacro; kit físico de contingencia por sede"],
+["Facturación a ARS de unidades nunca despachadas","Conciliación inexistente entre despacho y facturación","HC-CMP-POL-003 (V2) + conciliación","Guías de despacho FR-001 ALM vs. facturas; auditoría interna","Facturación, comercial, directivos que conocían","Estafa; RPJ","Conciliación mensual automática + auditoría de muestreo trimestral"],
+["Evento grave y borrado de correos y registros «para protegernos»","Instrucción verbal de un directivo tras una muerte","HC-CMP-PR-005 (V2)","Acta de legal hold, respaldo íntegro, cadena de custodia","Quien ordena y quien ejecuta — ambos","Obstrucción; convierte una defensa posible en condena probable","Legal hold automático al clasificar un evento como grave; formación a directivos"],
+["Denuncia interna de acoso archivada sin investigar","La víctima acude a fiscalía; no hay expediente interno","HC-CMP-PR-003/004 (V2)","Registro de denuncias, expediente de investigación, medidas adoptadas","RRHH, gerencia; la empresa por tolerancia","Tipos de acoso del nuevo código + laboral","Canal con vía confidencial, plazos de investigación y protección al denunciante"]];
+$('#escList').innerHTML=ESC.map((e,i)=>`<details class="esc"><summary><span class="no">${String(i+1).padStart(2,'0')}</span>${e[0]}</summary>
+<div class="body">
+<div class="cell"><b>Qué falló</b>${e[1]}</div>
+<div class="cell"><b>Procedimiento que debió existir</b><span class="cod" style="font-family:var(--mono);font-size:12px">${e[2]}</span></div>
+<div class="cell"><b>Registros que prueban cumplimiento</b>${e[3]}</div>
+<div class="cell"><b>Posibles responsables</b>${e[4]}</div>
+<div class="cell"><b>Consecuencias posibles</b>${e[5]}</div>
+<div class="cell"><b>Control que lo previene</b>${e[6]}</div>
+</div></details>`).join('');
+
+/* ---------- MATRIZ ---------- */
+const MX=[
+["Captación / promoción","Promesa de compensación al donante (donación debe ser voluntaria)","Dec. 349-04 · Política Nacional de Sangre","HC-SGC-POL-003; HC-DON-PR-001","—","Gerencia Comercial","Material promocional aprobado; registro de jornadas","% jornadas con acta"],
+["Selección del donante","Donante inelegible aceptado","Dec. 349-04; arts. 112/150","HC-DON-PR-004/005; FR-002/003","—","Médico responsable","Cuestionario firmado; registro de diferidos consultado","% cuestionarios completos"],
+["Consentimiento informado","Procedimiento sin consentimiento válido","Arts. 158–160; Ley 42-01","HC-DON-PR-003; HC-TRF-FR-003","Refuerzo V2 de contenido","Médico responsable","Consentimiento firmado con constancia de información","% consentimientos completos"],
+["Extracción / identificación","Etiquetado cruzado unidad-muestra","Arts. 112/114","HC-EXT-PR-004; IT-002","—","Enfermería / Extracción","Verificación a dos personas registrada","Errores de identificación = 0"],
+["Tamizaje","Falso negativo por CCI débil o lote malo","Dec. 349-04; arts. 112/150","HC-LAB-PR-002/003/007; ABS-PR-003","—","Jefe de Laboratorio","Registro de corrida con controles; trazabilidad de lote","% corridas válidas"],
+["Consejería al reactivo","Divulgación indebida / no notificación al donante","Arts. 195/196/325; Dec. 349-04","HC-LAB-PR-004; POL-002","HC-CMP-POL-005","Médico responsable","Acta de consejería confidencial","% reactivos con consejería"],
+["Procesamiento / liberación","Liberación sin tamizaje cerrado","Arts. 112/114","HC-PRO-PR-005","Bloqueo informático (TIC)","Dirección Técnica","Acta de liberación doble firma; log de sistema","Liberaciones no conformes = 0"],
+["Almacenamiento / cuarentena","Unidad segregada reingresada por error","Arts. 112/114","HC-ALM-PR-002","Cuarentena física con llave","Jefe de Banco","Registro de cuarentena; conciliación física","Hallazgos de conciliación"],
+["Cadena de frío","Desviación no detectada o ignorada","Art. 112 §I; Dec. 349-04","HC-EQP-PR-004; RG-001","Bitácora de respuesta a alarmas","Jefe de Banco / Biomédico","Serie de temperatura; bitácora con tiempos","Desviaciones sin respuesta = 0"],
+["Transporte","Ruptura térmica entre sedes","Arts. 112/150; Dec. 349-04","HC-ALM-PR-003; IT-001; FR-002","Validación térmica ejecutada","Logística","Registro por envío; criterio de aceptación","% envíos conformes"],
+["Compatibilidad / transfusión","Incompatibilidad por identificación","Arts. 112/114","HC-TRF-PR-002/005; LC-001","—","Serv. Transfusional / Enfermería","LC firmada junto al paciente; hoja de acto","Eventos ABO = 0"],
+["Hemovigilancia","Reacción no investigada / no notificada","Art. 12; Dec. 349-04","HC-HMV-PR-001/003; FR-001","Plazos internos definidos","Comité Med. Transfusional","Constancias de notificación DNBS","% notificadas en plazo"],
+["Descarte / residuos","Disposición ilegal; unidad «resucitada»","Ley 64-00; falsedad","HC-ALM-PR-006; INF-PR-003","Debida diligencia del gestor","Jefe de Banco / Bioseguridad","Acta con testigo; manifiestos","Manifiestos completos"],
+["Protección de datos","Brecha o divulgación de datos de salud","Arts. 195/196/325; Ley 172-13","HC-TIC-PR-003; POL-002","HC-CMP-POL-005; PR-007 brechas","TI / Cumplimiento","Matriz de accesos; registro de brechas","Brechas reportadas/gestionadas"],
+["Registros clínicos","Registro faltante o alterado","Art. 354; falsedades","HC-SGC-PR-002; MT-005","Regla de intangibilidad","Gestión de Calidad","Registros originales + adendas firmadas","% registros críticos completos"],
+["Mantenimiento / calibración","Equipo vencido en uso con daño","Art. 112 §I","HC-EQP-PR-002/003; MT-002","Paro automático al vencimiento","Biomédico","Hoja de vida; certificados","% cumplimiento del programa"],
+["Proveedores / compras","Insumo no conforme; corrupción","Estafa; anticorrupción","HC-ABS-PR-001/003","HC-CMP-PR-006; POL-003/004","Compras / Cumplimiento","Evaluaciones; actas de lote; declaraciones","Proveedores críticos evaluados"],
+["RRHH / formación","Personal no competente en proceso crítico","Culpa in eligendo/vigilando","HC-RRH-PR-002/003; FR-002","Módulo penal en inducción","RRHH","Evaluaciones de competencia; firmas autorizadas","% competencia vigente"],
+["Bioseguridad / emergencias","Exposición ocupacional; contingencia fallida","Arts. 150/151; ISO 15190","HC-INF-PR-001/004; PL-001/003","Escenarios de apagón/ciclón","Comité de Bioseguridad","Reportes de exposición; simulacros","Simulacros ejecutados"],
+["TI / trazabilidad","Pérdida de datos donante-receptor","ISO 15189 §7.6; arts. 112","HC-TIC-PR-001/002; PL-001","Validación del sistema (adelantada)","TI","Respaldos probados; protocolo de validación","Restauraciones exitosas"],
+["Comercial / facturación","Estafa a ARS; promesas clínicas indebidas","Estafa; publicidad sanitaria","— (interfaz PA-08)","POL-003 + conciliación + acuerdo de servicio","Gerencia Comercial","Conciliación despacho-factura","Diferencias de conciliación = 0"],
+["Comunicación con médicos y pacientes","Información clínica errónea o filtrada","Arts. 195/196; resp. profesional","HC-LAB-PR-010/011","Guía de comunicación de resultados críticos","Dirección Médica","Registro de notificación con hora","% críticos comunicados en plazo"]];
+function paintM(){
+ const q=$('#qM').value.toLowerCase().trim();
+ const rows=MX.filter(m=>!q||m.join(' ').toLowerCase().includes(q));
+ $('#cntM').textContent=`${rows.length} de ${MX.length} procesos`;
+ $('#mBody').innerHTML=rows.map(m=>`<tr><td><b>${m[0]}</b></td><td class="sm">${m[1]}</td><td class="cod" style="white-space:normal">${m[2]}</td><td class="cod" style="white-space:normal">${m[3]}</td><td class="cod" style="white-space:normal;color:${m[4]==='—'?'var(--cold)':'var(--hemo)'}">${m[4]}</td><td class="sm">${m[5]}</td><td class="sm">${m[6]}</td><td class="sm">${m[7]}</td></tr>`).join('');
+}
+$('#qM').addEventListener('input',paintM);paintM();
+
+/* ---------- B16 ---------- */
+const B16=[
+["HC-CMP-POL-001","Política de cumplimiento penal y prevención de delitos","POL","P1","Art. 8 §IV — marco del programa","HC-SGC-POL-001","Política aprobada y difundida"],
+["HC-CMP-POL-002","Código de ética y conducta","POL","P1","Buena práctica + soporte del régimen disciplinario","POL-001 (CMP)","Adhesión firmada por todo el personal"],
+["HC-CMP-POL-003","Política antifraude y anticorrupción","POL","P1","Tipos de estafa y corrupción del código","POL-002 (CMP)","Cláusulas en contratos; conciliaciones"],
+["HC-CMP-POL-004","Política de conflictos de interés","POL","P2","Tipos societarios y de corrupción privada","POL-002 (CMP)","Declaraciones anuales firmadas"],
+["HC-CMP-POL-005","Política de protección de datos personales","POL","P1","Arts. 195/196/325 + Ley 172-13","HC-SGC-POL-002","Inventario de datos; avisos de privacidad"],
+["HC-CMP-PR-001","Programa de prevención de riesgos penales","PR","P1","Art. 8 §IV — documento eje de la eximente","MT-001 (CMP)","Programa adoptado por acta de Dirección"],
+["HC-CMP-PR-002","Órgano de cumplimiento: designación, autonomía y funciones","PR","P1","Art. 8 §IV numeral 2","POL-001 (CMP)","Acta de nombramiento; informes a Gerencia"],
+["HC-CMP-PR-003","Canal de denuncias y protección al denunciante","PR","P1","Art. 8 §IV numeral 3","PR-002 (CMP)","Registro de denuncias; acuses"],
+["HC-CMP-PR-004","Investigación interna y régimen disciplinario","PR","P1","Art. 8 §IV numeral 3 (sistema disciplinario)","PR-003 (CMP); reglamento RRH","Expedientes de investigación; sanciones"],
+["HC-CMP-PR-005","Preservación de evidencias y legal hold","PR","P1","Obstrucción de justicia; defensa documental","PR-004 (CMP)","Actas de custodia; respaldos íntegros"],
+["HC-CMP-PR-006","Debida diligencia de terceros (proveedores, gestores, aliados)","PR","P2","Anticorrupción; Ley 64-00 (gestores de residuos)","HC-ABS-PR-001","Expedientes de diligencia por tercero"],
+["HC-CMP-PR-007","Gestión de brechas de datos personales","PR","P2","Ley 172-13; arts. 195/196","POL-005 (CMP)","Registro de brechas y notificaciones"],
+["HC-CMP-MT-001","Matriz de riesgos penales","MT","P1","Art. 8 §IV numeral 1","HC-SGC-MT-006","Matriz con conducta-tipo-control-responsable"],
+["HC-CMP-MT-002","Matriz requisito legal – control – evidencia","MT","P2","Trazabilidad de defensa documental","MT-001 (CMP)","Cadena riesgo→KPI verificada"],
+["HC-CMP-FR-001","Formulario de denuncia (incluye vía confidencial)","FR","P1","Art. 8 §IV numeral 3","PR-003 (CMP)","Denuncias trazadas"],
+["HC-CMP-FR-002","Declaración de conflicto de interés","FR","P2","POL-004","POL-004 (CMP)","Declaraciones archivadas"],
+["HC-CMP-PL-001","Plan anual de cumplimiento y capacitación penal","PL","P1","Art. 8 §IV numeral 4 (revisión periódica)","PR-001 (CMP)","Plan aprobado; ejecución medida"]];
+$('#b16Body').innerHTML=B16.map(b=>`<tr><td class="cod">${b[0]}</td><td><b>${b[1]}</b></td><td><span class="tag">${b[2]}</span></td><td><span class="tag ${b[3]==='P1'?'rC':'rM'}">${b[3]}</span></td><td class="sm">${b[4]}</td><td class="cod" style="white-space:normal">${b[5]}</td><td class="sm">${b[6]}</td></tr>`).join('');
+
+const REF=[
+["HC-SGC-PR-002 Control de registros","Regla de intangibilidad (corrección solo por adenda firmada) y retención con criterio probatorio penal","Art. 354; prescripción penal supera plazos sanitarios típicos"],
+["HC-SGC-MT-005 Lista maestra de registros","Columna «valor probatorio penal» y plazo revisado por abogado","Vacíos probatorios = riesgo 16 del Top 20"],
+["HC-DON-PR-003 Consentimiento del donante","Constancia de información de riesgos, capacidad, revocabilidad y verificación de comprensión","Arts. 158–160"],
+["HC-TRF-FR-003 Consentimiento de transfusión","Mismos refuerzos + circuito de urgencia documentado (quién decide sin consentimiento y cómo se registra)","Arts. 158–160; estado de necesidad"],
+["HC-EQP-PR-004 Monitoreo y alarmas","Bitácora de respuesta a alarmas con tiempos, decisión y firma; escalamiento automático","Art. 112 §I — culpa consciente"],
+["HC-PRO-PR-005 Liberación","Bloqueo informático + doble firma; registro de excepciones prohibido salvo protocolo de emergencia definido","Arts. 112/114"],
+["HC-HMV-PR-003 Notificación a la autoridad","Plazos internos máximos, responsable y suplente, constancia de acuse","Art. 12 — omisión del garante"],
+["HC-RRH-PR-001/002 Selección y competencia","Verificación de credenciales en fuente + módulo penal en inducción + deberes de garante por cargo","Culpa in eligendo / in vigilando"],
+["HC-TIC-PR-003/004 Accesos y validación","Logs inmutables, revisión trimestral de accesos, validación del sistema adelantada a B4","Arts. 195/196; defensa de trazabilidad"]];
+$('#refBody').innerHTML=REF.map(r=>`<tr><td class="cod" style="white-space:normal">${r[0]}</td><td class="sm">${r[1]}</td><td class="sm">${r[2]}</td></tr>`).join('');
+
+/* ---------- RACI ---------- */
+const RACI=[
+["Aprobar el programa de prevención penal","A","C","C","R","I","I","I","I","I"],
+["Operar el canal de denuncias","I","I","C","R","I","I","C","I","C"],
+["Investigación interna de denuncias","A","C","C","R","I","I","C","I","C"],
+["Legal hold ante evento grave","A","C","C","R","I","I","I","I","R"],
+["Liberación de hemocomponentes","I","A","C","I","I","R","I","I","I"],
+["Detener una liberación dudosa (autoridad de paro)","I","A","R","C","I","R","I","I","I"],
+["Notificación a la DNBS","I","A","C","I","I","C","I","I","I"],
+["Consejería al donante reactivo","I","A/R","I","C","I","C","I","I","I"],
+["Respuesta a alarmas de temperatura","I","C","C","I","R","I","I","I","C"],
+["Conciliación facturación ↔ despacho","A","I","C","R","C","I","I","R","C"],
+["Declaraciones de conflicto de interés","A","I","I","R","I","I","C","I","I"],
+["Capacitación penal del personal","A","C","C","R","I","I","R","I","I"],
+["Matriz de riesgos penales (actualización)","A","C","R","R","C","C","C","C","C"],
+["Revisión anual del programa (Dirección)","A/R","C","C","R","C","C","C","C","C"]];
+$('#raciBody').innerHTML=RACI.map(r=>`<tr><td><b>${r[0]}</b></td>${r.slice(1).map(c=>`<td style="font-family:var(--mono);font-size:12px;${c.includes('R')?'color:var(--hemo);font-weight:600':''}">${c}</td>`).join('')}</tr>`).join('');
+
+/* ---------- CAPACITACIÓN ---------- */
+const CAP=[
+["Gerencia y directivos","Régimen penal de la Ley 74-25: RPJ, culpa consciente, deber de garante, obstrucción; responsabilidades del art. 8","Anual + inducción","P1","Acta + evaluación"],
+["Director médico / técnico","Arts. 112/114/150, consentimiento (158–160), certificados (354), notificación DNBS","Anual","P1","Acta + evaluación"],
+["Oficial de cumplimiento","Programa art. 8 §IV, investigación interna, custodia de evidencia, Ley 172-13","Certificación inicial + anual","P1","Certificado"],
+["Bioanalistas y laboratorio","Algoritmo de reactivos, CCI, confidencialidad del dato de salud, intangibilidad de registros","Semestral","P1","FR-003 RRH + competencia"],
+["Enfermería y extracción","Identificación positiva, reacciones del donante, consentimiento, registro honesto","Semestral","P1","Evaluación de competencia FR-002"],
+["Personal de banco / almacén","Cadena de frío, cuarentena, respuesta a alarmas, descarte con testigo","Semestral","P1","Evaluación práctica"],
+["Logística / transporte","Contenedores validados, registro de temperatura, criterio de aceptación","Semestral","P2","Evaluación práctica"],
+["Compras / administración","Antifraude, anticorrupción, conflictos de interés, debida diligencia","Anual","P2","Acta + declaración firmada"],
+["Comercial / facturación","Estafa y facturación a ARS, promesas clínicas, protección de datos","Anual","P2","Acta"],
+["TI","Ley 172-13, logs inmutables, respuesta a brechas, legal hold técnico","Anual","P1","Acta + simulacro"],
+["Todo el personal","Código de ética, canal de denuncias, bioseguridad, qué hacer ante un evento grave (no tocar, no borrar, reportar)","Inducción + anual","P1","Adhesión firmada + asistencia"]];
+$('#capBody').innerHTML=CAP.map(c=>`<tr><td><b>${c[0]}</b></td><td class="sm">${c[1]}</td><td>${c[2]}</td><td><span class="tag ${c[3]==='P1'?'rC':'rM'}">${c[3]}</span></td><td class="sm">${c[4]}</td></tr>`).join('');
+
+/* ---------- KPI ---------- */
+const KPI=[
+["Avance del programa penal (B16)","Docs B16 aprobados / 17","Quincenal","100 % al día 90","<80 % al día 60","Cumplimiento"],
+["% directivos y garantes capacitados en Ley 74-25","Capacitados / total","Mensual","100 %","<90 %","Cumplimiento"],
+["Denuncias recibidas y tiempo de respuesta","Nº y días a primer contacto","Mensual","100 % ≤ 5 días","> 10 días","Cumplimiento"],
+["Investigaciones cerradas en plazo","Cerradas ≤ 30 días / abiertas","Mensual","≥ 90 %","<70 %","Cumplimiento"],
+["Declaraciones de conflicto de interés vigentes","Firmadas / obligados","Anual","100 %","<95 %","Cumplimiento"],
+["Registros críticos íntegros (auditoría de muestreo)","Completos y sin alteración / muestra","Mensual","100 %","<98 %","Calidad"],
+["Eventos con legal hold activado en plazo","Holds ≤ 24 h / eventos graves","Por evento","100 %","Cualquier fallo","Cumplimiento"],
+["Conciliación facturación ↔ despacho","Diferencias no explicadas","Mensual","0","≥ 1","Cumplimiento + Finanzas"],
+["Errores de identificación donante/receptor","Nº eventos","Mensual","0","≥ 1 (CAPA inmediata)","Calidad"],
+["Reacciones transfusionales notificadas en plazo","Notificadas en plazo / totales","Mensual","100 %","<100 %","Hemovigilancia"],
+["Desviaciones de temperatura con respuesta documentada","Con bitácora / totales","Mensual","100 %","<100 %","Banco de Sangre"],
+["Unidades descartadas por causa","Nº y % por causa","Mensual","Tendencia ↓","+20 % vs. media","Banco de Sangre"],
+["% corridas analíticas válidas (CCI)","Válidas / totales","Mensual","≥ 98 %","<95 %","Laboratorio"],
+["Reactivos con consejería documentada","Actas / reactivos confirmados","Mensual","100 %","<100 %","Dirección Médica"],
+["Consentimientos completos (auditoría de muestreo)","Completos / muestra","Mensual","100 %","<98 %","Calidad"],
+["% cumplimiento mantenimiento y calibración","Ejecutado / programado","Mensual","≥ 95 %","<90 %","Biomédico"],
+["Equipos críticos con verificación diaria","LC firmadas / días operados","Mensual","100 %","<98 %","Jefes de sede"],
+["% personal con competencia vigente en procesos críticos","Vigentes / requeridos","Trimestral","100 %","<95 %","RRHH"],
+["Documentos del SGC vigentes (no vencidos de revisión)","Vigentes / totales","Mensual","≥ 95 %","<90 %","Calidad"],
+["No conformidades abiertas > 30 días","Nº","Mensual","≤ 3","> 6","Calidad"],
+["CAPA cerradas con eficacia verificada","Cerradas eficaces / cerradas","Trimestral","≥ 90 %","<75 %","Calidad"],
+["Trazabilidad completa donante→receptor (muestreo)","Cadenas completas / muestra","Trimestral","100 %","<100 %","Banco de Sangre"],
+["Accidentes ocupacionales con exposición","Nº y con profilaxis en plazo","Mensual","0 sin gestión","Cualquiera sin gestión","Bioseguridad"],
+["Restauraciones de respaldo probadas con éxito","Éxitos / pruebas","Trimestral","100 %","<100 %","TI"],
+["Brechas de datos personales gestionadas en plazo","Gestionadas / detectadas","Por evento","100 %","Cualquier fallo","Cumplimiento + TI"]];
+$('#kpiBody').innerHTML=KPI.map((k,i)=>`<tr><td class="cod">${String(i+1).padStart(2,'0')}</td><td><b>${k[0]}</b></td><td class="sm">${k[1]}</td><td>${k[2]}</td><td class="sm">${k[3]}</td><td class="sm">${k[4]}</td><td class="sm">${k[5]}</td></tr>`).join('');
+
+/* ---------- PLAN ---------- */
+const PLAN=[
+["Días 1–30 · Acciones críticas","Blindaje inmediato y arranque del programa",[
+ ["Validación jurídica de fechas, alcance y estado del recurso del CMD","Gerencia Gral.","Abogado penalista externo","—","Opinión escrita recibida","P1"],
+ ["Nombramiento del responsable de cumplimiento (acta)","Gerencia Gral.","Decisión + acta","HC-CMP-PR-002 (borrador)","Acta firmada","P1"],
+ ["Comunicado de intangibilidad de registros y no destrucción de evidencia","Gerencia Gral.","1 página + difusión","Base de HC-CMP-PR-005","100 % del personal notificado","P1"],
+ ["Vía rápida V1 operando: temperatura, identificación, reactivos, reacciones, descarte","Calidad + dueños","POE vía rápida","5 docs V1","Registros generándose","P1"],
+ ["Canal de denuncias mínimo viable","Cumplimiento","Buzón + correo + registro","HC-CMP-FR-001 (v0)","Canal anunciado","P1"],
+ ["Auditoría de completitud de registros de descargo (12 meses)","Calidad","Equipo interno","Informe AUD","Informe con brechas honestas","P1"]]],
+["Días 31–60 · Normalización documental","El papel del programa",[
+ ["Matriz de riesgos penales aprobada","Cumplimiento","Taller con dueños de proceso","HC-CMP-MT-001","Matriz firmada","P1"],
+ ["Políticas: cumplimiento, ética, antifraude, datos personales","Cumplimiento + Gerencia","Redacción + revisión legal","POL-001/002/003/005","4 políticas aprobadas","P1"],
+ ["Procedimientos: canal, investigación, preservación de evidencia","Cumplimiento","Redacción","PR-003/004/005","3 PR aprobados","P1"],
+ ["Refuerzos penales a consentimientos y liberación","Dueños de proceso","Revisión médica y legal","DON-PR-003, TRF-FR-003, PRO-PR-005","Versiones reforzadas vigentes","P1"],
+ ["Bitácora de respuesta a alarmas implantada","Biomédico + Banco","Formato + entrenamiento","Refuerzo EQP-PR-004","Bitácora en uso en 4 sedes","P1"]]],
+["Días 61–90 · Implementación","Programa operando antes del 5-nov",[
+ ["Programa de prevención integrado y adoptado por la Dirección","Gerencia Gral.","Sesión formal","HC-CMP-PR-001 + acta","Acta de adopción (≤ 31-oct)","P1"],
+ ["Capacitación penal: directivos, garantes y personal crítico","RRHH + Cumplimiento","Jornadas por sede","HC-CMP-PL-001","≥ 90 % capacitado","P1"],
+ ["Régimen disciplinario vinculado al programa","RRHH","Actualización de reglamento","PR-004 + reglamento","Reglamento comunicado","P1"],
+ ["Debida diligencia de terceros críticos (gestor de residuos, referencia, transporte)","Cumplimiento + Compras","Expedientes","HC-CMP-PR-006","Terceros críticos evaluados","P2"],
+ ["KPIs 1–8 midiendo y reportando a Gerencia","Cumplimiento","Tablero","RG-005 ampliado","Primer reporte mensual","P1"]]],
+["Días 91–180 · Auditoría y mejoras","Probar que funciona",[
+ ["Simulacro de evento grave con legal hold","Cumplimiento","Ejercicio de mesa","PR-005","Informe del simulacro","P1"],
+ ["Auditoría interna del programa penal + SGC crítico","Calidad","Auditor interno formado","PG-001 adelantado (alcance B16)","Informe con hallazgos","P1"],
+ ["Continuación del cronograma V1 (bloques B2–B8 según plan)","Dueños de proceso","Según V1","Docs V1","Hitos M3–M7 de V1","P2"],
+ ["Conciliación facturación-despacho institucionalizada","Finanzas + Cumplimiento","Rutina mensual","POL-003 anexo","3 meses sin diferencias","P2"],
+ ["Primera revisión del programa con ajustes","Cumplimiento","Informe a Dirección","PL-001","Acta de revisión","P1"]]],
+["Días 181–365 · Madurez y preparación ISO 15189","Del cumplimiento a la acreditación",[
+ ["Ciclo completo de auditoría interna ISO 15189 + habilitación (B13–B14 de V1)","Calidad","Equipo auditor","LC-002/003","Cobertura total de procesos","P1"],
+ ["Revisión por la dirección con entradas de calidad + penal","Gerencia Gral.","Sesión anual","FR-013 ampliado","Acta con decisiones y recursos","P1"],
+ ["Recalibración de metas de KPIs con línea base real","Calidad + Cumplimiento","Datos de 6+ meses","MT-007","Metas ajustadas","P2"],
+ ["Evaluación externa del programa penal (abogado o consultor)","Gerencia Gral.","Revisión independiente","Informe externo","Dictamen de idoneidad","P2"],
+ ["Decisión formal sobre ruta de acreditación ISO 15189","Dirección","Análisis costo-beneficio","Plan estratégico","Decisión documentada","P3"]]]];
+$('#planBody').innerHTML=PLAN.map(p=>`<div class="phase"><div class="hd"><b>${p[0]}</b><span>${p[1]}</span></div>
+<div class="tablewrap" style="border:0;border-radius:0"><table><thead><tr><th style="min-width:230px">Acción</th><th>Responsable</th><th>Recursos</th><th>Documento</th><th>KPI / evidencia</th><th>Prior.</th></tr></thead><tbody>
+${p[2].map(a=>`<tr><td><b>${a[0]}</b></td><td class="sm">${a[1]}</td><td class="sm">${a[2]}</td><td class="cod" style="white-space:normal">${a[3]}</td><td class="sm">${a[4]}</td><td><span class="tag ${a[5]==='P1'?'rC':a[5]==='P2'?'rM':'rB'}">${a[5]}</span></td></tr>`).join('')}
+</tbody></table></div></div>`).join('');
+</script>
+</body>
+</html>

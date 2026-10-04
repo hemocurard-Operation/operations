@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HC-SGC-MC-01 · Documento Maestro Consolidado — Sistema de Gestión de Calidad HemoCura</title>
+<style>
+:root{
+  --ink:#16232B; --ink2:#3D4E58; --muted:#6E7F8A;
+  --burg:#8C1D2F; --gold:#A8862B; --teal:#1F6F6B;
+  --paper:#FBFAF8; --panel:#F3F5F6; --rule:#DDE3E7; --white:#fff;
+  --red:#B3261E; --amber:#B26A00; --green:#2E6B3E; --blue:#1F5C8C;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0; background:var(--paper); color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  font-size:15px; line-height:1.62; -webkit-font-smoothing:antialiased;
+}
+.wrap{display:flex; align-items:flex-start; max-width:1500px; margin:0 auto}
+
+/* ---------- navegación ---------- */
+aside{
+  position:sticky; top:0; width:290px; flex:0 0 290px; height:100vh; overflow-y:auto;
+  background:var(--ink); color:#C3CFD6; padding:26px 0 40px;
+}
+aside .brand{padding:0 22px 18px; border-bottom:1px solid #2C3B44; margin-bottom:14px}
+aside .brand b{display:block; color:#fff; font-size:15px; letter-spacing:.02em}
+aside .brand span{display:block; font-size:11px; color:#8399A5; margin-top:5px; letter-spacing:.08em; text-transform:uppercase}
+aside nav a{
+  display:flex; gap:10px; padding:7px 22px; color:#B6C6CE; text-decoration:none; font-size:12.5px;
+  border-left:3px solid transparent;
+}
+aside nav a:hover{background:#1D2C35; color:#fff; border-left-color:var(--gold)}
+aside nav a .c{color:#7E96A3; font-variant-numeric:tabular-nums; flex:0 0 62px; font-size:11px; padding-top:2px}
+aside .navgrp{padding:16px 22px 5px; font-size:10.5px; letter-spacing:.14em; text-transform:uppercase; color:#6C848F}
+
+main{flex:1; min-width:0; background:var(--white)}
+.inner{max-width:1000px; padding:0 56px 90px}
+
+/* ---------- portada ---------- */
+.hero{padding:64px 0 40px; border-bottom:3px double var(--rule)}
+.eyebrow{font-size:11px; letter-spacing:.18em; text-transform:uppercase; color:var(--burg); font-weight:700; margin-bottom:16px}
+h1{font-family:Georgia,"Iowan Old Style","Times New Roman",serif; font-size:40px; line-height:1.14; margin:0 0 16px; letter-spacing:-.015em}
+.lede{font-size:17px; color:var(--ink2); max-width:76ch; margin:0 0 26px}
+.stamp{display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:1px; background:var(--rule); border:1px solid var(--rule)}
+.stamp div{background:var(--white); padding:12px 14px; font-size:13px}
+.stamp b{display:block; font-size:10.5px; letter-spacing:.11em; text-transform:uppercase; color:var(--muted); margin-bottom:4px; font-weight:700}
+
+/* ---------- secciones ---------- */
+section{padding:44px 0 8px; border-bottom:1px solid var(--rule)}
+.sec-head{display:flex; gap:20px; align-items:flex-start}
+.sec-code{
+  flex:0 0 92px; font-size:11px; font-weight:700; letter-spacing:.06em; color:var(--burg);
+  border-top:2px solid var(--burg); padding-top:8px; font-variant-numeric:tabular-nums;
+}
+.sec-head > div:last-child{flex:1; min-width:0}
+h2{font-family:Georgia,serif; font-size:26px; line-height:1.22; margin:0 0 14px; letter-spacing:-.01em}
+h3{font-size:15px; letter-spacing:.03em; text-transform:uppercase; color:var(--burg); margin:32px 0 10px; font-weight:700}
+h4{font-size:14.5px; margin:22px 0 8px; color:var(--ink)}
+p{margin:0 0 13px; max-width:82ch}
+ul,ol{margin:0 0 14px; padding-left:20px; max-width:82ch}
+li{margin-bottom:6px}
+
+/* ---------- tablas ---------- */
+.tw{overflow-x:auto; margin:14px 0 20px; border:1px solid var(--rule)}
+table{border-collapse:collapse; width:100%; font-size:13px; background:var(--white)}
+th{
+  background:var(--panel); text-align:left; padding:9px 11px; font-size:10.5px;
+  letter-spacing:.09em; text-transform:uppercase; color:var(--ink2); font-weight:700;
+  border-bottom:1px solid var(--rule); white-space:nowrap;
+}
+td{padding:9px 11px; border-bottom:1px solid #EDF0F2; vertical-align:top}
+tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#FAFBFB}
+.n{font-variant-numeric:tabular-nums; white-space:nowrap}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:12px; white-space:nowrap}
+
+/* ---------- chips ---------- */
+.chip{
+  display:inline-block; font-size:10px; font-weight:700; letter-spacing:.06em; text-transform:uppercase;
+  padding:2px 7px; border-radius:2px; vertical-align:middle; white-space:nowrap;
+}
+.leg{background:#F6E4E7; color:#7A1526}
+.iso{background:#E2ECF4; color:#1B4F76}
+.bp{background:#E6F0E9; color:#26583A}
+.est{background:#F7EEDC; color:#7A5F13}
+.pend{background:#FBE9DA; color:#8A4A10}
+.legal{background:#EEE9F5; color:#4B3A72}
+
+/* ---------- semáforo ---------- */
+.dot{display:inline-block; width:9px; height:9px; border-radius:50%; margin-right:6px; vertical-align:middle}
+.d-red{background:var(--red)} .d-amb{background:var(--amber)} .d-yel{background:#C9A227}
+.d-grn{background:var(--green)} .d-blu{background:var(--blue)} .d-gry{background:#B6BFC4}
+
+/* ---------- bloques ---------- */
+.note{border-left:3px solid var(--gold); background:#FCF9F1; padding:13px 16px; margin:16px 0; font-size:14px}
+.warn{border-left:3px solid var(--burg); background:#FCF3F4; padding:13px 16px; margin:16px 0; font-size:14px}
+.ok{border-left:3px solid var(--teal); background:#F1F7F6; padding:13px 16px; margin:16px 0; font-size:14px}
+.note b,.warn b,.ok b{color:var(--ink)}
+
+.kpi{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:1px; background:var(--rule); border:1px solid var(--rule); margin:18px 0}
+.kpi div{background:var(--white); padding:14px}
+.kpi .v{font-family:Georgia,serif; font-size:27px; line-height:1; color:var(--burg)}
+.kpi .l{font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin-top:7px}
+
+.ledger{border:1px solid var(--rule); border-left:3px solid var(--ink); padding:0; margin:18px 0}
+.ledger .row{display:flex; gap:0; border-bottom:1px solid #EDF0F2}
+.ledger .row:last-child{border-bottom:none}
+.ledger .a{flex:0 0 210px; padding:11px 14px; background:var(--panel); font-size:12.5px; font-weight:600}
+.ledger .b{flex:1; padding:11px 14px; font-size:13px}
+
+.foot{margin-top:44px; padding-top:20px; border-top:3px double var(--rule); font-size:12px; color:var(--muted)}
+.foot p{max-width:none}
+a.src{color:var(--blue); text-decoration:none; border-bottom:1px dotted var(--blue)}
+
+@media print{
+  aside{display:none} .inner{padding:0 10px} body{font-size:11px}
+  section{page-break-inside:avoid; border-bottom:1px solid #ccc}
+}
+@media (max-width:1080px){
+  aside{display:none} .inner{padding:0 22px 60px} h1{font-size:30px}
+  .sec-head{flex-direction:column; gap:8px} .sec-code{flex:none; display:inline-block}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<aside>
+  <div class="brand"><b>HemoCura · HC-SGC</b><span>Documento maestro consolidado</span></div>
+  <nav>
+    <div class="navgrp">Consolidación</div>
+    <a href="#s0"><span class="c">MC-00</span><span>Nota de consolidación</span></a>
+    <a href="#s1"><span class="c">MC-01</span><span>Resumen ejecutivo</span></a>
+    <a href="#s2"><span class="c">MC-02</span><span>Inventario documental</span></a>
+    <a href="#s3"><span class="c">MC-03</span><span>Revisión adversarial</span></a>
+    <a href="#s4"><span class="c">MC-04</span><span>Registro de decisiones</span></a>
+    <div class="navgrp">Sistema consolidado</div>
+    <a href="#s5"><span class="c">MC-05</span><span>Marco normativo</span></a>
+    <a href="#s6"><span class="c">MC-06</span><span>Alcance dual</span></a>
+    <a href="#s7"><span class="c">MC-07</span><span>Gobierno y RACI</span></a>
+    <a href="#s8"><span class="c">MC-08</span><span>Nomenclatura única</span></a>
+    <a href="#s9"><span class="c">MC-09</span><span>Lista maestra documental</span></a>
+    <a href="#s10"><span class="c">MC-10</span><span>Mapa de procesos</span></a>
+    <div class="navgrp">Control</div>
+    <a href="#s11"><span class="c">MC-11</span><span>Cronograma reconciliado</span></a>
+    <a href="#s12"><span class="c">MC-12</span><span>Registro de riesgos</span></a>
+    <a href="#s13"><span class="c">MC-13</span><span>Tablero de indicadores</span></a>
+    <a href="#s14"><span class="c">MC-14</span><span>Estados y trazabilidad</span></a>
+    <a href="#s15"><span class="c">MC-15</span><span>Quality Gates</span></a>
+    <div class="navgrp">Cierre</div>
+    <a href="#s16"><span class="c">MC-16</span><span>Vacíos del proyecto</span></a>
+    <a href="#s17"><span class="c">MC-17</span><span>Dashboard</span></a>
+    <a href="#s18"><span class="c">MC-18</span><span>Próximos entregables</span></a>
+  </nav>
+</aside>
+
+<main>
+<div class="inner">
+
+<div class="hero">
+  <div class="eyebrow">Documento controlado · Consolida y sustituye documentos previos</div>
+  <h1>Documento Maestro Consolidado<br>del Sistema de Gestión de Calidad</h1>
+  <p class="lede">Un solo documento de referencia para el HC-SGC. Integra el Plan Maestro 2026–2027 y el Plan de Ejecución, elimina duplicaciones, resuelve las cuatro contradicciones detectadas entre ambos, y fija una fuente única de verdad para gobierno, nomenclatura, cronograma, riesgos e indicadores.</p>
+  <div class="stamp">
+    <div><b>Código</b>HC-SGC-MC-01 · v2.0</div>
+    <div><b>Fecha</b>19 de agosto de 2026</div>
+    <div><b>Alcance</b>Santiago · Puerto Plata · Tenares · SFM</div>
+    <div><b>Estado</b>Borrador para aprobación del Consejo de Socios</div>
+    <div><b>Sustituye</b>HC-PLA (secciones duplicadas) · HC-SGC-PE-01</div>
+    <div><b>Documentos integrados</b>4</div>
+  </div>
+</div>
+
+<section id="s0">
+<div class="sec-head"><div class="sec-code">MC-00</div><div>
+<h2>Nota de consolidación: por qué existe este documento</h2>
+
+<p>El proyecto ha producido cuatro entregables en tres conversaciones. Los cuatro son útiles, pero dos de ellos —el Plan Maestro y el Plan de Ejecución— cubren el mismo terreno con <b>codificaciones distintas, horizontes temporales distintos y matrices de riesgo distintas</b>. Esa es exactamente la situación que la instrucción 37 del proyecto prohíbe: una colección de documentos en lugar de un sistema.</p>
+
+<p>Un auditor que reciba hoy los cuatro documentos preguntará cuál gobierna. Si la respuesta no es inmediata y única, el hallazgo no es documental: es de control de documentos, cláusula 8.3 de ISO 15189:2022 <span class="chip iso">Requisito ISO</span>. El sistema documental de una organización que aspira a acreditarse no puede tener dos planes vigentes que digan cosas diferentes sobre el mismo cronograma.</p>
+
+<div class="warn"><b>Regla de jerarquía que este documento establece:</b> HC-SGC-MC-01 es la fuente única de verdad para gobierno, alcance, nomenclatura, cronograma, riesgos, indicadores y puertas de decisión. Los documentos previos conservan valor únicamente en las materias donde este documento remite expresamente a ellos —desarrollo comercial, funnel médico, CRM y presentaciones—. Toda contradicción se resuelve a favor de HC-SGC-MC-01.</div>
+
+<h3>Qué se hizo con cada documento</h3>
+<div class="ledger">
+  <div class="row"><div class="a">Plan Maestro 2026–2027<br><span class="mono">HC-PLA-00 a 30</span></div><div class="b"><b>Integrado parcialmente y reclasificado.</b> Sus secciones de gobierno, riesgos, RACI, cronograma y presupuesto se absorben aquí. Sus secciones comerciales (14 a 19: programa comercial, segmentación médica, funnel, visita médica, CRM, materiales) se separan como documento independiente y se reemiten con código propio: pertenecen al plan de negocio, no al SGC.</div></div>
+  <div class="row"><div class="a">Plan de Ejecución del SGC<br><span class="mono">HC-SGC-PE-01</span></div><div class="b"><b>Absorbido íntegramente.</b> Su contenido de fases, gates, indicadores y arranque de 14 días se incorpora corregido. Pasa a estado <i>derogado por consolidación</i>; no debe circular más como documento vigente.</div></div>
+  <div class="row"><div class="a">Presentación a socios<br><span class="mono">HC-SGC-PR-01</span></div><div class="b"><b>Vigente, requiere una corrección.</b> Sigue siendo el instrumento de decisión ante el Consejo. Debe actualizarse el cronograma para reflejar el calendario reconciliado de la sección MC-11 y la fecha de verificación legislativa de MC-05.</div></div>
+  <div class="row"><div class="a">Presentación al personal<br><span class="mono">HC-SGC-PR-02</span></div><div class="b"><b>Vigente sin cambios de fondo.</b> Se mantiene la decisión de excluir el riesgo legislativo. Solo se ajusta el calendario mostrado al personal para que coincida con MC-11.</div></div>
+</div>
+
+<div class="note"><b>Sobre la conversación no recuperable.</b> El proyecto contiene una conversación cuyo contenido no está disponible para esta consolidación. Si en ella se produjo algún entregable, no está reflejado aquí. <span class="chip pend">Pendiente de verificación</span> — Gustavo debe confirmar si existe material adicional que deba integrarse antes de aprobar la versión definitiva.</div>
+</div></div>
+</section>
+
+<section id="s1">
+<div class="sec-head"><div class="sec-code">MC-01</div><div>
+<h2>Resumen ejecutivo</h2>
+
+<p>Ocho conclusiones sostienen todo el proyecto. Las seis primeras venían de los documentos previos y se confirman; las dos últimas surgen de esta consolidación y no estaban en ningún documento anterior.</p>
+
+<div class="tw"><table>
+<thead><tr><th style="width:26px">#</th><th>Conclusión</th><th>Consecuencia práctica</th><th style="width:90px">Estado</th></tr></thead>
+<tbody>
+<tr><td class="n">1</td><td><b>Alcance dual.</b> ISO 15189 acredita laboratorios médicos. El banco de sangre se opera bajo el marco regulatorio dominicano; el laboratorio se acredita bajo ISO 15189:2022.</td><td>Un sistema documental, dos alcances. Reduce el proyecto entre 40 % y 60 % respecto de intentar acreditar todo.</td><td><span class="dot d-grn"></span>Confirmada</td></tr>
+<tr><td class="n">2</td><td><b>La triple función gerencial es un hallazgo de imparcialidad</b>, no un problema de agenda.</td><td>Corrección de costo cero. Es la decisión número uno y no depende de presupuesto.</td><td><span class="dot d-red"></span>Abierta</td></tr>
+<tr><td class="n">3</td><td><b>La ruta crítica pasa por una contratación:</b> el Coordinador de Operaciones.</td><td>Sin ese rol, la redacción documental y la estandarización entre las cuatro sedes no arrancan.</td><td><span class="dot d-red"></span>Abierta</td></tr>
+<tr><td class="n">4</td><td><b>La versión de norma aplicable debe confirmarse por escrito</b> ante el organismo acreditador antes de presupuestar.</td><td>Diferencia real de esfuerzo entre esquemas. Una consulta escrita cuesta cero y bloquea un error de presupuesto.</td><td><span class="dot d-amb"></span>Consulta a enviar</td></tr>
+<tr><td class="n">5</td><td><b>Riesgo legislativo R-01.</b> Existe un proyecto de ley unificado en el Senado que prohibiría el lucro en obtención, procesamiento y distribución de sangre.</td><td>Afecta el modelo económico del banco de sangre, no al laboratorio ni a la cámara hiperbárica. Requiere vigilancia formal y un escenario de reconversión.</td><td><span class="dot d-red"></span>Vigente</td></tr>
+<tr><td class="n">6</td><td><b>Los POE se redactan desde la práctica real</b>, no desde plantillas.</td><td>Un POE que describe lo que nadie hace genera no conformidad en la primera auditoría. Observar antes de escribir.</td><td><span class="dot d-grn"></span>Principio adoptado</td></tr>
+<tr><td class="n">7</td><td><b>El proyecto tenía dos planes vigentes contradictorios.</b> Doce meses en un documento, veintidós en otro; dos matrices de riesgo sin correspondencia; dos codificaciones incompatibles.</td><td>Resuelto por este documento. Sin consolidación, el propio proyecto de calidad habría sido el primer hallazgo de la auditoría.</td><td><span class="dot d-yel"></span>Resuelta aquí</td></tr>
+<tr><td class="n">8</td><td><b>Ninguna nomenclatura previa cumplía la regla del propio proyecto.</b> <span class="mono">HC-PLA-13</span> y <span class="mono">HC-SGC-PE-04</span> son numeraciones de secciones, no códigos de documento controlado.</td><td>Se adopta una nomenclatura única en MC-08 antes de emitir el primer documento operativo. Corregir después obliga a reemitir todo.</td><td><span class="dot d-yel"></span>Resuelta aquí</td></tr>
+</tbody></table></div>
+
+<h3>Lo que hay que decidir en la próxima reunión del Consejo</h3>
+<ol>
+<li><b>Separar las funciones gerenciales.</b> Definir quién asume la gerencia comercial para que el responsable del SGC no reporte a la línea comercial. Costo cero, efecto inmediato sobre el hallazgo de imparcialidad.</li>
+<li><b>Autorizar la contratación del Coordinador de Operaciones</b> y la designación del Responsable de Calidad. Son el desbloqueo de todo lo demás.</li>
+<li><b>Aprobar la consulta escrita al organismo acreditador</b> sobre versión de norma, esquema aplicable y requisitos de alcance.</li>
+<li><b>Instruir vigilancia legislativa formal sobre R-01</b> con asesor legal externo y un informe trimestral al Consejo.</li>
+<li><b>Aprobar este documento como fuente única</b> y derogar formalmente el Plan de Ejecución.</li>
+</ol>
+</div></div>
+</section>
+
+<section id="s2">
+<div class="sec-head"><div class="sec-code">MC-02</div><div>
+<h2>Inventario de los documentos del proyecto</h2>
+
+<p>Identificación completa de lo producido hasta la fecha, con su disposición. Esta tabla es el primer registro real de la futura Lista Maestra de Documentos.</p>
+
+<div class="tw"><table>
+<thead><tr><th>Documento</th><th>Formato</th><th>Contenido</th><th>Disposición</th><th>Reemplazado por</th></tr></thead>
+<tbody>
+<tr>
+<td><b>Plan Maestro HemoCura 2026–2027</b><br><span class="mono">31 secciones</span></td>
+<td>HTML</td>
+<td>Estructura organizativa, organigrama, gap ISO 15189, arquitectura documental, competencias, programa de formación de seis niveles, equipamiento, estrategia comercial, funnel de diez etapas, CRM, 11 proyectos con ruta crítica, 22 riesgos, RACI, presupuesto, plan 30-60-90, roadmap 12 meses</td>
+<td><span class="chip est">Escisión</span> Contenido de calidad absorbido aquí; contenido comercial se separa</td>
+<td>MC-01 (calidad) + nuevo documento de plan comercial</td>
+</tr>
+<tr>
+<td><b>Plan de Ejecución del SGC</b><br><span class="mono">HC-SGC-PE-01 · 13 secciones</span></td>
+<td>HTML</td>
+<td>Seis conclusiones, gobierno del proyecto, arquitectura documental de cuatro niveles, seis fases en 22 meses, puertas de decisión, 12 indicadores, 8 riesgos críticos, estructura presupuestaria, arranque de 14 días</td>
+<td><span class="chip leg">Derogado</span> por consolidación</td>
+<td>HC-SGC-MC-01 v2.0</td>
+</tr>
+<tr>
+<td><b>Presentación a socios</b><br><span class="mono">HC-SGC-PR-01 · 13 diapositivas</span></td>
+<td>PPTX</td>
+<td>Tesis de inversión, cuatro activos organizativos, alcance dual, hallazgo de imparcialidad, ruta crítica, riesgo legislativo con escenario de contingencia, verificación ante acreditador, control financiero por fases, matriz de riesgo, cuatro decisiones solicitadas</td>
+<td><span class="chip bp">Vigente</span> con corrección de cronograma</td>
+<td>—</td>
+</tr>
+<tr>
+<td><b>Presentación al personal</b><br><span class="mono">HC-SGC-PR-02 · 13 diapositivas</span></td>
+<td>PPTX</td>
+<td>Por qué existe el sistema, qué es una no conformidad y por qué reportarla no es acusar, cinco reglas del registro, programa de formación de seis niveles, línea de tiempo, compromiso mutuo</td>
+<td><span class="chip bp">Vigente</span> con corrección de cronograma</td>
+<td>—</td>
+</tr>
+<tr>
+<td><b>Conversación no recuperable</b></td>
+<td>—</td>
+<td><span class="chip pend">Pendiente de verificación</span> — contenido no disponible</td>
+<td>A confirmar por Gustavo</td>
+<td>—</td>
+</tr>
+</tbody></table></div>
+
+<h3>Solapamiento medido entre los dos planes</h3>
+<div class="tw"><table>
+<thead><tr><th>Materia</th><th>En Plan Maestro</th><th>En Plan de Ejecución</th><th>¿Coinciden?</th></tr></thead>
+<tbody>
+<tr><td>Gobierno y órganos de decisión</td><td>Sí, con organigrama</td><td>Sí, con cuatro órganos y frecuencias</td><td><span class="dot d-amb"></span>Complementarios, no idénticos</td></tr>
+<tr><td>Matriz RACI</td><td>Sección 24, RACI general</td><td>RACI resumido de entregables mayores</td><td><span class="dot d-amb"></span>Dos RACI distintas</td></tr>
+<tr><td>Riesgos</td><td>22 riesgos</td><td>8 riesgos críticos</td><td><span class="dot d-red"></span>Sin correspondencia de códigos</td></tr>
+<tr><td>Cronograma</td><td>Roadmap 12 meses + plan 30-60-90</td><td>Seis fases en 22 meses</td><td><span class="dot d-red"></span>Contradictorios</td></tr>
+<tr><td>Arquitectura documental</td><td>Sección propia</td><td>Cuatro niveles con codificación</td><td><span class="dot d-red"></span>Codificaciones distintas</td></tr>
+<tr><td>Indicadores</td><td>Dashboard KPI mixto calidad/comercial</td><td>12 indicadores de SGC</td><td><span class="dot d-amb"></span>Mezcla de dominios</td></tr>
+<tr><td>Presupuesto</td><td>Marco por categorías</td><td>Estructura sin cifras inventadas</td><td><span class="dot d-grn"></span>Compatibles</td></tr>
+</tbody></table></div>
+</div></div>
+</section>
+
+<section id="s3">
+<div class="sec-head"><div class="sec-code">MC-03</div><div>
+<h2>Revisión adversarial de los documentos existentes</h2>
+
+<p>Antes de consolidar, los cuatro documentos se auditaron desde cuatro perspectivas. Lo que sigue son los hallazgos reales, no una formalidad.</p>
+
+<h3>Como auditor de ISO 15189</h3>
+<div class="tw"><table>
+<thead><tr><th style="width:60px">Hallazgo</th><th>Descripción</th><th>Cláusula</th><th>Corrección en este documento</th></tr></thead>
+<tbody>
+<tr><td><b>A-01</b><br><span class="dot d-red"></span>Mayor</td><td>Dos documentos de planificación vigentes con cronogramas contradictorios y sin relación de precedencia declarada.</td><td>Control de documentos</td><td>MC-00 fija jerarquía; MC-11 reconcilia el calendario</td></tr>
+<tr><td><b>A-02</b><br><span class="dot d-red"></span>Mayor</td><td>Ningún documento tiene aún control de versiones operativo: no hay elaborador, revisor y aprobador nominados ni firma; no hay lista maestra.</td><td>Control de documentos</td><td>MC-09 abre la lista maestra; MC-18 sitúa el procedimiento de control documental como primer entregable</td></tr>
+<tr><td><b>A-03</b><br><span class="dot d-amb"></span>Menor</td><td>Los códigos usados (<span class="mono">HC-PLA-13</span>, <span class="mono">HC-SGC-PE-04</span>) numeran secciones, no documentos. Un código de documento controlado no puede reutilizarse como índice interno.</td><td>Control de documentos</td><td>MC-08 establece nomenclatura única y diccionario</td></tr>
+<tr><td><b>A-04</b><br><span class="dot d-amb"></span>Menor</td><td>Se declara un programa de formación de seis niveles sin criterios de evaluación de competencia asociados. Formación no es competencia.</td><td>Personal</td><td>MC-09 incorpora el procedimiento de evaluación de competencia como documento obligatorio de Fase 2</td></tr>
+<tr><td><b>A-05</b><br><span class="dot d-amb"></span>Menor</td><td>No hay ningún documento sobre gestión del cambio, pese a que el proyecto entero es un cambio organizativo mayor.</td><td>Mejora</td><td>MC-16 lo registra como vacío; MC-09 lo programa</td></tr>
+</tbody></table></div>
+
+<h3>Como inspector sanitario</h3>
+<ul>
+<li><b>La habilitación no aparece en ninguna parte.</b> Los documentos hablan de acreditación ISO y de cumplimiento regulatorio en abstracto, pero no registran el estado de habilitación de cada una de las cuatro sedes ante la autoridad sanitaria, ni las fechas de vencimiento, ni quién las renueva. Un inspector no pregunta por ISO: pregunta por la habilitación vigente y el exequátur del director técnico. <span class="chip pend">Pendiente de verificación</span> por sede.</li>
+<li><b>La hemovigilancia figura como rol adicional asignado a un coordinador.</b> Funciona en organizaciones pequeñas, pero debe quedar por escrito quién la ejerce, con qué autoridad y a quién reporta un evento adverso transfusional fuera de horario. Hoy no está.</li>
+<li><b>No hay registro del reporte periódico a la autoridad</b> más allá de una tarea suelta en el plan 30-60-90. Debe ser un procedimiento con responsable, plazo y acuse.</li>
+<li><b>Residuos biosanitarios, agua y manejo de derrames</b> aparecen mencionados pero sin documento asignado ni evidencia esperada.</li>
+</ul>
+
+<h3>Como director de banco de sangre</h3>
+<ul>
+<li><b>La cadena de frío no tiene tratamiento proporcional a su criticidad.</b> Es el proceso donde una falla destruye producto y compromete al paciente, y en los documentos ocupa el mismo espacio que la gestión de compras. Debe tener procedimiento propio, mapeo térmico, alarmas con escalamiento nominal y criterio documentado de evaluación de producto tras excursión de temperatura.</li>
+<li><b>Cuatro sedes multiplican por cuatro cada riesgo logístico</b> y ningún documento diferencia qué procesos se ejecutan en cuál. Antes de redactar un solo POE hay que saber qué hace realmente cada sede: colecta, procesamiento, almacenamiento, despacho o solo toma de muestras.</li>
+<li><b>La trazabilidad unidad–donante–receptor</b> se menciona como concepto. No hay descripción de cómo se reconstruye hoy ni de si el sistema informático actual lo permite. Sin eso no se puede hacer look-back.</li>
+<li><b>El plan asume disponibilidad de personal para redactar documentos</b> mientras siguen operando cuatro sedes. Esa carga no está cuantificada en ningún sitio.</li>
+</ul>
+
+<h3>Como especialista en gestión de riesgos</h3>
+<ul>
+<li><b>Dos registros de riesgo sin correspondencia</b> significa que ninguno se está usando. Se unifican en MC-12.</li>
+<li><b>Ningún riesgo tiene riesgo residual declarado</b>, solo nivel inicial. Sin residual no se puede decidir si el control es suficiente.</li>
+<li><b>El riesgo de concentración de conocimiento en una persona no está registrado.</b> Gustavo concentra hoy tres funciones y es también el motor del proyecto. Si se ausenta, el proyecto se detiene. Ese es un riesgo del proyecto, no de la operación, y faltaba.</li>
+<li><b>No hay criterio de aceptación de riesgo.</b> Falta declarar qué nivel de riesgo la Dirección acepta sin acción adicional.</li>
+</ul>
+
+<div class="ok"><b>Resultado de la revisión.</b> Cinco hallazgos de auditoría, cuatro observaciones de inspección, cuatro de dirección técnica y cuatro de riesgos. Trece de esos diecisiete se corrigen en este documento; los cuatro restantes —habilitación por sede, alcance real de cada sede, capacidad del sistema informático y carga de trabajo— dependen de información que solo HemoCura puede aportar y se listan en MC-16.</div>
+</div></div>
+</section>
+
+<section id="s4">
+<div class="sec-head"><div class="sec-code">MC-04</div><div>
+<h2>Registro de decisiones del proyecto</h2>
+
+<p>Las decisiones tomadas hasta hoy, con su motivo e impacto. A partir de este documento, ninguna decisión estructural se toma sin quedar registrada aquí.</p>
+
+<div class="tw"><table>
+<thead><tr><th style="width:52px">ID</th><th style="width:80px">Fecha</th><th>Decisión</th><th>Motivo</th><th>Documentos afectados</th></tr></thead>
+<tbody>
+<tr><td class="mono">D-01</td><td class="n">Ago 2026</td><td>Limitar el alcance de acreditación ISO 15189 al laboratorio; operar el banco de sangre bajo marco regulatorio nacional</td><td>ISO 15189 acredita laboratorios médicos, no productores de hemocomponentes</td><td>Todos</td></tr>
+<tr><td class="mono">D-02</td><td class="n">Ago 2026</td><td>Un solo sistema documental para las dos líneas, diferenciado solo en procedimientos técnicos</td><td>Evita duplicar control documental, no conformidades y competencia</td><td>MC-08, MC-09</td></tr>
+<tr><td class="mono">D-03</td><td class="n">Ago 2026</td><td>El Responsable de Calidad nunca reporta a la gerencia comercial</td><td>Imparcialidad <span class="chip iso">ISO</span></td><td>MC-07</td></tr>
+<tr><td class="mono">D-04</td><td class="n">Ago 2026</td><td>Presentar primero al Consejo de Socios, después al personal</td><td>Comunicar sin respaldo formal quema credibilidad para la segunda convocatoria</td><td>PR-01, PR-02</td></tr>
+<tr><td class="mono">D-05</td><td class="n">Ago 2026</td><td>No incluir el riesgo legislativo en la presentación al personal</td><td>Genera alarma sin capacidad de acción a ese nivel; el Consejo sí debe verlo</td><td>PR-02</td></tr>
+<tr><td class="mono">D-06</td><td class="n">Ago 2026</td><td>No inventar cifras presupuestarias ni proyecciones de ingreso</td><td>Un presupuesto inventado desacredita el documento entero ante el Consejo</td><td>MC-11, Plan comercial</td></tr>
+<tr><td class="mono">D-07</td><td class="n">19 ago 2026</td><td><b>Consolidar en HC-SGC-MC-01 y derogar HC-SGC-PE-01</b></td><td>Dos planes vigentes contradictorios son un hallazgo de control documental</td><td>Todos</td></tr>
+<tr><td class="mono">D-08</td><td class="n">19 ago 2026</td><td><b>Separar el contenido comercial del SGC</b> en documento independiente</td><td>El funnel médico y el CRM no son parte del sistema de calidad y contaminan su alcance</td><td>Plan Maestro</td></tr>
+<tr><td class="mono">D-09</td><td class="n">19 ago 2026</td><td><b>Adoptar nomenclatura única</b> antes de emitir cualquier documento operativo</td><td>Renombrar cuarenta documentos después cuesta más que decidirlo ahora</td><td>MC-08, MC-09</td></tr>
+<tr><td class="mono">D-10</td><td class="n">19 ago 2026</td><td><b>Reconciliar el cronograma en 24 meses</b> con seis fases y doce puertas</td><td>Doce meses no alcanzan con cuatro sedes y sin personal dedicado; veintidós no cerraba el ciclo de mejora</td><td>MC-11, PR-01, PR-02</td></tr>
+</tbody></table></div>
+</div></div>
+</section>
+
+<section id="s5">
+<div class="sec-head"><div class="sec-code">MC-05</div><div>
+<h2>Marco normativo con fecha de verificación</h2>
+
+<p>Cada referencia lleva su naturaleza declarada. Nunca se presenta una recomendación como obligación.</p>
+
+<div class="tw"><table>
+<thead><tr><th>Referencia</th><th>Naturaleza</th><th>Qué exige en lo que nos afecta</th><th>Verificación</th></tr></thead>
+<tbody>
+<tr><td><b>Decreto 349-04</b><br>Reglamento para la habilitación y funcionamiento de bancos de sangre y servicios de transfusión</td><td><span class="chip leg">Obligación legal RD</span></td><td>Habilitación, responsable de calidad designado, obligatoriedad de tamizaje previo a toda transfusión, prescripción médica, prohibiciones de despacho, selección de donantes conforme a normas técnicas</td><td>Texto localizado y consultado. <b>Confirmar vigencia y modificaciones posteriores ante la autoridad sanitaria.</b></td></tr>
+<tr><td><b>Ley 42-01</b> General de Salud</td><td><span class="chip leg">Obligación legal RD</span></td><td>Marco general de habilitación de establecimientos de salud y potestad sancionadora</td><td>Vigente según fuentes oficiales consultadas</td></tr>
+<tr><td><b>Resolución 000017-2019</b></td><td><span class="chip leg">Obligación legal RD</span></td><td>Referida en documentos previos del proyecto</td><td><span class="chip pend">Pendiente de verificación</span> — obtener texto oficial completo, confirmar título exacto, vigencia y aplicabilidad antes de citarla en cualquier documento controlado</td></tr>
+<tr><td><b>ISO 15189:2022</b> Laboratorios clínicos — requisitos de calidad y competencia</td><td><span class="chip iso">Requisito normativo</span></td><td>Imparcialidad, competencia del personal, control de documentos y registros, gestión del riesgo, procesos pre-analítico, analítico y post-analítico, auditoría interna, revisión por la dirección</td><td>Versión 2022 vigente. <b>Confirmar por escrito qué versión aplica el organismo acreditador</b> antes de presupuestar</td></tr>
+<tr><td><b>Proyecto de ley unificado del Sistema Nacional de Sangre</b></td><td><span class="chip legal">Riesgo legislativo</span></td><td>La Comisión de Salud Pública del Senado unificó tres iniciativas afines sobre el sistema nacional de sangre. El texto establece que la donación será voluntaria y no remunerada, y prohíbe la venta de sangre y derivados así como cualquier forma de lucro en la obtención, procesamiento o distribución. Contempla un régimen de faltas leves y graves. La comisión continuaba el análisis del proyecto unificado antes de su aprobación definitiva</td><td>Prensa y comunicación oficial del Senado, mayo de 2026. <b>No es ley.</b> Verificar estado de trámite trimestralmente</td></tr>
+<tr><td><b>Ley 87-01</b> Sistema Dominicano de Seguridad Social</td><td><span class="chip leg">Obligación legal RD</span></td><td>Relación con ARS, facturación y requisitos de prestador</td><td><span class="chip pend">Pendiente</span> — alcance concreto sobre HemoCura a confirmar</td></tr>
+<tr><td><b>Protección de datos personales</b></td><td><span class="chip leg">Obligación legal RD</span></td><td>Tratamiento de datos de donantes y pacientes, consentimiento, conservación y cesión</td><td><span class="chip pend">Pendiente de verificación</span> — identificar norma vigente y su reglamento. <b>Requiere validación legal</b></td></tr>
+<tr><td><b>Responsabilidad penal y civil</b></td><td><span class="chip legal">Requiere validación legal</span></td><td>Falsificación o alteración de registros, negligencia profesional, omisión de controles, violación de confidencialidad</td><td><b>No se emite interpretación jurídica.</b> Un asesor legal dominicano debe pronunciarse sobre el encuadre concreto antes de que cualquier documento del SGC afirme consecuencias penales</td></tr>
+<tr><td><b>Residuos biosanitarios · infraestructura sanitaria · equipos médicos · legislación laboral</b></td><td><span class="chip pend">No evaluado</span></td><td>—</td><td>Sin norma identificada aún en el proyecto. Es una brecha real, registrada en MC-16</td></tr>
+<tr><td><b>AABB, OPS/OMS, guías de medicina transfusional</b></td><td><span class="chip bp">Buena práctica</span></td><td>Referencia técnica para procesos de banco de sangre no cubiertos por ISO 15189</td><td>Uso voluntario. No citar como obligación</td></tr>
+</tbody></table></div>
+
+<div class="warn"><b>Sobre el riesgo R-01.</b> El proyecto de ley afecta al modelo económico del banco de sangre, no al laboratorio clínico ni a la cámara hiperbárica. Esto refuerza la decisión D-01: el activo que se está construyendo —sistema de calidad, personal competente, trazabilidad— conserva valor íntegro bajo cualquier escenario, incluida una eventual reconversión hacia servicios de laboratorio y transfusión sin lucro sobre el componente. La vigilancia legislativa debe ser formal, trimestral y documentada, con asesor legal externo y reporte al Consejo.</div>
+</div></div>
+</section>
+
+<section id="s6">
+<div class="sec-head"><div class="sec-code">MC-06</div><div>
+<h2>Alcance dual del sistema</h2>
+
+<div class="tw"><table>
+<thead><tr><th style="width:130px">Línea</th><th>Marco de referencia</th><th>Objetivo</th><th>Evidencia de éxito</th></tr></thead>
+<tbody>
+<tr><td><b>Laboratorio clínico</b></td><td>ISO 15189:2022 <span class="chip iso">ISO</span></td><td>Acreditación del alcance analítico definido</td><td>Certificado de acreditación con alcance declarado</td></tr>
+<tr><td><b>Banco de sangre</b></td><td>Decreto 349-04 y normas técnicas nacionales <span class="chip leg">Legal</span>, con AABB como referencia técnica <span class="chip bp">BP</span></td><td>Cumplimiento regulatorio demostrable y trazabilidad completa</td><td>Habilitación vigente, inspección superada sin hallazgos críticos, trazabilidad reconstruible unidad–donante–receptor</td></tr>
+<tr><td><b>Cámara hiperbárica</b></td><td><span class="chip pend">Pendiente de verificación</span></td><td>Determinar marco aplicable y si entra o no en el SGC</td><td>Decisión documentada de inclusión o exclusión de alcance</td></tr>
+</tbody></table></div>
+
+<div class="note"><b>La cámara hiperbárica es un cabo suelto.</b> Aparece como línea de servicio en el diagnóstico organizativo pero ningún documento define si queda dentro o fuera del alcance del SGC ni bajo qué marco se regula. Dejar un servicio clínico fuera del sistema sin decisión escrita es exactamente el tipo de omisión que un auditor detecta. Decisión requerida en Fase 0.</div>
+
+<h3>Qué hace realmente cada sede</h3>
+<p>Antes de redactar un solo procedimiento hay que completar esta tabla. Hoy está vacía, y sin ella no se sabe cuántos POE se necesitan ni cuáles aplican a cada lugar.</p>
+<div class="tw"><table>
+<thead><tr><th>Proceso</th><th>Santiago</th><th>Puerto Plata</th><th>Tenares</th><th>SFM</th></tr></thead>
+<tbody>
+<tr><td>Captación y colecta de donantes</td><td colspan="4" style="text-align:center"><span class="chip pend">Pendiente de verificación — completar en diagnóstico</span></td></tr>
+<tr><td>Procesamiento y fraccionamiento</td><td colspan="4" style="text-align:center"><span class="chip pend">Pendiente de verificación</span></td></tr>
+<tr><td>Tamizaje serológico</td><td colspan="4" style="text-align:center"><span class="chip pend">Pendiente de verificación</span></td></tr>
+<tr><td>Inmunohematología</td><td colspan="4" style="text-align:center"><span class="chip pend">Pendiente de verificación</span></td></tr>
+<tr><td>Almacenamiento de componentes</td><td colspan="4" style="text-align:center"><span class="chip pend">Pendiente de verificación</span></td></tr>
+<tr><td>Despacho y transporte</td><td colspan="4" style="text-align:center"><span class="chip pend">Pendiente de verificación</span></td></tr>
+<tr><td>Laboratorio clínico general</td><td colspan="4" style="text-align:center"><span class="chip pend">Pendiente de verificación</span></td></tr>
+<tr><td>Habilitación sanitaria vigente y fecha</td><td colspan="4" style="text-align:center"><span class="chip pend">Pendiente de verificación — prioridad máxima</span></td></tr>
+</tbody></table></div>
+</div></div>
+</section>
+
+<section id="s7">
+<div class="sec-head"><div class="sec-code">MC-07</div><div>
+<h2>Gobierno del sistema y RACI unificada</h2>
+
+<h3>Órganos</h3>
+<div class="tw"><table>
+<thead><tr><th>Órgano</th><th>Composición</th><th>Frecuencia</th><th>Decide sobre</th></tr></thead>
+<tbody>
+<tr><td><b>Consejo de Socios</b></td><td>Socios</td><td>Trimestral</td><td>Presupuesto, puertas de decisión, alcance, contrataciones de dirección</td></tr>
+<tr><td><b>Comité de Calidad</b></td><td>Dirección Técnica, Responsable de Calidad, Coordinador de Operaciones, Gerencia Comercial</td><td>Mensual</td><td>Aprobación documental, no conformidades mayores, plan de auditorías, indicadores</td></tr>
+<tr><td><b>Célula de implantación</b></td><td>Responsable de Calidad y un referente por sede</td><td>Semanal</td><td>Avance documental, incidencias de implantación, capacitación</td></tr>
+<tr><td><b>Revisión por la Dirección</b></td><td>Socios y Comité de Calidad</td><td>Semestral</td><td>Adecuación, suficiencia y eficacia del SGC <span class="chip iso">ISO</span></td></tr>
+</tbody></table></div>
+
+<div class="warn"><b>Regla estructural no negociable.</b> El Responsable de Calidad reporta a la Dirección Técnica o directamente al Consejo de Socios; nunca a la Gerencia Comercial. La liberación técnica de resultados es potestad exclusiva de la Dirección Técnica o del profesional delegado por escrito. Ninguna meta comercial puede condicionar un criterio técnico, y esa independencia debe estar declarada en documento firmado. <span class="chip iso">ISO · imparcialidad</span></div>
+
+<h3>Roles y estado real</h3>
+<div class="tw"><table>
+<thead><tr><th>Rol</th><th>Responsabilidad primaria</th><th>Suplencia</th><th>Estado</th></tr></thead>
+<tbody>
+<tr><td>Dirección Técnica</td><td>Autoridad técnica final, liberación de resultados, aprobación de POE técnicos</td><td><span class="chip pend">A definir</span></td><td>Existe — formalizar delegaciones por escrito y verificar exequátur</td></tr>
+<tr><td>Responsable de Calidad</td><td>Custodia documental, auditorías internas, no conformidades y CAPA, indicadores</td><td><span class="chip pend">A definir</span></td><td><b>A designar en Fase 0</b></td></tr>
+<tr><td>Coordinador de Operaciones</td><td>Estandarización entre sedes, ejecución del cronograma, control de recursos</td><td><span class="chip pend">A definir</span></td><td><b>A contratar en Fase 1 — nodo de ruta crítica</b></td></tr>
+<tr><td>Gerencia Comercial</td><td>Requisitos del cliente, contratos, satisfacción. Sin autoridad sobre liberación técnica</td><td>—</td><td>Existe — acotar funciones y separar de la gerencia general</td></tr>
+<tr><td>Encargado de sede</td><td>Cumplimiento local, registros, primer nivel de no conformidad</td><td>Mutua entre sedes</td><td>Designar uno por sede en Fase 1</td></tr>
+<tr><td>Responsable de hemovigilancia</td><td>Recepción, investigación y reporte de eventos adversos transfusionales y de donante</td><td><b>Obligatoria — incluye fuera de horario</b></td><td><b>Vacío detectado.</b> Asignar nominalmente en Fase 1</td></tr>
+</tbody></table></div>
+
+<h3>RACI de los entregables mayores</h3>
+<p>Sustituye a las dos RACI previas. R ejecuta, A responde ante el Consejo, C se consulta, I se informa.</p>
+<div class="tw"><table>
+<thead><tr><th>Entregable</th><th>R</th><th>A</th><th>C</th><th>I</th></tr></thead>
+<tbody>
+<tr><td>Política y objetivos de calidad</td><td>Calidad</td><td>Socios</td><td>Dir. Técnica</td><td>Todo el personal</td></tr>
+<tr><td>Procedimiento de control de documentos</td><td>Calidad</td><td>Dir. Técnica</td><td>Coord. Operaciones</td><td>Encargados de sede</td></tr>
+<tr><td>Mapa de procesos y manual del SGC</td><td>Calidad</td><td>Dir. Técnica</td><td>Coord. Operaciones</td><td>Encargados de sede</td></tr>
+<tr><td>POE técnicos de laboratorio</td><td>Analistas responsables</td><td>Dir. Técnica</td><td>Calidad</td><td>Personal técnico</td></tr>
+<tr><td>POE de banco de sangre</td><td>Coord. Operaciones</td><td>Dir. Técnica</td><td>Calidad</td><td>Personal de colecta</td></tr>
+<tr><td>Procedimiento de cadena de frío y excursiones</td><td>Coord. Operaciones</td><td>Dir. Técnica</td><td>Calidad</td><td>Encargados de sede</td></tr>
+<tr><td>Programa de capacitación y evaluación de competencia</td><td>Calidad</td><td>Dir. Técnica</td><td>Encargados de sede</td><td>Personal</td></tr>
+<tr><td>Inventario y plan metrológico de equipos</td><td>Coord. Operaciones</td><td>Dir. Técnica</td><td>Calidad</td><td>Comité</td></tr>
+<tr><td>Auditorías internas</td><td>Auditor interno formado</td><td>Calidad</td><td>Dir. Técnica</td><td>Comité</td></tr>
+<tr><td>Hemovigilancia y eventos adversos</td><td>Resp. hemovigilancia</td><td>Dir. Técnica</td><td>Calidad</td><td>Comité y autoridad</td></tr>
+<tr><td>Expediente de solicitud de acreditación</td><td>Calidad</td><td>Socios</td><td>Dir. Técnica</td><td>Comité</td></tr>
+<tr><td>Vigilancia legislativa R-01</td><td>Gerencia Comercial</td><td>Socios</td><td>Asesor legal externo</td><td>Comité</td></tr>
+<tr><td>Habilitaciones sanitarias por sede</td><td>Coord. Operaciones</td><td>Socios</td><td>Asesor legal</td><td>Comité</td></tr>
+</tbody></table></div>
+</div></div>
+</section>
+
+<section id="s8">
+<div class="sec-head"><div class="sec-code">MC-08</div><div>
+<h2>Nomenclatura única y diccionario</h2>
+
+<p>Los documentos previos usaron tres esquemas distintos y ninguno cumplía la regla del propio proyecto. Se adopta uno solo, y se adopta ahora, antes de emitir el primer documento operativo.</p>
+
+<h3>Estructura del código</h3>
+<p style="font-family:ui-monospace,monospace; font-size:17px; background:var(--panel); padding:14px 16px; border-left:3px solid var(--burg)">HC-[TIPO]-[ÁREA]-[NNN]-V[nn]</p>
+<p>Ejemplo: <span class="mono">HC-PRG-CAL-001-V01</span> es el procedimiento de gestión número 1 del área de calidad, versión 1. El código no cambia nunca; solo cambia la versión.</p>
+
+<h3>Diccionario de tipos</h3>
+<div class="tw"><table>
+<thead><tr><th>Código</th><th>Tipo</th><th>Nivel</th><th>Aprueba</th></tr></thead>
+<tbody>
+<tr><td class="mono">MAN</td><td>Manual del SGC</td><td>I</td><td>Socios</td></tr>
+<tr><td class="mono">POL</td><td>Política</td><td>I</td><td>Socios</td></tr>
+<tr><td class="mono">PRG</td><td>Procedimiento de gestión</td><td>II</td><td>Dirección Técnica</td></tr>
+<tr><td class="mono">POE</td><td>Procedimiento operativo estándar</td><td>III</td><td>Dirección Técnica</td></tr>
+<tr><td class="mono">INS</td><td>Instructivo o protocolo</td><td>III</td><td>Responsable de área</td></tr>
+<tr><td class="mono">FOR</td><td>Formulario o lista de verificación</td><td>IV</td><td>Responsable de Calidad</td></tr>
+<tr><td class="mono">PLA</td><td>Plan</td><td>I o II</td><td>Según alcance</td></tr>
+<tr><td class="mono">MAT</td><td>Matriz o registro maestro</td><td>II</td><td>Responsable de Calidad</td></tr>
+<tr><td class="mono">LIS</td><td>Listado maestro</td><td>II</td><td>Responsable de Calidad</td></tr>
+<tr><td class="mono">MC</td><td>Documento maestro consolidado</td><td>I</td><td>Socios</td></tr>
+<tr><td class="mono">PR</td><td>Presentación institucional</td><td>—</td><td>Según destinatario</td></tr>
+</tbody></table></div>
+
+<div class="note"><b>Conflicto resuelto.</b> La abreviatura <span class="mono">MAN</span> se reserva exclusivamente para <i>Manual</i>. El mantenimiento de equipos usa el área <span class="mono">EQU</span>, nunca <span class="mono">MAN</span>. Este era un choque previsto en las instrucciones del proyecto y queda cerrado aquí.</div>
+
+<h3>Diccionario de áreas</h3>
+<div class="tw"><table>
+<thead><tr><th>Código</th><th>Área</th><th>Código</th><th>Área</th></tr></thead>
+<tbody>
+<tr><td class="mono">CAL</td><td>Calidad y mejora</td><td class="mono">EQU</td><td>Equipos, metrología y mantenimiento</td></tr>
+<tr><td class="mono">LAB</td><td>Laboratorio clínico</td><td class="mono">COM</td><td>Compras, proveedores e inventario</td></tr>
+<tr><td class="mono">DON</td><td>Donación, colecta y donantes</td><td class="mono">BIO</td><td>Bioseguridad, residuos e instalaciones</td></tr>
+<tr><td class="mono">HEM</td><td>Hemocomponentes: proceso, almacén, despacho</td><td class="mono">INF</td><td>Información, informática y datos</td></tr>
+<tr><td class="mono">HVG</td><td>Hemovigilancia y eventos adversos</td><td class="mono">RRH</td><td>Personal, competencia y formación</td></tr>
+<tr><td class="mono">FRI</td><td>Cadena de frío</td><td class="mono">CON</td><td>Continuidad y emergencias</td></tr>
+</tbody></table></div>
+
+<h3>Reglas de versión</h3>
+<ul>
+<li>El código se conserva de por vida. La versión se incrementa en cada modificación aprobada.</li>
+<li>Toda modificación exige: descripción del cambio en el historial, evaluación de documentos relacionados, evaluación de capacitación necesaria y actualización de la lista maestra.</li>
+<li>Copia impresa sin sello de control es copia no controlada. Debe decirlo el pie de cada documento.</li>
+<li>Ningún documento entra en vigor sin elaborador, revisor y aprobador nominados y fecha de vigencia.</li>
+</ul>
+</div></div>
+</section>
+
+<section id="s9">
+<div class="sec-head"><div class="sec-code">MC-09</div><div>
+<h2>Lista maestra de documentos — índice preliminar</h2>
+
+<p>Cuarenta y dos documentos en tres oleadas. No es la lista definitiva: el diagnóstico añadirá POE técnicos según lo que cada sede haga realmente. El orden importa más que la cantidad — los cinco primeros son los que permiten emitir todos los demás.</p>
+
+<h3>Oleada 1 · Fundacionales — sin ellos no se puede emitir nada más</h3>
+<div class="tw"><table>
+<thead><tr><th>Código</th><th>Documento</th><th>Registro que genera</th><th>Riesgo que controla</th></tr></thead>
+<tbody>
+<tr><td class="mono">HC-PRG-CAL-001</td><td><b>Control de documentos y registros</b></td><td>Lista maestra, acuses de distribución</td><td>Versiones obsoletas en punto de uso</td></tr>
+<tr><td class="mono">HC-POL-CAL-001</td><td>Política de calidad y compromiso de imparcialidad</td><td>Acta de aprobación, difusión firmada</td><td>Presión comercial sobre criterio técnico</td></tr>
+<tr><td class="mono">HC-MAN-CAL-001</td><td>Manual del SGC: alcance, mapa de procesos, estructura</td><td>Acta de aprobación</td><td>Alcance indefinido</td></tr>
+<tr><td class="mono">HC-PRG-CAL-002</td><td>No conformidades, acciones correctivas y verificación de eficacia</td><td>Registro de NC, expedientes CAPA</td><td>Fallas que se repiten</td></tr>
+<tr><td class="mono">HC-PRG-CAL-003</td><td>Gestión de riesgos y oportunidades</td><td>Registro maestro de riesgos</td><td>Riesgos no tratados</td></tr>
+</tbody></table></div>
+
+<h3>Oleada 2 · Gestión y soporte</h3>
+<div class="tw"><table>
+<thead><tr><th>Código</th><th>Documento</th><th>Código</th><th>Documento</th></tr></thead>
+<tbody>
+<tr><td class="mono">HC-PRG-CAL-004</td><td>Auditoría interna</td><td class="mono">HC-PRG-RRH-001</td><td>Selección, inducción y descripción de puestos</td></tr>
+<tr><td class="mono">HC-PRG-CAL-005</td><td>Revisión por la dirección</td><td class="mono">HC-PRG-RRH-002</td><td><b>Evaluación de competencia y autorización de tareas</b></td></tr>
+<tr><td class="mono">HC-PRG-CAL-006</td><td>Quejas y reclamaciones</td><td class="mono">HC-PLA-RRH-001</td><td>Plan anual de capacitación de seis niveles</td></tr>
+<tr><td class="mono">HC-PRG-CAL-007</td><td><b>Gestión del cambio</b></td><td class="mono">HC-MAT-RRH-001</td><td>Matriz de competencias por cargo</td></tr>
+<tr><td class="mono">HC-PRG-CAL-008</td><td>Indicadores y análisis de datos</td><td class="mono">HC-PRG-EQU-001</td><td>Selección, recepción, instalación y calificación de equipos</td></tr>
+<tr><td class="mono">HC-PRG-COM-001</td><td>Compras, selección y reevaluación de proveedores</td><td class="mono">HC-PRG-EQU-002</td><td>Mantenimiento, calibración y verificación</td></tr>
+<tr><td class="mono">HC-PRG-COM-002</td><td>Recepción, inspección, cuarentena y liberación de insumos</td><td class="mono">HC-PRG-EQU-003</td><td>Falla, reparación y retiro de equipos</td></tr>
+<tr><td class="mono">HC-PRG-COM-003</td><td>Inventario, lotes, vencimientos y punto de reorden</td><td class="mono">HC-LIS-EQU-001</td><td>Inventario maestro de equipos</td></tr>
+<tr><td class="mono">HC-PRG-BIO-001</td><td>Bioseguridad, EPP y exposición ocupacional</td><td class="mono">HC-PRG-INF-001</td><td>Gestión de información, respaldo y ciberseguridad</td></tr>
+<tr><td class="mono">HC-PRG-BIO-002</td><td>Residuos biosanitarios y derrames</td><td class="mono">HC-PRG-INF-002</td><td>Confidencialidad y protección de datos</td></tr>
+<tr><td class="mono">HC-PRG-BIO-003</td><td>Limpieza, desinfección y control ambiental</td><td class="mono">HC-PLA-CON-001</td><td>Continuidad operacional y emergencias</td></tr>
+</tbody></table></div>
+
+<h3>Oleada 3 · Técnicos — cantidad final depende del diagnóstico por sede</h3>
+<div class="tw"><table>
+<thead><tr><th>Código</th><th>Documento</th><th>Criticidad</th></tr></thead>
+<tbody>
+<tr><td class="mono">HC-POE-FRI-001</td><td><b>Cadena de frío: monitoreo, alarmas y excursiones de temperatura</b></td><td><span class="dot d-red"></span>Máxima</td></tr>
+<tr><td class="mono">HC-POE-FRI-002</td><td>Mapeo térmico de cámaras y equipos de almacenamiento</td><td><span class="dot d-red"></span>Máxima</td></tr>
+<tr><td class="mono">HC-POE-FRI-003</td><td>Transporte y embalaje validado de componentes</td><td><span class="dot d-red"></span>Máxima</td></tr>
+<tr><td class="mono">HC-POE-DON-001</td><td>Registro, identificación y consentimiento del donante</td><td><span class="dot d-red"></span>Máxima</td></tr>
+<tr><td class="mono">HC-POE-DON-002</td><td>Entrevista, selección y diferimiento</td><td><span class="dot d-red"></span>Máxima</td></tr>
+<tr><td class="mono">HC-POE-DON-003</td><td>Flebotomía y reacciones adversas del donante</td><td><span class="dot d-red"></span>Máxima</td></tr>
+<tr><td class="mono">HC-POE-HEM-001</td><td>Rotulación, identificación unívoca y trazabilidad</td><td><span class="dot d-red"></span>Máxima</td></tr>
+<tr><td class="mono">HC-POE-HEM-002</td><td>Procesamiento y separación de componentes</td><td><span class="dot d-amb"></span>Alta</td></tr>
+<tr><td class="mono">HC-POE-HEM-003</td><td>Cuarentena, liberación y rechazo de unidades</td><td><span class="dot d-red"></span>Máxima</td></tr>
+<tr><td class="mono">HC-POE-HEM-004</td><td>Almacenamiento, inventario y despacho</td><td><span class="dot d-amb"></span>Alta</td></tr>
+<tr><td class="mono">HC-POE-HEM-005</td><td>Producto no conforme, devoluciones, retiro y eliminación</td><td><span class="dot d-amb"></span>Alta</td></tr>
+<tr><td class="mono">HC-POE-LAB-001</td><td>Tamizaje serológico y control de calidad interno</td><td><span class="dot d-red"></span>Máxima</td></tr>
+<tr><td class="mono">HC-POE-LAB-002</td><td>Inmunohematología: grupo, Rh, escrutinio y pruebas cruzadas</td><td><span class="dot d-red"></span>Máxima</td></tr>
+<tr><td class="mono">HC-POE-LAB-003</td><td>Fase preanalítica: solicitud, muestra, identificación y rechazo</td><td><span class="dot d-amb"></span>Alta</td></tr>
+<tr><td class="mono">HC-POE-LAB-004</td><td>Fase postanalítica: validación, informe y comunicación de valores críticos</td><td><span class="dot d-amb"></span>Alta</td></tr>
+<tr><td class="mono">HC-POE-LAB-005</td><td>Verificación de métodos y control de calidad externo</td><td><span class="dot d-amb"></span>Alta</td></tr>
+<tr><td class="mono">HC-PRG-HVG-001</td><td>Hemovigilancia, eventos adversos, look-back y trace-back</td><td><span class="dot d-red"></span>Máxima</td></tr>
+</tbody></table></div>
+
+<div class="note"><b>Criterio de no duplicación.</b> Antes de crear cualquier documento nuevo se verifica si otro ya cumple esa función. Cuarenta y dos documentos bien integrados superan a ciento veinte redundantes. Cada POE debe declarar qué riesgo controla y qué registro genera; si no puede responder a esas dos preguntas, no se emite.</div>
+</div></div>
+</section>
+
+<section id="s10">
+<div class="sec-head"><div class="sec-code">MC-10</div><div>
+<h2>Mapa de procesos</h2>
+
+<h3>Estratégicos</h3>
+<p>Gobierno y dirección · Planificación de la calidad · Gestión de riesgos · Revisión por la dirección · Vigilancia regulatoria y legislativa · Gestión del cambio</p>
+
+<h3>Operativos — cadena principal</h3>
+<div style="font-family:ui-monospace,monospace; font-size:12px; background:var(--panel); padding:16px; border-left:3px solid var(--burg); overflow-x:auto; line-height:1.9">
+promoción → captación → registro e identificación → consentimiento → entrevista y selección → flebotomía → rotulación<br>
+&nbsp;&nbsp;&nbsp;&nbsp;↓<br>
+transporte interno → procesamiento y fraccionamiento → tamizaje → inmunohematología → cuarentena<br>
+&nbsp;&nbsp;&nbsp;&nbsp;↓<br>
+<b>liberación</b> → almacenamiento → inventario → despacho → transporte → entrega → <b>hemovigilancia</b><br>
+&nbsp;&nbsp;&nbsp;&nbsp;↓ (ramal permanente)<br>
+producto no conforme → investigación → look-back / trace-back → eliminación y registro
+</div>
+<p><b>Proceso transversal crítico:</b> cadena de frío, que atraviesa desde la colecta hasta la entrega y no pertenece a ninguna etapa en exclusiva. Por eso tiene procedimiento propio y responsable nominado.</p>
+<p><b>Proceso paralelo:</b> laboratorio clínico general, con sus tres fases —preanalítica, analítica y postanalítica— y su propio ciclo de control de calidad interno y externo. Es el que se acredita.</p>
+
+<h3>De soporte</h3>
+<p>Personal y competencia · Compras y proveedores · Almacén e inventario · Equipos y metrología · Informática y datos · Mantenimiento e infraestructura · Limpieza y bioseguridad · Residuos · Finanzas · Seguridad física · Gestión documental</p>
+
+<h3>Ficha de proceso — estructura obligatoria</h3>
+<p>Cada proceso se documenta con: código, nombre, objetivo, alcance, propietario, entradas y proveedores, actividades, salidas y clientes, recursos, documentos aplicables, registros generados, riesgos, controles, indicadores e interacción con otros procesos. Para procesos operativos se usa SIPOC.</p>
+
+<div class="warn"><b>Los tres puntos donde un error no se recupera.</b> Identificación del donante y de la unidad, liberación de producto, y compatibilidad transfusional. En estos tres, el diseño debe incluir doble verificación por personas distintas, registro nominal de quién ejecuta y quién verifica, y bloqueo físico o informático que impida avanzar sin la verificación. Ninguna decisión crítica puede depender de memoria, comunicación verbal o conocimiento informal.</div>
+</div></div>
+</section>
+
+<section id="s11">
+<div class="sec-head"><div class="sec-code">MC-11</div><div>
+<h2>Cronograma reconciliado</h2>
+
+<p>El Plan Maestro proponía doce meses; el Plan de Ejecución, veintidós. Ninguno era correcto. Doce meses no alcanzan para cuatro sedes sin personal dedicado; veintidós terminaban antes de cerrar un ciclo completo de mejora. Se adopta un calendario de <b>veinticuatro meses</b>, contados desde la aprobación del Consejo, no desde hoy.</p>
+
+<div class="tw"><table>
+<thead><tr><th style="width:70px">Fase</th><th>Nombre</th><th style="width:80px">Meses</th><th>Contenido</th><th>Cierra con</th></tr></thead>
+<tbody>
+<tr><td class="mono"><b>F0</b></td><td>Gobernanza</td><td class="n">0–2</td><td>Acta de compromiso, designación de Responsable de Calidad, separación de funciones gerenciales, consulta al acreditador, decisión sobre cámara hiperbárica, activación de vigilancia legislativa</td><td>Gate 1</td></tr>
+<tr><td class="mono"><b>F1</b></td><td>Diagnóstico</td><td class="n">2–6</td><td>Contratación del Coordinador de Operaciones, alcance real por sede, estado de habilitaciones, inventario de equipos y calibraciones, inventario documental, evaluación del sistema informático, carga de trabajo real</td><td>Gates 2 y 3</td></tr>
+<tr><td class="mono"><b>F2</b></td><td>Diseño y documentación</td><td class="n">5–14</td><td>Oleadas 1 y 2 completas, oleada 3 de procesos críticos, mapa de procesos, matriz de competencias, registro de riesgos formal</td><td>Gates 4 y 5</td></tr>
+<tr><td class="mono"><b>F3</b></td><td>Capacitación e implantación</td><td class="n">10–18</td><td>Formación por niveles, despliegue por sede, POE en punto de uso, arranque de registros reales, evaluación de competencia</td><td>Gates 6 y 7</td></tr>
+<tr><td class="mono"><b>F4</b></td><td>Evidencia y verificación</td><td class="n">15–21</td><td>Acumulación de registros, indicadores con serie histórica, control de calidad interno y externo, primera auditoría interna completa, CAPA en curso</td><td>Gates 8, 9 y 10</td></tr>
+<tr><td class="mono"><b>F5</b></td><td>Revisión y preparación externa</td><td class="n">20–24</td><td>Revisión por la dirección, preauditoría, cierre de hallazgos críticos, expediente de solicitud</td><td>Gates 11 y 12</td></tr>
+</tbody></table></div>
+
+<div class="note"><b>Las fases se solapan a propósito.</b> La documentación empieza antes de terminar el diagnóstico, y la capacitación antes de terminar la documentación. Lo que no se solapa nunca: no se implanta un documento sin aprobar, no se audita un proceso sin implantar, y no se solicita evaluación externa sin evidencia acumulada de al menos seis meses.</div>
+
+<h3>Arranque: los primeros catorce días</h3>
+<p>Once acciones. Ninguna requiere presupuesto aprobado.</p>
+<div class="tw"><table>
+<thead><tr><th style="width:60px">Día</th><th>Acción</th><th>Resultado tangible</th></tr></thead>
+<tbody>
+<tr><td class="n">1–2</td><td>Convocar al Consejo de Socios y presentar HC-SGC-PR-01 con el cronograma corregido</td><td>Fecha de decisión agendada</td></tr>
+<tr><td class="n">2</td><td>Redactar el acta de compromiso de la Dirección, incluyendo la separación de funciones gerenciales</td><td>Borrador listo para firma</td></tr>
+<tr><td class="n">3</td><td>Redactar la consulta escrita al organismo acreditador sobre versión de norma y esquema</td><td>Comunicación enviada</td></tr>
+<tr><td class="n">3–4</td><td>Solicitar el texto oficial del proyecto de ley unificado y su estado de trámite</td><td>Solicitud radicada</td></tr>
+<tr><td class="n">4</td><td><b>Verificar el estado de habilitación sanitaria de las cuatro sedes</b></td><td>Cuatro certificados con fecha de vencimiento</td></tr>
+<tr><td class="n">4–5</td><td>Definir perfil, funciones y banda salarial del Coordinador de Operaciones</td><td>Descripción de puesto aprobada</td></tr>
+<tr><td class="n">5</td><td>Identificar candidatos para Responsable de Calidad</td><td>Terna preliminar</td></tr>
+<tr><td class="n">6–7</td><td>Levantar el inventario de documentos y registros existentes por sede</td><td>Listado inicial con estado</td></tr>
+<tr><td class="n">8</td><td>Levantar el inventario de equipos críticos y su estado de calibración</td><td>Inventario metrológico inicial</td></tr>
+<tr><td class="n">9–10</td><td>Solicitar cotizaciones de consultoría, evaluación externa y formación de auditores</td><td>Tres cotizaciones por rubro en curso</td></tr>
+<tr><td class="n">11–12</td><td>Completar la tabla de alcance real por sede de MC-06</td><td>Tabla llena, base para dimensionar los POE</td></tr>
+<tr><td class="n">13–14</td><td>Presentar HC-SGC-PR-02 al personal, por sede</td><td>Registro de difusión firmado</td></tr>
+</tbody></table></div>
+
+<h3>Presupuesto — estructura sin cifras inventadas</h3>
+<div class="tw"><table>
+<thead><tr><th>Categoría</th><th>Concepto</th><th>Clasificación</th><th>Momento</th></tr></thead>
+<tbody>
+<tr><td>Personal</td><td>Coordinador de Operaciones · Responsable de Calidad</td><td><b>Indispensable</b></td><td>F0–F1</td></tr>
+<tr><td>Formación</td><td>Fundamentos ISO 15189 para el equipo directivo · formación de auditores internos</td><td><b>Indispensable</b></td><td>F1–F3</td></tr>
+<tr><td>Metrología</td><td>Calibración de equipos críticos · mapeo térmico de cámaras</td><td><b>Indispensable</b></td><td>F1–F2</td></tr>
+<tr><td>Control de calidad</td><td>Programa de evaluación externa de la calidad</td><td><b>Indispensable</b></td><td>F3–F4</td></tr>
+<tr><td>Evaluación externa</td><td>Tasas del organismo acreditador</td><td><b>Indispensable</b></td><td>F5</td></tr>
+<tr><td>Consultoría</td><td>Acompañamiento externo especializado</td><td>Importante</td><td>F2–F4</td></tr>
+<tr><td>Tecnología</td><td>Control documental electrónico · monitoreo continuo de temperatura con alarma · respaldo</td><td>Importante</td><td>F2–F3</td></tr>
+<tr><td>Legal</td><td>Asesoría en vigilancia legislativa y protección de datos</td><td>Importante</td><td>F0 en adelante</td></tr>
+<tr><td>Infraestructura</td><td>Adecuaciones de flujo, señalización, almacenamiento</td><td>Recomendable</td><td>Según diagnóstico</td></tr>
+<tr><td>Contingencia</td><td>Respaldo eléctrico y refrigeración de emergencia</td><td>Según hallazgo de riesgo</td><td>F1–F3</td></tr>
+</tbody></table></div>
+<p>Las cifras se completan con las cotizaciones del día 9–10. <b>No se presentan al Consejo cifras estimadas sin cotización</b>: un presupuesto inventado desacredita el documento entero.</p>
+</div></div>
+</section>
+
+<section id="s12">
+<div class="sec-head"><div class="sec-code">MC-12</div><div>
+<h2>Registro maestro de riesgos</h2>
+
+<p>Unifica los dos registros previos, que no tenían correspondencia entre sí. Doce riesgos priorizados, con riesgo residual declarado — algo que ningún documento anterior incluía.</p>
+
+<div class="tw"><table>
+<thead><tr><th style="width:48px">ID</th><th>Riesgo</th><th>Consecuencia</th><th style="width:66px">Nivel</th><th>Control</th><th style="width:70px">Residual</th><th>Resp.</th></tr></thead>
+<tbody>
+<tr><td class="mono"><b>R-01</b></td><td>Aprobación de ley que prohíba el lucro en obtención, procesamiento y distribución de sangre</td><td>Modelo económico del banco de sangre inviable</td><td><span class="dot d-red"></span>Crítico</td><td>Vigilancia legislativa trimestral con asesor legal; escenario de reconversión preparado</td><td><span class="dot d-amb"></span>Alto</td><td>Socios</td></tr>
+<tr><td class="mono"><b>R-02</b></td><td>Error de identificación de donante, unidad o receptor</td><td>Reacción transfusional grave; responsabilidad legal</td><td><span class="dot d-red"></span>Crítico</td><td>Doble verificación nominal, bloqueo informático, POE-DON-001 y POE-HEM-001</td><td><span class="dot d-yel"></span>Medio</td><td>Dir. Técnica</td></tr>
+<tr><td class="mono"><b>R-03</b></td><td>Falla de cadena de frío no detectada o no evaluada</td><td>Pérdida de producto o transfusión de componente comprometido</td><td><span class="dot d-red"></span>Crítico</td><td>Monitoreo continuo con alarma escalada, mapeo térmico, criterio documentado de excursión</td><td><span class="dot d-yel"></span>Medio</td><td>Coord. Operaciones</td></tr>
+<tr><td class="mono"><b>R-04</b></td><td>Liberación de unidad sin tamizaje completo o con resultado no verificado</td><td>Transmisión de infección; incumplimiento del Decreto 349-04</td><td><span class="dot d-red"></span>Crítico</td><td>Cuarentena física e informática, liberación solo por autoridad delegada por escrito</td><td><span class="dot d-yel"></span>Medio</td><td>Dir. Técnica</td></tr>
+<tr><td class="mono"><b>R-05</b></td><td>Pérdida de trazabilidad unidad–donante–receptor</td><td>Look-back imposible; hallazgo crítico de inspección</td><td><span class="dot d-red"></span>Crítico</td><td>Evaluación del sistema informático en F1; registro redundante mientras no esté resuelto</td><td><span class="dot d-amb"></span>Alto</td><td>Coord. Operaciones</td></tr>
+<tr><td class="mono"><b>R-06</b></td><td>Habilitación sanitaria vencida o incompleta en alguna sede</td><td>Cierre administrativo de la sede</td><td><span class="dot d-red"></span>Crítico</td><td>Verificación en día 4; calendario de renovación con responsable nominal</td><td><span class="dot d-grn"></span>Bajo</td><td>Coord. Operaciones</td></tr>
+<tr><td class="mono"><b>R-07</b></td><td>Presión comercial sobre criterio técnico por concentración de funciones</td><td>Hallazgo de imparcialidad; riesgo clínico</td><td><span class="dot d-amb"></span>Alto</td><td>Separación de funciones, línea de reporte declarada por escrito</td><td><span class="dot d-grn"></span>Bajo</td><td>Socios</td></tr>
+<tr><td class="mono"><b>R-08</b></td><td><b>Concentración del proyecto en una sola persona.</b> Si Gustavo se ausenta, el proyecto se detiene</td><td>Pérdida del avance y del conocimiento del proyecto</td><td><span class="dot d-amb"></span>Alto</td><td>Designación temprana del Responsable de Calidad; documentación de decisiones en MC-04; contratación del Coordinador</td><td><span class="dot d-yel"></span>Medio</td><td>Socios</td></tr>
+<tr><td class="mono"><b>R-09</b></td><td>Apagón prolongado con falla simultánea de generador</td><td>Pérdida total de inventario de componentes</td><td><span class="dot d-amb"></span>Alto</td><td>Prueba periódica de generador con registro; plan de traslado de emergencia; alarma con escalamiento fuera de horario</td><td><span class="dot d-yel"></span>Medio</td><td>Coord. Operaciones</td></tr>
+<tr><td class="mono"><b>R-10</b></td><td>Huracán, inundación o emergencia sanitaria</td><td>Interrupción de operación en una o varias sedes</td><td><span class="dot d-amb"></span>Alto</td><td>Plan de continuidad por escenario; acuerdos de respaldo entre sedes</td><td><span class="dot d-yel"></span>Medio</td><td>Coord. Operaciones</td></tr>
+<tr><td class="mono"><b>R-11</b></td><td>Personal ejecuta procedimientos sin competencia evaluada y registrada</td><td>Error técnico; no conformidad mayor</td><td><span class="dot d-amb"></span>Alto</td><td>Matriz de competencias con autorización nominal por tarea; reevaluación periódica</td><td><span class="dot d-yel"></span>Medio</td><td>Calidad</td></tr>
+<tr><td class="mono"><b>R-12</b></td><td>Pérdida o filtración de datos de donantes y pacientes</td><td>Responsabilidad legal y daño reputacional</td><td><span class="dot d-amb"></span>Alto</td><td>Respaldo verificado, control de acceso, acuerdos de confidencialidad individuales firmados</td><td><span class="dot d-yel"></span>Medio</td><td>Informática / Calidad</td></tr>
+</tbody></table></div>
+
+<div class="note"><b>Criterio de aceptación de riesgo — a aprobar por el Consejo.</b> Propuesta: ningún riesgo con residual crítico o alto que afecte a seguridad del donante, seguridad del paciente o integridad del producto puede permanecer sin plan de acción con fecha. Los riesgos de residual medio se revisan en cada Comité de Calidad. Los de residual bajo, en la revisión por la dirección. Sin este criterio aprobado, el registro de riesgos no es operativo.</div>
+</div></div>
+</section>
+
+<section id="s13">
+<div class="sec-head"><div class="sec-code">MC-13</div><div>
+<h2>Tablero de indicadores</h2>
+
+<p>Los documentos previos mezclaban indicadores de calidad con indicadores comerciales en un mismo tablero. Se separan: aquí van solo los del SGC. Los comerciales pasan al plan de negocio.</p>
+
+<div class="tw"><table>
+<thead><tr><th style="width:56px">Código</th><th>Indicador</th><th>Fórmula</th><th style="width:70px">Frec.</th><th>Decisión que dispara</th></tr></thead>
+<tbody>
+<tr><td class="mono">K-01</td><td>Documentos aprobados sobre planificados</td><td>Aprobados ÷ planificados de la oleada</td><td>Mensual</td><td>Reasignar recursos de redacción</td></tr>
+<tr><td class="mono">K-02</td><td>Personal con competencia evaluada y vigente</td><td>Evaluados vigentes ÷ personal que ejecuta tareas críticas</td><td>Trimestral</td><td>Suspender autorización de tarea</td></tr>
+<tr><td class="mono">K-03</td><td>No conformidades abiertas por antigüedad</td><td>NC abiertas mayores de 60 días</td><td>Mensual</td><td>Escalamiento al Comité</td></tr>
+<tr><td class="mono">K-04</td><td>Eficacia verificada de acciones correctivas</td><td>CAPA cerradas con eficacia verificada ÷ CAPA cerradas</td><td>Trimestral</td><td>Revisar método de análisis causal</td></tr>
+<tr><td class="mono">K-05</td><td><b>Excursiones de temperatura</b></td><td>Excursiones registradas ÷ período, por equipo</td><td>Mensual</td><td>Intervención sobre equipo o proceso</td></tr>
+<tr><td class="mono">K-06</td><td>Producto descartado por causa</td><td>Unidades descartadas ÷ unidades colectadas, desglosado</td><td>Mensual</td><td>Actuar sobre la causa dominante</td></tr>
+<tr><td class="mono">K-07</td><td>Unidades vencidas sin utilizar</td><td>Vencidas ÷ disponibles</td><td>Mensual</td><td>Ajustar planificación de inventario</td></tr>
+<tr><td class="mono">K-08</td><td>Reacciones adversas del donante</td><td>Reacciones ÷ donaciones, por severidad</td><td>Mensual</td><td>Revisar POE de flebotomía y selección</td></tr>
+<tr><td class="mono">K-09</td><td>Eventos adversos transfusionales notificados</td><td>Eventos ÷ unidades transfundidas</td><td>Mensual</td><td>Investigación y look-back</td></tr>
+<tr><td class="mono">K-10</td><td>Equipos con calibración vigente</td><td>Vigentes ÷ equipos críticos</td><td>Mensual</td><td>Retirar equipo de uso</td></tr>
+<tr><td class="mono">K-11</td><td>Desempeño en evaluación externa de la calidad</td><td>Resultados aceptables ÷ ensayos participados</td><td>Por ciclo</td><td>Investigar método o competencia</td></tr>
+<tr><td class="mono">K-12</td><td>Hallazgos de auditoría interna cerrados en plazo</td><td>Cerrados en plazo ÷ total</td><td>Por auditoría</td><td>Revisión por la dirección</td></tr>
+<tr><td class="mono">K-13</td><td>Trazabilidad reconstruible</td><td>Casos de prueba resueltos ÷ casos ensayados por trimestre</td><td>Trimestral</td><td>Intervención sobre el sistema de información</td></tr>
+<tr><td class="mono">K-14</td><td>Quejas de clientes y usuarios por categoría</td><td>Quejas ÷ período, con tiempo de respuesta</td><td>Mensual</td><td>Acción sobre el proceso causante</td></tr>
+</tbody></table></div>
+
+<div class="warn"><b>Regla de metas.</b> Ninguno de estos indicadores lleva meta numérica en este documento. Las metas se fijan después de medir tres períodos con la línea base real de HemoCura. Una meta inventada antes de conocer la línea base solo produce cumplimiento aparente o desmoralización.</div>
+</div></div>
+</section>
+
+<section id="s14">
+<div class="sec-head"><div class="sec-code">MC-14</div><div>
+<h2>Estados de implementación y matriz de trazabilidad</h2>
+
+<p>Esta es la distinción que sostiene todo el proyecto: un documento redactado no es un requisito cumplido.</p>
+
+<div class="tw"><table>
+<thead><tr><th style="width:150px">Estado</th><th>Qué significa exactamente</th><th>Evidencia mínima que lo demuestra</th></tr></thead>
+<tbody>
+<tr><td><span class="dot d-gry"></span><b>No evaluado</b></td><td>Nadie ha mirado si existe</td><td>—</td></tr>
+<tr><td><span class="dot d-red"></span><b>No existe</b></td><td>Confirmado que no hay proceso ni documento</td><td>Registro del diagnóstico</td></tr>
+<tr><td><span class="dot d-yel"></span><b>Documentado</b></td><td>Documento redactado y aprobado, con código, versión y firmas</td><td>Documento en lista maestra con aprobación</td></tr>
+<tr><td><span class="dot d-yel"></span><b>Capacitado</b></td><td>El personal que lo ejecuta lo conoce</td><td>Registro de capacitación firmado y evaluación superada</td></tr>
+<tr><td><span class="dot d-amb"></span><b>Implementado</b></td><td>Se ejecuta en la práctica y genera los registros previstos</td><td>Registros reales, de fecha reciente, en el punto de uso</td></tr>
+<tr><td><span class="dot d-blu"></span><b>Verificado</b></td><td>Alguien distinto de quien ejecuta comprobó que se hace como está escrito</td><td>Registro de verificación con firma independiente</td></tr>
+<tr><td><span class="dot d-blu"></span><b>Auditado</b></td><td>Sometido a auditoría interna con muestreo</td><td>Informe de auditoría con hallazgos</td></tr>
+<tr><td><span class="dot d-grn"></span><b>Efectivo</b></td><td>El indicador asociado demuestra que el control funciona</td><td>Serie de datos con tendencia, sin recurrencia de la falla</td></tr>
+<tr><td><span class="dot d-amb"></span><b>Evidencia insuficiente</b></td><td>Se afirma que se hace pero no puede demostrarse</td><td>Se trata como no conforme</td></tr>
+<tr><td><span class="dot d-blu"></span><b>Requiere mejora</b></td><td>Funciona pero con oportunidad identificada</td><td>Acción de mejora abierta</td></tr>
+</tbody></table></div>
+
+<div class="warn"><b>Verde solo por evidencia.</b> Ningún requisito se marca en verde porque exista un documento. El verde exige registro real y, cuando aplique, indicador que lo respalde. Este es el criterio que separa un sistema auditable de una carpeta de papeles.</div>
+
+<h3>Matriz maestra de trazabilidad — estructura y ejemplo</h3>
+<p>Cada requisito significativo debe poder seguirse de extremo a extremo. Se construye progresivamente; empieza con los procesos críticos.</p>
+<div class="tw"><table>
+<thead><tr><th>Requisito</th><th>Proceso</th><th>Riesgo</th><th>Control</th><th>Documento</th><th>Registro</th><th>Indicador</th><th>Estado</th></tr></thead>
+<tbody>
+<tr>
+<td>Tamizaje previo a toda transfusión <span class="chip leg">Legal</span></td>
+<td>Tamizaje y liberación</td><td class="mono">R-04</td>
+<td>Cuarentena informática hasta resultado verificado</td>
+<td class="mono">HC-POE-LAB-001<br>HC-POE-HEM-003</td>
+<td>Resultado con firma de verificación; log de liberación</td>
+<td class="mono">K-11</td>
+<td><span class="dot d-gry"></span>No evaluado</td>
+</tr>
+<tr>
+<td>Conservación en condiciones adecuadas <span class="chip leg">Legal</span> <span class="chip bp">BP</span></td>
+<td>Cadena de frío</td><td class="mono">R-03</td>
+<td>Monitoreo continuo con alarma escalada y criterio de excursión</td>
+<td class="mono">HC-POE-FRI-001<br>HC-POE-FRI-002</td>
+<td>Registro continuo de temperatura; expediente de excursión</td>
+<td class="mono">K-05</td>
+<td><span class="dot d-gry"></span>No evaluado</td>
+</tr>
+<tr>
+<td>Competencia del personal <span class="chip iso">ISO</span></td>
+<td>Personal</td><td class="mono">R-11</td>
+<td>Autorización nominal por tarea, con reevaluación</td>
+<td class="mono">HC-PRG-RRH-002<br>HC-MAT-RRH-001</td>
+<td>Evaluación de competencia firmada; carta de autorización</td>
+<td class="mono">K-02</td>
+<td><span class="dot d-gry"></span>No evaluado</td>
+</tr>
+<tr>
+<td>Imparcialidad <span class="chip iso">ISO</span></td>
+<td>Gobierno</td><td class="mono">R-07</td>
+<td>Línea de reporte declarada; liberación técnica exclusiva</td>
+<td class="mono">HC-POL-CAL-001<br>HC-MAN-CAL-001</td>
+<td>Acta de compromiso firmada; organigrama publicado</td>
+<td>—</td>
+<td><span class="dot d-red"></span>No existe</td>
+</tr>
+</tbody></table></div>
+</div></div>
+</section>
+
+<section id="s15">
+<div class="sec-head"><div class="sec-code">MC-15</div><div>
+<h2>Puertas de control</h2>
+
+<p>Ninguna fase se cierra sin criterio de salida verificado. La puerta no la declara quien ejecuta: la verifica el Comité de Calidad y la aprueba el Consejo cuando implica presupuesto.</p>
+
+<div class="tw"><table>
+<thead><tr><th style="width:56px">Gate</th><th>Criterio de salida</th><th>Evidencia que lo demuestra</th><th style="width:56px">Fase</th></tr></thead>
+<tbody>
+<tr><td class="mono"><b>G1</b></td><td>Gobernanza aprobada y funciones separadas</td><td>Acta firmada por el Consejo; organigrama publicado en las cuatro sedes; Responsable de Calidad designado por escrito</td><td class="mono">F0</td></tr>
+<tr><td class="mono"><b>G2</b></td><td>Diagnóstico completo</td><td>Tabla de alcance por sede llena; habilitaciones verificadas; inventario de equipos y de documentos cerrado; evaluación del sistema informático</td><td class="mono">F1</td></tr>
+<tr><td class="mono"><b>G3</b></td><td>Brechas priorizadas y riesgos aceptados</td><td>Gap analysis con clasificación; registro de riesgos con residual y criterio de aceptación aprobado</td><td class="mono">F1</td></tr>
+<tr><td class="mono"><b>G4</b></td><td>Procesos definidos</td><td>Mapa de procesos aprobado; fichas SIPOC de los procesos críticos; propietario nominado en cada uno</td><td class="mono">F2</td></tr>
+<tr><td class="mono"><b>G5</b></td><td>Documentación crítica aprobada</td><td>Oleadas 1 y 2 completas y POE de criticidad máxima aprobados, todos en lista maestra</td><td class="mono">F2</td></tr>
+<tr><td class="mono"><b>G6</b></td><td>Personal capacitado</td><td>Registro de capacitación por documento y por persona; evaluaciones superadas</td><td class="mono">F3</td></tr>
+<tr><td class="mono"><b>G7</b></td><td>Procesos implementados</td><td>Registros reales generados en las cuatro sedes durante al menos un mes; POE en punto de uso verificado por muestreo</td><td class="mono">F3</td></tr>
+<tr><td class="mono"><b>G8</b></td><td>Evidencia suficiente</td><td>Seis meses de registros; indicadores con serie histórica; control de calidad externo con al menos un ciclo</td><td class="mono">F4</td></tr>
+<tr><td class="mono"><b>G9</b></td><td>Auditoría interna realizada</td><td>Programa ejecutado sobre todos los procesos críticos por auditor formado e independiente del área auditada</td><td class="mono">F4</td></tr>
+<tr><td class="mono"><b>G10</b></td><td>Acciones críticas cerradas con eficacia verificada</td><td>Expedientes CAPA cerrados con evidencia de eficacia, no solo de ejecución</td><td class="mono">F4</td></tr>
+<tr><td class="mono"><b>G11</b></td><td>Revisión por la dirección efectuada</td><td>Acta con decisiones, responsables, plazos y recursos asignados</td><td class="mono">F5</td></tr>
+<tr><td class="mono"><b>G12</b></td><td>Preparación para evaluación externa</td><td>Preauditoría superada; hallazgos mayores cerrados; expediente de solicitud completo</td><td class="mono">F5</td></tr>
+</tbody></table></div>
+
+<div class="note"><b>Regla de las puertas.</b> Una puerta que se abre sin cumplir su criterio deja de ser una puerta. Si el Consejo decide avanzar sin cumplir un criterio, la decisión y su motivo se registran en MC-04, y el riesgo asumido se incorpora al registro de riesgos. Avanzar es legítimo; avanzar sin registrarlo, no.</div>
+</div></div>
+</section>
+
+<section id="s16">
+<div class="sec-head"><div class="sec-code">MC-16</div><div>
+<h2>Vacíos que ningún documento del proyecto cubre todavía</h2>
+
+<p>Lo que sigue no está en ningún entregable previo ni se resuelve aquí, porque depende de información que solo HemoCura posee. Es la lista de lo que hay que averiguar antes de seguir escribiendo.</p>
+
+<div class="tw"><table>
+<thead><tr><th style="width:38px">#</th><th>Vacío</th><th>Por qué bloquea</th><th style="width:70px">Prioridad</th></tr></thead>
+<tbody>
+<tr><td class="n">1</td><td><b>Estado de habilitación sanitaria de cada sede</b>, con fecha de vencimiento y responsable de renovación</td><td>Un inspector pregunta esto antes que cualquier otra cosa. Una habilitación vencida cierra una sede</td><td><span class="dot d-red"></span>P0</td></tr>
+<tr><td class="n">2</td><td><b>Qué procesos ejecuta realmente cada sede</b></td><td>Determina cuántos POE se necesitan y cuáles aplican dónde. Sin esto no se puede dimensionar la Fase 2</td><td><span class="dot d-red"></span>P0</td></tr>
+<tr><td class="n">3</td><td><b>Capacidad real del sistema informático para reconstruir trazabilidad</b> unidad–donante–receptor</td><td>Si no la tiene, el look-back es imposible y hay que resolverlo antes de documentar nada</td><td><span class="dot d-red"></span>P0</td></tr>
+<tr><td class="n">4</td><td><b>Exequátur vigente del director técnico</b> y delegaciones escritas de liberación</td><td>Requisito legal y de imparcialidad simultáneo</td><td><span class="dot d-red"></span>P0</td></tr>
+<tr><td class="n">5</td><td><b>Inventario de equipos con estado de calibración</b></td><td>Un equipo crítico sin calibración vigente invalida los resultados que produjo</td><td><span class="dot d-red"></span>P0</td></tr>
+<tr><td class="n">6</td><td><b>Quién ejerce hemovigilancia</b>, con qué autoridad y quién responde fuera de horario</td><td>Un evento adverso transfusional no espera al horario laboral</td><td><span class="dot d-amb"></span>P1</td></tr>
+<tr><td class="n">7</td><td><b>Decisión sobre la cámara hiperbárica:</b> dentro o fuera del alcance del SGC</td><td>Un servicio clínico sin decisión escrita de alcance es una omisión detectable</td><td><span class="dot d-amb"></span>P1</td></tr>
+<tr><td class="n">8</td><td><b>Carga de trabajo real del personal</b> que debe redactar documentos mientras opera</td><td>El cronograma de Fase 2 es ficción si nadie tiene horas disponibles</td><td><span class="dot d-amb"></span>P1</td></tr>
+<tr><td class="n">9</td><td><b>Norma vigente de residuos biosanitarios</b> y de infraestructura sanitaria</td><td>Ninguna referencia identificada aún. Es cumplimiento legal, no buena práctica</td><td><span class="dot d-amb"></span>P1</td></tr>
+<tr><td class="n">10</td><td><b>Norma vigente de protección de datos</b> aplicable a datos de donantes y pacientes</td><td>Requiere validación legal antes de redactar el procedimiento de confidencialidad</td><td><span class="dot d-amb"></span>P1</td></tr>
+<tr><td class="n">11</td><td><b>Texto oficial y estado de trámite del proyecto de ley unificado</b></td><td>La evaluación de R-01 se apoya hoy en prensa, no en el texto radicado</td><td><span class="dot d-amb"></span>P1</td></tr>
+<tr><td class="n">12</td><td><b>Confirmación escrita del organismo acreditador</b> sobre versión de norma y esquema</td><td>Presupuestar sin esto es presupuestar a ciegas</td><td><span class="dot d-amb"></span>P1</td></tr>
+<tr><td class="n">13</td><td><b>Contenido de la conversación no recuperable del proyecto</b></td><td>Puede contener decisiones o entregables no reflejados en esta consolidación</td><td><span class="dot d-yel"></span>P2</td></tr>
+</tbody></table></div>
+</div></div>
+</section>
+
+<section id="s17">
+<div class="sec-head"><div class="sec-code">MC-17</div><div>
+<h2>Dashboard del proyecto</h2>
+
+<div class="kpi">
+  <div><div class="v">4</div><div class="l">Documentos producidos</div></div>
+  <div><div class="v">1</div><div class="l">Derogado por consolidación</div></div>
+  <div><div class="v">42</div><div class="l">Documentos planificados</div></div>
+  <div><div class="v">0</div><div class="l">Documentos aprobados</div></div>
+  <div><div class="v">0 %</div><div class="l">Procesos implementados</div></div>
+  <div><div class="v">12</div><div class="l">Riesgos registrados</div></div>
+  <div><div class="v">6</div><div class="l">Riesgos críticos</div></div>
+  <div><div class="v">13</div><div class="l">Vacíos de información</div></div>
+  <div><div class="v">0/12</div><div class="l">Puertas superadas</div></div>
+  <div><div class="v">24</div><div class="l">Meses de horizonte</div></div>
+</div>
+
+<div class="tw"><table>
+<thead><tr><th>Dimensión</th><th>Estado</th><th>Comentario</th></tr></thead>
+<tbody>
+<tr><td>Gobernanza</td><td><span class="dot d-red"></span>Crítico</td><td>Sin acta de compromiso ni separación de funciones. Es el bloqueo raíz</td></tr>
+<tr><td>Diagnóstico</td><td><span class="dot d-gry"></span>No evaluado</td><td>Trece vacíos abiertos, cinco de prioridad P0</td></tr>
+<tr><td>Documentación</td><td><span class="dot d-yel"></span>En desarrollo</td><td>Arquitectura y nomenclatura definidas; cero documentos operativos emitidos</td></tr>
+<tr><td>Personal</td><td><span class="dot d-red"></span>Crítico</td><td>Dos roles clave sin cubrir; ninguna competencia evaluada</td></tr>
+<tr><td>Equipos</td><td><span class="dot d-gry"></span>No evaluado</td><td>Sin inventario ni estado metrológico</td></tr>
+<tr><td>Riesgos</td><td><span class="dot d-amb"></span>Alto</td><td>Registro unificado hoy; falta aprobar criterio de aceptación</td></tr>
+<tr><td>Cumplimiento legal</td><td><span class="dot d-amb"></span>Alto</td><td>Habilitaciones sin verificar; cuatro normas sin identificar; R-01 vigente</td></tr>
+<tr><td>Indicadores</td><td><span class="dot d-yel"></span>En desarrollo</td><td>Catorce definidos; ninguno con línea base ni meta</td></tr>
+<tr><td>Auditoría</td><td><span class="dot d-gry"></span>No evaluado</td><td>Sin auditor formado</td></tr>
+<tr><td>Coherencia del sistema</td><td><span class="dot d-blu"></span>Mejorado</td><td>Cuatro contradicciones resueltas; fuente única establecida</td></tr>
+</tbody></table></div>
+
+<p><b>Lectura honesta del dashboard.</b> El proyecto tiene una arquitectura sólida y cero implementación. Eso es normal en este punto y no es un problema — el problema sería confundirlo con avance. Todo el verde que aparecerá en los próximos meses debe venir de registros, no de documentos.</p>
+</div></div>
+</section>
+
+<section id="s18">
+<div class="sec-head"><div class="sec-code">MC-18</div><div>
+<h2>Próximos entregables</h2>
+
+<div class="tw"><table>
+<thead><tr><th style="width:38px">#</th><th>Entregable</th><th>Por qué va en este orden</th><th style="width:80px">Momento</th></tr></thead>
+<tbody>
+<tr><td class="n">1</td><td><b>Acta de compromiso y resolución de la Dirección</b>, incluyendo separación de funciones gerenciales, designación del Responsable de Calidad y compromiso de recursos</td><td>Sin autorización formal, todo lo demás es trabajo especulativo. Y es la corrección de costo cero del hallazgo de imparcialidad</td><td>Inmediato</td></tr>
+<tr><td class="n">2</td><td><b>Checklist de diagnóstico</b> que cierre los trece vacíos de MC-16, organizado por sede</td><td>Es lo que convierte los vacíos en datos. Ejecutable por el personal actual sin presupuesto</td><td>Días 4–14</td></tr>
+<tr><td class="n">3</td><td><b>HC-PRG-CAL-001 · Control de documentos y registros</b></td><td>Es el único documento que permite emitir correctamente todos los demás. Emitirlo después obliga a reemitir lo anterior</td><td>Tras Gate 1</td></tr>
+<tr><td class="n">4</td><td>Consulta escrita al organismo acreditador y solicitud del texto legislativo</td><td>Cierran dos vacíos P1 sin costo y desbloquean el presupuesto</td><td>Días 3–4</td></tr>
+<tr><td class="n">5</td><td>Descripción de puesto del Coordinador de Operaciones y del Responsable de Calidad</td><td>Desbloquea la ruta crítica</td><td>Días 4–5</td></tr>
+<tr><td class="n">6</td><td>Gap analysis formal contra ISO 15189:2022 y Decreto 349-04, alimentado por el diagnóstico</td><td>Solo tiene sentido con datos reales del diagnóstico, no antes</td><td>Fase 1</td></tr>
+</tbody></table></div>
+
+<div class="ok"><b>Recomendación sobre el siguiente paso.</b> El entregable 1 es el que desbloquea todo y no cuesta nada. Redactarlo requiere una decisión del Consejo, no presupuesto. Si en las próximas dos semanas solo se hace una cosa, que sea convocar al Consejo con HC-SGC-PR-01 corregido y salir con el acta firmada.</div>
+
+<h3>Criterio de éxito del proyecto</h3>
+<p>El éxito no será tener todos los documentos. Será poder demostrar, con registros y ante un tercero, que HemoCura tiene procesos definidos, personal competente, riesgos controlados, trazabilidad reconstruible, indicadores que se usan para decidir, auditorías que encuentran cosas y acciones correctivas cuya eficacia se verifica — y que todo eso ocurre de forma rutinaria, no para la visita.</p>
+</div></div>
+</section>
+
+<div class="foot">
+<p><b>HC-SGC-MC-01 · v2.0 · 19 de agosto de 2026</b> — Documento controlado. Consolida el Plan Maestro HemoCura 2026–2027 y deroga HC-SGC-PE-01. Requiere aprobación del Consejo de Socios antes de entrar en vigor. Toda copia impresa se considera copia no controlada salvo sello en contrario.</p>
+<p>Documentos asociados vigentes: HC-SGC-PR-01 (presentación a socios) · HC-SGC-PR-02 (presentación al personal), ambos con corrección de cronograma pendiente conforme a MC-11.</p>
+<p>Elaborado por: <span class="mono">__________________</span> · Revisado por: <span class="mono">__________________</span> · Aprobado por: <span class="mono">__________________</span></p>
+<p style="margin-top:14px"><b>Historial de versiones.</b> v1.0 — Plan de Ejecución HC-SGC-PE-01, agosto 2026. v2.0 — Consolidación de los cuatro entregables del proyecto, resolución de cuatro contradicciones, adopción de nomenclatura única, reconciliación de cronograma a 24 meses, unificación del registro de riesgos con residual declarado, separación del contenido comercial e incorporación de trece vacíos de información.</p>
+</div>
+
+</div>
+</main>
+</div>
+</body>
+</html>
