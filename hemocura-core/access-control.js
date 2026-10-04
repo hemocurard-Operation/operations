@@ -31,7 +31,15 @@ const ROUTE_PERMISSION={
   internalaudits:'INTERNAL_AUDIT_VIEW',
   competencies:'COMPETENCY_VIEW',
   resources:'RESOURCES_VIEW',
-  analyticalqc:'ANALYTICAL_QC_VIEW'
+  analyticalqc:'ANALYTICAL_QC_VIEW',
+  release1:'RELEASE_GATE_VIEW',
+  uat:'RELEASE_GATE_VIEW',
+  integration:'RELEASE_GATE_VIEW',
+  continuity:'CONTINUITY_VIEW',
+  management:'MANAGEMENT_REVIEW_VIEW',
+  coldchain:'COLD_CHAIN_VIEW',
+  hemovigilance:'HEMOVIGILANCE_VIEW',
+  suppliers:'SUPPLIERS_VIEW'
 };
 
 let cache=null;

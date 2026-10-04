@@ -1,0 +1,1 @@
+import {getSupabase} from './supabase.js';const sb=()=>getSupabase();export const integrationData={score:async()=>{const {data,error}=await sb().from('vw_feature_complete_scorecard').select('*').single();if(error)throw new Error(error.message);return data}};
