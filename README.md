@@ -1,14 +1,14 @@
-# HemoCura v0.35.0 — Recursos Críticos
+# HemoCura v0.36.0 — Calidad Analítica
 
 Añade:
-- maestro de equipos;
-- mantenimiento preventivo/correctivo;
-- calibración/calificación/verificación;
-- reactivos y lotes;
-- verificación de lotes;
-- vencimientos;
-- puntos ambientales;
-- lecturas y excursiones;
+- maestro de métodos;
+- verificación/validación/reverificación;
+- planes de IQC;
+- resultados IQC;
+- flags estadísticos explicables;
+- desviaciones QC;
+- programas EQA/PT;
+- eventos EQA/PT;
 - alertas;
 - vínculo con auditoría, NC y CAPA.
 

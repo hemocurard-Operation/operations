@@ -1,20 +1,26 @@
 {
   "project": "HemoCura Operations Intelligence + QMS + Compliance",
-  "version": "0.35.0",
-  "stage": "Equipment Reagents and Environmental Control",
+  "version": "0.36.0",
+  "stage": "Analytical Quality Control and Proficiency Testing",
   "release_channel": "RC",
   "protected_files": [
     "js/config.js"
   ],
   "qms_scope": [
-    "EQUIPMENT_MASTER",
-    "MAINTENANCE",
-    "CALIBRATION",
-    "REAGENT_LOTS",
-    "ENVIRONMENTAL_MONITORING",
-    "ALERTS",
-    "NC_CAPA_LINK",
-    "AUDIT_EVIDENCE"
+    "METHOD_MASTER",
+    "METHOD_VERIFICATION",
+    "INTERNAL_QC",
+    "QC_RULES",
+    "QC_DEVIATIONS",
+    "EQA_PT",
+    "EVIDENCE",
+    "NC_CAPA_LINK"
   ],
-  "clinical_core": "LIVE-LIMITED / CONTROLLED_RELEASE"
+  "clinical_core": "LIVE-LIMITED / CONTROLLED_RELEASE",
+  "guardrails": [
+    "QC rules support process control only",
+    "System does not make clinical interpretation decisions",
+    "Out-of-control results require human review before corrective action",
+    "External proficiency results remain subject to provider and laboratory review"
+  ]
 }
