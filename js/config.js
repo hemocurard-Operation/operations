@@ -3,7 +3,7 @@
 
 export const CONFIG = {
   SUPABASE_URL: 'https://tiothqiljipdamgudvcb.supabase.co',
-  SUPABASE_PUBLISHABLE_KEY: 'sb_publishable_OO9fniHIjPS6iueOWPSIHg_p1W-iWn0L',
+  SUPABASE_PUBLISHABLE_KEY: 'sb_publishable_OO9fniHIjPS6iueOWPSIHg_p1W-iWn0',
   APP_BASE: '/operations/'
 };
 
