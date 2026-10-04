@@ -1,15 +1,16 @@
 {
   "project": "HemoCura Operations Intelligence + QMS + Compliance",
-  "version": "0.32.0",
-  "stage": "Document Control and CAPA Approval Integration",
-  "release_channel": "RC",
+  "version": "0.32.1",
+  "stage": "Boot Diagnostic Hotfix",
+  "release_channel": "HOTFIX",
+  "base_version": "0.32.0",
   "protected_files": [
     "js/config.js"
   ],
-  "qms_model": "Document lifecycle + NC/CAPA + approvals + audit",
-  "approval_integrations": [
-    "DOCUMENT_APPROVAL",
-    "CAPA_CLOSE"
-  ],
-  "clinical_core": "LIVE-LIMITED / CONTROLLED_RELEASE"
+  "fixes": [
+    "Await asynchronous mountLayout so bootstrap catches access/RLS/schema failures",
+    "Remove stale hardcoded v0.3.0 boot label",
+    "Show classified boot error and recovery hint on screen",
+    "Load current VERSION.json during boot"
+  ]
 }

@@ -1,5 +1,5 @@
 {
-  "version": "0.32.0",
+  "version": "0.32.1",
   "protected_files": [
     "js/config.js"
   ],
@@ -10,11 +10,11 @@
     },
     {
       "path": "README.md",
-      "sha256": "aae9cb8800fe6c74f551ad3a6dfde87261b3afa644baf74017a7037455338933"
+      "sha256": "b05f02fc6a7747c1adb11acd27d36b81974f55c3bb2e40d2204a23773549f71f"
     },
     {
       "path": "VERSION.json",
-      "sha256": "66b518e712093609ae76c9067d11e962364fdb8cc9ac42b191149dcde613f5d6"
+      "sha256": "480976b425835103eaf8d866b86f5b6273254cba8598077eba841f05869edf87"
     },
     {
       "path": "assets/README.md",
@@ -67,6 +67,10 @@
     {
       "path": "docs/GUIA_SUPABASE_DESDE_CERO.html",
       "sha256": "9740d78dfd2b2298241a023c56ba847ec65d2735105b6c396dbdcc524af2cd00"
+    },
+    {
+      "path": "docs/HOTFIX_0.32.1_BOOT.md",
+      "sha256": "9f30adfeda32db33eb8764bcb0e9708a95be1f18d41cd85a187e3431d91f9a6f"
     },
     {
       "path": "docs/HOTFIX_DESPACHOS_0.20.2.md",
@@ -346,7 +350,7 @@
     },
     {
       "path": "hemocura-core/bootstrap.js",
-      "sha256": "87fb202d402f80a21cd9a988f6a9bbaebd1fb1c68fe90be198d9a5fef6e61817"
+      "sha256": "659e3aed8c24797624d01310d1293d137158b50104b8bd797b1128b4a8122f9e"
     },
     {
       "path": "hemocura-core/command-center.js",
@@ -550,7 +554,7 @@
     },
     {
       "path": "index.html",
-      "sha256": "92b27c24855673cb06a2cb726bad0965a313dca12431f3cd878e80a55d664751"
+      "sha256": "7db904392248a6249cdd83c1f7517e4619130cd4e7abb418787feca4604f9dc9"
     },
     {
       "path": "js/app.js",

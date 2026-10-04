@@ -1,17 +1,11 @@
-# HemoCura v0.32.0 — Gobierno QMS
+# HemoCura v0.32.1 — Hotfix de arranque
 
-Integra aprobaciones con:
-- document_register
-- document_changes
-- capa
-- nonconformities
+Corrige la pantalla congelada en "Inicializando v0.3.0…".
 
-Añade:
-- solicitud formal de aprobación documental;
-- aprobación/ejecución separadas;
-- cierre CAPA condicionado a efectividad;
-- vistas de gobierno QMS;
-- módulo #qmsgov;
-- KPIs de revisiones y CAPA vencidas.
+Cambios:
+- `await mountLayout(session)`;
+- versión dinámica desde VERSION.json;
+- error de arranque visible;
+- guía directa para migraciones, perfiles, roles y RLS.
 
-`js/config.js` continúa protegido.
+`js/config.js` sigue protegido y NO se incluye.
