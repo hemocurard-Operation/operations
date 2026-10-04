@@ -1,15 +1,17 @@
-# HemoCura v0.33.0 — Auditorías Internas
+# HemoCura v0.34.0 — Competencias y Capacitación
 
 Añade:
-- programa anual;
-- planes de auditoría;
-- referencias de criterios ISO 15189;
-- control de independencia;
-- hallazgos;
+- puestos;
+- catálogo de competencias;
+- matriz puesto→competencia;
+- asignación de puestos;
+- capacitaciones;
+- evaluaciones de competencia;
 - evidencia;
-- conversión hallazgo → NC;
-- NC → CAPA;
-- portafolio gerencial.
+- vigencia;
+- brechas;
+- alertas;
+- cumplimiento por persona;
+- vínculo con auditorías.
 
-No reproduce el texto íntegro de ISO 15189.
 `js/config.js` continúa protegido.

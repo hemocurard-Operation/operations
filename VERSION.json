@@ -1,20 +1,20 @@
 {
   "project": "HemoCura Operations Intelligence + QMS + Compliance",
-  "version": "0.33.0",
-  "stage": "Internal Audits and ISO 15189 Governance",
+  "version": "0.34.0",
+  "stage": "Competency and Training Management",
   "release_channel": "RC",
   "protected_files": [
     "js/config.js"
   ],
   "qms_scope": [
-    "ANNUAL_AUDIT_PROGRAM",
-    "AUDIT_PLAN",
-    "AUDIT_CRITERIA",
-    "FINDINGS",
+    "JOB_ROLES",
+    "COMPETENCY_MATRIX",
+    "TRAINING",
+    "ASSESSMENT",
     "EVIDENCE",
-    "NC_CAPA_LINK",
-    "AUDITOR_INDEPENDENCE"
+    "VALIDITY",
+    "GAPS",
+    "AUDIT_LINK"
   ],
-  "iso_policy": "Clause references and configurable summaries only; no verbatim ISO standard text",
   "clinical_core": "LIVE-LIMITED / CONTROLLED_RELEASE"
 }

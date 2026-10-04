@@ -28,7 +28,8 @@ const ROUTE_PERMISSION={
   diagnostics:'RELEASE_GATE_VIEW',
   approvals:'APPROVAL_VIEW',
   qmsgov:'QUALITY_VIEW',
-  internalaudits:'INTERNAL_AUDIT_VIEW'
+  internalaudits:'INTERNAL_AUDIT_VIEW',
+  competencies:'COMPETENCY_VIEW'
 };
 
 let cache=null;

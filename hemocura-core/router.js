@@ -8,6 +8,7 @@ const ROUTES={
  approvals:{title:'Aprobaciones',subtitle:'Segregación de funciones y firma operativa'},
  qmsgov:{title:'Gobierno QMS',subtitle:'Documentos, CAPA y aprobaciones'},
  internalaudits:{title:'Auditorías Internas',subtitle:'Programa anual, hallazgos y evidencia'},
+ competencies:{title:'Competencias',subtitle:'Puestos, capacitación, evaluación y brechas'},
  sales:{title:'Ventas / Salidas',subtitle:'Control operativo de salidas y facturación'},
  donors:{title:'Donantes',subtitle:'Donantes y donaciones efectivas'},
  screening:{title:'Tamizaje',subtitle:'Pruebas, reactivos, lotes y resultados'},
