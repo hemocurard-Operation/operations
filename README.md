@@ -1,13 +1,12 @@
-# HemoCura v0.25.0
+# HemoCura v0.26.0
 
-Añade:
-- Producción
-- Objetivos mínimo/objetivo/máximo
-- Demanda histórica 30/60/90
-- Cobertura en días
-- Unidades requeridas
-- Donantes requeridos
-- Alertas de abastecimiento
-- BI de abastecimiento
+Añade Centro de Mando:
+- cierre operativo diario;
+- score gerencial por sucursal;
+- gestión por excepciones;
+- plan de acción;
+- conciliación del cierre;
+- integración con abastecimiento, SGC y proyectos.
 
-El modelo es explicable y de apoyo operativo.
+Modelo:
+dato → excepción → acción → responsable → evidencia → cierre.

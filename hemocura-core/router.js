@@ -1,5 +1,6 @@
 const ROUTES={
  dashboard:{title:'Centro de Operaciones',subtitle:'Operaciones, sangre, calidad y cumplimiento'},
+ command:{title:'Centro de Mando',subtitle:'Cierre diario, score y gestión por excepciones'},
  sales:{title:'Ventas / Salidas',subtitle:'Control operativo de salidas y facturación'},
  donors:{title:'Donantes',subtitle:'Donantes y donaciones efectivas'},
  screening:{title:'Tamizaje',subtitle:'Pruebas, reactivos, lotes y resultados'},
