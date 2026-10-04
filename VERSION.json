@@ -1,26 +1,11 @@
 {
   "project": "HemoCura Operations Intelligence + QMS + Compliance",
-  "version": "0.36.0",
-  "stage": "Analytical Quality Control and Proficiency Testing",
-  "release_channel": "RC",
+  "version": "0.44.0",
+  "stage": "Release Candidate final para HemoCura 1.0",
+  "release_channel": "FINAL_RC",
   "protected_files": [
     "js/config.js"
   ],
-  "qms_scope": [
-    "METHOD_MASTER",
-    "METHOD_VERIFICATION",
-    "INTERNAL_QC",
-    "QC_RULES",
-    "QC_DEVIATIONS",
-    "EQA_PT",
-    "EVIDENCE",
-    "NC_CAPA_LINK"
-  ],
-  "clinical_core": "LIVE-LIMITED / CONTROLLED_RELEASE",
-  "guardrails": [
-    "QC rules support process control only",
-    "System does not make clinical interpretation decisions",
-    "Out-of-control results require human review before corrective action",
-    "External proficiency results remain subject to provider and laboratory review"
-  ]
+  "config_policy": "PROTECTED_LOCAL_ENVIRONMENT_FILE",
+  "clinical_core": "LIVE-LIMITED / CONTROLLED_RELEASE"
 }
