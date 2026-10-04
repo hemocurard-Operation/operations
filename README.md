@@ -1,12 +1,14 @@
-# HemoCura v0.27.0
+# HemoCura v0.29.0
 
-Añade:
-- bitácora de auditoría;
-- candidatos automáticos a excepción;
-- conversión controlada a excepción;
-- prevención de duplicados abiertos;
-- revisión semanal por sucursal;
-- portafolio de excepciones con edad/vencimiento;
-- trazabilidad de cierres, acciones y liberaciones.
+Añade gobierno de acceso:
+- catálogo de permisos;
+- matriz rol→permiso;
+- helper `has_permission()`;
+- contexto de seguridad del usuario;
+- filtrado de menú por permisos;
+- bloqueo de rutas no autorizadas;
+- log de decisiones de acceso;
+- diagnóstico de perfiles/roles;
+- módulo Seguridad y Acceso.
 
-No automatiza decisiones clínicas.
+`js/config.js` continúa protegido y fuera de paquetes.

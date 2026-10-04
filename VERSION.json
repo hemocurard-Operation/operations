@@ -1,26 +1,21 @@
 {
   "project": "HemoCura Operations Intelligence + QMS + Compliance",
-  "version": "0.27.0",
-  "stage": "Audit Trail and Automated Exception Management",
+  "version": "0.29.0",
+  "stage": "Access Governance and RLS Validation",
   "release_channel": "RC",
+  "config_policy": "PROTECTED_LOCAL_ENVIRONMENT_FILE",
+  "protected_files": [
+    "js/config.js"
+  ],
   "scope": [
     "OPERATIONS",
     "BLOOD_FLOW",
-    "SUPPLY",
-    "DAILY_CLOSE",
-    "EXCEPTIONS",
-    "AUDIT_TRAIL",
     "QMS",
     "COMPLIANCE",
     "BI",
-    "PROJECT_MANAGEMENT"
+    "PROJECT_MANAGEMENT",
+    "ACCESS_GOVERNANCE"
   ],
-  "clinical_core": "LIVE-LIMITED / CONTROLLED_RELEASE",
-  "management_model": "Detect → Exception → Action → Evidence → Review → Close",
-  "guardrails": [
-    "No automatic clinical decisions",
-    "Automated exceptions are management signals only",
-    "Human confirmation required for closure",
-    "Audit log is append-only by application policy"
-  ]
+  "security_model": "Supabase Auth + RLS + application permissions + branch access",
+  "clinical_core": "LIVE-LIMITED / CONTROLLED_RELEASE"
 }

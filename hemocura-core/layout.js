@@ -3,6 +3,9 @@ import { renderView } from './views.js';
 import { mountOpsDashboard } from './ops-dashboard.js';
 import { mountCommandCenter } from './command-center.js';
 import { mountAudit } from './audit.js';
+import { mountReleaseGate } from './release-gate.js';
+import { mountSecurity } from './security.js';
+import { filterRoutes, canRoute } from './access-control.js';
 import { mountOperationalSales } from './operational-sales.js';
 import { mountDonors } from './donors.js';
 import { mountScreening } from './screening.js';
@@ -23,11 +26,21 @@ import { mountProjects } from './projects.js';
 import { mountSettings } from './settings.js';
 import { mountQA } from './qa.js';
 import { signOut } from './auth.js';
-export function mountLayout(session){
- const app=document.getElementById('app'),nav=routeList().map(([k,m])=>`<button data-route="${k}">${m.title}</button>`).join('');
+export async function mountLayout(session){
+ const app=document.getElementById('app');
+ const allowedRoutes=await filterRoutes(routeList());
+ const nav=allowedRoutes.map(([k,m])=>`<button data-route="${k}">${m.title}</button>`).join('');
  app.innerHTML=`<div class="app-layout"><aside class="sidebar" id="sidebar"><div class="sidebar-brand"><div class="brand-mark">H</div><div><strong>HemoCura</strong><br><small>Operaciones · Sangre · SGC</small></div></div><nav class="nav">${nav}</nav></aside><section class="main-shell"><header class="topbar"><div><button class="mobile-toggle secondary" id="menu-btn">☰</button><strong id="page-title">Centro de Operaciones</strong><div class="muted" id="page-subtitle"></div></div><div class="topbar-actions"><span class="muted">${session.user?.email||'Usuario'}</span><button id="logout-btn">Salir</button></div></header><main class="content"><div id="view"></div></main></section></div>`;
  document.querySelectorAll('[data-route]').forEach(b=>b.onclick=()=>navigate(b.dataset.route));document.getElementById('logout-btn').onclick=async()=>{await signOut();location.replace('./login.html')};document.getElementById('menu-btn')?.addEventListener('click',()=>document.getElementById('sidebar').classList.toggle('open'));
- const render=async()=>{const r=getRoute(),m=getRouteMeta(r);document.getElementById('page-title').textContent=m.title;document.getElementById('page-subtitle').textContent=m.subtitle;document.getElementById('view').innerHTML=renderView(r);document.querySelectorAll('[data-route]').forEach(b=>b.classList.toggle('active',b.dataset.route===r));document.getElementById('sidebar').classList.remove('open');
- const mounts={dashboard:()=>mountOpsDashboard(document.getElementById('ops-dashboard-root')),command:()=>mountCommandCenter(document.getElementById('command-root')),audit:()=>mountAudit(document.getElementById('audit-root')),sales:()=>mountOperationalSales(document.getElementById('sales-root')),donors:()=>mountDonors(document.getElementById('donors-root')),screening:()=>mountScreening(document.getElementById('screening-root')),bloodflow:()=>mountBloodFlow(document.getElementById('bloodflow-root')),production:()=>mountProduction(document.getElementById('production-root')),supply:()=>mountSupplyPlanning(document.getElementById('supply-root')),bloodinventory:()=>mountBloodInventory(document.getElementById('bloodinventory-root')),dispatches:()=>mountDispatches(document.getElementById('dispatch-root')),inventory:()=>mountInventory(document.getElementById('inventory-root')),requisitions:()=>mountRequisitions(document.getElementById('requisitions-root')),inspections:()=>mountInspections(document.getElementById('inspections-root')),planning:()=>mountPlanning(document.getElementById('planning-root')),quality:()=>mountQuality(document.getElementById('quality-root')),documents:()=>mountDocuments(document.getElementById('documents-root')),compliance:()=>mountCompliance(document.getElementById('compliance-root')),bi:()=>mountBI(document.getElementById('bi-root')),projects:()=>mountProjects(document.getElementById('projects-root')),settings:()=>mountSettings(document.getElementById('settings-root')),qa:()=>mountQA(document.getElementById('qa-root'))};if(mounts[r])await mounts[r]();};
+ const render=async()=>{const r=getRoute(),m=getRouteMeta(r);
+ const access=await canRoute(r);
+ if(!access.allowed){
+   document.getElementById('page-title').textContent='Acceso denegado';
+   document.getElementById('page-subtitle').textContent=`Permiso requerido: ${access.permission}`;
+   document.getElementById('view').innerHTML=`<section class="card"><div class="status bad"><strong>Acceso denegado.</strong><br>Permiso requerido: <code>${access.permission}</code></div></section>`;
+   return;
+ }
+ document.getElementById('page-title').textContent=m.title;document.getElementById('page-subtitle').textContent=m.subtitle;document.getElementById('view').innerHTML=renderView(r);document.querySelectorAll('[data-route]').forEach(b=>b.classList.toggle('active',b.dataset.route===r));document.getElementById('sidebar').classList.remove('open');
+ const mounts={dashboard:()=>mountOpsDashboard(document.getElementById('ops-dashboard-root')),command:()=>mountCommandCenter(document.getElementById('command-root')),audit:()=>mountAudit(document.getElementById('audit-root')),releasegate:()=>mountReleaseGate(document.getElementById('releasegate-root')),security:()=>mountSecurity(document.getElementById('security-root')),sales:()=>mountOperationalSales(document.getElementById('sales-root')),donors:()=>mountDonors(document.getElementById('donors-root')),screening:()=>mountScreening(document.getElementById('screening-root')),bloodflow:()=>mountBloodFlow(document.getElementById('bloodflow-root')),production:()=>mountProduction(document.getElementById('production-root')),supply:()=>mountSupplyPlanning(document.getElementById('supply-root')),bloodinventory:()=>mountBloodInventory(document.getElementById('bloodinventory-root')),dispatches:()=>mountDispatches(document.getElementById('dispatch-root')),inventory:()=>mountInventory(document.getElementById('inventory-root')),requisitions:()=>mountRequisitions(document.getElementById('requisitions-root')),inspections:()=>mountInspections(document.getElementById('inspections-root')),planning:()=>mountPlanning(document.getElementById('planning-root')),quality:()=>mountQuality(document.getElementById('quality-root')),documents:()=>mountDocuments(document.getElementById('documents-root')),compliance:()=>mountCompliance(document.getElementById('compliance-root')),bi:()=>mountBI(document.getElementById('bi-root')),projects:()=>mountProjects(document.getElementById('projects-root')),settings:()=>mountSettings(document.getElementById('settings-root')),qa:()=>mountQA(document.getElementById('qa-root'))};if(mounts[r])await mounts[r]();};
  window.addEventListener('hashchange',()=>render().catch(e=>console.error('[HEMOCURA_NAV_ERROR]',e)));render().catch(e=>console.error('[HEMOCURA_NAV_ERROR]',e));
 }
