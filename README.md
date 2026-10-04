@@ -1,15 +1,17 @@
-# HemoCura v0.30.0 — Diagnóstico Unificado
+# HemoCura v0.31.0 — Aprobaciones y Segregación
 
 Añade:
-- motor de clasificación de errores;
-- códigos estables;
-- acciones de recuperación;
-- login con diagnóstico;
-- pruebas de conectividad;
-- diagnóstico de perfil/rol/permisos;
-- diagnóstico de schema/migraciones;
-- registro de eventos diagnósticos;
-- pantalla `#diagnostics`.
+- políticas de aprobación;
+- solicitudes;
+- decisiones;
+- firma operativa interna;
+- segregación solicitante/aprobador;
+- ejecución controlada;
+- auditoría;
+- bandeja #approvals.
 
-Compatible con `validateConfig()` antiguo.
-`js/config.js` continúa protegido.
+Acciones con ejecución integrada:
+- UNIT_RELEASE
+- DAILY_CLOSE
+
+DOCUMENT_APPROVAL y CAPA_CLOSE quedan preparadas para integrar sin asumir columnas que aún no han sido verificadas.

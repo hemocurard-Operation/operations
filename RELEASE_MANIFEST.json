@@ -1,5 +1,5 @@
 {
-  "version": "0.30.0",
+  "version": "0.31.0",
   "protected_files": [
     "js/config.js"
   ],
@@ -10,11 +10,11 @@
     },
     {
       "path": "README.md",
-      "sha256": "3b318d7ddc7b4639cf7c41bdc99cb9de6694717ff60466abfdb6dfc02ace4e2f"
+      "sha256": "ca81cb62316923c68fe8d8eba8ea14b86b02a08cf5606e19d7ff921adaf69ddd"
     },
     {
       "path": "VERSION.json",
-      "sha256": "daa545d5b6e39263f1dbb5326c34b44f5cbc1f10ed495d2d2dd742f743d5f26e"
+      "sha256": "7eddde952337640aa33edf813b2738b6f6416dfd5f0d7c2785bf8c483491e36a"
     },
     {
       "path": "assets/README.md",
@@ -153,6 +153,10 @@
       "sha256": "53d0b4ca209ed68d859e63c5d319c9da7907f29a89e4d43d5db82ce20908deac"
     },
     {
+      "path": "docs/IMPLEMENTACION_0.31.0.md",
+      "sha256": "eae99de3e84ce6ef9c65735569ad9b6444ae41fa63f36d224dfb3ef6a0591622"
+    },
+    {
       "path": "docs/IMPLEMENTACION_0.4.0.md",
       "sha256": "15ca738c8e7391bb7b1a178a6d54a6704fb0e4940d8811799a58070b9f83e10a"
     },
@@ -229,6 +233,10 @@
       "sha256": "15ba33000696746255e896b69b76ebcdb3158843117239867c59388b9829d8a7"
     },
     {
+      "path": "docs/SEGREGACION_FUNCIONES_v0_31.md",
+      "sha256": "2801748dc3d9226600c22fbb515f8c908547d637d46f69bde20952faca6e092b"
+    },
+    {
       "path": "docs/STATIC_AUDIT_0.16.0.md",
       "sha256": "27b6e79bae92cab1aea803eb0e243a36ecda17ddab033a7dc7bf37395527b637"
     },
@@ -282,11 +290,19 @@
     },
     {
       "path": "hemocura-core/access-control.js",
-      "sha256": "8ef20b31f5bc8063c4500ace3fafaae6fbf177903dae65df8648fda7b6900ecd"
+      "sha256": "2e3fce595f698bfed33cb1d9a327ace9f11372ad47b02155d1751e7e55410479"
     },
     {
       "path": "hemocura-core/access-data.js",
       "sha256": "8151486faa7e2a0cd92151d75f729caed149da7ba6cb47b25d617a1827c43260"
+    },
+    {
+      "path": "hemocura-core/approval-data.js",
+      "sha256": "9f581007be8f4cd046c72e1b77bd6823b15cfa52a5ff4183e7787e377ecf403d"
+    },
+    {
+      "path": "hemocura-core/approvals.js",
+      "sha256": "7dd79244bb860a33c9cd93d44c1f46bbb256dee6d6fea5dd49e23c3eb3cdafb8"
     },
     {
       "path": "hemocura-core/audit-data.js",
@@ -410,7 +426,7 @@
     },
     {
       "path": "hemocura-core/layout.js",
-      "sha256": "25483ff7bc3e6653d58c730092400bf02eb746dd8adefe0fa358bac82ef90771"
+      "sha256": "de6dfb191816a81d703fc02750b513c81a96358be5004bf75f885fd35520764f"
     },
     {
       "path": "hemocura-core/operational-sales.js",
@@ -418,7 +434,7 @@
     },
     {
       "path": "hemocura-core/ops-dashboard.js",
-      "sha256": "e71e7c9779d4651df35a331b8ad67715eacdc32c7fe2c23d909432733d743425"
+      "sha256": "89844228cd87ac5ac3961d02421d65d4e6236176c971a26363a909779edb5a1b"
     },
     {
       "path": "hemocura-core/planning-data.js",
@@ -474,7 +490,7 @@
     },
     {
       "path": "hemocura-core/router.js",
-      "sha256": "b2c412043c224109fbaeb231317228ce6e8ca0a16eb7b383d52c7fcb7674b658"
+      "sha256": "f813bae2d760e8a81080968f7b38f3ec82bdf0942ef0660eeb3b40592a010b5d"
     },
     {
       "path": "hemocura-core/sales-data.js",
@@ -514,7 +530,7 @@
     },
     {
       "path": "hemocura-core/views.js",
-      "sha256": "1e54a143bdc09de4c7a83de34dc8a4f27a04ed2de5472e9cac862f8ac83861d1"
+      "sha256": "48cd59e22b46ba6b5f605ff325f5260ed4a4a5a932fba485dc5ac95ff929e76c"
     },
     {
       "path": "index.html",
@@ -613,6 +629,10 @@
       "sha256": "283f411d8f83d642d75912a49cf12f8d45428837748e5975a2506f71d8c90bb1"
     },
     {
+      "path": "sql/31_APPROVALS_SOD_v0_31.sql",
+      "sha256": "573d69cc2ddb689593878202ea940ee7a989b56932fcfd6af1106989a643ba79"
+    },
+    {
       "path": "sql/README.md",
       "sha256": "241098b3bdf88ed1b88e0689fa82cf331bea230c868d00213cc329f1601bde72"
     },
@@ -659,6 +679,10 @@
     {
       "path": "tests/SMOKE_TESTS_0.30.0.md",
       "sha256": "4a745375f99a8ba50aea5cea139605be6b13e5919d7a57f25b506a2ee178c251"
+    },
+    {
+      "path": "tests/SMOKE_TESTS_0.31.0.md",
+      "sha256": "ada0f1aacd2c1a19316f3c1e06a9e0581cc7caed3e8a5b3bde14b81168e695e2"
     },
     {
       "path": "tests/SMOKE_TESTS_DISPATCH_0.20.2.md",
