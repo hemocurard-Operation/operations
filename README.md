@@ -1,11 +1,15 @@
-# HemoCura v0.32.1 — Hotfix de arranque
+# HemoCura v0.33.0 — Auditorías Internas
 
-Corrige la pantalla congelada en "Inicializando v0.3.0…".
+Añade:
+- programa anual;
+- planes de auditoría;
+- referencias de criterios ISO 15189;
+- control de independencia;
+- hallazgos;
+- evidencia;
+- conversión hallazgo → NC;
+- NC → CAPA;
+- portafolio gerencial.
 
-Cambios:
-- `await mountLayout(session)`;
-- versión dinámica desde VERSION.json;
-- error de arranque visible;
-- guía directa para migraciones, perfiles, roles y RLS.
-
-`js/config.js` sigue protegido y NO se incluye.
+No reproduce el texto íntegro de ISO 15189.
+`js/config.js` continúa protegido.

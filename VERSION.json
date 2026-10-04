@@ -1,16 +1,20 @@
 {
   "project": "HemoCura Operations Intelligence + QMS + Compliance",
-  "version": "0.32.1",
-  "stage": "Boot Diagnostic Hotfix",
-  "release_channel": "HOTFIX",
-  "base_version": "0.32.0",
+  "version": "0.33.0",
+  "stage": "Internal Audits and ISO 15189 Governance",
+  "release_channel": "RC",
   "protected_files": [
     "js/config.js"
   ],
-  "fixes": [
-    "Await asynchronous mountLayout so bootstrap catches access/RLS/schema failures",
-    "Remove stale hardcoded v0.3.0 boot label",
-    "Show classified boot error and recovery hint on screen",
-    "Load current VERSION.json during boot"
-  ]
+  "qms_scope": [
+    "ANNUAL_AUDIT_PROGRAM",
+    "AUDIT_PLAN",
+    "AUDIT_CRITERIA",
+    "FINDINGS",
+    "EVIDENCE",
+    "NC_CAPA_LINK",
+    "AUDITOR_INDEPENDENCE"
+  ],
+  "iso_policy": "Clause references and configurable summaries only; no verbatim ISO standard text",
+  "clinical_core": "LIVE-LIMITED / CONTROLLED_RELEASE"
 }
