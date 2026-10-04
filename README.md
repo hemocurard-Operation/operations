@@ -1,14 +1,15 @@
-# HemoCura v0.29.0
+# HemoCura v0.30.0 — Diagnóstico Unificado
 
-Añade gobierno de acceso:
-- catálogo de permisos;
-- matriz rol→permiso;
-- helper `has_permission()`;
-- contexto de seguridad del usuario;
-- filtrado de menú por permisos;
-- bloqueo de rutas no autorizadas;
-- log de decisiones de acceso;
-- diagnóstico de perfiles/roles;
-- módulo Seguridad y Acceso.
+Añade:
+- motor de clasificación de errores;
+- códigos estables;
+- acciones de recuperación;
+- login con diagnóstico;
+- pruebas de conectividad;
+- diagnóstico de perfil/rol/permisos;
+- diagnóstico de schema/migraciones;
+- registro de eventos diagnósticos;
+- pantalla `#diagnostics`.
 
-`js/config.js` continúa protegido y fuera de paquetes.
+Compatible con `validateConfig()` antiguo.
+`js/config.js` continúa protegido.

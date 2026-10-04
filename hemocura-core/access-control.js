@@ -24,7 +24,8 @@ const ROUTE_PERMISSION={
   projects:'PROJECTS_VIEW',
   settings:'ADMIN_VIEW',
   qa:'RELEASE_GATE_VIEW',
-  security:'ACCESS_ADMIN'
+  security:'ACCESS_ADMIN',
+  diagnostics:'RELEASE_GATE_VIEW'
 };
 
 let cache=null;

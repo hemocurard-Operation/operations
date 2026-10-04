@@ -1,10 +1,12 @@
-# HemoCura v0.29.0 SAFE PATCH
+# HemoCura v0.30.0 SAFE PATCH
 
-1. NO reemplaza `js/config.js`.
-2. Subir sobre v0.28.0.
-3. Ejecutar `sql/29_ACCESS_GOVERNANCE_v0_29.sql`.
-4. Cerrar sesión y volver a iniciar.
-5. Probar menú y rutas con al menos dos roles.
-6. Abrir `#security` como ADMIN.
-7. Ejecutar `#releasegate`.
-8. Ejecutar `#qa`.
+1. NO reemplaza js/config.js.
+2. Subir sobre v0.29.0.
+3. Ejecutar sql/30_UNIFIED_DIAGNOSTICS_v0_30.sql.
+4. Abrir deployment-check.html.
+5. Probar login.
+6. Abrir #diagnostics.
+7. Corregir códigos detectados.
+8. Ejecutar #releasegate y #qa.
+
+v0.30 es compatible con el validateConfig() actual basado en array.

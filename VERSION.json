@@ -1,12 +1,13 @@
 {
   "project": "HemoCura Operations Intelligence + QMS + Compliance",
-  "version": "0.29.0",
-  "stage": "Access Governance and RLS Validation",
+  "version": "0.30.0",
+  "stage": "Unified Diagnostics and Guided Recovery",
   "release_channel": "RC",
   "config_policy": "PROTECTED_LOCAL_ENVIRONMENT_FILE",
   "protected_files": [
     "js/config.js"
   ],
+  "diagnostic_model": "CODE + SEVERITY + LOCATION + PROBLEM + EVIDENCE + ACTION",
   "scope": [
     "OPERATIONS",
     "BLOOD_FLOW",
@@ -14,8 +15,8 @@
     "COMPLIANCE",
     "BI",
     "PROJECT_MANAGEMENT",
-    "ACCESS_GOVERNANCE"
+    "ACCESS_GOVERNANCE",
+    "DIAGNOSTICS"
   ],
-  "security_model": "Supabase Auth + RLS + application permissions + branch access",
   "clinical_core": "LIVE-LIMITED / CONTROLLED_RELEASE"
 }

@@ -1,5 +1,5 @@
 {
-  "version": "0.29.0",
+  "version": "0.30.0",
   "protected_files": [
     "js/config.js"
   ],
@@ -10,11 +10,11 @@
     },
     {
       "path": "README.md",
-      "sha256": "6be41f19e6fb13cd76dffa4cc7824894f06c7d91ff3137a629109d051b844851"
+      "sha256": "3b318d7ddc7b4639cf7c41bdc99cb9de6694717ff60466abfdb6dfc02ace4e2f"
     },
     {
       "path": "VERSION.json",
-      "sha256": "4136947d2ea91e2b63fa24798f744c29d682e328ab81077bd2629404ab4fb4bd"
+      "sha256": "daa545d5b6e39263f1dbb5326c34b44f5cbc1f10ed495d2d2dd742f743d5f26e"
     },
     {
       "path": "assets/README.md",
@@ -26,7 +26,7 @@
     },
     {
       "path": "deployment-check.html",
-      "sha256": "f78be1bfee63b8ed2cf79fd57032d1366598a1ce07c6d19e883eb1c146ad0141"
+      "sha256": "7d2bfff0cde8a3dd1f7d8749618ebe2d5c0c7fb737a93c80696bf750d3c0443b"
     },
     {
       "path": "docs/ALCANCE_Y_EXCLUSIONES.md",
@@ -55,6 +55,10 @@
     {
       "path": "docs/DEPLOYMENT_VERIFIER.md",
       "sha256": "920c10b104da3730357f3636791d8bd2d3ce191f4628cff88cc2fb92ce91bd45"
+    },
+    {
+      "path": "docs/DIAGNOSTIC_CODES_v0_30.md",
+      "sha256": "9a9a42705609dc90e8634334087549a0de33ee7c4a02bf5d472e02dd428657ac"
     },
     {
       "path": "docs/GO_LIVE_RUNBOOK.md",
@@ -143,6 +147,10 @@
     {
       "path": "docs/IMPLEMENTACION_0.3.0.md",
       "sha256": "a6bec22e38d22561bc1207d306896f381b4d23046a81d78163fd4972a2ae0700"
+    },
+    {
+      "path": "docs/IMPLEMENTACION_0.30.0.md",
+      "sha256": "53d0b4ca209ed68d859e63c5d319c9da7907f29a89e4d43d5db82ce20908deac"
     },
     {
       "path": "docs/IMPLEMENTACION_0.4.0.md",
@@ -274,7 +282,7 @@
     },
     {
       "path": "hemocura-core/access-control.js",
-      "sha256": "42a898e4a023c44d8a47bd8653857118d926d3df9a0846c184f46a7e9ba254b7"
+      "sha256": "8ef20b31f5bc8063c4500ace3fafaae6fbf177903dae65df8648fda7b6900ecd"
     },
     {
       "path": "hemocura-core/access-data.js",
@@ -290,7 +298,7 @@
     },
     {
       "path": "hemocura-core/auth.js",
-      "sha256": "85e61de87912cc35efd4f5c4a5b8744a712f79c8dfdd9ca73b419dd7c5c99ded"
+      "sha256": "af9ceceaaa3c222584ca7555f3995beb3ec38d85910054861e6cf533e7f43f42"
     },
     {
       "path": "hemocura-core/bi.js",
@@ -345,6 +353,18 @@
       "sha256": "495912fa9b3d03b9b45b1be49bec2f986af1c24f3c886d7973fede579b970467"
     },
     {
+      "path": "hemocura-core/diagnostic-data.js",
+      "sha256": "4b3c7fddb8ad58f85f0fcada1507349e3970642808cd575b4f129687220298cd"
+    },
+    {
+      "path": "hemocura-core/diagnostic-engine.js",
+      "sha256": "3ebc74c2f4d4244b7f51cf08845718177eed2c92fff98f5645f7d78ef9dfe2d4"
+    },
+    {
+      "path": "hemocura-core/diagnostics.js",
+      "sha256": "021b58a5627f4c3b2b7a21daa0e0f08e61f7bae7dab2aac9302a05b939613909"
+    },
+    {
       "path": "hemocura-core/dispatch-data.js",
       "sha256": "e18467746ddb215b27cd08833864a1bb4822a066c5289fc7b190c79ec4ac85e0"
     },
@@ -390,7 +410,7 @@
     },
     {
       "path": "hemocura-core/layout.js",
-      "sha256": "cf007816f0b9cc519989a8b43802323ba2484dc0ce56fe0051b01b03e5ed10de"
+      "sha256": "25483ff7bc3e6653d58c730092400bf02eb746dd8adefe0fa358bac82ef90771"
     },
     {
       "path": "hemocura-core/operational-sales.js",
@@ -398,7 +418,7 @@
     },
     {
       "path": "hemocura-core/ops-dashboard.js",
-      "sha256": "2ad1364986e63761253b14fafdafe7935da018fcac4c1914015c650e6895d393"
+      "sha256": "e71e7c9779d4651df35a331b8ad67715eacdc32c7fe2c23d909432733d743425"
     },
     {
       "path": "hemocura-core/planning-data.js",
@@ -438,7 +458,7 @@
     },
     {
       "path": "hemocura-core/release-data.js",
-      "sha256": "2262e5a00ecb8c05f422608975a7f09ad4174a84f4539d5e6c4e2d25da48f9f4"
+      "sha256": "9be66850144141cc8a9079bcdf7fcd1663468a61f18d3ed8a82c4609a9e4c3ff"
     },
     {
       "path": "hemocura-core/release-gate.js",
@@ -454,7 +474,7 @@
     },
     {
       "path": "hemocura-core/router.js",
-      "sha256": "8a3d8ffa5dea3bbd82743c286d1554166fe8741b8746b61369c203489dd17a92"
+      "sha256": "b2c412043c224109fbaeb231317228ce6e8ca0a16eb7b383d52c7fcb7674b658"
     },
     {
       "path": "hemocura-core/sales-data.js",
@@ -482,7 +502,7 @@
     },
     {
       "path": "hemocura-core/supabase.js",
-      "sha256": "fa7df109eb600cafbcf00c10b8f8b83eb7f11698d0f40f87c83f013031851dc3"
+      "sha256": "eace91f27e85aa1230f8b66c76c2713a9fa5f887db04c2e8bb199af294ce6b5d"
     },
     {
       "path": "hemocura-core/supply-data.js",
@@ -494,7 +514,7 @@
     },
     {
       "path": "hemocura-core/views.js",
-      "sha256": "e7ac74c9d53a1a9fe0a61f749285b8c64c2269bf2e23be6795bc3685616cd716"
+      "sha256": "1e54a143bdc09de4c7a83de34dc8a4f27a04ed2de5472e9cac862f8ac83861d1"
     },
     {
       "path": "index.html",
@@ -506,11 +526,11 @@
     },
     {
       "path": "js/config.example.js",
-      "sha256": "86ebb9dc5a0a03838005cbc621a87c57adbec3463df99f3a2b6d4412c6650545"
+      "sha256": "53c270a8c0692799ee27db7194a83a0e14b9313a6ad149b910159f5949fa5b18"
     },
     {
       "path": "js/login.js",
-      "sha256": "71032411ea93355f380950d3ded4d5196dd4c67c957ab771dbbbf5cf8eb5ea73"
+      "sha256": "f38431decbb458226d782d55fb727e26775cceda79fe579dfc74fcdac34c1cc3"
     },
     {
       "path": "js/promotion.js",
@@ -589,6 +609,10 @@
       "sha256": "98b824df34b3a24d6552b385ca37cd35bc50910b830bd58a8e27f822164d8fdb"
     },
     {
+      "path": "sql/30_UNIFIED_DIAGNOSTICS_v0_30.sql",
+      "sha256": "283f411d8f83d642d75912a49cf12f8d45428837748e5975a2506f71d8c90bb1"
+    },
+    {
       "path": "sql/README.md",
       "sha256": "241098b3bdf88ed1b88e0689fa82cf331bea230c868d00213cc329f1601bde72"
     },
@@ -631,6 +655,10 @@
     {
       "path": "tests/SMOKE_TESTS_0.29.0.md",
       "sha256": "a021148de453fc2e09520cd6f3daf2390cf29301f81dd179ea30a0a2f0d6b629"
+    },
+    {
+      "path": "tests/SMOKE_TESTS_0.30.0.md",
+      "sha256": "4a745375f99a8ba50aea5cea139605be6b13e5919d7a57f25b506a2ee178c251"
     },
     {
       "path": "tests/SMOKE_TESTS_DISPATCH_0.20.2.md",

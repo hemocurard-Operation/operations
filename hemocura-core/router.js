@@ -4,6 +4,7 @@ const ROUTES={
  audit:{title:'Auditoría',subtitle:'Trazabilidad, candidatos y revisión semanal'},
  releasegate:{title:'Release Gate',subtitle:'Configuración, schema, migraciones y despliegue'},
  security:{title:'Seguridad y Acceso',subtitle:'Roles, permisos, sucursal y RLS'},
+ diagnostics:{title:'Diagnóstico',subtitle:'Configuración, red, Auth, perfil, RLS y migraciones'},
  sales:{title:'Ventas / Salidas',subtitle:'Control operativo de salidas y facturación'},
  donors:{title:'Donantes',subtitle:'Donantes y donaciones efectivas'},
  screening:{title:'Tamizaje',subtitle:'Pruebas, reactivos, lotes y resultados'},
