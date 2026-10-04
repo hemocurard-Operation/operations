@@ -29,7 +29,8 @@ const ROUTE_PERMISSION={
   approvals:'APPROVAL_VIEW',
   qmsgov:'QUALITY_VIEW',
   internalaudits:'INTERNAL_AUDIT_VIEW',
-  competencies:'COMPETENCY_VIEW'
+  competencies:'COMPETENCY_VIEW',
+  resources:'RESOURCES_VIEW'
 };
 
 let cache=null;

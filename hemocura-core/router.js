@@ -9,6 +9,7 @@ const ROUTES={
  qmsgov:{title:'Gobierno QMS',subtitle:'Documentos, CAPA y aprobaciones'},
  internalaudits:{title:'Auditorías Internas',subtitle:'Programa anual, hallazgos y evidencia'},
  competencies:{title:'Competencias',subtitle:'Puestos, capacitación, evaluación y brechas'},
+ resources:{title:'Recursos Críticos',subtitle:'Equipos, reactivos y condiciones ambientales'},
  sales:{title:'Ventas / Salidas',subtitle:'Control operativo de salidas y facturación'},
  donors:{title:'Donantes',subtitle:'Donantes y donaciones efectivas'},
  screening:{title:'Tamizaje',subtitle:'Pruebas, reactivos, lotes y resultados'},
