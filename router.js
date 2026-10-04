@@ -4,6 +4,8 @@ const ROUTES={
  donors:{title:'Donantes',subtitle:'Donantes y donaciones efectivas'},
  screening:{title:'Tamizaje',subtitle:'Pruebas, reactivos, lotes y resultados'},
  bloodflow:{title:'Flujo Sanguíneo',subtitle:'Donación, tamizaje, liberación, inventario y salida'},
+ production:{title:'Producción',subtitle:'Componentes producidos y rendimiento'},
+ supply:{title:'Abastecimiento',subtitle:'Demanda, cobertura y donantes requeridos'},
  bloodinventory:{title:'Inventario de Sangre',subtitle:'Disponibilidad por componente, ABO y Rh'},
  dispatches:{title:'Despachos',subtitle:'Despacho físico y conciliación'},
  inventory:{title:'Insumos',subtitle:'Inventario de reactivos y materiales'},
