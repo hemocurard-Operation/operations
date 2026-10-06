@@ -5,37 +5,77 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>HemoCura Deployment Check</title>
 <style>
-body{font-family:system-ui,Arial,sans-serif;margin:0;background:#f5f7fb;color:#172033}
-main{max-width:980px;margin:32px auto;padding:0 16px}
-.card{background:white;border:1px solid #dce3ee;border-radius:12px;padding:18px;margin:12px 0}
-.ok{color:#116329}.bad{color:#a61b1b}.warn{color:#8a5a00}
-code{background:#eef2f7;padding:2px 5px;border-radius:4px}
-table{width:100%;border-collapse:collapse}td,th{padding:8px;border-bottom:1px solid #e7ebf1;text-align:left}
+:root{--navy:#1A365D;--ok:#116329;--bad:#a61b1b;--warn:#8a5a00;--line:#dce3ee;--bg:#f5f7fb}
+*{box-sizing:border-box}body{font-family:system-ui,Arial,sans-serif;margin:0;background:var(--bg);color:#172033}
+main{max-width:1050px;margin:32px auto;padding:0 16px}.card{background:white;border:1px solid var(--line);border-radius:12px;padding:18px;margin:12px 0}
+.ok{color:var(--ok)}.bad{color:var(--bad)}.warn{color:var(--warn)} code{background:#eef2f7;padding:2px 5px;border-radius:4px}
+table{width:100%;border-collapse:collapse}td,th{padding:8px;border-bottom:1px solid #e7ebf1;text-align:left;vertical-align:top}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.kpi{padding:12px;border:1px solid var(--line);border-radius:9px}.kpi strong{display:block;font-size:20px}@media(max-width:760px){.grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <main>
 <h1>HemoCura · Deployment Check</h1>
-<p>Verificación pública de archivos estáticos. No muestra secretos ni consulta datos clínicos.</p>
-<div class="card"><div id="summary">Ejecutando…</div></div>
-<div class="card"><table><thead><tr><th>Archivo</th><th>Estado</th><th>Detalle</th></tr></thead><tbody id="rows"></tbody></table></div>
+<p>Verifica archivos estáticos, configuración pública y conectividad de Supabase sin consultar datos clínicos.</p>
+<div class="card"><div class="grid"><div class="kpi"><span>Archivos</span><strong id="static-summary">Ejecutando…</strong></div><div class="kpi"><span>Config</span><strong id="config-summary">Ejecutando…</strong></div><div class="kpi"><span>Supabase</span><strong id="supabase-summary">Ejecutando…</strong></div></div></div>
+<div class="card"><h2>Archivos</h2><table><thead><tr><th>Archivo</th><th>Estado</th><th>Detalle</th></tr></thead><tbody id="rows"></tbody></table></div>
+<div class="card"><h2>Configuración</h2><div id="config-detail">Ejecutando…</div></div>
+<div class="card"><h2>Resultado</h2><div id="summary">Ejecutando…</div></div>
 <p><a href="./login.html">Ir al login</a></p>
 </main>
 <script type="module">
-const files=['./VERSION.json','./index.html','./login.html','./js/app.js','./js/config.js','./hemocura-core/bootstrap.js','./hemocura-core/layout.js'];
+import { CONFIG, validateConfig, maskKey, getSupabaseHost } from './js/config.js';
+
+const files=[
+ './VERSION.json','./index.html','./login.html','./js/app.js','./js/config.js',
+ './hemocura-core/bootstrap.js','./hemocura-core/layout.js','./hemocura-core/router.js',
+ './hemocura-core/views.js','./hemocura-core/ops-dashboard.js','./css/app.css','./css/ui-v0442.css'
+];
+
 const rows=[];
 for(const path of files){
   try{
     const r=await fetch(path,{cache:'no-store'});
     if(!r.ok) throw new Error('HTTP '+r.status);
     const text=await r.text();
-    if(path.endsWith('config.js')&&(text.includes('TU-PROYECTO')||text.includes('TU_CLAVE'))) throw new Error('placeholders detectados');
     rows.push({path,ok:true,detail:text.length+' bytes'});
-  }catch(e){rows.push({path,ok:false,detail:e.message})}
+  }catch(e){
+    rows.push({path,ok:false,detail:e?.message||String(e)});
+  }
 }
+
 document.getElementById('rows').innerHTML=rows.map(x=>`<tr><td><code>${x.path}</code></td><td class="${x.ok?'ok':'bad'}">${x.ok?'OK':'ERROR'}</td><td>${x.detail}</td></tr>`).join('');
-const ok=rows.every(x=>x.ok);
-document.getElementById('summary').innerHTML=`<strong class="${ok?'ok':'bad'}">${ok?'STATIC READY':'STATIC NOT READY'}</strong>`;
+const staticOk=rows.every(x=>x.ok);
+document.getElementById('static-summary').className=staticOk?'ok':'bad';
+document.getElementById('static-summary').textContent=staticOk?'STATIC READY':'STATIC NOT READY';
+
+const config=validateConfig();
+document.getElementById('config-summary').className=config.ok?'ok':'bad';
+document.getElementById('config-summary').textContent=config.ok?'CONFIG READY':'CONFIG ERROR';
+document.getElementById('config-detail').innerHTML=config.ok
+ ? `<div class="ok"><strong>Formato válido.</strong><br>Host: <code>${getSupabaseHost()}</code><br>Key: <code>${maskKey(CONFIG.SUPABASE_PUBLISHABLE_KEY)}</code><br>APP_BASE: <code>${CONFIG.APP_BASE}</code></div>`
+ : `<div class="bad"><strong>${config.problems.join(' · ')}</strong></div>`;
+
+let supabaseOk=false;
+let supabaseDetail='';
+try{
+  if(!config.ok) throw new Error('Config inválida');
+  const r=await fetch(`${CONFIG.SUPABASE_URL}/auth/v1/settings`,{
+    cache:'no-store',
+    headers:{apikey:CONFIG.SUPABASE_PUBLISHABLE_KEY}
+  });
+  if(!r.ok) throw new Error(`HTTP ${r.status}`);
+  await r.json();
+  supabaseOk=true;
+  supabaseDetail='Auth settings accesible';
+}catch(e){
+  supabaseDetail=e?.message||String(e);
+}
+
+document.getElementById('supabase-summary').className=supabaseOk?'ok':'bad';
+document.getElementById('supabase-summary').textContent=supabaseOk?'SUPABASE READY':'SUPABASE ERROR';
+
+const allOk=staticOk&&config.ok&&supabaseOk;
+document.getElementById('summary').innerHTML=`<strong class="${allOk?'ok':'bad'}">${allOk?'DEPLOYMENT READY':'DEPLOYMENT NOT READY'}</strong><br><span>${supabaseDetail}</span>`;
 </script>
 </body>
 </html>
