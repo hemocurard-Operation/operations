@@ -1,8 +1,8 @@
 {
   "project": "HemoCura Operations Intelligence + QMS + Compliance",
-  "version": "0.44.0",
-  "stage": "Release Candidate final para HemoCura 1.0",
-  "release_channel": "FINAL_RC",
+  "version": "0.44.1",
+  "stage": "Frontend integration hotfix sobre Release Candidate HemoCura 1.0",
+  "release_channel": "FINAL_RC_HOTFIX",
   "protected_files": [
     "js/config.js"
   ],
