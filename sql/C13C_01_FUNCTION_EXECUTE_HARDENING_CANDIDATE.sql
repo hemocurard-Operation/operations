@@ -28,14 +28,18 @@ revoke execute on function public.recalculate_inventory_policy(uuid) from anon;
 revoke execute on function public.reserve_blood_units_fefo(uuid) from anon;
 
 -- 2) Helpers internos / triggers no se exponen como RPC para authenticated.
--- Permanecen disponibles al propietario/service_role y para ejecución interna.
 revoke execute on function public.audit_row_change() from authenticated;
 revoke execute on function public.evaluate_temperature_reading() from authenticated;
 revoke execute on function public.emit_operational_alert(uuid,text,public.severity_level,text,uuid,text,text,text,jsonb,text) from authenticated;
 revoke execute on function public.generate_sale_from_dispatch(uuid) from authenticated;
 revoke execute on function public.recalc_daily_sale(uuid) from authenticated;
 
--- 3) APIs/helpers que sí necesita el usuario autenticado se mantienen explícitos.
+-- FEFO clínico queda cerrado hasta que C14 instale el doble gate y lo vuelva
+-- a exponer de forma controlada. Fallar cerrado es preferible a permitir la
+-- reserva serializada mientras clinical_fefo permanece SHADOW.
+revoke execute on function public.reserve_blood_units_fefo(uuid) from authenticated;
+
+-- 3) APIs/helpers que siguen temporalmente disponibles antes del cutover C13-C2.
 grant execute on function public.adjust_sale_line(uuid,numeric,text) to authenticated;
 grant execute on function public.approve_monthly_cost_period(uuid) to authenticated;
 grant execute on function public.calculate_monthly_product_costs(uuid) to authenticated;
@@ -49,7 +53,6 @@ grant execute on function public.has_permission(text) to authenticated;
 grant execute on function public.has_role(text) to authenticated;
 grant execute on function public.production_healthcheck() to authenticated;
 grant execute on function public.recalculate_inventory_policy(uuid) to authenticated;
-grant execute on function public.reserve_blood_units_fefo(uuid) to authenticated;
 
 -- C01/C02 ya instaladas y controladas.
 revoke execute on function public.hc_review_donor_status(uuid,text,text) from anon;
@@ -61,9 +64,9 @@ insert into public.app_migrations(migration_code,version,description,applied_by,
 values(
   'C13C1_FUNCTION_EXECUTE_HARDENING_v0_44_6',
   '0.44.6',
-  'Revoca RPC anon y acceso directo a helpers SECURITY DEFINER internos',
+  'Revoca RPC anon, helpers SECURITY DEFINER internos y cierra FEFO hasta C14',
   auth.uid(),
-  'No cambia lógica de negocio; reduce EXECUTE expuesto.'
+  'No cambia lógica de negocio; reduce EXECUTE expuesto y falla cerrado para FEFO SHADOW.'
 )
 on conflict(migration_code) do nothing;
 
