@@ -30,6 +30,10 @@ with checks(name,ok,detail) as (
    ),
    'helpers internos sin EXECUTE directo'),
 
+ ('FEFO_FAILS_CLOSED_BEFORE_C14',
+   not has_function_privilege('authenticated',to_regprocedure('public.reserve_blood_units_fefo(uuid)'),'EXECUTE'),
+   'reserve_blood_units_fefo no expuesto hasta instalar C14 double-gate'),
+
  ('CORE_RLS_HELPERS_AUTH_EXECUTE',
    has_function_privilege('authenticated',to_regprocedure('public.current_branch_id()'),'EXECUTE')
    and has_function_privilege('authenticated',to_regprocedure('public.can_access_branch(uuid)'),'EXECUTE')
@@ -37,10 +41,10 @@ with checks(name,ok,detail) as (
    and has_function_privilege('authenticated',to_regprocedure('public.has_permission(text)'),'EXECUTE'),
    'helpers usados por RLS continúan disponibles'),
 
- ('FRONTEND_RPC_AUTH_EXECUTE',
+ ('LEGACY_FRONTEND_RPC_TEMPORARY_COMPATIBILITY',
    has_function_privilege('authenticated',to_regprocedure('public.adjust_sale_line(uuid,numeric,text)'),'EXECUTE')
    and has_function_privilege('authenticated',to_regprocedure('public.calculate_monthly_product_costs(uuid)'),'EXECUTE'),
-   'RPC usados por frontend continúan disponibles'),
+   'RPC legacy de Ventas/Costos continúan temporalmente hasta C13-C2B'),
 
  ('C13C1_REGISTERED',
    exists(select 1 from public.app_migrations where migration_code='C13C1_FUNCTION_EXECUTE_HARDENING_v0_44_6'),
