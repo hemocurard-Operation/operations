@@ -8,8 +8,8 @@ La cola se deriva del Remediation Sequencer. No adelantar etapas dependientes.
 |---:|---|---|---|
 | 1 | S01 · C11.2 Frontend Smoke + Merge | PASS | Browser smoke PASS + PR #1 merged + Pages deploy PASS |
 | 2 | S02 · C12 Security Hardening | PASS | Preflight PASS + migration aplicada + validator PASS |
-| 3 | S03 · C13-A RLS No-Policy | READY TO EXECUTE | C12 PASS |
-| 4 | S04 · C13-C1 Function Execute Hardening | BLOCKED | C13-A PASS |
+| 3 | S03 · C13-A RLS No-Policy | PASS | C12 PASS + C13-A validator PASS |
+| 4 | S04 · C13-C1 Function Execute Hardening | READY TO EXECUTE | C13-A PASS |
 | 5 | S05 · C13-C2A Controlled RPC Wrappers | BLOCKED | C13-C1 PASS |
 | 6 | S06 · Frontend RPC Cutover / PR #2 | BLOCKED | C13-C2A PASS + smoke |
 | 7 | S07 · C13-C2B Legacy RPC Cutover | BLOCKED | S06 PASS |
@@ -38,6 +38,17 @@ La cola se deriva del Remediation Sequencer. No adelantar etapas dependientes.
 - Validator: `RESULTADO_GENERAL = PASS`
 - Roles `ENCARGADA_LABORATORIO` y `TI`: PASS
 - UAT/Release direct write hardening: PASS
+
+## Evidencia de S03
+
+- C13-A preflight: 19 tablas RLS sin policy antes del patch
+- Dependency contract: C12 registrado, 19/19 targets presentes, 0 permisos requeridos faltantes
+- Migration: `C13A_RLS_NO_POLICY_v0_44_4`
+- Ajuste `recipient_issues`: aplicado y alineado a `DISPATCH_VIEW`
+- Validator: `RESULTADO_GENERAL = PASS`
+- `public` con RLS habilitado y sin policy después del patch: `0`
+- `temperature_readings`: SELECT + INSERT únicamente
+- Sin DELETE browser directo en tablas clínicas/cadena de frío validadas
 
 ## Regla
 
