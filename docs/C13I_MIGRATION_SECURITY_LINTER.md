@@ -56,24 +56,35 @@ Formato:
 
 Los waivers desconocidos o con razones menores de 12 caracteres fallan el gate.
 
-## Validación estática realizada antes de subir
+## Validación
 
-El linter y su suite fueron ejecutados localmente contra 12 casos de prueba. Resultado: `12/12 OK`.
+### Local
+
+El linter y su suite fueron ejecutados contra 12 casos de prueba. Resultado: `12/12 OK`.
 
 La suite cubre, entre otros, missing RLS, GRANT ALL, SECURITY DEFINER sin search_path, EXECUTE anónimo, broad policy, view sin security_invoker y waiver inválido.
+
+### GitHub Actions
+
+Workflow: `HemoCura Migration Security Linter`
+
+- Run ID: `37595173127`
+- Evento: `pull_request`
+- Branch: `fix/c11-supabase-verified-frontend`
+- Estado: `completed`
+- Conclusión: `success`
 
 ## Estado
 
 - DISEÑADO: PASS
 - GENERADO: PASS
 - TEST LOCAL: PASS (12/12)
-- CI EN GITHUB: PENDIENTE DE EJECUCIÓN
+- CI EN GITHUB: PASS
 - INSTALADO EN SUPABASE: NO APLICA
-- VALIDADO COMO GATE DE MERGE: NO, hasta que GitHub Actions ejecute PASS
+- VALIDADO COMO GATE DE REPOSITORIO: PASS
 
-## Siguiente gate
+## Regla desde ahora
 
-1. GitHub Actions ejecuta `Migration Security Linter`.
-2. Unit tests = PASS.
-3. Migraciones gobernadas = PASS.
-4. Después del merge de C11/C13-I, toda migración nueva debe entrar por `sql/migrations/`.
+Después del merge de C11/C13-I, toda migración nueva debe entrar por `sql/migrations/` para quedar sometida automáticamente a HC001–HC010.
+
+C13-I no sustituye los validators runtime contra Supabase. Un migration lint PASS permite revisar/aplicar la migración; no convierte por sí solo el cambio en `VALIDADO` en producción.
