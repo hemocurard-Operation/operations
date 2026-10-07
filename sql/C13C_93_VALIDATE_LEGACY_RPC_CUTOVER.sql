@@ -28,8 +28,8 @@ with checks(name,ok,detail) as (
    'alertas/inventario/health legacy internos'),
 
  ('C13C2B_REGISTERED',
-   exists(select 1 from public.app_migrations where migration_code='C13C2B_LEGACY_RPC_CUTOVER_v0_44_8'),
-   'app_migrations C13C2B_LEGACY_RPC_CUTOVER_v0_44_8')
+   exists(select 1 from public.app_migrations where migration_code='C13C2B_LEGACY_RPC_CUTOVER_v0_44_7'),
+   'app_migrations C13C2B_LEGACY_RPC_CUTOVER_v0_44_7')
 )
 select name,ok,detail,case when ok then 'PASS' else 'FAIL' end status
 from checks
