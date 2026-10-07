@@ -31,6 +31,12 @@ jobs:
       - name: Extract frontend Supabase references
         run: |
           python tools/runtime_contract_gate.py extract | tee runtime-contract-discovery.json
+      - name: Enforce frontend declaration contract
+        run: |
+          python tools/runtime_contract_gate.py check-code contracts/runtime-contract-v0.44.json
+      - name: Validate verified Supabase baseline snapshot
+        run: |
+          python tools/runtime_contract_gate.py check-runtime contracts/runtime-contract-v0.44.json contracts/supabase-runtime-snapshot-v0.44.json
       - name: Upload discovery
         uses: actions/upload-artifact@v4
         with:
