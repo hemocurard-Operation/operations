@@ -1,19 +1,20 @@
 # HemoCura Cowork v1 · Control Center
 
-Línea base activa: frontend runtime `0.44.2`, database baseline `0.44.4`.
+Línea base activa: frontend runtime `0.44.2`, database baseline `0.44.5`.
 
 | Dominio | Estado | Evidencia / gate | Próxima acción |
 |---|---|---|---|
 | GitHub CI | PASS | Security Linter + Runtime Contract + Release Doctor + Sequencer + Browser Smoke | Mantener verde |
 | Frontend | PASS | C11.2 merged + browser smoke SUCCESS + Pages deploy SUCCESS | Mantener estable |
-| Database | PASS BASELINE | v0.44.4 | Ejecutar C13-C1 antes de avanzar |
+| Database | PASS BASELINE | v0.44.5 | Ejecutar C13-C2A |
 | Schema Drift | PASS | Runtime Contract | Vigilar cambios |
 | RLS No-Policy | PASS | C13-A validator PASS; 0 tablas public con RLS sin policy | Mantener cerrado |
 | RLS Global | ATTENTION | C13-A cerrado; broad policies/grant reconciliation pendientes | C13-F/G más adelante |
-| RPC Security | ATTENTION | C12 RPC controlados instalados; funciones legacy pendientes | C13-C1/C2A/C2B/D |
-| Anonymous Surface | ATTENTION | 19 targets C13-A cerrados; hardening global pendiente | C13-B1/B2/E/H |
+| RPC Security | ATTENTION | C13-C1 cerró anon/PUBLIC; wrappers/cutover/search_path pendientes | C13-C2A/C2B/D |
+| Anonymous SECURITY DEFINER Execute | PASS | 19 → 0 funciones ejecutables por anon | Mantener en 0 |
+| Anonymous Surface | ATTENTION | RPC secdef anon cerrado; views/tablas globales pendientes | C13-B1/B2/E/H |
 | Role Model | PASS BASELINE | ENCARGADA_LABORATORIO + TI instalados | Mantener segregación |
-| Clinical Guardrails | SAFE_LIMITED | No activar automatismos clínicos | C14 |
+| Clinical Guardrails | SAFE_LIMITED | FEFO directo cerrado hasta C14; no automatismos clínicos | C14 después del cutover RPC |
 | UAT | STOP | RPC controlados instalados, sin runs 1.0.0 | Después de hardening |
 | Sign-offs | STOP | RPC controlado instalado, sin firmas 1.0.0 | Después de UAT |
 | Final Release Gate | NOT_READY | C13-K | Recalcular al cerrar la cola |
@@ -45,9 +46,21 @@ Línea base activa: frontend runtime `0.44.2`, database baseline `0.44.4`.
 - `temperature_readings` queda append-only desde browser
 - Sin DELETE directo en trazabilidad clínica/cadena de frío verificada
 
+## S04 cerrado
+
+- Antes: `19` funciones SECURITY DEFINER ejecutables por `anon`
+- C12 RPC controlados ya estaban cerrados a `anon`
+- Migration aplicada: `C13C1_FUNCTION_EXECUTE_HARDENING_v0_44_5`
+- Validator: `RESULTADO_GENERAL = PASS`
+- Después: `0` SECURITY DEFINER ejecutables por `anon`
+- Trigger/internal helpers cerrados a RPC directo autenticado
+- Helpers RLS conservan compatibilidad autenticada
+- `reserve_blood_units_fefo(uuid)` queda fail-closed hasta C14
+- Security Advisor posterior mantiene pendientes: 67 security-definer views, 19 mutable search_path y 19 SECURITY DEFINER autenticadas intencionales/por revisar
+
 ## Próxima acción segura
 
-`S04_C13C1_FUNCTION_EXECUTE_HARDENING`
+`S05_C13C2A_CONTROLLED_RPC_WRAPPERS`
 
 ## Semáforo
 
