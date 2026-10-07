@@ -35,8 +35,9 @@
     "pages_result": "SUCCESS",
     "c12_migration": "C12_SECURITY_HARDENING_v0_44_3",
     "c12_validator": "PASS",
-    "c13a_migration": "C13A_RLS_NO_POLICY_v0_44_4",
-    "c13a_recipient_policy_fix": "APPLIED",
+    "c13a_migration_registry": "C13A_RLS_NO_POLICY_v0_44_4",
+    "c13a_supabase_migration": "c13a_rls_no_policy_v0_44_4",
+    "c13a_recipient_policy_fix": "c13a_recipient_policy_fix_v0_44_4",
     "c13a_validator": "PASS",
     "public_rls_enabled_without_policy": 0
   },
