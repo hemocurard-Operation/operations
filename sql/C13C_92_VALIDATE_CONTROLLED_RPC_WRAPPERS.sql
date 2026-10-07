@@ -38,8 +38,8 @@ with checks(name,ok,detail) as (
    'frontend anterior sigue funcionando hasta desplegar hc_*'),
 
  ('C13C2A_REGISTERED',
-   exists(select 1 from public.app_migrations where migration_code='C13C2A_CONTROLLED_RPC_WRAPPERS_v0_44_7'),
-   'app_migrations C13C2A_CONTROLLED_RPC_WRAPPERS_v0_44_7')
+   exists(select 1 from public.app_migrations where migration_code='C13C2A_CONTROLLED_RPC_WRAPPERS_v0_44_6'),
+   'app_migrations C13C2A_CONTROLLED_RPC_WRAPPERS_v0_44_6')
 )
 select name,ok,detail,case when ok then 'PASS' else 'FAIL' end status
 from checks
