@@ -1,0 +1,44 @@
+name: HemoCura Remediation Sequencer
+
+on:
+  pull_request:
+    paths:
+      - 'contracts/remediation-plan-v0.44.19.json'
+      - 'contracts/remediation-state-v0.44.19.json'
+      - 'tools/remediation_sequencer.py'
+      - 'tools/test_remediation_sequencer.py'
+      - 'sql/C12_*.sql'
+      - 'sql/C13*.sql'
+      - 'sql/C14_*.sql'
+      - 'tests/frontend-c11-2-smoke.html'
+      - '.github/workflows/remediation-sequencer.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  remediation-sequencer:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Unit tests
+        run: |
+          cd tools
+          python -m unittest -v test_remediation_sequencer.py
+      - name: Validate plan and compute next safe action
+        run: |
+          python tools/remediation_sequencer.py \
+            contracts/remediation-plan-v0.44.19.json \
+            contracts/remediation-state-v0.44.19.json \
+            --repo-root . | tee remediation-sequence.json
+      - name: Upload sequence artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: remediation-sequence
+          path: remediation-sequence.json

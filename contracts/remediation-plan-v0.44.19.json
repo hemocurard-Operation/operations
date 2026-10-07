@@ -1,0 +1,154 @@
+{
+  "gate": "C13-L",
+  "version": "0.44.19",
+  "description": "Dependency-aware remediation sequence from C11.2 through final release readiness.",
+  "stages": [
+    {
+      "id": "S01_C11_2_FRONTEND_SMOKE_MERGE",
+      "type": "manual_frontend",
+      "depends_on": [],
+      "pr": 1,
+      "evidence_path": "tests/frontend-c11-2-smoke.html",
+      "completion_rule": "PR #1 merged only after deployment smoke PASS."
+    },
+    {
+      "id": "S02_C12_SECURITY_HARDENING",
+      "type": "database",
+      "depends_on": ["S01_C11_2_FRONTEND_SMOKE_MERGE"],
+      "expected_version": "0.44.3",
+      "candidate": "sql/C12_01_SECURITY_HARDENING_CANDIDATE.sql",
+      "validator": "sql/C12_90_VALIDATE_SECURITY_HARDENING.sql"
+    },
+    {
+      "id": "S03_C13A_RLS_POLICIES",
+      "type": "database",
+      "depends_on": ["S02_C12_SECURITY_HARDENING"],
+      "expected_version": "0.44.4",
+      "candidate": "sql/C13A_01_RLS_POLICY_CANDIDATE.sql",
+      "followup_candidate": "sql/C13A_02_RECIPIENT_POLICY_FIX.sql",
+      "validator": "sql/C13A_90_VALIDATE_RLS_POLICIES.sql"
+    },
+    {
+      "id": "S04_C13C1_FUNCTION_EXECUTE_HARDENING",
+      "type": "database",
+      "depends_on": ["S03_C13A_RLS_POLICIES"],
+      "expected_version": "0.44.5",
+      "candidate": "sql/C13C_01_FUNCTION_EXECUTE_HARDENING_CANDIDATE.sql",
+      "validator": "sql/C13C_91_VALIDATE_FUNCTION_EXECUTE_HARDENING.sql"
+    },
+    {
+      "id": "S05_C13C2A_CONTROLLED_RPC_WRAPPERS",
+      "type": "database",
+      "depends_on": ["S04_C13C1_FUNCTION_EXECUTE_HARDENING"],
+      "expected_version": "0.44.6",
+      "candidate": "sql/C13C_02_CONTROLLED_RPC_WRAPPERS_CANDIDATE.sql",
+      "validator": "sql/C13C_92_VALIDATE_CONTROLLED_RPC_WRAPPERS.sql"
+    },
+    {
+      "id": "S06_C13C2_FRONTEND_CUTOVER",
+      "type": "manual_frontend",
+      "depends_on": ["S05_C13C2A_CONTROLLED_RPC_WRAPPERS"],
+      "pr": 2,
+      "completion_rule": "Deploy PR #2 and smoke Sales + Costs before legacy RPC cutover."
+    },
+    {
+      "id": "S07_C13C2B_LEGACY_RPC_CUTOVER",
+      "type": "database",
+      "depends_on": ["S06_C13C2_FRONTEND_CUTOVER"],
+      "expected_version": "0.44.7",
+      "candidate": "sql/C13C_03_LEGACY_RPC_CUTOVER_CANDIDATE.sql",
+      "validator": "sql/C13C_93_VALIDATE_LEGACY_RPC_CUTOVER.sql"
+    },
+    {
+      "id": "S08_C14_CLINICAL_GUARDRAILS",
+      "type": "database",
+      "depends_on": ["S07_C13C2B_LEGACY_RPC_CUTOVER"],
+      "expected_version": "0.44.8",
+      "candidate": "sql/C14_01_CLINICAL_GUARDRAILS_CANDIDATE.sql",
+      "validator": "sql/C14_90_VALIDATE_CLINICAL_GUARDRAILS.sql"
+    },
+    {
+      "id": "S09_C13B1_ANON_VIEW_EXPOSURE",
+      "type": "database",
+      "depends_on": ["S08_C14_CLINICAL_GUARDRAILS"],
+      "expected_version": "0.44.9",
+      "candidate": "sql/C13B_01_REVOKE_ANON_OWNER_VIEWS_CANDIDATE.sql",
+      "validator": "sql/C13B_91_VALIDATE_REVOKE_ANON_OWNER_VIEWS.sql"
+    },
+    {
+      "id": "S10_C13B2_SECURITY_INVOKER_VIEWS",
+      "type": "database",
+      "depends_on": ["S09_C13B1_ANON_VIEW_EXPOSURE"],
+      "expected_version": "0.44.10",
+      "candidate": "sql/C13B_02_SECURITY_INVOKER_CRITICAL_VIEWS_CANDIDATE.sql",
+      "followup_candidate": "sql/C13B_03_RELEASE_READINESS_INVOKER_CANDIDATE.sql",
+      "validator": "sql/C13B_92_VALIDATE_SECURITY_INVOKER_CRITICAL_VIEWS.sql"
+    },
+    {
+      "id": "S11_C13D_FUNCTION_SEARCH_PATH",
+      "type": "database",
+      "depends_on": ["S10_C13B2_SECURITY_INVOKER_VIEWS"],
+      "expected_version": "0.44.11",
+      "candidate": "sql/C13D_01_FUNCTION_SEARCH_PATH_HARDENING_CANDIDATE.sql",
+      "validator": "sql/C13D_90_VALIDATE_FUNCTION_SEARCH_PATH.sql"
+    },
+    {
+      "id": "S12_C13F_BROAD_POLICY_HARDENING",
+      "type": "database",
+      "depends_on": ["S11_C13D_FUNCTION_SEARCH_PATH"],
+      "expected_version": "0.44.13",
+      "candidate": "sql/C13F_01_BROAD_POLICY_HARDENING_CANDIDATE.sql",
+      "validator": "sql/C13F_90_VALIDATE_BROAD_POLICY_HARDENING.sql"
+    },
+    {
+      "id": "S13_C13G_GRANT_POLICY_RECONCILIATION",
+      "type": "database",
+      "depends_on": ["S12_C13F_BROAD_POLICY_HARDENING", "S03_C13A_RLS_POLICIES", "S02_C12_SECURITY_HARDENING"],
+      "expected_version": "0.44.14",
+      "candidate": "sql/C13G_01_GRANT_POLICY_RECONCILIATION_CANDIDATE.sql",
+      "validator": "sql/C13G_90_VALIDATE_GRANT_POLICY_RECONCILIATION.sql"
+    },
+    {
+      "id": "S14_C13E_ANON_SURFACE_HARDENING",
+      "type": "database",
+      "depends_on": ["S13_C13G_GRANT_POLICY_RECONCILIATION"],
+      "expected_version": "0.44.12",
+      "candidate": "sql/C13E_01_ANON_SURFACE_HARDENING_CANDIDATE.sql",
+      "validator": "sql/C13E_90_VALIDATE_ANON_SURFACE.sql"
+    },
+    {
+      "id": "S15_C13H_DEFAULT_PRIVILEGE_GOVERNANCE",
+      "type": "database",
+      "depends_on": ["S14_C13E_ANON_SURFACE_HARDENING"],
+      "expected_version": "0.44.15",
+      "candidate": "sql/C13H_01_DEFAULT_PRIVILEGE_GOVERNANCE_CANDIDATE.sql",
+      "validator": "sql/C13H_90_VALIDATE_DEFAULT_PRIVILEGES.sql"
+    },
+    {
+      "id": "S16_C13K_POST_HARDENING_DOCTOR",
+      "type": "manual_gate",
+      "depends_on": ["S15_C13H_DEFAULT_PRIVILEGE_GOVERNANCE"],
+      "evidence_path": "sql/C13K_00_COMPOSITE_RELEASE_DOCTOR.sql",
+      "completion_rule": "Rerun C13-K and require security components PASS before UAT."
+    },
+    {
+      "id": "S17_UAT_1_0_0",
+      "type": "manual_operational",
+      "depends_on": ["S16_C13K_POST_HARDENING_DOCTOR"],
+      "completion_rule": "At least one UAT run PASS; all active cases executed; zero critical FAIL/BLOCKED."
+    },
+    {
+      "id": "S18_RELEASE_SIGNOFFS_1_0_0",
+      "type": "manual_operational",
+      "depends_on": ["S17_UAT_1_0_0"],
+      "completion_rule": "Four distinct approved sign-offs: OPERACIONES, CALIDAD, TI, GERENCIA."
+    },
+    {
+      "id": "S19_C13K_FINAL_RELEASE_DOCTOR",
+      "type": "manual_gate",
+      "depends_on": ["S18_RELEASE_SIGNOFFS_1_0_0"],
+      "evidence_path": "sql/C13K_00_COMPOSITE_RELEASE_DOCTOR.sql",
+      "completion_rule": "C13-K FINAL RELEASE GATE = READY."
+    }
+  ]
+}

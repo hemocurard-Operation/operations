@@ -1,0 +1,42 @@
+name: HemoCura Release Readiness Doctor
+
+on:
+  pull_request:
+    paths:
+      - 'contracts/release-readiness-snapshot-v0.44.18.json'
+      - 'tools/release_readiness_doctor.py'
+      - 'tools/test_release_readiness_doctor.py'
+      - 'sql/C13K_00_COMPOSITE_RELEASE_DOCTOR.sql'
+      - 'docs/C13K_**'
+      - '.github/workflows/release-readiness-doctor.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  release-readiness-doctor:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Unit tests
+        run: |
+          cd tools
+          python -m unittest -v test_release_readiness_doctor.py
+
+      - name: Validate verified read-only snapshot
+        run: |
+          python tools/release_readiness_doctor.py contracts/release-readiness-snapshot-v0.44.18.json | tee release-readiness-doctor.json
+
+      - name: Publish diagnostic artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-readiness-doctor
+          path: release-readiness-doctor.json

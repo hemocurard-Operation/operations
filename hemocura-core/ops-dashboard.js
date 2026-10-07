@@ -1,35 +1,146 @@
 import { getSupabase } from './supabase.js';
-function esc(v=''){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
-async function safe(label,fn){try{const r=await fn();if(r?.error)throw r.error;return{label,ok:true,data:r?.data||[]}}catch(e){return{label,ok:false,data:[],error:e.message}}}
+
+function esc(v=''){
+  return String(v ?? '').replace(/[&<>"']/g,c=>({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'
+  }[c]));
+}
+
+async function safeRows(label,fn){
+  try{
+    const r=await fn();
+    if(r?.error) throw r.error;
+    return {label,ok:true,data:r?.data||[]};
+  }catch(e){
+    return {label,ok:false,data:[],error:e?.message||String(e)};
+  }
+}
+
+async function safeCount(label,fn){
+  try{
+    const r=await fn();
+    if(r?.error) throw r.error;
+    return {label,ok:true,count:Number(r?.count||0)};
+  }catch(e){
+    return {label,ok:false,count:0,error:e?.message||String(e)};
+  }
+}
+
+async function loadVersion(){
+  try{
+    const url=new URL('../VERSION.json',import.meta.url);
+    const r=await fetch(url,{cache:'no-store'});
+    if(!r.ok) throw new Error(`VERSION.json HTTP ${r.status}`);
+    return await r.json();
+  }catch(e){
+    console.warn('[HEMOCURA_VERSION]',e);
+    return {version:'desconocida',stage:'No disponible',clinical_core:'NO DECLARADO'};
+  }
+}
+
+function localDateISO(date=new Date()){
+  const y=date.getFullYear();
+  const m=String(date.getMonth()+1).padStart(2,'0');
+  const d=String(date.getDate()).padStart(2,'0');
+  return `${y}-${m}-${d}`;
+}
+
+function openCount(rows=[]){
+  const closed=new Set(['CERRADO','CERRADA','CLOSED','CANCELADO','CANCELADA','COMPLETADO','COMPLETADA']);
+  return rows.filter(r=>!closed.has(String(r.status||'').trim().toUpperCase())).length;
+}
+
+function kpi(label,value,detail=''){
+  return `<section class="card ops-kpi-card">
+    <div class="muted">${esc(label)}</div>
+    <div class="kpi">${esc(value)}</div>
+    ${detail?`<small class="muted">${esc(detail)}</small>`:''}
+  </section>`;
+}
+
+function action(route,title,detail){
+  return `<a class="ops-action" href="#${esc(route)}">
+    <strong>${esc(title)}</strong>
+    <span>${esc(detail)}</span>
+  </a>`;
+}
+
+function coreItem(label,status,tone='warn'){
+  return `<div class="ops-core-item">
+    <span>${esc(label)}</span>
+    <strong class="state-pill state-${tone}">${esc(status)}</strong>
+  </div>`;
+}
+
 export async function mountOpsDashboard(root){
+  if(!root) throw new Error('ops-dashboard-root no disponible');
   const sb=getSupabase();
+
   root.innerHTML='<section class="card"><div class="status info">Cargando centro de operaciones…</div></section>';
-  const [dispatches,incidents,nc,capa]=await Promise.all([
-    safe('Despachos',()=>sb.from('dispatches').select('id,status,dispatch_date').order('dispatch_date',{ascending:false}).limit(100)),
-    safe('Incidencias',()=>sb.from('incidents').select('id,status').limit(100)),
-    safe('No conformidades',()=>sb.from('nonconformities').select('id,status').limit(100)),
-    safe('CAPA',()=>sb.from('capa').select('id,status').limit(100))
+
+  const today=localDateISO();
+  const [version,dispatches,incidents,nc,capa]=await Promise.all([
+    loadVersion(),
+    safeCount('Despachos',()=>sb.from('dispatches').select('id',{count:'exact',head:true}).eq('dispatch_date',today)),
+    safeCount('Incidencias',()=>sb.from('incidents').select('id',{count:'exact',head:true}).eq('requires_quality_followup',true)),
+    safeRows('No conformidades',()=>sb.from('nonconformities').select('id,status').limit(200)),
+    safeRows('CAPA',()=>sb.from('capa').select('id,status').limit(200))
   ]);
-  const fs=[dispatches,incidents,nc,capa].filter(x=>!x.ok);
-  const open=rows=>rows.filter(r=>!['CERRADO','CERRADA','CLOSED','CANCELADO'].includes(String(r.status||'').toUpperCase())).length;
+
+  const failures=[dispatches,incidents,nc,capa].filter(x=>!x.ok);
+
   root.innerHTML=`
-    <div class="sales-toolbar"><div><h2 class="section-heading">Centro de Operaciones · SGC · Compliance</h2>
-    <div class="muted">CRM y prospección quedan fuera. Ventas se conserva solo como control operativo de salidas/facturación.</div></div>
-    <span class="shadow-badge">v0.21.0</span></div>
-    ${fs.length?`<div class="status warn">Carga parcial: ${esc(fs.map(x=>`${x.label}: ${x.error}`).join(' · '))}</div>`:''}
-    <div class="grid sales-kpis">
-      <section class="card"><div class="muted">Despachos recientes</div><div class="kpi">${dispatches.data.length}</div></section>
-      <section class="card"><div class="muted">Incidencias abiertas</div><div class="kpi">${open(incidents.data)}</div></section>
-      <section class="card"><div class="muted">NC abiertas</div><div class="kpi">${open(nc.data)}</div></section>
-      <section class="card"><div class="muted">CAPA abiertas</div><div class="kpi">${open(capa.data)}</div></section>
-    </div>
-    <div class="scope-grid"><a class="scope-card" href="#command"><strong>Centro de Mando</strong><span>Cierre diario y excepciones</span></a><a class="scope-card" href="#audit"><strong>Auditoría</strong><span>Trazabilidad y revisión semanal</span></a><a class="scope-card" href="#releasegate"><strong>Release Gate</strong><span>Validar antes de promover</span></a><a class="scope-card" href="#security"><strong>Seguridad</strong><span>Roles, permisos y RLS</span></a><a class="scope-card" href="#diagnostics"><strong>Diagnóstico</strong><span>Qué falló y cómo corregirlo</span></a><a class="scope-card" href="#approvals"><strong>Aprobaciones</strong><span>Firma operativa y segregación</span></a><a class="scope-card" href="#qmsgov"><strong>Gobierno QMS</strong><span>Documentos y CAPA</span></a><a class="scope-card" href="#internalaudits"><strong>Auditorías Internas</strong><span>Programa anual y hallazgos</span></a><a class="scope-card" href="#competencies"><strong>Competencias</strong><span>Capacitación, evaluación y brechas</span></a><a class="scope-card" href="#resources"><strong>Recursos Críticos</strong><span>Equipos, reactivos y ambiente</span></a><a class="scope-card" href="#analyticalqc"><strong>Calidad Analítica</strong><span>Métodos, IQC y EQA/PT</span></a><a class="scope-card" href="#release1"><strong>Release 1.0</strong><span>Gate final y firmas</span></a><a class="scope-card" href="#uat"><strong>UAT</strong><span>Pruebas de aceptación</span></a><a class="scope-card" href="#integration"><strong>Integración</strong><span>End-to-end y feature complete</span></a><a class="scope-card" href="#continuity"><strong>Continuidad</strong><span>Backup, recuperación e integridad</span></a><a class="scope-card" href="#management"><strong>Revisión Dirección</strong><span>Objetivos y decisiones</span></a><a class="scope-card" href="#coldchain"><strong>Cadena de Frío</strong><span>Temperatura y transporte</span></a><a class="scope-card" href="#hemovigilance"><strong>Hemovigilancia</strong><span>Eventos y retiros</span></a><a class="scope-card" href="#suppliers"><strong>Proveedores</strong><span>Compras y evaluación</span></a>
-      <a class="scope-card" href="#sales"><strong>Ventas / Salidas</strong><span>Despachos, facturación y cobranza</span></a><a class="scope-card" href="#donors"><strong>Donantes</strong><span>Origen del inventario sanguíneo</span></a><a class="scope-card" href="#screening"><strong>Tamizaje</strong><span>Pruebas y trazabilidad</span></a><a class="scope-card" href="#bloodflow"><strong>Flujo Sanguíneo</strong><span>Trazabilidad y liberación</span></a><a class="scope-card" href="#production"><strong>Producción</strong><span>Componentes y rendimiento</span></a><a class="scope-card" href="#supply"><strong>Abastecimiento</strong><span>Cobertura y donantes requeridos</span></a><a class="scope-card" href="#bloodinventory"><strong>Inventario Sangre</strong><span>Disponibilidad por componente</span></a>
-      <a class="scope-card" href="#requisitions"><strong>Requisiciones</strong><span>Insumos y abastecimiento</span></a>
-      <a class="scope-card" href="#inspections"><strong>Inspecciones</strong><span>Cumplimiento por sucursal</span></a>
-      <a class="scope-card" href="#quality"><strong>SGC</strong><span>Incidencias · NC · CAPA</span></a>
-      <a class="scope-card" href="#documents"><strong>Documentos</strong><span>Fuente única y arquitectura</span></a>
-      <a class="scope-card" href="#compliance"><strong>Compliance</strong><span>Riesgos y programa penal</span></a>
-    </div>
-    <section class="card"><div class="status warn">Clinical Core: FEFO por unidad, bloqueo térmico y trazabilidad donante→receptor siguen SHADOW/BLOCKED.</div></section>`;
+    <section class="ops-hero">
+      <div>
+        <div class="eyebrow">HemoCura Operations</div>
+        <h2 class="section-heading">Centro de Operaciones</h2>
+        <div class="muted">${esc(version.stage||'Estado operativo')}</div>
+      </div>
+      <div class="ops-version">
+        <span>Versión</span>
+        <strong>${esc(version.version||'desconocida')}</strong>
+      </div>
+    </section>
+
+    ${failures.length?`
+      <div class="status warn">
+        <strong>Carga parcial.</strong>
+        ${esc(failures.map(x=>`${x.label}: ${x.error}`).join(' · '))}
+      </div>`:''}
+
+    <section class="ops-section">
+      <div class="ops-section-head"><div><div class="eyebrow">Ahora</div><h3>Estado operativo</h3></div></div>
+      <div class="ops-kpi-grid">
+        ${kpi('Despachos de hoy',dispatches.count,today)}
+        ${kpi('Incidencias con seguimiento',incidents.count,'requires_quality_followup = true')}
+        ${kpi('NC activas',openCount(nc.data))}
+        ${kpi('CAPA activas',openCount(capa.data))}
+      </div>
+    </section>
+
+    <section class="ops-section">
+      <div class="ops-section-head"><div><div class="eyebrow">Acciones</div><h3>Ir a lo importante</h3></div></div>
+      <div class="ops-actions">
+        ${action('command','Centro de Mando','Cierre diario y gestión por excepciones')}
+        ${action('quality','SGC','Incidencias, NC, CAPA y alertas')}
+        ${action('coldchain','Cadena de Frío','Temperatura, transporte y excursiones')}
+        ${action('bi','Inteligencia de Negocios','Indicadores y análisis operativo')}
+        ${action('diagnostics','Diagnóstico','Configuración, Auth, RLS y dependencias')}
+        ${action('releasegate','Release Gate','Validación antes de promover')}
+      </div>
+    </section>
+
+    <section class="card ops-core">
+      <div class="ops-section-head">
+        <div><div class="eyebrow">Guardrail clínico</div><h3>Clinical Core</h3></div>
+        <strong class="state-pill state-info">${esc(version.clinical_core||'NO DECLARADO')}</strong>
+      </div>
+      <div class="ops-core-grid">
+        ${coreItem('FEFO por unidad','SHADOW / BLOCKED')}
+        ${coreItem('Bloqueo térmico','SHADOW / BLOCKED')}
+        ${coreItem('Trazabilidad donante → receptor','SHADOW / BLOCKED')}
+        ${coreItem('Decisión clínica automática','NO PERMITIDA','ok')}
+      </div>
+      <p class="muted ops-note">El estado operativo no sustituye verificación clínica, UAT, RLS ni liberación humana autorizada.</p>
+    </section>`;
 }

@@ -1,0 +1,34 @@
+{
+  "gate": "C13-L",
+  "version": "0.44.19",
+  "captured_at_utc": "2026-10-07T10:11:02.612288Z",
+  "project_ref": "tiothqiljipdamgudvcb",
+  "applied_versions": [],
+  "manual_complete": [],
+  "ci": {
+    "migration-security-lint": "PASS",
+    "runtime-contract": "PASS",
+    "release-readiness-doctor": "PASS"
+  },
+  "pull_requests": {
+    "1": {"state": "open", "draft": false, "merged": false},
+    "2": {"state": "open", "draft": true, "merged": false}
+  },
+  "release_doctor": {
+    "gate": "NOT_READY",
+    "database": "PASS",
+    "schema_drift": "PASS",
+    "rls": "STOP",
+    "rpc_security": "STOP",
+    "anon_surface": "STOP",
+    "role_model": "STOP",
+    "clinical_guardrails": "SAFE_LIMITED",
+    "uat": "STOP",
+    "signoffs": "STOP"
+  },
+  "notes": [
+    "Supabase query confirmed no target hardening versions 0.44.3 through 0.44.15 are registered.",
+    "PR #1 is open and PR #2 remains draft.",
+    "No production mutation was performed while capturing this state."
+  ]
+}

@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HemoCura C11.2 · Frontend Smoke</title>
+<style>body{font-family:Arial,sans-serif;margin:24px;color:#172131}.pass{color:#23703B}.fail{color:#8B0000}pre{background:#f4f6f8;padding:12px;border-radius:8px;white-space:pre-wrap}</style>
+</head>
+<body>
+<h1>HemoCura C11.2 · Frontend Smoke</h1>
+<div id="result">Ejecutando…</div>
+<pre id="detail"></pre>
+<script type="module">
+import {routeList} from '../hemocura-core/router.js';
+import {registeredViewRoutes,renderView} from '../hemocura-core/views.js';
+import {mountedRouteKeys} from '../hemocura-core/layout.js';
+
+const routeKeys=routeList().map(([k])=>k);
+const viewKeys=registeredViewRoutes();
+const mountKeys=mountedRouteKeys();
+const missingViews=routeKeys.filter(k=>!viewKeys.includes(k));
+const missingMounts=routeKeys.filter(k=>!mountKeys.includes(k));
+const badViews=routeKeys.filter(k=>!renderView(k).includes('id='));
+let versionOk=false,versionDetail='';
+try{
+  const r=await fetch('../VERSION.json',{cache:'no-store'});
+  const v=await r.json();
+  versionOk=v.version==='0.44.2';
+  versionDetail=`VERSION=${v.version}`;
+}catch(e){versionDetail=e.message}
+const ok=!missingViews.length&&!missingMounts.length&&!badViews.length&&versionOk;
+document.getElementById('result').innerHTML=ok?'<h2 class="pass">PASS · rutas, vistas, mounts y VERSION coherentes</h2>':'<h2 class="fail">FAIL · revisar detalle</h2>';
+document.getElementById('detail').textContent=JSON.stringify({totalRoutes:routeKeys.length,missingViews,missingMounts,badViews,versionOk,versionDetail},null,2);
+</script>
+</body>
+</html>

@@ -1,0 +1,44 @@
+name: HemoCura Runtime Contract Gate
+
+on:
+  pull_request:
+    paths:
+      - 'hemocura-core/**'
+      - 'js/**'
+      - 'contracts/**'
+      - 'tools/runtime_contract_gate.py'
+      - 'tools/test_runtime_contract_gate.py'
+      - '.github/workflows/runtime-contract-gate.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  runtime-contract:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Unit tests
+        run: |
+          cd tools
+          python -m unittest -v test_runtime_contract_gate.py
+      - name: Extract frontend Supabase references
+        run: |
+          python tools/runtime_contract_gate.py extract | tee runtime-contract-discovery.json
+      - name: Enforce frontend declaration contract
+        run: |
+          python tools/runtime_contract_gate.py check-code contracts/runtime-contract-v0.44.json
+      - name: Validate verified Supabase baseline snapshot
+        run: |
+          python tools/runtime_contract_gate.py check-runtime contracts/runtime-contract-v0.44.json contracts/supabase-runtime-snapshot-v0.44.json
+      - name: Upload discovery
+        uses: actions/upload-artifact@v4
+        with:
+          name: runtime-contract-discovery
+          path: runtime-contract-discovery.json
