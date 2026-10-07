@@ -1,16 +1,17 @@
 # HemoCura Cowork v1 · Control Center
 
-Línea base activa: frontend runtime `0.44.2`, database baseline `0.44.3`.
+Línea base activa: frontend runtime `0.44.2`, database baseline `0.44.4`.
 
 | Dominio | Estado | Evidencia / gate | Próxima acción |
 |---|---|---|---|
-| GitHub CI | PASS | Security Linter + Runtime Contract + Release Doctor + Sequencer | Mantener verde |
+| GitHub CI | PASS | Security Linter + Runtime Contract + Release Doctor + Sequencer + Browser Smoke | Mantener verde |
 | Frontend | PASS | C11.2 merged + browser smoke SUCCESS + Pages deploy SUCCESS | Mantener estable |
-| Database | PASS BASELINE | v0.44.3 | Ejecutar C13-A antes de v0.45 |
+| Database | PASS BASELINE | v0.44.4 | Ejecutar C13-C1 antes de avanzar |
 | Schema Drift | PASS | Runtime Contract | Vigilar cambios |
-| RLS | STOP | 19 tablas clasificadas; hardening pendiente | C13-A/F/G |
-| RPC Security | ATTENTION | C12 RPC controlados ya instalados; hardening adicional pendiente | C13-C1/C2A/C2B/D |
-| Anonymous Surface | STOP | Hardening pendiente | C13-B1/B2/E/H |
+| RLS No-Policy | PASS | C13-A validator PASS; 0 tablas public con RLS sin policy | Mantener cerrado |
+| RLS Global | ATTENTION | C13-A cerrado; broad policies/grant reconciliation pendientes | C13-F/G más adelante |
+| RPC Security | ATTENTION | C12 RPC controlados instalados; funciones legacy pendientes | C13-C1/C2A/C2B/D |
+| Anonymous Surface | ATTENTION | 19 targets C13-A cerrados; hardening global pendiente | C13-B1/B2/E/H |
 | Role Model | PASS BASELINE | ENCARGADA_LABORATORIO + TI instalados | Mantener segregación |
 | Clinical Guardrails | SAFE_LIMITED | No activar automatismos clínicos | C14 |
 | UAT | STOP | RPC controlados instalados, sin runs 1.0.0 | Después de hardening |
@@ -32,9 +33,21 @@ Línea base activa: frontend runtime `0.44.2`, database baseline `0.44.3`.
 - Roles `ENCARGADA_LABORATORIO` y `TI`: PASS
 - Release/UAT direct browser writes: cerrados según validator
 
+## S03 cerrado
+
+- C13-A preflight: `19` tablas RLS sin policy
+- Contrato de dependencia: C12 presente, 19/19 targets presentes y permisos requeridos completos
+- Migration aplicada: `C13A_RLS_NO_POLICY_v0_44_4`
+- Recipient policy fix aplicado
+- Validator: `RESULTADO_GENERAL = PASS`
+- `public_rls_enabled_without_policy = 0`
+- `anon` sin acceso directo a los 19 targets
+- `temperature_readings` queda append-only desde browser
+- Sin DELETE directo en trazabilidad clínica/cadena de frío verificada
+
 ## Próxima acción segura
 
-`S03_C13A_RLS_NO_POLICY`
+`S04_C13C1_FUNCTION_EXECUTE_HARDENING`
 
 ## Semáforo
 
