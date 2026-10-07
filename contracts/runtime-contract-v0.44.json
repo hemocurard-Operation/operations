@@ -172,7 +172,11 @@
     "review_and_release_unit"
   ],
   "optional_relations": [],
-  "optional_rpcs": [],
+  "optional_rpcs": [
+    "hc_adjust_sale_line",
+    "hc_calculate_monthly_product_costs",
+    "hc_production_healthcheck"
+  ],
   "ignored_relations": [],
   "ignored_rpcs": [],
   "critical_columns": {
