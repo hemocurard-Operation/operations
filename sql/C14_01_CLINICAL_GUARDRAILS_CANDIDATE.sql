@@ -24,7 +24,6 @@ begin
   if auth.uid() is null then
     raise exception 'Sesión requerida.' using errcode='42501';
   end if;
-
   if not public.has_permission('DISPATCH_WRITE') then
     raise exception 'Permiso DISPATCH_WRITE requerido.' using errcode='42501';
   end if;
@@ -41,8 +40,7 @@ begin
 
   if not coalesce(v_feature_enabled,false)
      or not coalesce(v_system_enabled,false) then
-    raise exception 'FEFO clínico permanece SHADOW/BLOCKED; no se permite reserva automática por unidad.'
-      using errcode='42501';
+    raise exception 'FEFO clínico permanece SHADOW/BLOCKED; no se permite reserva automática por unidad.' using errcode='42501';
   end if;
 
   select * into v_line
@@ -176,8 +174,7 @@ begin
     perform public.emit_operational_alert(
       v_device.branch_id,'CADENA_FRIO','CRITICA','storage_excursions',v_excursion_id,
       'Desviación de temperatura',
-      format('Equipo %s: %s °C fuera de rango [%s, %s].',
-             v_device.device_code,new.temperature_c,v_policy.min_temp,v_policy.max_temp),
+      format('Equipo %s: %s °C fuera de rango [%s, %s].',v_device.device_code,new.temperature_c,v_policy.min_temp,v_policy.max_temp),
       'TEMP_EXCURSION:'||v_excursion_id::text,
       jsonb_build_object(
         'device_id',v_device.id,
@@ -189,7 +186,6 @@ begin
       'QUALITY'
     );
 
-    -- El bloqueo automático solo puede ejecutarse cuando LOS DOS gates están activos.
     if v_device.hold_on_excursion
        and coalesce(v_feature_enabled,false)
        and coalesce(v_system_enabled,false) then
@@ -207,13 +203,12 @@ begin
 end
 $$;
 
--- Función de trigger: no debe exponerse como RPC de navegador.
 revoke all on function public.evaluate_temperature_reading() from public,anon,authenticated;
 
 insert into public.app_migrations(migration_code,version,description,applied_by,notes)
 values(
-  'C14_CLINICAL_GUARDRAILS_v0_44_5',
-  '0.44.5',
+  'C14_CLINICAL_GUARDRAILS_v0_44_8',
+  '0.44.8',
   'Double-gate para FEFO y bloqueo térmico; no activa funcionalidades clínicas SHADOW',
   auth.uid(),
   'clinical_fefo y cold_chain_auto_block permanecen controlados por feature flag + system mode.'
