@@ -9,8 +9,8 @@ La cola se deriva del Remediation Sequencer. No adelantar etapas dependientes.
 | 1 | S01 · C11.2 Frontend Smoke + Merge | PASS | Browser smoke PASS + PR #1 merged + Pages deploy PASS |
 | 2 | S02 · C12 Security Hardening | PASS | Preflight PASS + migration aplicada + validator PASS |
 | 3 | S03 · C13-A RLS No-Policy | PASS | C12 PASS + C13-A validator PASS |
-| 4 | S04 · C13-C1 Function Execute Hardening | READY TO EXECUTE | C13-A PASS |
-| 5 | S05 · C13-C2A Controlled RPC Wrappers | BLOCKED | C13-C1 PASS |
+| 4 | S04 · C13-C1 Function Execute Hardening | PASS | C13-A PASS + validator PASS |
+| 5 | S05 · C13-C2A Controlled RPC Wrappers | READY TO EXECUTE | C13-C1 PASS |
 | 6 | S06 · Frontend RPC Cutover / PR #2 | BLOCKED | C13-C2A PASS + smoke |
 | 7 | S07 · C13-C2B Legacy RPC Cutover | BLOCKED | S06 PASS |
 | 8 | S08 · C14 Clinical Guardrails | BLOCKED | S07 PASS |
@@ -49,6 +49,18 @@ La cola se deriva del Remediation Sequencer. No adelantar etapas dependientes.
 - `public` con RLS habilitado y sin policy después del patch: `0`
 - `temperature_readings`: SELECT + INSERT únicamente
 - Sin DELETE browser directo en tablas clínicas/cadena de frío validadas
+
+## Evidencia de S04
+
+- C13-C1 preflight: `19` SECURITY DEFINER ejecutables por `anon` antes del patch
+- C12 RPC controlados expuestos a `anon`: `0`
+- 21/21 firmas requeridas presentes
+- Migration: `C13C1_FUNCTION_EXECUTE_HARDENING_v0_44_5`
+- Validator: `RESULTADO_GENERAL = PASS`
+- SECURITY DEFINER ejecutables por `anon` después del patch: `0`
+- Trigger/internal helpers sin EXECUTE directo para `authenticated`: PASS
+- `reserve_blood_units_fefo(uuid)` queda fail-closed hasta C14
+- Helpers RLS (`current_branch_id`, `can_access_branch`, `has_role`, `has_permission`) conservan EXECUTE autenticado
 
 ## Regla
 
