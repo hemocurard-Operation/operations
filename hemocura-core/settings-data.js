@@ -116,8 +116,8 @@ export async function getProductionControl() {
       .limit(20)
   );
 
-  const health = await safeQuery('production_healthcheck', () =>
-    getSupabase().rpc('production_healthcheck')
+  const health = await safeQuery('hc_production_healthcheck', () =>
+    getSupabase().rpc('hc_production_healthcheck')
   );
 
   return { mode, flags, releases, events, health };
