@@ -12,10 +12,15 @@ async function fetchJsonNoCache(path){
   return r.json();
 }
 
-async function fetchTextNoCache(path){
-  const r=await fetch(path,{cache:'no-store'});
-  if(!r.ok) throw new Error(`${path}: HTTP ${r.status}`);
-  return r.text();
+async function checkFrontendFile(path){
+  try{
+    const r=await fetch(path,{cache:'no-store'});
+    if(!r.ok) throw new Error(`HTTP ${r.status}`);
+    const text=await r.text();
+    return {path,ok:true,detail:`${text.length} bytes`};
+  }catch(error){
+    return {path,ok:false,detail:error?.message||String(error)};
+  }
 }
 
 export async function mountReleaseGate(root){
@@ -69,13 +74,12 @@ export async function mountReleaseGate(root){
 
     <section class="card">
       <div class="status warn">
-        <strong>Archivo protegido:</strong> <code>js/config.js</code> no forma parte de los paquetes de actualización.
-        La plantilla es <code>js/config.example.js</code>.
+        <strong>Archivo protegido:</strong> <code>js/config.js</code> no se modifica desde el Release Gate.
+        La validez del archivo se determina mediante <code>normalizeConfigValidation()</code>, no buscando cadenas de texto dentro del código fuente.
       </div>
     </section>`;
 
   async function run(){
-    const checks=[];
     const config=releaseData.configCheck();
 
     document.getElementById('config-result').innerHTML=`
@@ -88,41 +92,19 @@ export async function mountReleaseGate(root){
       ${config.problems.length?`<ul>${config.problems.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:''}`;
 
     const files=[
-      './VERSION.json',
-      './index.html',
-      './login.html',
-      './js/app.js',
-      './js/config.js',
-      './hemocura-core/bootstrap.js',
-      './hemocura-core/layout.js'
+      './VERSION.json','./index.html','./login.html','./js/app.js','./js/config.js',
+      './hemocura-core/bootstrap.js','./hemocura-core/layout.js','./hemocura-core/router.js',
+      './hemocura-core/views.js','./hemocura-core/ops-dashboard.js','./css/app.css','./css/ui-v0442.css'
     ];
 
-    const fileResults=[];
-    for(const path of files){
-      try{
-        const text=await fetchTextNoCache(path);
-        let detail=`${text.length} bytes`;
-        if(path.endsWith('config.js') && (text.includes('TU-PROYECTO')||text.includes('TU_CLAVE'))){
-          throw new Error('Contiene placeholders');
-        }
-        fileResults.push({path,ok:true,detail});
-      }catch(e){
-        fileResults.push({path,ok:false,detail:e.message});
-      }
-    }
-
+    const fileResults=await Promise.all(files.map(checkFrontendFile));
     document.getElementById('frontend-body').innerHTML=fileResults.map(x=>`
       <tr><td><code>${esc(x.path)}</code></td><td>${x.ok?'OK':'ERROR'}</td><td>${esc(x.detail)}</td></tr>
     `).join('');
 
-    let schema=[],migrations=[],ready=null,releases=[],version=null;
     try{
-      [schema,migrations,ready,releases,version]=await Promise.all([
-        releaseData.schema(),
-        releaseData.migrations(),
-        releaseData.readiness(),
-        releaseData.releases(),
-        fetchJsonNoCache('./VERSION.json')
+      const [schema,migrations,ready,releases,version]=await Promise.all([
+        releaseData.schema(),releaseData.migrations(),releaseData.readiness(),releaseData.releases(),fetchJsonNoCache('./VERSION.json')
       ]);
 
       document.getElementById('schema-body').innerHTML=schema.map(x=>`
@@ -140,7 +122,8 @@ export async function mountReleaseGate(root){
       const frontendOk=fileResults.every(x=>x.ok);
       const schemaOk=schema.every(x=>x.object_exists);
       const migrationsOk=migrations.every(x=>x.applied);
-      const allOk=config.ok && frontendOk && schemaOk && migrationsOk && ready?.backend_ready;
+      const backendOk=Boolean(ready?.backend_ready);
+      const allOk=config.ok&&frontendOk&&schemaOk&&migrationsOk&&backendOk;
 
       document.getElementById('rel-kpis').innerHTML=`
         <section class="card"><div class="muted">Config</div><div class="kpi">${config.ok?'OK':'ERROR'}</div></section>
@@ -151,27 +134,30 @@ export async function mountReleaseGate(root){
       document.getElementById('rel-msg').innerHTML=`
         <div class="status ${allOk?'ok':'warn'}">
           ${allOk
-            ? `READY: ${esc(version?.version||'versión actual')} cumple el Release Gate.`
+            ? `READY: ${esc(version?.version||'versión actual')} cumple el Release Gate estructural.`
             : 'NOT READY: corrija los elementos pendientes antes de promover esta versión.'}
         </div>`;
 
-      if(allOk && version?.version){
+      if(allOk&&version?.version){
         try{
           await releaseData.registerRelease({
             version:version.version,
             release_channel:version.release_channel||'RC',
             status:'VALIDACION',
-            validation_notes:'Release Gate automático: configuración, frontend, schema y migraciones OK'
+            validation_notes:'Release Gate estructural: configuración, frontend, schema y migraciones OK. No sustituye UAT ni sign-off humano.'
           });
-        }catch(e){
-          console.warn('[HEMOCURA_RELEASE_GATE] No se pudo registrar release',e);
+        }catch(error){
+          console.warn('[HEMOCURA_RELEASE_GATE] No se pudo registrar release',error);
         }
       }
-    }catch(e){
-      document.getElementById('rel-msg').innerHTML=`<div class="status bad">${esc(e.message)} · Ejecute la migración v0.28.0.</div>`;
+    }catch(error){
+      document.getElementById('rel-msg').innerHTML=`<div class="status bad">${esc(error?.message||String(error))}</div>`;
     }
   }
 
-  document.getElementById('rel-run').onclick=run;
+  document.getElementById('rel-run').onclick=()=>run().catch(error=>{
+    document.getElementById('rel-msg').innerHTML=`<div class="status bad">${esc(error?.message||String(error))}</div>`;
+  });
+
   await run();
 }
