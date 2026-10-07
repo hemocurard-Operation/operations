@@ -47,8 +47,8 @@ with checks(name,ok,detail) as (
    'RPC legacy de Ventas/Costos continúan temporalmente hasta C13-C2B'),
 
  ('C13C1_REGISTERED',
-   exists(select 1 from public.app_migrations where migration_code='C13C1_FUNCTION_EXECUTE_HARDENING_v0_44_6'),
-   'app_migrations C13C1_FUNCTION_EXECUTE_HARDENING_v0_44_6')
+   exists(select 1 from public.app_migrations where migration_code='C13C1_FUNCTION_EXECUTE_HARDENING_v0_44_5'),
+   'app_migrations C13C1_FUNCTION_EXECUTE_HARDENING_v0_44_5')
 )
 select name,ok,detail,case when ok then 'PASS' else 'FAIL' end status
 from checks
@@ -57,7 +57,6 @@ select 'RESULTADO_GENERAL',bool_and(ok),'C13-C1 EXECUTE hardening',
        case when bool_and(ok) then 'PASS' else 'STOP' end
 from checks;
 
--- Evidencia complementaria: debe devolver 0 filas para anon.
 select p.proname,pg_get_function_identity_arguments(p.oid) args
 from pg_proc p
 join pg_namespace n on n.oid=p.pronamespace
