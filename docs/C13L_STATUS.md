@@ -3,9 +3,9 @@
 DISEÑADO: PASS
 GENERADO: PASS
 SUPABASE PREFLIGHT READ-ONLY: PASS
-CI GITHUB: PENDIENTE
+CI GITHUB: PASS
 INSTALADO EN SUPABASE: NO APLICA
-VALIDADO COMO GATE: PENDIENTE DE CI
+VALIDADO COMO GATE: PASS
 
 CURRENT NEXT SAFE ACTION: S01_C11_2_FRONTEND_SMOKE_MERGE
 
@@ -15,5 +15,12 @@ CURRENT NEXT SAFE ACTION: S01_C11_2_FRONTEND_SMOKE_MERGE
 - target hardenings pending: 13
 - UAT runs 1.0.0: 0
 - release sign-offs 1.0.0: 0
+
+## CI verificado
+
+- migration-security-lint: SUCCESS
+- runtime-contract: SUCCESS
+- release-readiness-doctor: SUCCESS
+- remediation-sequencer: SUCCESS
 
 Producción no fue modificada durante C13-L.
