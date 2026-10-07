@@ -1,0 +1,29 @@
+{
+  "project": "HemoCura Cowork v1",
+  "cowork_version": "1.0.0",
+  "branch": "cowork/v1",
+  "frontend_candidate": "0.44.2",
+  "database_baseline": "0.44",
+  "release_gate": "NOT_READY",
+  "next_safe_action": "S01_C11_2_FRONTEND_SMOKE_MERGE",
+  "gates": {
+    "migration_security_linter": "PASS",
+    "runtime_contract": "PASS",
+    "release_readiness_doctor": "PASS_AS_GATE_NOT_READY",
+    "remediation_sequencer": "PASS",
+    "rls": "STOP",
+    "rpc_security": "STOP",
+    "anonymous_surface": "STOP",
+    "role_model": "STOP",
+    "clinical_guardrails": "SAFE_LIMITED",
+    "uat": "STOP",
+    "signoffs": "STOP"
+  },
+  "guardrails": {
+    "service_role_in_frontend": false,
+    "automatic_donor_eligibility": false,
+    "automatic_transfusion_compatibility": false,
+    "automatic_blood_release": false,
+    "human_release_required": true
+  }
+}
