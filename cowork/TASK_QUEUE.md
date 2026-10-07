@@ -6,8 +6,8 @@ La cola se deriva del Remediation Sequencer. No adelantar etapas dependientes.
 
 | Orden | Etapa | Estado | Gate requerido |
 |---:|---|---|---|
-| 1 | S01 · C11.2 Frontend Smoke + Merge | READY TO EXECUTE | Smoke PASS + merge |
-| 2 | S02 · C12 Security Hardening | BLOCKED BY S01 | Preflight + patch + validate |
+| 1 | S01 · C11.2 Frontend Smoke + Merge | PASS | Browser smoke PASS + PR #1 merged + Pages deploy PASS |
+| 2 | S02 · C12 Security Hardening | READY TO EXECUTE | Preflight + patch + validate |
 | 3 | S03 · C13-A RLS No-Policy | BLOCKED | C12 PASS |
 | 4 | S04 · C13-C1 Function Execute Hardening | BLOCKED | C13-A PASS |
 | 5 | S05 · C13-C2A Controlled RPC Wrappers | BLOCKED | C13-C1 PASS |
@@ -24,6 +24,12 @@ La cola se deriva del Remediation Sequencer. No adelantar etapas dependientes.
 | 16 | UAT 1.0.0 | BLOCKED | Hardening PASS |
 | 17 | 4 Sign-offs | BLOCKED | UAT PASS |
 | 18 | Final Release Doctor | BLOCKED | Sign-offs completos |
+
+## Evidencia de S01
+
+- PR #1 merged: `1d442aca8b3eca7d6b6d8a5a75f1e9ccd2f03d92`
+- Browser smoke run: `37607415945` → SUCCESS
+- GitHub Pages run: `37607415753` → build + deploy SUCCESS
 
 ## Regla
 
