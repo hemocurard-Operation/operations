@@ -7,8 +7,8 @@ La cola se deriva del Remediation Sequencer. No adelantar etapas dependientes.
 | Orden | Etapa | Estado | Gate requerido |
 |---:|---|---|---|
 | 1 | S01 · C11.2 Frontend Smoke + Merge | PASS | Browser smoke PASS + PR #1 merged + Pages deploy PASS |
-| 2 | S02 · C12 Security Hardening | READY TO EXECUTE | Preflight + patch + validate |
-| 3 | S03 · C13-A RLS No-Policy | BLOCKED | C12 PASS |
+| 2 | S02 · C12 Security Hardening | PASS | Preflight PASS + migration aplicada + validator PASS |
+| 3 | S03 · C13-A RLS No-Policy | READY TO EXECUTE | C12 PASS |
 | 4 | S04 · C13-C1 Function Execute Hardening | BLOCKED | C13-A PASS |
 | 5 | S05 · C13-C2A Controlled RPC Wrappers | BLOCKED | C13-C1 PASS |
 | 6 | S06 · Frontend RPC Cutover / PR #2 | BLOCKED | C13-C2A PASS + smoke |
@@ -30,6 +30,14 @@ La cola se deriva del Remediation Sequencer. No adelantar etapas dependientes.
 - PR #1 merged: `1d442aca8b3eca7d6b6d8a5a75f1e9ccd2f03d92`
 - Browser smoke run: `37607415945` → SUCCESS
 - GitHub Pages run: `37607415753` → build + deploy SUCCESS
+
+## Evidencia de S02
+
+- C12 preflight: FAVORABLE
+- Migration: `C12_SECURITY_HARDENING_v0_44_3`
+- Validator: `RESULTADO_GENERAL = PASS`
+- Roles `ENCARGADA_LABORATORIO` y `TI`: PASS
+- UAT/Release direct write hardening: PASS
 
 ## Regla
 
