@@ -12,6 +12,17 @@ on:
       - 'hemocura-core/**'
       - 'tests/frontend-c11-2-smoke.html'
       - '.github/workflows/frontend-browser-smoke.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'deployment-check.html'
+      - 'VERSION.json'
+      - 'js/**'
+      - 'css/**'
+      - 'hemocura-core/**'
+      - 'tests/frontend-c11-2-smoke.html'
+      - '.github/workflows/frontend-browser-smoke.yml'
   workflow_dispatch:
 
 permissions:
