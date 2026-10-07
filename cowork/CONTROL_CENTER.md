@@ -4,17 +4,17 @@ Línea base activa: frontend runtime `0.44.2`, database baseline `0.44.6`.
 
 | Dominio | Estado | Evidencia / gate | Próxima acción |
 |---|---|---|---|
-| GitHub CI | PASS | Security Linter + Runtime Contract + Release Doctor + Sequencer + Browser Smoke | Mantener verde |
-| Frontend | PASS | C11.2 merged + browser smoke SUCCESS + Pages deploy SUCCESS | Ejecutar cutover a RPC `hc_*` |
-| Database | PASS BASELINE | v0.44.6 | Mantener compatibilidad durante S06 |
+| GitHub CI | PASS | Security Linter + Runtime Contract + RPC Cutover Gate + Browser Smoke | Mantener verde |
+| Frontend | PASS | PR #4 merged + browser smoke PR/main SUCCESS + Pages deploy SUCCESS | Mantener wrappers `hc_*` |
+| Database | PASS BASELINE | v0.44.6 | Ejecutar C13-C2B |
 | Schema Drift | PASS | Runtime Contract | Vigilar cambios |
 | RLS No-Policy | PASS | C13-A validator PASS; 0 tablas public con RLS sin policy | Mantener cerrado |
 | RLS Global | ATTENTION | C13-A cerrado; broad policies/grant reconciliation pendientes | C13-F/G más adelante |
-| RPC Security | ATTENTION | Wrappers `hc_*` instalados y validados; legacy aún activo por compatibilidad | S06 frontend cutover, luego C13-C2B/D |
+| RPC Security | ATTENTION | Frontend activo ya usa wrappers `hc_*`; legacy backend sigue temporalmente expuesto a authenticated | C13-C2B, luego C13-D |
 | Anonymous SECURITY DEFINER Execute | PASS | 19 → 0 funciones ejecutables por anon | Mantener en 0 |
 | Anonymous Surface | ATTENTION | RPC secdef anon cerrado; views/tablas globales pendientes | C13-B1/B2/E/H |
 | Role Model | PASS BASELINE | ENCARGADA_LABORATORIO + TI instalados | Mantener segregación |
-| Clinical Guardrails | SAFE_LIMITED | FEFO directo cerrado hasta C14; no automatismos clínicos | C14 después del cutover RPC |
+| Clinical Guardrails | SAFE_LIMITED | FEFO directo cerrado hasta C14; no automatismos clínicos | C14 después de C13-C2B |
 | UAT | STOP | Sin runs 1.0.0 | Después de hardening |
 | Sign-offs | STOP | Sin firmas 1.0.0 | Después de UAT |
 | Final Release Gate | NOT_READY | C13-K | Recalcular al cerrar la cola |
@@ -68,9 +68,23 @@ Línea base activa: frontend runtime `0.44.2`, database baseline `0.44.6`.
 - Wrappers no disponibles a `anon`
 - Legacy permanece temporalmente activo para evitar downtime durante S06
 
+## S06 cerrado
+
+- Se migraron los tres RPC legacy realmente usados por el frontend activo a wrappers controlados `hc_*`.
+- PR real: `#4`, no #2; la numeración cambió porque ya existían otros PR en GitHub.
+- RPC Cutover Gate: SUCCESS (`37697399298`)
+- Runtime Contract: SUCCESS (`37697399210`)
+- Browser Smoke PR: SUCCESS (`37697399387`)
+- PR #4: MERGED
+- Merge SHA: `72b0e10d6f72ff3d97eaa56764f3ef56292fc744`
+- Browser Smoke `main`: SUCCESS (`37697601966`)
+- GitHub Pages build/deploy: SUCCESS (`37697601665`)
+- Verificación read-only post-deploy Supabase: wrappers permiten `authenticated`, bloquean `anon`; legacy todavía permite `authenticated` solo durante transición.
+- S06 no aplicó ninguna migración nueva a Supabase.
+
 ## Próxima acción segura
 
-`S06_FRONTEND_RPC_CUTOVER_PR2`
+`S07_C13C2B_LEGACY_RPC_CUTOVER`
 
 ## Semáforo
 
