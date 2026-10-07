@@ -59,7 +59,7 @@ export async function adjustSaleLine(lineId, adjustment, reason) {
 
   console.info('[HEMOCURA_SALES_ADJUST]', { lineId, adjustment });
 
-  const { error } = await getSupabase().rpc('adjust_sale_line', {
+  const { error } = await getSupabase().rpc('hc_adjust_sale_line', {
     p_line_id: lineId,
     p_adjustment: Number(adjustment),
     p_reason: reason.trim()

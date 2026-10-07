@@ -88,7 +88,7 @@ export async function recalculateMonthlyCosts(periodId) {
   console.info('[HEMOCURA_COSTS_RECALC]', periodId);
 
   const { data, error } = await getSupabase()
-    .rpc('calculate_monthly_product_costs', { p_period_id: periodId });
+    .rpc('hc_calculate_monthly_product_costs', { p_period_id: periodId });
 
   if (error) {
     console.error('[HEMOCURA_COSTS_ERROR] recalc', error);
