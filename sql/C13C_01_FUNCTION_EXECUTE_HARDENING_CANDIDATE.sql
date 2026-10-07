@@ -62,8 +62,8 @@ grant execute on function public.log_audit_event(text,text,uuid,text,uuid,text,j
 
 insert into public.app_migrations(migration_code,version,description,applied_by,notes)
 values(
-  'C13C1_FUNCTION_EXECUTE_HARDENING_v0_44_6',
-  '0.44.6',
+  'C13C1_FUNCTION_EXECUTE_HARDENING_v0_44_5',
+  '0.44.5',
   'Revoca RPC anon, helpers SECURITY DEFINER internos y cierra FEFO hasta C14',
   auth.uid(),
   'No cambia lógica de negocio; reduce EXECUTE expuesto y falla cerrado para FEFO SHADOW.'
