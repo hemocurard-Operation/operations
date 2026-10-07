@@ -10,8 +10,8 @@ La cola se deriva del Remediation Sequencer. No adelantar etapas dependientes.
 | 2 | S02 · C12 Security Hardening | PASS | Preflight PASS + migration aplicada + validator PASS |
 | 3 | S03 · C13-A RLS No-Policy | PASS | C12 PASS + C13-A validator PASS |
 | 4 | S04 · C13-C1 Function Execute Hardening | PASS | C13-A PASS + validator PASS |
-| 5 | S05 · C13-C2A Controlled RPC Wrappers | READY TO EXECUTE | C13-C1 PASS |
-| 6 | S06 · Frontend RPC Cutover / PR #2 | BLOCKED | C13-C2A PASS + smoke |
+| 5 | S05 · C13-C2A Controlled RPC Wrappers | PASS | C13-C1 PASS + validator PASS |
+| 6 | S06 · Frontend RPC Cutover / PR #2 | READY TO EXECUTE | C13-C2A PASS + frontend smoke |
 | 7 | S07 · C13-C2B Legacy RPC Cutover | BLOCKED | S06 PASS |
 | 8 | S08 · C14 Clinical Guardrails | BLOCKED | S07 PASS |
 | 9 | S09 · C13-B1 View anon exposure | BLOCKED | C14 PASS |
@@ -61,6 +61,19 @@ La cola se deriva del Remediation Sequencer. No adelantar etapas dependientes.
 - Trigger/internal helpers sin EXECUTE directo para `authenticated`: PASS
 - `reserve_blood_units_fefo(uuid)` queda fail-closed hasta C14
 - Helpers RLS (`current_branch_id`, `can_access_branch`, `has_role`, `has_permission`) conservan EXECUTE autenticado
+
+## Evidencia de S05
+
+- C13-C2A preflight: C13-C1 registrado y C13-C2A aún no aplicado
+- Permisos requeridos faltantes: `0`
+- Roles requeridos faltantes: `0`
+- Funciones legacy requeridas presentes: `true`
+- Wrappers previos presentes: `false`
+- Migration aplicada: `C13C2A_CONTROLLED_RPC_WRAPPERS_v0_44_6`
+- Validator: `RESULTADO_GENERAL = PASS`
+- Wrappers `hc_*` disponibles para authenticated
+- Wrappers no accesibles por `anon`
+- RPC legacy permanecen temporalmente activos para compatibilidad durante el cutover frontend
 
 ## Regla
 
