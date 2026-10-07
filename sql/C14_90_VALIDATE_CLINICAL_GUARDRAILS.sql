@@ -15,6 +15,11 @@ with checks(name,ok,detail) as (
    and pg_get_functiondef(to_regprocedure('public.reserve_blood_units_fefo(uuid)')) ilike '%DISPATCH_WRITE%',
    'feature flag + system mode + permission'),
 
+ ('FEFO_AUTH_EXECUTE_RESTORED_WITH_GATES',
+   has_function_privilege('authenticated',to_regprocedure('public.reserve_blood_units_fefo(uuid)'),'EXECUTE')
+   and not has_function_privilege('anon',to_regprocedure('public.reserve_blood_units_fefo(uuid)'),'EXECUTE'),
+   'authenticated puede llamar solo a la versión doble-gated'),
+
  ('TEMP_DOUBLE_GATE',
    pg_get_functiondef(to_regprocedure('public.evaluate_temperature_reading()')) ilike '%cold_chain_auto_block%'
    and pg_get_functiondef(to_regprocedure('public.evaluate_temperature_reading()')) ilike '%temperature_blocking_enabled%',
@@ -41,8 +46,8 @@ with checks(name,ok,detail) as (
    'trazabilidad donante→receptor sigue SHADOW/BLOCKED'),
 
  ('C14_REGISTERED',
-   exists(select 1 from public.app_migrations where migration_code='C14_CLINICAL_GUARDRAILS_v0_44_5'),
-   'app_migrations C14_CLINICAL_GUARDRAILS_v0_44_5')
+   exists(select 1 from public.app_migrations where migration_code='C14_CLINICAL_GUARDRAILS_v0_44_8'),
+   'app_migrations C14_CLINICAL_GUARDRAILS_v0_44_8')
 )
 select name,ok,detail,case when ok then 'PASS' else 'FAIL' end status
 from checks
