@@ -4,11 +4,12 @@
   "branch": "cowork/v1",
   "frontend_candidate": "0.44.2",
   "frontend_runtime": "0.44.2",
-  "database_baseline": "0.44",
+  "database_baseline": "0.44.3",
   "release_gate": "NOT_READY",
-  "next_safe_action": "S02_C12_SECURITY_HARDENING",
+  "next_safe_action": "S03_C13A_RLS_NO_POLICY",
   "gates": {
     "s01_c11_2_frontend_smoke_merge": "PASS",
+    "s02_c12_security_hardening": "PASS",
     "frontend_browser_smoke": "PASS",
     "github_pages_deploy": "PASS",
     "migration_security_linter": "PASS",
@@ -16,9 +17,9 @@
     "release_readiness_doctor": "PASS_AS_GATE_NOT_READY",
     "remediation_sequencer": "PASS",
     "rls": "STOP",
-    "rpc_security": "STOP",
+    "rpc_security": "ATTENTION",
     "anonymous_surface": "STOP",
-    "role_model": "STOP",
+    "role_model": "PASS_BASELINE",
     "clinical_guardrails": "SAFE_LIMITED",
     "uat": "STOP",
     "signoffs": "STOP"
@@ -29,7 +30,9 @@
     "browser_smoke_run": 37607415945,
     "browser_smoke_result": "SUCCESS",
     "pages_run": 37607415753,
-    "pages_result": "SUCCESS"
+    "pages_result": "SUCCESS",
+    "c12_migration": "C12_SECURITY_HARDENING_v0_44_3",
+    "c12_validator": "PASS"
   },
   "guardrails": {
     "service_role_in_frontend": false,
