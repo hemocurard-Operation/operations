@@ -4,13 +4,14 @@
   "branch": "cowork/v1",
   "frontend_candidate": "0.44.2",
   "frontend_runtime": "0.44.2",
-  "database_baseline": "0.44.4",
+  "database_baseline": "0.44.5",
   "release_gate": "NOT_READY",
-  "next_safe_action": "S04_C13C1_FUNCTION_EXECUTE_HARDENING",
+  "next_safe_action": "S05_C13C2A_CONTROLLED_RPC_WRAPPERS",
   "gates": {
     "s01_c11_2_frontend_smoke_merge": "PASS",
     "s02_c12_security_hardening": "PASS",
     "s03_c13a_rls_no_policy": "PASS",
+    "s04_c13c1_function_execute_hardening": "PASS",
     "frontend_browser_smoke": "PASS",
     "github_pages_deploy": "PASS",
     "migration_security_linter": "PASS",
@@ -19,10 +20,11 @@
     "remediation_sequencer": "PASS",
     "rls_no_policy": "PASS",
     "rls": "ATTENTION_C13F_G_PENDING",
-    "rpc_security": "ATTENTION",
-    "anonymous_surface": "ATTENTION_C13A_TARGETS_CLOSED_GLOBAL_HARDENING_PENDING",
+    "rpc_security": "ATTENTION_C13C2A_C2B_D_PENDING",
+    "anonymous_secdef_execute": "PASS_ZERO",
+    "anonymous_surface": "ATTENTION_GLOBAL_HARDENING_PENDING",
     "role_model": "PASS_BASELINE",
-    "clinical_guardrails": "SAFE_LIMITED",
+    "clinical_guardrails": "SAFE_LIMITED_FEFO_CLOSED",
     "uat": "STOP",
     "signoffs": "STOP"
   },
@@ -39,13 +41,22 @@
     "c13a_supabase_migration": "c13a_rls_no_policy_v0_44_4",
     "c13a_recipient_policy_fix": "c13a_recipient_policy_fix_v0_44_4",
     "c13a_validator": "PASS",
-    "public_rls_enabled_without_policy": 0
+    "public_rls_enabled_without_policy": 0,
+    "c13c1_migration_registry": "C13C1_FUNCTION_EXECUTE_HARDENING_v0_44_5",
+    "c13c1_supabase_migration": "c13c1_function_execute_hardening_v0_44_5",
+    "c13c1_validator": "PASS",
+    "security_definer_anon_executable_before": 19,
+    "security_definer_anon_executable_after": 0,
+    "security_advisor_authenticated_secdef_remaining": 19,
+    "security_advisor_security_definer_views_remaining": 67,
+    "security_advisor_mutable_search_path_remaining": 19
   },
   "guardrails": {
     "service_role_in_frontend": false,
     "automatic_donor_eligibility": false,
     "automatic_transfusion_compatibility": false,
     "automatic_blood_release": false,
-    "human_release_required": true
+    "human_release_required": true,
+    "clinical_fefo_direct_rpc_exposed": false
   }
 }
