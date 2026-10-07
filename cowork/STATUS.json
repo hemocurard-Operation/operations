@@ -3,10 +3,14 @@
   "cowork_version": "1.0.0",
   "branch": "cowork/v1",
   "frontend_candidate": "0.44.2",
+  "frontend_runtime": "0.44.2",
   "database_baseline": "0.44",
   "release_gate": "NOT_READY",
-  "next_safe_action": "S01_C11_2_FRONTEND_SMOKE_MERGE",
+  "next_safe_action": "S02_C12_SECURITY_HARDENING",
   "gates": {
+    "s01_c11_2_frontend_smoke_merge": "PASS",
+    "frontend_browser_smoke": "PASS",
+    "github_pages_deploy": "PASS",
     "migration_security_linter": "PASS",
     "runtime_contract": "PASS",
     "release_readiness_doctor": "PASS_AS_GATE_NOT_READY",
@@ -18,6 +22,14 @@
     "clinical_guardrails": "SAFE_LIMITED",
     "uat": "STOP",
     "signoffs": "STOP"
+  },
+  "evidence": {
+    "pr_1_merged": true,
+    "merge_sha": "1d442aca8b3eca7d6b6d8a5a75f1e9ccd2f03d92",
+    "browser_smoke_run": 37607415945,
+    "browser_smoke_result": "SUCCESS",
+    "pages_run": 37607415753,
+    "pages_result": "SUCCESS"
   },
   "guardrails": {
     "service_role_in_frontend": false,
