@@ -1,0 +1,96 @@
+{
+  "gate": "C13-K",
+  "version": "0.44.18",
+  "source": "Supabase read-only doctor",
+  "captured_at_utc": "2026-10-07T10:01:16.989858Z",
+  "project_ref": "tiothqiljipdamgudvcb",
+  "final_release_gate": "NOT_READY",
+  "components": {
+    "database": "PASS",
+    "schema_drift": "PASS",
+    "rls": "STOP",
+    "rpc_security": "STOP",
+    "anon_surface": "STOP",
+    "role_model": "STOP",
+    "clinical_guardrails": "SAFE_LIMITED",
+    "uat": "STOP",
+    "signoffs": "STOP"
+  },
+  "counts": {
+    "missing_relations": 0,
+    "missing_rpcs": 0,
+    "missing_critical_columns": 0,
+    "forbidden_columns_present": 0,
+    "rls_off_tables": 0,
+    "rls_no_policy_tables": 19,
+    "broad_authenticated_policies": 6,
+    "anon_dml_grants": 568,
+    "anon_dml_tables": 142,
+    "anon_executable_security_definer": 17,
+    "callable_without_fixed_search_path": 16,
+    "missing_required_roles": 2
+  },
+  "database": {
+    "migration_0_44_0": true,
+    "legacy_backend_ready": true,
+    "legacy_release_objects_ready": true
+  },
+  "clinical": {
+    "mode": "LIVE_LIMITED",
+    "excel_parallel_required": true,
+    "clinical_dispatch": false,
+    "temperature_blocking": false,
+    "donor_recipient_traceability": false,
+    "any_clinical_automation_flag_enabled": false,
+    "c14_registered": false
+  },
+  "uat": {
+    "active_cases": 8,
+    "active_critical_cases": 7,
+    "runs": 0,
+    "passed_runs": 0,
+    "results": 0,
+    "critical_failures": 0
+  },
+  "signoffs": {
+    "total": 0,
+    "approved": 0,
+    "rejected": 0,
+    "approved_types": 0,
+    "approved_signoff_types": []
+  },
+  "missing_required_roles": [
+    "ENCARGADA_LABORATORIO",
+    "TI"
+  ],
+  "blockers": [
+    {
+      "code": "ANON_DML_SURFACE",
+      "detail": "568 grants DML anon distribuidos en 142 tablas"
+    },
+    {
+      "code": "CLINICAL_FULL_RELEASE",
+      "detail": "Modo SAFE_LIMITED: automatizaciones clínicas críticas deshabilitadas; C14 aún no promovido"
+    },
+    {
+      "code": "RLS_COVERAGE",
+      "detail": "19 tablas con RLS sin policy; 6 policies broad authenticated; 0 tablas sin RLS"
+    },
+    {
+      "code": "ROLE_MODEL",
+      "detail": "Faltan roles requeridos: ENCARGADA_LABORATORIO, TI"
+    },
+    {
+      "code": "RPC_SECURITY",
+      "detail": "17 SECURITY DEFINER ejecutables por anon; 16 funciones callable sin search_path fijo"
+    },
+    {
+      "code": "SIGNOFFS",
+      "detail": "Sign-offs 1.0.0: 0/4 áreas aprobadas; 0 rechazadas"
+    },
+    {
+      "code": "UAT",
+      "detail": "UAT 1.0.0: 0 runs, 0 PASS, 0 resultados, 0 fallos/bloqueos críticos"
+    }
+  ]
+}
