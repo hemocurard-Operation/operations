@@ -8,7 +8,6 @@
 
 begin;
 
--- Retirar acceso directo a funciones legacy reemplazadas por wrappers hc_*.
 revoke execute on function public.adjust_sale_line(uuid,numeric,text) from anon,authenticated;
 revoke execute on function public.approve_monthly_cost_period(uuid) from anon,authenticated;
 revoke execute on function public.calculate_monthly_product_costs(uuid) from anon,authenticated;
@@ -21,8 +20,8 @@ revoke execute on function public.production_healthcheck() from anon,authenticat
 
 insert into public.app_migrations(migration_code,version,description,applied_by,notes)
 values(
-  'C13C2B_LEGACY_RPC_CUTOVER_v0_44_8',
-  '0.44.8',
+  'C13C2B_LEGACY_RPC_CUTOVER_v0_44_7',
+  '0.44.7',
   'Retira EXECUTE directo de RPC legacy tras migración frontend a wrappers hc_*',
   auth.uid(),
   'Requiere smoke frontend favorable antes de ejecutar.'
