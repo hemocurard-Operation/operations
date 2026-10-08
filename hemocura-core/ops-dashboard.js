@@ -104,17 +104,18 @@ export async function mountOpsDashboard(root){
 
     ${failures.length?`
       <div class="status warn">
-        <strong>Carga parcial.</strong>
+        <strong>Carga parcial. Los indicadores afectados no están disponibles.</strong>
         ${esc(failures.map(x=>`${x.label}: ${x.error}`).join(' · '))}
       </div>`:''}
 
+    <div class="sales-toolbar"><span class="muted">Consultado: ${esc(new Date().toLocaleString('es-DO',{timeZone:'America/Santo_Domingo'}))} · Datos visibles según permisos</span><button id="ops-retry" class="secondary">Actualizar datos</button></div>
     <section class="ops-section">
       <div class="ops-section-head"><div><div class="eyebrow">Ahora</div><h3>Estado operativo</h3></div></div>
       <div class="ops-kpi-grid">
-        ${kpi('Despachos de hoy',dispatches.count,today)}
-        ${kpi('Incidencias con seguimiento',incidents.count,'requires_quality_followup = true')}
-        ${kpi('NC activas',openCount(nc.data))}
-        ${kpi('CAPA activas',openCount(capa.data))}
+        ${kpi('Despachos de hoy',dispatches.ok?dispatches.count:'No disponible',today)}
+        ${kpi('Incidencias con seguimiento',incidents.ok?incidents.count:'No disponible','Incidencias que requieren revisión de Calidad')}
+        ${kpi('NC activas',nc.ok?openCount(nc.data):'No disponible',nc.ok?'Hasta 200 registros visibles':'Consulta fallida')}
+        ${kpi('CAPA activas',capa.ok?openCount(capa.data):'No disponible',capa.ok?'Hasta 200 registros visibles':'Consulta fallida')}
       </div>
     </section>
 
@@ -143,4 +144,5 @@ export async function mountOpsDashboard(root){
       </div>
       <p class="muted ops-note">El estado operativo no sustituye verificación clínica, UAT, RLS ni liberación humana autorizada.</p>
     </section>`;
+  root.querySelector('#ops-retry').onclick=()=>mountOpsDashboard(root);
 }
