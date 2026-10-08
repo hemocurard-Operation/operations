@@ -17,7 +17,7 @@ export async function mountRequisitions(root){
       <tbody id="req-body"></tbody></table></div></section>
     <dialog id="req-dialog" class="sales-dialog">
       <form id="req-form">
-        <h3>Nueva requisición</h3>
+        <h3>Nueva requisición</h3><div id="req-form-status" role="status" aria-live="polite"></div>
         <label>Código<input id="req-code" required placeholder="REQ-2026-001"></label>
         <label>Fecha<input id="req-date" type="date" value="${today()}" required></label>
         <label>Sucursal<select id="req-branch" required><option value="">Seleccionar…</option>${branches.map(b=>`<option value="${esc(b.id)}">${esc(b.name)}</option>`).join('')}</select></label>
@@ -52,6 +52,11 @@ export async function mountRequisitions(root){
   document.getElementById('req-cancel').onclick=()=>document.getElementById('req-dialog').close();
   document.getElementById('req-form').onsubmit=async(ev)=>{
     ev.preventDefault();
+    const button=ev.target.querySelector('[type=submit]');
+    if(button.disabled) return;
+    button.disabled=true; button.textContent='Guardando…';
+    const status=document.getElementById('req-form-status');
+    status.textContent='Guardando solicitud. Espere la confirmación.';
     try{
       await createRequisition({
         requisition_code:document.getElementById('req-code').value.trim(),
@@ -68,7 +73,8 @@ export async function mountRequisitions(root){
         requested_qty:Number(document.getElementById('req-qty').value)
       }]);
       document.getElementById('req-dialog').close(); ev.target.reset(); await load();
-    }catch(e){document.getElementById('req-status').innerHTML=`<div class="status bad">${esc(e.message)}</div>`}
+    }catch(e){status.innerHTML=`<div class="status bad">${esc(e.message)}. Los datos permanecen en el formulario. Si fallaron las líneas, revise la solicitud creada antes de volver a enviarla.</div>`}
+    finally{button.disabled=false; button.textContent='Guardar'}
   };
   await load();
 }
