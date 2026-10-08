@@ -89,7 +89,7 @@ export async function mountLayout(session){
   app.innerHTML=`<div class="app-layout">
     <aside class="sidebar" id="sidebar">
       <div class="sidebar-brand"><div class="brand-mark">H</div><div><strong>HemoCura</strong><br><small>Operaciones · Sangre · SGC</small></div></div>
-      <nav class="nav">${nav}</nav>
+      <label class="nav-search">Buscar módulo<input id="module-search" type="search" placeholder="Ej.: donantes, calidad" autocomplete="off"></label><p id="nav-empty" class="muted" hidden>No hay módulos coincidentes.</p><nav class="nav">${nav}</nav>
     </aside>
     <section class="main-shell">
       <header class="topbar"><div><button class="mobile-toggle secondary" id="menu-btn" aria-label="Abrir menú">☰</button><strong id="page-title">Centro de Operaciones</strong><div class="muted" id="page-subtitle"></div></div>
@@ -99,6 +99,21 @@ export async function mountLayout(session){
   </div>`;
 
   document.querySelectorAll('[data-route]').forEach(b=>b.onclick=()=>navigate(b.dataset.route));
+  document.getElementById('module-search').addEventListener('input',event=>{
+    const normalize=value=>value.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+    const query=normalize(event.target.value.trim());
+    let matches=0;
+    document.querySelectorAll('.nav-group').forEach(group=>{
+      let visible=0;
+      group.querySelectorAll('[data-route]').forEach(button=>{
+        const match=normalize(button.textContent+' '+button.title).includes(query);
+        button.hidden=!match;
+        if(match) visible++;
+      });
+      group.hidden=!visible; matches+=visible;
+    });
+    document.getElementById('nav-empty').hidden=matches>0;
+  });
   document.getElementById('logout-btn').onclick=async()=>{await signOut();location.replace('./login.html')};
   document.getElementById('menu-btn')?.addEventListener('click',()=>document.getElementById('sidebar')?.classList.toggle('open'));
 
