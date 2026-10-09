@@ -71,14 +71,23 @@ Se incorpora `tools/test_quick_capture_safety.py` y el workflow `HemoCura Quick 
 - copy de guardrail clínico;
 - no modificación/referencia de `js/config.js` desde el módulo.
 
+## Validación del PR #9
+- HemoCura Quick Capture Safety: PASS.
+- HemoCura Runtime Contract Gate: PASS.
+- HemoCura Frontend RPC Cutover: PASS.
+- HemoCura Frontend Browser Smoke: PASS.
+- PR mergeable: YES.
+
 ## Alcance técnico
 Esta iteración no requiere nuevo DDL en Supabase. Reutiliza tablas, RLS y contratos existentes. `js/config.js` permanece protegido y sin cambios.
 
-## Estado inicial
+## Estado pre-merge
 - DISEÑADO: PASS
 - GENERADO EN RAMA: PASS
 - TEST LOCAL DEL GATE: PASS 11/11
-- CI GITHUB: PENDIENTE PR
-- BROWSER SMOKE: PENDIENTE PR
+- CI GITHUB: PASS
+- RUNTIME CONTRACT: PASS
+- RPC CUTOVER: PASS
+- BROWSER SMOKE: PASS
 - SUPABASE DDL: NO APLICA
-- PRODUCCIÓN: SIN CAMBIOS HASTA MERGE + DEPLOY PASS
+- PRODUCCIÓN: PENDIENTE MERGE + DEPLOY PASS
