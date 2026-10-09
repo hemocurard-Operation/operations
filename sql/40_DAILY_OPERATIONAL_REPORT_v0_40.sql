@@ -39,7 +39,13 @@ language plpgsql
 security invoker
 set search_path=public
 as $$
-declare v_id uuid;
+declare
+  v_id uuid;
+  v_screened numeric := 0;
+  v_reactive numeric := 0;
+  v_available numeric := 0;
+  v_dispatched numeric := 0;
+  v_live public.vw_daily_branch_operations%rowtype;
 begin
   if not public.can_access_branch(p_branch_id) then
     raise exception 'Sin acceso a la sucursal';
@@ -48,12 +54,43 @@ begin
     raise exception 'Estado no válido';
   end if;
 
+  select coalesce(sum(
+    coalesce((x->>'non_reactive')::numeric,0)+
+    coalesce((x->>'reactive')::numeric,0)
+  ),0),
+  coalesce(sum(coalesce((x->>'reactive')::numeric,0)),0)
+  into v_screened,v_reactive
+  from jsonb_array_elements(coalesce(p_screening_lots,'[]'::jsonb)) x;
+
+  select coalesce(sum(
+    coalesce((x.value->>'whole_blood')::numeric,0)+
+    coalesce((x.value->>'packed_cells')::numeric,0)+
+    coalesce((x.value->>'plasma')::numeric,0)+
+    coalesce((x.value->>'platelets')::numeric,0)
+  ),0)
+  into v_available
+  from jsonb_each(coalesce(p_manual_inventory,'{}'::jsonb)) x;
+
+  select coalesce(sum(coalesce((x->>'quantity')::numeric,0)),0)
+  into v_dispatched
+  from jsonb_array_elements(coalesce(p_manual_dispatches,'[]'::jsonb)) x;
+
+  if p_close_date=current_date then
+    select * into v_live
+    from public.vw_daily_branch_operations
+    where branch_id=p_branch_id;
+  end if;
+
   insert into public.daily_operational_closes(
     close_date,branch_id,status,responsible_name,
+    donors_count,effective_donations,screened_units,reactive_results,
+    available_units,dispatched_units,invoiced_units,invoiced_amount,
     screening_lots,manual_inventory,manual_dispatches,equipment_snapshot,
     source_mode,notes,closed_by,closed_at,updated_at
   ) values(
     p_close_date,p_branch_id,p_status,nullif(trim(p_responsible_name),''),
+    coalesce(v_live.donors,0),coalesce(v_live.effective_donations,0),v_screened,v_reactive,
+    v_available,v_dispatched,coalesce(v_live.invoiced_units,0),coalesce(v_live.invoiced_amount,0),
     coalesce(p_screening_lots,'[]'::jsonb),
     coalesce(p_manual_inventory,'{}'::jsonb),
     coalesce(p_manual_dispatches,'[]'::jsonb),
@@ -66,6 +103,14 @@ begin
   on conflict(close_date,branch_id) do update set
     status=excluded.status,
     responsible_name=excluded.responsible_name,
+    donors_count=excluded.donors_count,
+    effective_donations=excluded.effective_donations,
+    screened_units=excluded.screened_units,
+    reactive_results=excluded.reactive_results,
+    available_units=excluded.available_units,
+    dispatched_units=excluded.dispatched_units,
+    invoiced_units=excluded.invoiced_units,
+    invoiced_amount=excluded.invoiced_amount,
     screening_lots=excluded.screening_lots,
     manual_inventory=excluded.manual_inventory,
     manual_dispatches=excluded.manual_dispatches,
