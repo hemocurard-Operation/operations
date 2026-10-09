@@ -4,6 +4,7 @@ const ROUTE_PERMISSION={
   dashboard:'DASHBOARD_VIEW',
   command:'COMMAND_VIEW',
   quickcapture:'DASHBOARD_VIEW',
+  dataquality:'QUALITY_VIEW',
   audit:'AUDIT_VIEW',
   releasegate:'RELEASE_GATE_VIEW',
   sales:'SALES_VIEW',
