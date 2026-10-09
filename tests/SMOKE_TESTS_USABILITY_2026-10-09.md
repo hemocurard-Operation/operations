@@ -4,7 +4,7 @@ Fecha: 2026-10-09
 Rama: improve/usability-20261008
 
 ## Objetivo
-Validar que la simplificación de captura no elimine trazabilidad ni controles clínicos y que ningún dato se recapture cuando ya existe en un módulo fuente.
+Validar la captura operativa simplificada, manteniendo trazabilidad y guardrails clínicos. Durante esta fase de digitalización, tamizaje, inventario y despachos se capturan de forma consolidada en el Reporte Operativo Diario y no por registro individual.
 
 1. **Mi trabajo por permisos**
    - Iniciar sesión con un usuario con permisos limitados.
@@ -28,67 +28,67 @@ Validar que la simplificación de captura no elimine trazabilidad ni controles c
    - Confirmar fecha/hora automática desde Supabase.
 
 6. **Cadena de frío: alerta fuera de rango**
-   - Registrar un valor fuera del rango configurado del dispositivo.
-   - Confirmar mensaje de advertencia sin liberar/bloquear automáticamente producto clínico.
+   - Registrar un valor fuera del rango configurado.
+   - Confirmar advertencia sin decisión clínica automática.
 
-7. **Cadena de frío: búsqueda de dispositivo**
-   - Filtrar por código, tipo o ubicación.
-   - Confirmar lista de dispositivos y excursiones filtradas.
+7. **Recursos: intervención rápida**
+   - Buscar equipo y registrar mantenimiento/calibración.
+   - Confirmar persistencia del evento.
 
-8. **Recursos: búsqueda de equipo**
-   - Buscar por código, tipo, modelo, serie y ubicación.
-   - Confirmar acción rápida de intervención.
+8. **Ambiente: lectura rápida**
+   - Seleccionar punto ambiental y registrar valor.
+   - Confirmar advertencia si está fuera del rango.
 
-9. **Recursos: alta simple de equipo**
-   - Registrar código, tipo, ubicación y sucursal.
-   - Confirmar estado inicial ACTIVO y campos avanzados opcionales.
+9. **Móvil**
+   - Probar ancho <=700px.
+   - Confirmar controles táctiles y tablas utilizables.
 
-10. **Recursos: intervención rápida**
-    - Registrar mantenimiento correctivo/preventivo o calibración.
-    - Confirmar evento en `equipment_service_events`.
-
-11. **Ambiente: lectura rápida**
-    - Seleccionar punto ambiental y registrar valor.
-    - Confirmar advertencia si está fuera del rango configurado.
-
-12. **Despachos: excepciones primero**
-    - Abrir `#dispatches`.
-    - Confirmar que la conciliación y diferencias aparecen antes del listado completo.
-
-13. **Despachos: filtro solo diferencias**
-    - Activar/desactivar `Solo diferencias`.
-    - Confirmar recálculo del resumen sin nueva consulta.
-
-14. **Móvil**
-    - Probar ancho <=700px.
-    - Confirmar una columna, botones >=44px y formularios sin desbordes horizontales críticos.
-
-15. **Guardrails clínicos**
+10. **Guardrails clínicos**
     - Confirmar que ninguna pantalla nueva libera unidades, descarta unidades, aprueba CAPA ni toma decisiones clínicas automáticamente.
 
-16. **Cierre diario: sin recaptura**
+11. **Migración de reporte consolidado**
+    - Ejecutar `sql/40_DAILY_OPERATIONAL_REPORT_v0_40.sql`.
+    - Confirmar columnas `screening_lots`, `manual_inventory`, `manual_dispatches`, `equipment_snapshot` en `daily_operational_closes`.
+
+12. **Tamizaje sin captura individual**
+    - Abrir `#screening`.
+    - Confirmar que no existe botón/formulario de “Nuevo tamizaje”.
+    - Confirmar que se muestran lotes/tandas diarios desde el reporte.
+
+13. **Lote diario de tamizaje**
     - Abrir `#dailyinventory`.
-    - Confirmar que donantes, donaciones efectivas, tamizajes, inventario, despachos y facturación aparecen desde los registros existentes.
-    - Confirmar que no existen campos para volver a escribir esas cantidades.
+    - Crear una fila de lote con recibidos, no reactivos, reactivos, pendientes y descartados.
+    - Guardar y recargar; confirmar persistencia exacta.
 
-17. **Cierre diario: inventario como fuente única**
-    - Modificar un registro válido en `#bloodinventory`.
-    - Volver a `#dailyinventory` y actualizar.
-    - Confirmar que el resumen refleja el inventario fuente sin una segunda captura.
+14. **Inventario sin captura individual**
+    - Abrir `#bloodinventory`.
+    - Confirmar que no existe formulario para registrar una unidad/bolsa individual.
+    - Confirmar que el último conteo manual consolidado es visible.
 
-18. **Cierre diario: equipos por excepción**
-    - Dejar equipos ACTIVO sin alertas y uno en estado distinto de ACTIVO o con alerta.
-    - Confirmar que solo el equipo que requiere atención aparece en el cierre.
+15. **Inventario manual consolidado**
+    - En `#dailyinventory`, registrar cantidades para A+, A-, B+, B-, O+, O-, AB+, AB- en sangre total, paquete globular, plasma y plaquetas.
+    - Guardar y recargar; confirmar valores.
 
-19. **Centro de Mando sin cierre duplicado**
+16. **Despachos sin captura individual**
+    - Abrir `#dispatches`.
+    - Confirmar que no existe creación de despacho unitario.
+    - Confirmar que la captura operativa remite al reporte diario.
+
+17. **Despacho consolidado**
+    - En `#dailyinventory`, agregar destino, grupo, componente, cantidad y observación.
+    - Guardar y recargar; confirmar persistencia.
+
+18. **Históricos técnicos solo consulta**
+    - Confirmar que los antiguos resultados individuales de tamizaje, inventario calculado y conciliación técnica siguen visibles únicamente como consulta/trazabilidad.
+
+19. **Centro de Mando sin captura duplicada**
     - Abrir `#command`.
-    - Confirmar que la pantalla es de supervisión y no contiene un segundo formulario de cierre.
-    - Confirmar que el enlace “Abrir cierre diario” dirige a `#dailyinventory`.
+    - Confirmar que funciona como supervisión/score y enlaza al Reporte Operativo Diario sin un segundo formulario de captura.
 
-20. **Cierre diario único**
-    - Agregar una observación y pulsar “Cerrar día”.
-    - Confirmar que se ejecuta `capture_daily_operational_close` y queda un único registro por fecha + sucursal en `daily_operational_closes`.
-    - Confirmar que el cierre no libera unidades ni toma decisiones clínicas.
+20. **Cierre del reporte**
+    - Guardar primero como BORRADOR y luego como CERRADO.
+    - Confirmar un único registro por fecha + sucursal en `daily_operational_closes`.
+    - Confirmar que cerrar el reporte no ejecuta liberaciones ni decisiones clínicas.
 
 ## Criterio de salida
 El bloque puede pasar a UAT cuando los 20 smoke tests sean satisfactorios con al menos un usuario operativo y un usuario de Calidad autenticados.
