@@ -3,6 +3,7 @@ const ROUTES={
   dashboard:{title:'Inicio',subtitle:'Resumen priorizado según tu rol',group:'INICIO',order:10},
   command:{title:'Centro de Mando',subtitle:'Cierre diario, score y excepciones',group:'INICIO',order:20},
 
+  quickcapture:{title:'Captura rápida',subtitle:'Donantes, tamizaje, requisiciones, despachos e incidencias en formularios simples',group:'TRABAJO DIARIO',order:5},
   dispatches:{title:'Despachos',subtitle:'Despacho físico y conciliación',group:'TRABAJO DIARIO',order:10},
   requisitions:{title:'Requisiciones',subtitle:'Solicitud y autorización de insumos',group:'TRABAJO DIARIO',order:20},
   sales:{title:'Ventas / Salidas',subtitle:'Salidas y facturación operativa',group:'TRABAJO DIARIO',order:30},
