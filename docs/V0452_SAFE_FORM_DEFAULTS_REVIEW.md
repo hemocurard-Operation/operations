@@ -77,17 +77,29 @@ Se incorpora `tools/test_quick_capture_safety.py` y el workflow `HemoCura Quick 
 - HemoCura Frontend RPC Cutover: PASS.
 - HemoCura Frontend Browser Smoke: PASS.
 - PR mergeable: YES.
+- PR #9 fusionado mediante squash a `main`.
+
+## Validación posterior al merge
+Commit desplegado: `a5087ee910f3a02b00f6b89d303f045dde9557a8`.
+
+- HemoCura Quick Capture Safety en `main`: PASS, run `37925919373`.
+- HemoCura Frontend Browser Smoke en `main`: PASS, run `37925919398`.
+- GitHub Pages build and deployment: PASS, run `37925919892`.
+- Supabase DDL: NO APLICA; no se modificó el esquema.
 
 ## Alcance técnico
 Esta iteración no requiere nuevo DDL en Supabase. Reutiliza tablas, RLS y contratos existentes. `js/config.js` permanece protegido y sin cambios.
 
-## Estado pre-merge
+## Estado final
 - DISEÑADO: PASS
-- GENERADO EN RAMA: PASS
+- GENERADO: PASS
+- MERGED MAIN: PASS
 - TEST LOCAL DEL GATE: PASS 11/11
-- CI GITHUB: PASS
+- CI QUICK CAPTURE SAFETY: PASS
 - RUNTIME CONTRACT: PASS
 - RPC CUTOVER: PASS
-- BROWSER SMOKE: PASS
+- BROWSER SMOKE PR: PASS
+- BROWSER SMOKE POST-MERGE: PASS
+- GITHUB PAGES BUILD/DEPLOY: PASS
 - SUPABASE DDL: NO APLICA
-- PRODUCCIÓN: PENDIENTE MERGE + DEPLOY PASS
+- PRODUCCIÓN FRONTEND: DESPLEGADA v0.45.2
