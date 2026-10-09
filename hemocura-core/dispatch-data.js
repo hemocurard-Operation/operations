@@ -39,6 +39,42 @@ export async function getDispatchLines(dispatchId) {
   return data || [];
 }
 
+export async function createDispatch(header, lines = []) {
+  const sb = getSupabase();
+  const { data: dispatch, error } = await sb
+    .from('dispatches')
+    .insert({
+      dispatch_date: header.dispatchDate,
+      branch_id: header.branchId,
+      shift: header.shift || null,
+      dispatch_type: header.dispatchType || 'venta',
+      status: header.status || 'BORRADOR',
+      notes: header.notes || null
+    })
+    .select('id,dispatch_date,branch_id,status')
+    .single();
+
+  if (error) {
+    console.error('[HEMOCURA_DISPATCH_ERROR] create header', error);
+    throw new Error(`Crear despacho: ${error.message}`);
+  }
+
+  if (lines.length) {
+    const rows = lines.map(line => ({
+      dispatch_id: dispatch.id,
+      product_id: line.productId,
+      units: Number(line.units),
+      is_sale: line.isSale !== false
+    }));
+    const { error: lineError } = await sb.from('dispatch_lines').insert(rows);
+    if (lineError) {
+      console.error('[HEMOCURA_DISPATCH_ERROR] create lines', lineError);
+      throw new Error(`Líneas del despacho: ${lineError.message}`);
+    }
+  }
+  return dispatch;
+}
+
 export async function getProductsForDispatch() {
   const { data, error } = await getSupabase()
     .from('products')

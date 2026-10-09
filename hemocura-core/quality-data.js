@@ -42,6 +42,35 @@ export async function getIncidents(filters = {}) {
   return data || [];
 }
 
+export async function createIncident(payload) {
+  console.info('[HEMOCURA_INCIDENT] create');
+  const { data, error } = await getSupabase()
+    .from('incidents')
+    .insert({
+      incident_code: payload.incidentCode,
+      incident_date: payload.incidentDate,
+      incident_time: payload.incidentTime || null,
+      branch_id: payload.branchId || null,
+      classification: payload.classification || null,
+      process_name: payload.processName || null,
+      severity: Number(payload.severity || 1),
+      description: payload.description,
+      patient_or_donor_affected: !!payload.patientOrDonorAffected,
+      impact_detail: payload.impactDetail || null,
+      immediate_action: payload.immediateAction || null,
+      evidence_url: payload.evidenceUrl || null,
+      requires_quality_followup: !!payload.requiresQualityFollowup
+    })
+    .select()
+    .single();
+
+  if (error) {
+    console.error('[HEMOCURA_QUALITY_ERROR] create incident', error);
+    throw new Error(`Crear incidencia: ${error.message}`);
+  }
+  return data;
+}
+
 export async function getNonconformities(filters = {}) {
   console.info('[HEMOCURA_NC] nonconformities');
 
