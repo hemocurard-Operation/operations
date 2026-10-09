@@ -9,6 +9,7 @@ const ROUTES={
   production:{title:'Producción',subtitle:'Componentes producidos y rendimiento',group:'OPERACIÓN',order:40},
   supply:{title:'Abastecimiento',subtitle:'Demanda, cobertura y donantes requeridos',group:'OPERACIÓN',order:45},
   bloodinventory:{title:'Inventario de Sangre',subtitle:'Disponibilidad por componente, ABO y Rh',group:'OPERACIÓN',order:50},
+  dailyinventory:{title:'Captura diaria',subtitle:'Reporte diario de inventario, movimientos, donantes y equipos',group:'OPERACIÓN',order:55},
   dispatches:{title:'Despachos',subtitle:'Despacho físico y conciliación',group:'OPERACIÓN',order:60},
   inventory:{title:'Insumos',subtitle:'Inventario de reactivos y materiales',group:'OPERACIÓN',order:70},
   requisitions:{title:'Requisiciones',subtitle:'Solicitud y autorización de insumos',group:'OPERACIÓN',order:80},
