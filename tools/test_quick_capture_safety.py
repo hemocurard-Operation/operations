@@ -5,6 +5,8 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 capture = (ROOT / "hemocura-core" / "quick-capture.js").read_text(encoding="utf-8")
+flow = (ROOT / "hemocura-core" / "quick-capture-flow.js").read_text(encoding="utf-8")
+layout = (ROOT / "hemocura-core" / "layout.js").read_text(encoding="utf-8")
 data = (ROOT / "hemocura-core" / "quick-capture-data.js").read_text(encoding="utf-8")
 version = (ROOT / "VERSION.json").read_text(encoding="utf-8")
 
@@ -13,7 +15,7 @@ checks = []
 def check(name, condition):
     checks.append((name, bool(condition)))
 
-check("version_0452", '"version": "0.45.2"' in version)
+check("version_0453", '"version": "0.45.3"' in version)
 check("blank_screening_result_option", '<option value="" selected>Seleccionar resultado…</option>' in capture)
 check("screening_results_disabled_until_selected", 'class="qc-test-result" data-i="${i}" disabled' in capture)
 check("explicit_result_validation", 'missing=selected.filter(x=>!x.result)' in capture)
@@ -23,7 +25,12 @@ check("duplicate_requisition_guard", "duplicateValues(lines.map(x=>x.item_name))
 check("duplicate_dispatch_guard", "duplicateValues(lines.map(x=>x.product_id))" in capture)
 check("dispatch_forced_draft", "status:'BORRADOR'" in data)
 check("clinical_guardrail_copy", "No confirma, libera ni determina compatibilidad transfusional." in capture)
-check("protected_config_not_referenced", "js/config.js" not in capture)
+check("single_panel_launcher", "¿Qué vas a registrar?" in flow and "data-qc-open" in flow)
+check("single_panel_accordion", "p.details.open=p.key===target.key" in flow)
+check("last_panel_remembered", "localStorage.setItem(PANEL_KEY,target.key)" in flow)
+check("role_default_panel", "ENCARGADA_LABORATORIO:'screening'" in flow and "ASISTENTE_OPERACIONES:'requisition'" in flow and "MEDICO_GERENTE_TECNICO:'incident'" in flow)
+check("flow_integrated_after_mount", "if(route==='quickcapture') enhanceQuickCaptureFlow(root,primaryRole);" in layout)
+check("protected_config_not_referenced", "js/config.js" not in capture and "js/config.js" not in flow)
 
 failed = [name for name, ok in checks if not ok]
 for name, ok in checks:
