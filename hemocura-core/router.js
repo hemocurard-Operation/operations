@@ -1,7 +1,7 @@
 const GROUP_ORDER=['INICIO','OPERACIÓN','CALIDAD','GERENCIA','ADMINISTRACIÓN','SISTEMA'];
 const ROUTES={
   dashboard:{title:'Mi trabajo',subtitle:'Tareas frecuentes, pendientes y estado operativo',group:'INICIO',order:10},
-  command:{title:'Centro de Mando',subtitle:'Cierre diario, score y gestión por excepciones',group:'INICIO',order:20},
+  command:{title:'Centro de Mando',subtitle:'Supervisión, score y gestión por excepciones',group:'INICIO',order:20},
 
   donors:{title:'Donantes',subtitle:'Donantes y donaciones efectivas',group:'OPERACIÓN',order:10},
   screening:{title:'Tamizaje',subtitle:'Pruebas, reactivos, lotes y resultados',group:'OPERACIÓN',order:20},
@@ -9,7 +9,7 @@ const ROUTES={
   production:{title:'Producción',subtitle:'Componentes producidos y rendimiento',group:'OPERACIÓN',order:40},
   supply:{title:'Abastecimiento',subtitle:'Demanda, cobertura y donantes requeridos',group:'OPERACIÓN',order:45},
   bloodinventory:{title:'Inventario de Sangre',subtitle:'Disponibilidad por componente, ABO y Rh',group:'OPERACIÓN',order:50},
-  dailyinventory:{title:'Captura diaria',subtitle:'Reporte diario de inventario, movimientos, donantes y equipos',group:'OPERACIÓN',order:55},
+  dailyinventory:{title:'Cierre diario',subtitle:'Resumen automático; revisar excepciones, observar y cerrar',group:'OPERACIÓN',order:55},
   dispatches:{title:'Despachos',subtitle:'Despacho físico y conciliación',group:'OPERACIÓN',order:60},
   inventory:{title:'Insumos',subtitle:'Inventario de reactivos y materiales',group:'OPERACIÓN',order:70},
   requisitions:{title:'Requisiciones',subtitle:'Solicitud y autorización de insumos',group:'OPERACIÓN',order:80},
