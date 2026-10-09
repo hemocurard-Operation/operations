@@ -3,15 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>HemoCura C11.2 · Frontend Smoke</title>
+<title>HemoCura 0.45.0 · Frontend Smoke</title>
 <style>body{font-family:Arial,sans-serif;margin:24px;color:#172131}.pass{color:#23703B}.fail{color:#8B0000}pre{background:#f4f6f8;padding:12px;border-radius:8px;white-space:pre-wrap}</style>
 </head>
 <body>
-<h1>HemoCura C11.2 · Frontend Smoke</h1>
+<h1>HemoCura 0.45.0 · Frontend Smoke</h1>
 <div id="result">Ejecutando…</div>
 <pre id="detail"></pre>
 <script type="module">
-import {routeList} from '../hemocura-core/router.js';
+import {routeList,routeGroups} from '../hemocura-core/router.js';
 import {registeredViewRoutes,renderView} from '../hemocura-core/views.js';
 import {mountedRouteKeys} from '../hemocura-core/layout.js';
 
@@ -21,16 +21,30 @@ const mountKeys=mountedRouteKeys();
 const missingViews=routeKeys.filter(k=>!viewKeys.includes(k));
 const missingMounts=routeKeys.filter(k=>!mountKeys.includes(k));
 const badViews=routeKeys.filter(k=>!renderView(k).includes('id='));
+const requiredGroups=['INICIO','TRABAJO DIARIO','LABORATORIO Y SANGRE','CALIDAD Y SEGURIDAD','GESTIÓN','ADMINISTRACIÓN'];
+const missingGroups=requiredGroups.filter(g=>!routeGroups().includes(g));
 let versionOk=false,versionDetail='';
+let roleUxOk=false,roleUxDetail='';
 try{
   const r=await fetch('../VERSION.json',{cache:'no-store'});
   const v=await r.json();
-  versionOk=v.version==='0.44.2';
+  versionOk=v.version==='0.45.0';
   versionDetail=`VERSION=${v.version}`;
 }catch(e){versionDetail=e.message}
-const ok=!missingViews.length&&!missingMounts.length&&!badViews.length&&versionOk;
-document.getElementById('result').innerHTML=ok?'<h2 class="pass">PASS · rutas, vistas, mounts y VERSION coherentes</h2>':'<h2 class="fail">FAIL · revisar detalle</h2>';
-document.getElementById('detail').textContent=JSON.stringify({totalRoutes:routeKeys.length,missingViews,missingMounts,badViews,versionOk,versionDetail},null,2);
+try{
+  const [layout,dashboard,donors,screening,production]=await Promise.all([
+    fetch('../hemocura-core/layout.js',{cache:'no-store'}).then(r=>r.text()),
+    fetch('../hemocura-core/ops-dashboard.js',{cache:'no-store'}).then(r=>r.text()),
+    fetch('../hemocura-core/donors.js',{cache:'no-store'}).then(r=>r.text()),
+    fetch('../hemocura-core/screening.js',{cache:'no-store'}).then(r=>r.text()),
+    fetch('../hemocura-core/production.js',{cache:'no-store'}).then(r=>r.text())
+  ]);
+  roleUxOk=layout.includes('nav-search')&&dashboard.includes('MEDICO_GERENTE_TECNICO')&&donors.includes('revisión humana')&&screening.includes('datalist')&&production.includes('COMPONENTS');
+  roleUxDetail=roleUxOk?'role UX markers present':'one or more role UX markers missing';
+}catch(e){roleUxDetail=e.message}
+const ok=!missingViews.length&&!missingMounts.length&&!badViews.length&&!missingGroups.length&&versionOk&&roleUxOk;
+document.getElementById('result').innerHTML=ok?'<h2 class="pass">PASS · rutas, vistas, mounts, grupos, UX por rol y VERSION coherentes</h2>':'<h2 class="fail">FAIL · revisar detalle</h2>';
+document.getElementById('detail').textContent=JSON.stringify({totalRoutes:routeKeys.length,missingViews,missingMounts,badViews,missingGroups,versionOk,versionDetail,roleUxOk,roleUxDetail},null,2);
 </script>
 </body>
 </html>
