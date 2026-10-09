@@ -2,122 +2,72 @@ import { resourcesData } from './resources-data.js';
 
 function esc(v=''){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
 const today=()=>new Date().toISOString().slice(0,10);
+const stamp=p=>`${p}-${new Date().toISOString().replace(/[-:TZ.]/g,'').slice(0,14)}`;
 
 export async function mountResources(root){
-  const [branches,profiles,points]=await Promise.all([
-    resourcesData.branches(),resourcesData.profiles(),resourcesData.points()
-  ]);
+  const [branches,profiles,points]=await Promise.all([resourcesData.branches(),resourcesData.profiles(),resourcesData.points()]);
   const bm=Object.fromEntries(branches.map(x=>[x.id,x.name]));
+  let equipment=[],equipmentAlerts=[],reagents=[],environmental=[];
 
   root.innerHTML=`
-  <div class="sales-toolbar"><div><h2 class="section-heading">Recursos Críticos</h2>
-  <div class="muted">Equipos, mantenimiento/calibración, reactivos y condiciones ambientales.</div></div>
-  <button id="res-eq-new">Nuevo equipo</button></div>
-
+  <div class="sales-toolbar"><div><h2 class="section-heading">Recursos Críticos</h2><div class="muted">Encuentra el equipo primero y registra solo la acción que necesitas.</div></div><button id="res-eq-new">Nuevo equipo</button></div>
   <div id="res-msg"></div><div class="grid sales-kpis" id="res-kpis"></div>
 
-  <section class="card"><h3>Equipos</h3><div class="table-wrap"><table class="data-table">
-  <thead><tr><th>Código</th><th>Sucursal</th><th>Tipo</th><th>Modelo</th><th>Serie</th><th>Criticidad</th><th>Estado</th><th>Calibración</th><th>Mantenimiento</th></tr></thead>
+  <section class="card quick-capture"><div class="quick-capture-head"><div><div class="eyebrow">Acción rápida</div><h3>Buscar equipo</h3></div></div>
+    <div class="quick-search"><input id="res-search" type="search" placeholder="Código, tipo, modelo, serie o ubicación"><button id="res-clear" class="secondary">Limpiar</button></div>
+    <div id="res-search-result" class="muted">Busca un equipo para registrar mantenimiento o revisar su estado.</div>
+  </section>
+
+  <section class="card"><div class="card-head"><h3>Equipos</h3><span id="res-eq-count" class="muted"></span></div><div class="table-wrap"><table class="data-table">
+  <thead><tr><th>Código</th><th>Sucursal</th><th>Tipo</th><th>Modelo / serie</th><th>Ubicación</th><th>Criticidad</th><th>Estado</th><th>Próximos controles</th><th>Acción</th></tr></thead>
   <tbody id="res-eq"></tbody></table></div></section>
 
-  <section class="card"><h3>Alertas de equipos</h3><div class="table-wrap"><table class="data-table">
-  <thead><tr><th>Equipo</th><th>Sucursal</th><th>Tipo alerta</th><th>Fecha</th><th>Severidad</th><th>Mensaje</th></tr></thead>
-  <tbody id="res-eq-alerts"></tbody></table></div></section>
+  <section class="card quick-capture"><div class="quick-capture-head"><div><div class="eyebrow">Ambiente</div><h3>Registrar lectura ambiental</h3></div></div>
+    <form id="env-quick-form" class="filter-grid"><label>Punto<select id="env-point" required><option value="">Seleccionar…</option>${points.map(p=>`<option value="${esc(p.id)}">${esc(p.point_code)} · ${esc(p.area)} · ${esc(p.parameter)}</option>`).join('')}</select></label><label>Valor<input id="env-value" type="number" step="0.01" inputmode="decimal" required></label><div class="dialog-actions"><button type="submit">Guardar lectura</button></div></form>
+    <div id="env-quick-msg" role="status" aria-live="polite"></div>
+  </section>
 
-  <section class="card"><h3>Reactivos / lotes</h3><div class="table-wrap"><table class="data-table">
-  <thead><tr><th>Reactivo</th><th>Lote</th><th>Sucursal</th><th>Vence</th><th>Disponible</th><th>Verificación</th></tr></thead>
-  <tbody id="res-reagents"></tbody></table></div></section>
+  <details class="card"><summary><strong>Alertas de equipos</strong> <span class="muted">calibración y mantenimiento próximos o vencidos</span></summary><div class="table-wrap"><table class="data-table"><thead><tr><th>Equipo</th><th>Sucursal</th><th>Tipo alerta</th><th>Fecha</th><th>Severidad</th><th>Mensaje</th></tr></thead><tbody id="res-eq-alerts"></tbody></table></div></details>
+  <details class="card"><summary><strong>Reactivos / lotes</strong></summary><div class="table-wrap"><table class="data-table"><thead><tr><th>Reactivo</th><th>Lote</th><th>Sucursal</th><th>Vence</th><th>Disponible</th><th>Verificación</th></tr></thead><tbody id="res-reagents"></tbody></table></div></details>
+  <details class="card"><summary><strong>Excursiones ambientales — 30 días</strong></summary><div class="table-wrap"><table class="data-table"><thead><tr><th>Fecha/hora</th><th>Sucursal</th><th>Punto</th><th>Área</th><th>Parámetro</th><th>Valor</th><th>Rango</th><th>Mensaje</th></tr></thead><tbody id="res-env"></tbody></table></div></details>
 
-  <section class="card"><h3>Excursiones ambientales — 30 días</h3><div class="table-wrap"><table class="data-table">
-  <thead><tr><th>Fecha/hora</th><th>Sucursal</th><th>Punto</th><th>Área</th><th>Parámetro</th><th>Valor</th><th>Rango</th><th>Mensaje</th></tr></thead>
-  <tbody id="res-env"></tbody></table></div></section>
+  <dialog id="res-eq-dialog" class="sales-dialog"><form id="res-eq-form"><h3>Registrar equipo</h3><p class="muted">Completa primero código, tipo y ubicación. El resto puede añadirse cuando aplique.</p>
+    <label>Código<input id="re-code" required autofocus></label><label>Tipo<input id="re-type" required></label><label>Ubicación<input id="re-location"></label><label>Sucursal<select id="re-branch"><option value="">General</option>${branches.map(x=>`<option value="${x.id}">${esc(x.name)}</option>`).join('')}</select></label>
+    <details class="advanced-fields"><summary>Identificación y control</summary><label>Fabricante<input id="re-maker"></label><label>Modelo<input id="re-model"></label><label>Serie<input id="re-serial"></label><label>Criticidad<select id="re-critical"><option>MEDIA</option><option>ALTA</option><option>CRITICA</option><option>BAJA</option></select></label><label>Responsable<select id="re-owner"><option value="">Sin asignar</option>${profiles.map(x=>`<option value="${x.id}">${esc(x.full_name||x.id)}</option>`).join('')}</select></label><label><input id="re-cal-required" type="checkbox"> Requiere calibración</label><label>Próxima calibración<input id="re-cal-date" type="date"></label><label>Próximo mantenimiento<input id="re-main-date" type="date"></label></details>
+    <div id="re-form-msg" role="status" aria-live="polite"></div><div class="dialog-actions"><button type="button" id="re-cancel" class="secondary">Cancelar</button><button>Guardar equipo</button></div>
+  </form></dialog>
 
-  <dialog id="res-eq-dialog" class="sales-dialog"><form id="res-eq-form">
-  <h3>Registrar equipo</h3>
-  <label>Código<input id="re-code" required></label>
-  <label>Sucursal<select id="re-branch"><option value="">General</option>${branches.map(x=>`<option value="${x.id}">${esc(x.name)}</option>`).join('')}</select></label>
-  <label>Tipo<input id="re-type" required></label>
-  <label>Fabricante<input id="re-maker"></label>
-  <label>Modelo<input id="re-model"></label>
-  <label>Serie<input id="re-serial"></label>
-  <label>Ubicación<input id="re-location"></label>
-  <label>Criticidad<select id="re-critical"><option>MEDIA</option><option>ALTA</option><option>CRITICA</option><option>BAJA</option></select></label>
-  <label>Responsable<select id="re-owner"><option value="">Sin asignar</option>${profiles.map(x=>`<option value="${x.id}">${esc(x.full_name||x.id)}</option>`).join('')}</select></label>
-  <label><input id="re-cal-required" type="checkbox"> Requiere calibración</label>
-  <label>Próxima calibración<input id="re-cal-date" type="date"></label>
-  <label>Próximo mantenimiento<input id="re-main-date" type="date"></label>
-  <div class="dialog-actions"><button type="button" id="re-cancel" class="secondary">Cancelar</button><button>Guardar</button></div>
+  <dialog id="service-dialog" class="sales-dialog"><form id="service-form"><h3>Registrar intervención</h3><div id="service-eq" class="status info"></div>
+    <label>Tipo<select id="service-type"><option>MANTENIMIENTO_CORRECTIVO</option><option>MANTENIMIENTO_PREVENTIVO</option><option>CALIBRACION</option><option>VERIFICACION</option><option>CALIFICACION</option></select></label><label>Hallazgo o trabajo realizado<textarea id="service-findings" required></textarea></label>
+    <details class="advanced-fields"><summary>Detalles técnicos</summary><label>Fecha realizada<input id="service-date" type="date"></label><label>Proveedor<input id="service-provider"></label><label>Responsable<input id="service-responsible"></label><label>Resultado<select id="service-result"><option value="">Pendiente</option><option>CONFORME</option><option>NO_CONFORME</option><option>NO_APLICA</option></select></label><label>Próxima fecha<input id="service-next" type="date"></label></details>
+    <div id="service-msg" role="status" aria-live="polite"></div><div class="dialog-actions"><button type="button" id="service-cancel" class="secondary">Cancelar</button><button type="submit">Guardar intervención</button></div>
   </form></dialog>`;
 
+  let selectedEquipment=null;
+  function equipmentText(x){return `${x.equipment_code} ${x.equipment_type} ${x.model||''} ${x.serial_number||''} ${x.location||''}`.toLowerCase()}
+  function openService(x){selectedEquipment=x;document.getElementById('service-form').reset();document.getElementById('service-eq').textContent=`${x.equipment_code} · ${x.equipment_type}${x.location?` · ${x.location}`:''}`;document.getElementById('service-date').value=today();document.getElementById('service-msg').textContent='';document.getElementById('service-dialog').showModal()}
+  function renderEquipment(){
+    const q=document.getElementById('res-search').value.trim().toLowerCase();const rows=equipment.filter(x=>!q||equipmentText(x).includes(q));
+    document.getElementById('res-eq-count').textContent=`${rows.length} equipo(s)`;
+    document.getElementById('res-eq').innerHTML=rows.length?rows.map(x=>`<tr><td><code>${esc(x.equipment_code)}</code></td><td>${esc(bm[x.branch_id]||'General')}</td><td>${esc(x.equipment_type)}</td><td>${esc([x.model,x.serial_number].filter(Boolean).join(' · ')||'—')}</td><td>${esc(x.location||'—')}</td><td>${esc(x.criticality)}</td><td>${esc(x.status)}</td><td>${esc([x.next_calibration_date&&`Cal ${x.next_calibration_date}`,x.next_maintenance_date&&`Mant ${x.next_maintenance_date}`].filter(Boolean).join(' · ')||'—')}</td><td><button class="secondary compact" data-service="${esc(x.id)}">Intervención</button></td></tr>`).join(''):'<tr><td colspan="9">Sin coincidencias.</td></tr>';
+    document.querySelectorAll('[data-service]').forEach(b=>b.onclick=()=>openService(equipment.find(x=>x.id===b.dataset.service)));
+    const box=document.getElementById('res-search-result');if(!q){box.textContent='Busca un equipo para registrar mantenimiento o revisar su estado.';return}const top=rows.slice(0,5);box.innerHTML=top.length?top.map(x=>`<div class="search-result-row"><div><strong>${esc(x.equipment_code)} · ${esc(x.equipment_type)}</strong><span>${esc(x.location||'Sin ubicación')} · ${esc(x.status)}</span></div><button class="compact secondary" data-quick-service="${esc(x.id)}">Registrar intervención</button></div>`).join(''):'<div class="status info">No se encontraron equipos.</div>';box.querySelectorAll('[data-quick-service]').forEach(b=>b.onclick=()=>openService(equipment.find(x=>x.id===b.dataset.quickService)));
+  }
   async function load(){
     try{
-      const [eq,eqa,rg,rga,env,sum]=await Promise.all([
-        resourcesData.equipment(),resourcesData.equipmentAlerts(),
-        resourcesData.reagents(),resourcesData.reagentAlerts(),
-        resourcesData.environmental(),resourcesData.summary()
-      ]);
-
-      document.getElementById('res-eq').innerHTML=eq.length?eq.map(x=>`<tr>
-        <td><code>${esc(x.equipment_code)}</code></td><td>${esc(bm[x.branch_id]||'General')}</td>
-        <td>${esc(x.equipment_type)}</td><td>${esc(x.model||'—')}</td><td>${esc(x.serial_number||'—')}</td>
-        <td>${esc(x.criticality)}</td><td>${esc(x.status)}</td>
-        <td>${esc(x.next_calibration_date||'—')}</td><td>${esc(x.next_maintenance_date||'—')}</td>
-      </tr>`).join(''):'<tr><td colspan="9">Sin equipos.</td></tr>';
-
-      document.getElementById('res-eq-alerts').innerHTML=eqa.length?eqa.map(x=>`<tr>
-        <td><code>${esc(x.equipment_code)}</code></td><td>${esc(bm[x.branch_id]||'General')}</td>
-        <td>${esc(x.alert_type)}</td><td>${esc(x.due_date)}</td><td>${esc(x.severity)}</td><td>${esc(x.message)}</td>
-      </tr>`).join(''):'<tr><td colspan="6">Sin alertas.</td></tr>';
-
-      document.getElementById('res-reagents').innerHTML=rg.length?rg.map(x=>`<tr>
-        <td>${esc(x.reagent_code)} · ${esc(x.reagent_name)}</td><td>${esc(x.lot_number)}</td>
-        <td>${esc(bm[x.branch_id]||'General')}</td><td>${esc(x.expiry_date)}</td>
-        <td>${esc(x.quantity_available)} ${esc(x.unit||'')}</td><td>${esc(x.verification_status)}</td>
-      </tr>`).join(''):'<tr><td colspan="6">Sin reactivos.</td></tr>';
-
-      document.getElementById('res-env').innerHTML=env.length?env.map(x=>`<tr>
-        <td>${esc(new Date(x.reading_time).toLocaleString('es-DO'))}</td>
-        <td>${esc(bm[x.branch_id]||x.branch_id)}</td><td>${esc(x.point_code)}</td><td>${esc(x.area)}</td>
-        <td>${esc(x.parameter)}</td><td>${esc(x.value)} ${esc(x.unit)}</td>
-        <td>${esc(x.min_allowed??'−∞')} a ${esc(x.max_allowed??'+∞')}</td><td>${esc(x.message)}</td>
-      </tr>`).join(''):'<tr><td colspan="8">Sin excursiones.</td></tr>';
-
-      document.getElementById('res-kpis').innerHTML=`
-        <section class="card"><div class="muted">Equipos activos</div><div class="kpi">${sum.active_equipment}</div></section>
-        <section class="card"><div class="muted">Alertas equipos</div><div class="kpi">${sum.equipment_high_alerts}</div></section>
-        <section class="card"><div class="muted">Alertas reactivos</div><div class="kpi">${sum.reagent_high_alerts}</div></section>
-        <section class="card"><div class="muted">Excursiones 30d</div><div class="kpi">${sum.environmental_excursions_30d}</div></section>`;
-      document.getElementById('res-msg').innerHTML='';
-    }catch(e){
-      document.getElementById('res-msg').innerHTML=`<div class="status warn">${esc(e.message)} · Ejecute sql/35_RESOURCES_CONTROL_v0_35.sql.</div>`;
-    }
+      const [eq,eqa,rg,env,sum]=await Promise.all([resourcesData.equipment(),resourcesData.equipmentAlerts(),resourcesData.reagents(),resourcesData.environmental(),resourcesData.summary()]);equipment=eq;equipmentAlerts=eqa;reagents=rg;environmental=env;
+      renderEquipment();
+      document.getElementById('res-eq-alerts').innerHTML=eqa.length?eqa.map(x=>`<tr><td><code>${esc(x.equipment_code)}</code></td><td>${esc(bm[x.branch_id]||'General')}</td><td>${esc(x.alert_type)}</td><td>${esc(x.due_date)}</td><td>${esc(x.severity)}</td><td>${esc(x.message)}</td></tr>`).join(''):'<tr><td colspan="6">Sin alertas.</td></tr>';
+      document.getElementById('res-reagents').innerHTML=rg.length?rg.map(x=>`<tr><td>${esc(x.reagent_code)} · ${esc(x.reagent_name)}</td><td>${esc(x.lot_number)}</td><td>${esc(bm[x.branch_id]||'General')}</td><td>${esc(x.expiry_date)}</td><td>${esc(x.quantity_available)} ${esc(x.unit||'')}</td><td>${esc(x.verification_status)}</td></tr>`).join(''):'<tr><td colspan="6">Sin reactivos.</td></tr>';
+      document.getElementById('res-env').innerHTML=env.length?env.map(x=>`<tr><td>${esc(new Date(x.reading_time).toLocaleString('es-DO'))}</td><td>${esc(bm[x.branch_id]||x.branch_id)}</td><td>${esc(x.point_code)}</td><td>${esc(x.area)}</td><td>${esc(x.parameter)}</td><td><strong>${esc(x.value)} ${esc(x.unit)}</strong></td><td>${esc(x.min_allowed??'−∞')} a ${esc(x.max_allowed??'+∞')}</td><td>${esc(x.message)}</td></tr>`).join(''):'<tr><td colspan="8">Sin excursiones.</td></tr>';
+      document.getElementById('res-kpis').innerHTML=`<section class="card"><div class="muted">Equipos activos</div><div class="kpi">${sum.active_equipment}</div></section><section class="card"><div class="muted">Alertas equipos</div><div class="kpi">${sum.equipment_high_alerts}</div></section><section class="card"><div class="muted">Alertas reactivos</div><div class="kpi">${sum.reagent_high_alerts}</div></section><section class="card"><div class="muted">Excursiones 30d</div><div class="kpi">${sum.environmental_excursions_30d}</div></section>`;document.getElementById('res-msg').innerHTML='';
+    }catch(err){document.getElementById('res-msg').innerHTML=`<div class="status warn">${esc(err.message)} · Ejecute sql/35_RESOURCES_CONTROL_v0_35.sql.</div>`}
   }
 
-  document.getElementById('res-eq-new').onclick=()=>document.getElementById('res-eq-dialog').showModal();
-  document.getElementById('re-cancel').onclick=()=>document.getElementById('res-eq-dialog').close();
-  document.getElementById('res-eq-form').onsubmit=async e=>{
-    e.preventDefault();
-    try{
-      await resourcesData.createEquipment({
-        equipment_code:document.getElementById('re-code').value.trim(),
-        branch_id:document.getElementById('re-branch').value||null,
-        equipment_type:document.getElementById('re-type').value.trim(),
-        manufacturer:document.getElementById('re-maker').value.trim()||null,
-        model:document.getElementById('re-model').value.trim()||null,
-        serial_number:document.getElementById('re-serial').value.trim()||null,
-        location:document.getElementById('re-location').value.trim()||null,
-        criticality:document.getElementById('re-critical').value,
-        responsible_user_id:document.getElementById('re-owner').value||null,
-        calibration_required:document.getElementById('re-cal-required').checked,
-        next_calibration_date:document.getElementById('re-cal-date').value||null,
-        next_maintenance_date:document.getElementById('re-main-date').value||null,
-        maintenance_required:true,status:'ACTIVO'
-      });
-      document.getElementById('res-eq-dialog').close();e.target.reset();await load();
-    }catch(err){
-      document.getElementById('res-msg').innerHTML=`<div class="status bad">${esc(err.message)}</div>`;
-    }
-  };
-
+  function openNewEquipment(){const f=document.getElementById('res-eq-form');f.reset();document.getElementById('re-code').value=stamp('EQ');if(branches.length===1)document.getElementById('re-branch').value=branches[0].id;document.getElementById('re-form-msg').textContent='';document.getElementById('res-eq-dialog').showModal()}
+  document.getElementById('res-eq-new').onclick=openNewEquipment;document.getElementById('re-cancel').onclick=()=>document.getElementById('res-eq-dialog').close();document.getElementById('service-cancel').onclick=()=>document.getElementById('service-dialog').close();document.getElementById('res-search').addEventListener('input',renderEquipment);document.getElementById('res-clear').onclick=()=>{document.getElementById('res-search').value='';renderEquipment()};
+  document.getElementById('res-eq-form').onsubmit=async ev=>{ev.preventDefault();const btn=ev.submitter;if(btn.disabled)return;btn.disabled=true;btn.textContent='Guardando…';try{await resourcesData.createEquipment({equipment_code:document.getElementById('re-code').value.trim()||stamp('EQ'),branch_id:document.getElementById('re-branch').value||null,equipment_type:document.getElementById('re-type').value.trim(),manufacturer:document.getElementById('re-maker').value.trim()||null,model:document.getElementById('re-model').value.trim()||null,serial_number:document.getElementById('re-serial').value.trim()||null,location:document.getElementById('re-location').value.trim()||null,criticality:document.getElementById('re-critical').value,responsible_user_id:document.getElementById('re-owner').value||null,calibration_required:document.getElementById('re-cal-required').checked,next_calibration_date:document.getElementById('re-cal-date').value||null,next_maintenance_date:document.getElementById('re-main-date').value||null,maintenance_required:true,status:'ACTIVO'});document.getElementById('res-eq-dialog').close();document.getElementById('res-msg').innerHTML='<div class="status ok">Equipo registrado.</div>';await load()}catch(err){document.getElementById('re-form-msg').innerHTML=`<div class="status bad">${esc(err.message)}. Los datos permanecen en el formulario.</div>`}finally{btn.disabled=false;btn.textContent='Guardar equipo'}};
+  document.getElementById('service-form').onsubmit=async ev=>{ev.preventDefault();const btn=ev.submitter;if(btn.disabled)return;btn.disabled=true;btn.textContent='Guardando…';try{if(!selectedEquipment)throw new Error('Seleccione un equipo');await resourcesData.createService({service_code:stamp('SERV'),equipment_id:selectedEquipment.id,event_type:document.getElementById('service-type').value,performed_date:document.getElementById('service-date').value||today(),provider:document.getElementById('service-provider').value.trim()||null,responsible:document.getElementById('service-responsible').value.trim()||null,result:document.getElementById('service-result').value||null,findings:document.getElementById('service-findings').value.trim(),next_due_date:document.getElementById('service-next').value||null,status:'COMPLETADO'});document.getElementById('service-dialog').close();document.getElementById('res-msg').innerHTML='<div class="status ok">Intervención registrada.</div>';await load()}catch(err){document.getElementById('service-msg').innerHTML=`<div class="status bad">${esc(err.message)}. Los datos permanecen en el formulario.</div>`}finally{btn.disabled=false;btn.textContent='Guardar intervención'}};
+  document.getElementById('env-quick-form').onsubmit=async ev=>{ev.preventDefault();const btn=ev.submitter;if(btn.disabled)return;btn.disabled=true;btn.textContent='Guardando…';const point=points.find(p=>p.id===document.getElementById('env-point').value),value=Number(document.getElementById('env-value').value),msg=document.getElementById('env-quick-msg');try{if(!point)throw new Error('Seleccione un punto');await resourcesData.addReading({point_id:point.id,value,source:'MANUAL'});const out=(point.min_allowed!=null&&value<Number(point.min_allowed))||(point.max_allowed!=null&&value>Number(point.max_allowed));msg.innerHTML=out?`<div class="status warn">Lectura fuera del rango configurado. Requiere evaluación.</div>`:`<div class="status ok">Lectura registrada dentro del rango configurado.</div>`;document.getElementById('env-value').value='';await load()}catch(err){msg.innerHTML=`<div class="status bad">${esc(err.message)}</div>`}finally{btn.disabled=false;btn.textContent='Guardar lectura'}};
   await load();
 }
