@@ -58,6 +58,13 @@ function kpi(label,value,detail=''){
   </section>`;
 }
 
+function task(route,title,detail,tag='Abrir'){
+  return `<a class="ops-action ops-task" href="#${esc(route)}">
+    <div class="ops-task-top"><strong>${esc(title)}</strong><span class="state-pill state-info">${esc(tag)}</span></div>
+    <span>${esc(detail)}</span>
+  </a>`;
+}
+
 function action(route,title,detail){
   return `<a class="ops-action" href="#${esc(route)}">
     <strong>${esc(title)}</strong>
@@ -76,7 +83,7 @@ export async function mountOpsDashboard(root){
   if(!root) throw new Error('ops-dashboard-root no disponible');
   const sb=getSupabase();
 
-  root.innerHTML='<section class="card"><div class="status info">Cargando centro de operaciones…</div></section>';
+  root.innerHTML='<section class="card"><div class="status info">Cargando tu trabajo…</div></section>';
 
   const today=localDateISO();
   const [version,dispatches,incidents,nc,capa]=await Promise.all([
@@ -92,9 +99,9 @@ export async function mountOpsDashboard(root){
   root.innerHTML=`
     <section class="ops-hero">
       <div>
-        <div class="eyebrow">HemoCura Operations</div>
-        <h2 class="section-heading">Centro de Operaciones</h2>
-        <div class="muted">${esc(version.stage||'Estado operativo')}</div>
+        <div class="eyebrow">HemoCura</div>
+        <h2 class="section-heading">Mi trabajo</h2>
+        <div class="muted">Empieza por la tarea que necesitas completar. El sistema conserva la trazabilidad en segundo plano.</div>
       </div>
       <div class="ops-version">
         <span>Versión</span>
@@ -108,28 +115,41 @@ export async function mountOpsDashboard(root){
         ${esc(failures.map(x=>`${x.label}: ${x.error}`).join(' · '))}
       </div>`:''}
 
-    <div class="sales-toolbar"><span class="muted">Consultado: ${esc(new Date().toLocaleString('es-DO',{timeZone:'America/Santo_Domingo'}))} · Datos visibles según permisos</span><button id="ops-retry" class="secondary">Actualizar datos</button></div>
+    <section class="ops-section ops-priority-section">
+      <div class="ops-section-head"><div><div class="eyebrow">Acciones rápidas</div><h3>¿Qué necesitas hacer?</h3></div></div>
+      <div class="ops-actions ops-task-grid">
+        ${task('donors','Buscar o registrar donante','Encuentra un donante existente antes de crear uno nuevo','Frecuente')}
+        ${task('bloodflow','Registrar donación','Continúa el flujo sin volver a capturar datos ya existentes','Frecuente')}
+        ${task('screening','Registrar tamizaje','Carga pruebas, lotes y resultados del proceso','Frecuente')}
+        ${task('bloodinventory','Consultar inventario de sangre','Revisa disponibilidad por componente, grupo y Rh','Consulta')}
+        ${task('dispatches','Registrar despacho','Prepara y concilia la salida física de unidades','Frecuente')}
+        ${task('quality','Reportar una incidencia','Registra qué ocurrió; Calidad completa la clasificación','Rápido')}
+        ${task('requisitions','Solicitar insumos','Crea una requisición sin duplicar envíos','Rápido')}
+        ${task('coldchain','Registrar o revisar temperatura','Accede a cadena de frío y excursiones','Control')}
+      </div>
+    </section>
+
+    <div class="sales-toolbar"><span class="muted">Actualizado: ${esc(new Date().toLocaleString('es-DO',{timeZone:'America/Santo_Domingo'}))} · Datos visibles según permisos</span><button id="ops-retry" class="secondary">Actualizar</button></div>
+
     <section class="ops-section">
-      <div class="ops-section-head"><div><div class="eyebrow">Ahora</div><h3>Estado operativo</h3></div></div>
+      <div class="ops-section-head"><div><div class="eyebrow">Pendientes</div><h3>Lo que requiere atención</h3></div></div>
       <div class="ops-kpi-grid">
         ${kpi('Despachos de hoy',dispatches.ok?dispatches.count:'No disponible',today)}
-        ${kpi('Incidencias con seguimiento',incidents.ok?incidents.count:'No disponible','Incidencias que requieren revisión de Calidad')}
+        ${kpi('Incidencias con seguimiento',incidents.ok?incidents.count:'No disponible','Requieren revisión de Calidad')}
         ${kpi('NC activas',nc.ok?openCount(nc.data):'No disponible',nc.ok?'Hasta 200 registros visibles':'Consulta fallida')}
         ${kpi('CAPA activas',capa.ok?openCount(capa.data):'No disponible',capa.ok?'Hasta 200 registros visibles':'Consulta fallida')}
       </div>
     </section>
 
-    <section class="ops-section">
-      <div class="ops-section-head"><div><div class="eyebrow">Acciones</div><h3>Ir a lo importante</h3></div></div>
-      <div class="ops-actions">
+    <details class="card ops-more">
+      <summary><strong>Herramientas de supervisión y administración</strong><span class="muted"> Abrir solo cuando sean necesarias</span></summary>
+      <div class="ops-actions ops-secondary-actions">
         ${action('command','Centro de Mando','Cierre diario y gestión por excepciones')}
-        ${action('quality','SGC','Incidencias, NC, CAPA y alertas')}
-        ${action('coldchain','Cadena de Frío','Temperatura, transporte y excursiones')}
         ${action('bi','Inteligencia de Negocios','Indicadores y análisis operativo')}
         ${action('diagnostics','Diagnóstico','Configuración, Auth, RLS y dependencias')}
         ${action('releasegate','Release Gate','Validación antes de promover')}
       </div>
-    </section>
+    </details>
 
     <section class="card ops-core">
       <div class="ops-section-head">
@@ -142,7 +162,7 @@ export async function mountOpsDashboard(root){
         ${coreItem('Trazabilidad donante → receptor','SHADOW / BLOCKED')}
         ${coreItem('Decisión clínica automática','NO PERMITIDA','ok')}
       </div>
-      <p class="muted ops-note">El estado operativo no sustituye verificación clínica, UAT, RLS ni liberación humana autorizada.</p>
+      <p class="muted ops-note">El sistema organiza el trabajo, pero no sustituye verificación clínica, UAT, RLS ni liberación humana autorizada.</p>
     </section>`;
   root.querySelector('#ops-retry').onclick=()=>mountOpsDashboard(root);
 }
