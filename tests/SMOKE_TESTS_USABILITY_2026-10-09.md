@@ -4,7 +4,7 @@ Fecha: 2026-10-09
 Rama: improve/usability-20261008
 
 ## Objetivo
-Validar que la simplificación de captura no elimine trazabilidad ni controles clínicos.
+Validar que la simplificación de captura no elimine trazabilidad ni controles clínicos y que ningún dato se recapture cuando ya existe en un módulo fuente.
 
 1. **Mi trabajo por permisos**
    - Iniciar sesión con un usuario con permisos limitados.
@@ -66,26 +66,29 @@ Validar que la simplificación de captura no elimine trazabilidad ni controles c
 15. **Guardrails clínicos**
     - Confirmar que ninguna pantalla nueva libera unidades, descarta unidades, aprueba CAPA ni toma decisiones clínicas automáticamente.
 
-16. **Captura diaria: alta inicial**
-    - Ejecutar `sql/40_DAILY_INVENTORY_CAPTURE_v0_40.sql`.
-    - Abrir `#dailyinventory` y seleccionar fecha, turno y sucursal.
-    - Guardar un reporte como BORRADOR y confirmar persistencia.
+16. **Cierre diario: sin recaptura**
+    - Abrir `#dailyinventory`.
+    - Confirmar que donantes, donaciones efectivas, tamizajes, inventario, despachos y facturación aparecen desde los registros existentes.
+    - Confirmar que no existen campos para volver a escribir esas cantidades.
 
-17. **Captura diaria: reutiliza el reporte existente**
-    - Volver a cargar la misma fecha + turno + sucursal.
-    - Confirmar que se recuperan donantes, movimientos, inventario, equipos y observaciones sin duplicar registros.
+17. **Cierre diario: inventario como fuente única**
+    - Modificar un registro válido en `#bloodinventory`.
+    - Volver a `#dailyinventory` y actualizar.
+    - Confirmar que el resumen refleja el inventario fuente sin una segunda captura.
 
-18. **Captura diaria: inventario por grupo y componente**
-    - Registrar cantidades para los ocho grupos ABO/Rh en sangre total, paquete globular, plasma y plaquetas.
-    - Recargar el reporte y confirmar conservación exacta de valores.
+18. **Cierre diario: equipos por excepción**
+    - Dejar equipos ACTIVO sin alertas y uno en estado distinto de ACTIVO o con alerta.
+    - Confirmar que solo el equipo que requiere atención aparece en el cierre.
 
-19. **Captura diaria: estado de equipos**
-    - Marcar un equipo como AVERÍA y agregar observación.
-    - Confirmar persistencia y que el resto de equipos mantienen su estado independiente.
+19. **Centro de Mando sin cierre duplicado**
+    - Abrir `#command`.
+    - Confirmar que la pantalla es de supervisión y no contiene un segundo formulario de cierre.
+    - Confirmar que el enlace “Abrir cierre diario” dirige a `#dailyinventory`.
 
-20. **Captura diaria: completar reporte**
-    - Cambiar un reporte de BORRADOR a COMPLETADO.
-    - Confirmar que el histórico muestra el estado actualizado y que el cambio no ejecuta decisiones clínicas automáticas.
+20. **Cierre diario único**
+    - Agregar una observación y pulsar “Cerrar día”.
+    - Confirmar que se ejecuta `capture_daily_operational_close` y queda un único registro por fecha + sucursal en `daily_operational_closes`.
+    - Confirmar que el cierre no libera unidades ni toma decisiones clínicas.
 
 ## Criterio de salida
 El bloque puede pasar a UAT cuando los 20 smoke tests sean satisfactorios con al menos un usuario operativo y un usuario de Calidad autenticados.
