@@ -35,6 +35,7 @@ export async function mountOpsDashboard(root){
       ${show('BLOOD_INVENTORY_VIEW',task('bloodflow','Registrar donación','Continúa el flujo sin repetir datos ya capturados','Frecuente'))}
       ${show('SCREENING_VIEW',task('screening','Registrar tamizaje','Unidad, prueba y resultado; detalles técnicos bajo demanda','Frecuente'))}
       ${show('BLOOD_INVENTORY_VIEW',task('bloodinventory','Consultar inventario de sangre','Busca por componente y grupo antes de registrar movimientos','Consulta'))}
+      ${show('BLOOD_INVENTORY_WRITE',task('dailyinventory','Captura diaria de inventario','Registra en una sola pantalla donantes, movimiento, disponibilidad y equipos','Diario'))}
       ${show('DISPATCH_VIEW',task('dispatches','Revisar despachos','Consulta diferencias antes que el listado completo','Consulta',dispatches.ok?dispatches.count:null))}
       ${show('QUALITY_VIEW',task('incidents','Reportar incidencia','Describe qué ocurrió; Calidad clasifica y da seguimiento','Rápido',incidents.ok?incidents.count:null))}
       ${show('DISPATCH_VIEW',task('requisitions','Solicitar insumos','Crea una requisición con cuatro datos esenciales','Rápido',requisitions.ok?requisitions.count:null))}
