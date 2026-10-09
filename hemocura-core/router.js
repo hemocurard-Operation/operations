@@ -1,6 +1,6 @@
 const GROUP_ORDER=['INICIO','OPERACIÓN','CALIDAD','GERENCIA','ADMINISTRACIÓN','SISTEMA'];
 const ROUTES={
-  dashboard:{title:'Centro de Operaciones',subtitle:'Operaciones, sangre, calidad y cumplimiento',group:'INICIO',order:10},
+  dashboard:{title:'Mi trabajo',subtitle:'Tareas frecuentes, pendientes y estado operativo',group:'INICIO',order:10},
   command:{title:'Centro de Mando',subtitle:'Cierre diario, score y gestión por excepciones',group:'INICIO',order:20},
 
   donors:{title:'Donantes',subtitle:'Donantes y donaciones efectivas',group:'OPERACIÓN',order:10},
