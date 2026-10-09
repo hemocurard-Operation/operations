@@ -66,5 +66,26 @@ Validar que la simplificación de captura no elimine trazabilidad ni controles c
 15. **Guardrails clínicos**
     - Confirmar que ninguna pantalla nueva libera unidades, descarta unidades, aprueba CAPA ni toma decisiones clínicas automáticamente.
 
+16. **Captura diaria: alta inicial**
+    - Ejecutar `sql/40_DAILY_INVENTORY_CAPTURE_v0_40.sql`.
+    - Abrir `#dailyinventory` y seleccionar fecha, turno y sucursal.
+    - Guardar un reporte como BORRADOR y confirmar persistencia.
+
+17. **Captura diaria: reutiliza el reporte existente**
+    - Volver a cargar la misma fecha + turno + sucursal.
+    - Confirmar que se recuperan donantes, movimientos, inventario, equipos y observaciones sin duplicar registros.
+
+18. **Captura diaria: inventario por grupo y componente**
+    - Registrar cantidades para los ocho grupos ABO/Rh en sangre total, paquete globular, plasma y plaquetas.
+    - Recargar el reporte y confirmar conservación exacta de valores.
+
+19. **Captura diaria: estado de equipos**
+    - Marcar un equipo como AVERÍA y agregar observación.
+    - Confirmar persistencia y que el resto de equipos mantienen su estado independiente.
+
+20. **Captura diaria: completar reporte**
+    - Cambiar un reporte de BORRADOR a COMPLETADO.
+    - Confirmar que el histórico muestra el estado actualizado y que el cambio no ejecuta decisiones clínicas automáticas.
+
 ## Criterio de salida
-El bloque puede pasar a UAT cuando los 15 smoke tests sean satisfactorios con al menos un usuario operativo y un usuario de Calidad autenticados.
+El bloque puede pasar a UAT cuando los 20 smoke tests sean satisfactorios con al menos un usuario operativo y un usuario de Calidad autenticados.
