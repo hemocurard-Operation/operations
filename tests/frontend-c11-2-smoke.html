@@ -25,6 +25,7 @@ const requiredGroups=['INICIO','TRABAJO DIARIO','LABORATORIO Y SANGRE','CALIDAD 
 const missingGroups=requiredGroups.filter(g=>!routeGroups().includes(g));
 let versionOk=false,versionDetail='';
 let roleUxOk=false,roleUxDetail='';
+let formUxOk=false,formUxDetail='';
 try{
   const r=await fetch('../VERSION.json',{cache:'no-store'});
   const v=await r.json();
@@ -32,19 +33,24 @@ try{
   versionDetail=`VERSION=${v.version}`;
 }catch(e){versionDetail=e.message}
 try{
-  const [layout,dashboard,donors,screening,production]=await Promise.all([
+  const [layout,dashboard,donors,screening,production,requisitions,quality,dispatch]=await Promise.all([
     fetch('../hemocura-core/layout.js',{cache:'no-store'}).then(r=>r.text()),
     fetch('../hemocura-core/ops-dashboard.js',{cache:'no-store'}).then(r=>r.text()),
     fetch('../hemocura-core/donors.js',{cache:'no-store'}).then(r=>r.text()),
     fetch('../hemocura-core/screening.js',{cache:'no-store'}).then(r=>r.text()),
-    fetch('../hemocura-core/production.js',{cache:'no-store'}).then(r=>r.text())
+    fetch('../hemocura-core/production.js',{cache:'no-store'}).then(r=>r.text()),
+    fetch('../hemocura-core/requisitions.js',{cache:'no-store'}).then(r=>r.text()),
+    fetch('../hemocura-core/quality.js',{cache:'no-store'}).then(r=>r.text()),
+    fetch('../hemocura-core/dispatch.js',{cache:'no-store'}).then(r=>r.text())
   ]);
   roleUxOk=layout.includes('nav-search')&&dashboard.includes('MEDICO_GERENTE_TECNICO')&&donors.includes('revisión humana')&&screening.includes('datalist')&&production.includes('COMPONENTS');
   roleUxDetail=roleUxOk?'role UX markers present':'one or more role UX markers missing';
-}catch(e){roleUxDetail=e.message}
-const ok=!missingViews.length&&!missingMounts.length&&!badViews.length&&!missingGroups.length&&versionOk&&roleUxOk;
+  formUxOk=donors.includes('Guardar y agregar otro')&&screening.includes('Guardar y siguiente prueba')&&requisitions.includes('+ Agregar insumo')&&quality.includes('Nueva incidencia')&&dispatch.includes('Nuevo despacho');
+  formUxDetail=formUxOk?'C15-A simplified capture markers present':'one or more C15-A form markers missing';
+}catch(e){roleUxDetail=e.message;formUxDetail=e.message}
+const ok=!missingViews.length&&!missingMounts.length&&!badViews.length&&!missingGroups.length&&versionOk&&roleUxOk&&formUxOk;
 document.getElementById('result').innerHTML=ok?'<h2 class="pass">PASS · rutas, vistas, mounts, grupos, UX por rol y VERSION coherentes</h2>':'<h2 class="fail">FAIL · revisar detalle</h2>';
-document.getElementById('detail').textContent=JSON.stringify({totalRoutes:routeKeys.length,missingViews,missingMounts,badViews,missingGroups,versionOk,versionDetail,roleUxOk,roleUxDetail},null,2);
+document.getElementById('detail').textContent=JSON.stringify({totalRoutes:routeKeys.length,missingViews,missingMounts,badViews,missingGroups,versionOk,versionDetail,roleUxOk,roleUxDetail,formUxOk,formUxDetail},null,2);
 </script>
 </body>
 </html>
