@@ -15,6 +15,7 @@ const ROUTES={
   planning:{title:'Planificación',subtitle:'Plan operativo y forecast SHADOW',group:'OPERACIÓN',order:90},
   sales:{title:'Ventas / Salidas',subtitle:'Control operativo de salidas y facturación',group:'OPERACIÓN',order:100},
 
+  incidents:{title:'Reportar Incidencia',subtitle:'Captura simple de eventos para seguimiento de Calidad',group:'CALIDAD',order:5},
   quality:{title:'SGC',subtitle:'Incidencias, NC, CAPA y alertas',group:'CALIDAD',order:10},
   approvals:{title:'Aprobaciones',subtitle:'Segregación de funciones y firma operativa',group:'CALIDAD',order:20},
   qmsgov:{title:'Gobierno QMS',subtitle:'Documentos, CAPA y aprobaciones',group:'CALIDAD',order:30},
@@ -45,12 +46,7 @@ const ROUTES={
   release1:{title:'Release 1.0',subtitle:'Gate final de liberación',group:'SISTEMA',order:60},
   qa:{title:'QA Técnico',subtitle:'Validación integral',group:'SISTEMA',order:70}
 };
-export function routeList(){
-  return Object.entries(ROUTES).sort((a,b)=>{
-    const ga=GROUP_ORDER.indexOf(a[1].group),gb=GROUP_ORDER.indexOf(b[1].group);
-    return (ga-gb)||((a[1].order||999)-(b[1].order||999))||a[1].title.localeCompare(b[1].title);
-  });
-}
+export function routeList(){return Object.entries(ROUTES).sort((a,b)=>{const ga=GROUP_ORDER.indexOf(a[1].group),gb=GROUP_ORDER.indexOf(b[1].group);return (ga-gb)||((a[1].order||999)-(b[1].order||999))||a[1].title.localeCompare(b[1].title)})}
 export function routeGroups(){return [...GROUP_ORDER]}
 export function getRoute(){const k=(location.hash||'#dashboard').replace('#','').split('?')[0];return ROUTES[k]?k:'dashboard'}
 export function getRouteMeta(k){return ROUTES[k]||ROUTES.dashboard}
