@@ -61,9 +61,22 @@ Incluye cinco formularios progresivos:
 
 `js/config.js` permanece protegido y no se modifica.
 
+## Validación
+- PR #8 fusionado a `main`.
+- Runtime Contract Gate: PASS.
+- Frontend RPC Cutover Gate: PASS.
+- Frontend Browser Smoke del PR: PASS.
+- Frontend Browser Smoke posterior al merge en `main`: PASS.
+- GitHub Pages build: PASS.
+- GitHub Pages deploy: PASS.
+- Esquema Supabase nuevo: NO REQUERIDO; la iteración usa tablas y contratos ya existentes.
+
 ## Estado
 - DISEÑADO: PASS
-- GENERADO EN RAMA: PASS
-- ESQUEMA SUPABASE NUEVO: NO REQUERIDO
-- CI / BROWSER SMOKE: PENDIENTE HASTA PR
-- PRODUCCIÓN: SIN CAMBIOS HASTA MERGE + DEPLOY PASS
+- GENERADO: PASS
+- MERGED MAIN: PASS
+- CI: PASS
+- BROWSER SMOKE: PASS
+- DEPLOY GITHUB PAGES: PASS
+- SUPABASE DDL: NO APLICA
+- PRODUCCIÓN FRONTEND: DESPLEGADA v0.45.1
