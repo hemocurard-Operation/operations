@@ -58,10 +58,15 @@
 .sales-dialog form>label,.advanced-fields label{display:block;margin-top:10px}
 .sales-dialog input:focus,.sales-dialog select:focus,.sales-dialog textarea:focus,.quick-search input:focus{outline:3px solid rgba(26,54,93,.14);outline-offset:1px}
 .sales-dialog button[type=submit]:disabled{opacity:.6;cursor:not-allowed}
+.quick-capture .status{margin-top:8px}
+.quick-capture textarea{min-height:92px}
+.quick-capture button,.sales-dialog button{touch-action:manipulation}
+.card>summary{cursor:pointer;min-height:28px}
+.data-table .status{white-space:nowrap}
 
 @media(max-width:1100px){.ops-task-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:1000px){.ops-kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.ops-actions{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:700px){.ops-hero{flex-direction:column}.ops-version{text-align:left}.ops-kpi-grid,.ops-actions,.ops-task-grid,.ops-core-grid{grid-template-columns:1fr}.ops-core-item{align-items:flex-start;flex-direction:column}.ops-task{min-height:auto}.quick-search,.search-result-row{align-items:stretch;flex-direction:column}.sales-dialog{width:min(96vw,640px)}.sales-dialog button,.quick-search button{min-height:44px}}
+@media(max-width:700px){.ops-hero{flex-direction:column}.ops-version{text-align:left}.ops-kpi-grid,.ops-actions,.ops-task-grid,.ops-core-grid{grid-template-columns:1fr}.ops-core-item{align-items:flex-start;flex-direction:column}.ops-task{min-height:auto}.quick-search,.search-result-row{align-items:stretch;flex-direction:column}.sales-dialog{width:min(96vw,640px)}.sales-dialog button,.quick-search button{min-height:44px}.filter-grid{grid-template-columns:1fr!important}.data-table{font-size:12px}.card{overflow:hidden}}
 
 /* Iteración de usabilidad: búsqueda accesible de módulos */
 .nav-search{display:block;padding:12px;font-size:14px}.nav-search input{display:block;width:100%;margin-top:6px;padding:10px;border:1px solid #DCE1E8;border-radius:6px}.nav [hidden]{display:none!important}
