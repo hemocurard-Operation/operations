@@ -64,7 +64,7 @@ jobs:
           cat /tmp/hemocura-http.log || true
           exit 1
 
-      - name: C11.2 browser smoke
+      - name: Frontend browser smoke
         shell: bash
         run: |
           set -euo pipefail
@@ -72,7 +72,7 @@ jobs:
           "$BROWSER" --headless=new --no-sandbox --disable-gpu --disable-dev-shm-usage --virtual-time-budget=12000 \
             --dump-dom http://127.0.0.1:8000/tests/frontend-c11-2-smoke.html > /tmp/c11-smoke.html
           cat /tmp/c11-smoke.html
-          grep -F 'PASS · rutas, vistas, mounts y VERSION coherentes' /tmp/c11-smoke.html
+          grep -F 'PASS · rutas, vistas, mounts, grupos, UX por rol y VERSION coherentes' /tmp/c11-smoke.html
 
       - name: Deployment readiness browser smoke
         shell: bash
