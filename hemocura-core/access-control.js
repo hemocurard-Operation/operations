@@ -17,6 +17,7 @@ const ROUTE_PERMISSION={
   requisitions:'DISPATCH_VIEW',
   inspections:'QUALITY_VIEW',
   planning:'SUPPLY_VIEW',
+  incidents:'QUALITY_VIEW',
   quality:'QUALITY_VIEW',
   documents:'DOCUMENTS_VIEW',
   compliance:'COMPLIANCE_VIEW',
@@ -44,36 +45,8 @@ const ROUTE_PERMISSION={
 
 let cache=null;
 
-export async function loadAccess(){
-  if(cache) return cache;
-  const [context,rows]=await Promise.all([
-    accessData.context(),
-    accessData.permissions()
-  ]);
-  const permissions=new Set(rows.map(x=>x.permission_code));
-  cache={context,rows,permissions};
-  console.info('[HEMOCURA_ACCESS] loaded',context?.email,[...permissions]);
-  return cache;
-}
-
+export async function loadAccess(){if(cache)return cache;const [context,rows]=await Promise.all([accessData.context(),accessData.permissions()]);const permissions=new Set(rows.map(x=>x.permission_code));cache={context,rows,permissions};console.info('[HEMOCURA_ACCESS] loaded',context?.email,[...permissions]);return cache}
 export function resetAccessCache(){cache=null}
-
-export async function canRoute(route){
-  const a=await loadAccess();
-  const permission=ROUTE_PERMISSION[route] || 'DASHBOARD_VIEW';
-  const allowed=a.permissions.has(permission);
-  await accessData.log(route,permission,allowed,allowed?'PERMISSION_GRANTED':'PERMISSION_DENIED');
-  return {allowed,permission,context:a.context};
-}
-
-export async function filterRoutes(routeEntries){
-  const a=await loadAccess();
-  return routeEntries.filter(([key])=>{
-    const permission=ROUTE_PERMISSION[key]||'DASHBOARD_VIEW';
-    return a.permissions.has(permission);
-  });
-}
-
-export function requiredPermission(route){
-  return ROUTE_PERMISSION[route]||'DASHBOARD_VIEW';
-}
+export async function canRoute(route){const a=await loadAccess();const permission=ROUTE_PERMISSION[route]||'DASHBOARD_VIEW';const allowed=a.permissions.has(permission);await accessData.log(route,permission,allowed,allowed?'PERMISSION_GRANTED':'PERMISSION_DENIED');return {allowed,permission,context:a.context}}
+export async function filterRoutes(routeEntries){const a=await loadAccess();return routeEntries.filter(([key])=>{const permission=ROUTE_PERMISSION[key]||'DASHBOARD_VIEW';return a.permissions.has(permission)})}
+export function requiredPermission(route){return ROUTE_PERMISSION[route]||'DASHBOARD_VIEW'}
