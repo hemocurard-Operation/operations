@@ -1,232 +1,32 @@
-import {
-  loadDispatchWorkspace,
-  getDispatchLines,
-  getProductsForDispatch
-} from './dispatch-data.js';
+import { loadDispatchWorkspace, getDispatchLines, getProductsForDispatch } from './dispatch-data.js';
 import { getBranches } from './sales-data.js';
 
-const num = new Intl.NumberFormat('es-DO', {maximumFractionDigits:2});
-
-function esc(value=''){
-  return String(value ?? '').replace(/[&<>"']/g,c=>({
-    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'
-  }[c]));
-}
-
-function defaultDates(){
-  const today=new Date();
-  const to=today.toISOString().slice(0,10);
-  const d=new Date(today); d.setDate(d.getDate()-30);
-  return {from:d.toISOString().slice(0,10),to};
-}
-
-function statusClass(s=''){
-  const x=String(s).toUpperCase();
-  if(x==='CONFIRMADO') return 'sale-confirmed';
-  if(x==='CERRADO') return 'sale-closed';
-  if(x==='CANCELADO') return 'sev-critical';
-  return 'sale-draft';
-}
-
-function dispatchRows(rows, branchMap){
-  if(!rows.length) return `<tr><td colspan="8" class="muted">No hay despachos para los filtros seleccionados.</td></tr>`;
-  return rows.map(r=>`
-    <tr>
-      <td>${esc(r.dispatch_date)}</td>
-      <td>${esc(branchMap[r.branch_id]?.name || r.branch_id)}</td>
-      <td><span class="sale-status ${statusClass(r.status)}">${esc(r.status)}</span></td>
-      <td>${esc(r.dispatch_type || 'venta')}</td>
-      <td>${esc(r.shift || '—')}</td>
-      <td>${esc(r.customer_id || '—')}</td>
-      <td>${esc(r.notes || '')}</td>
-      <td><button class="secondary compact" data-dispatch-id="${esc(r.id)}">Ver detalle</button></td>
-    </tr>`).join('');
-}
-
-function lineRows(rows, productMap){
-  if(!rows.length) return `<tr><td colspan="5" class="muted">No hay líneas visibles.</td></tr>`;
-  return rows.map(r=>`
-    <tr>
-      <td>${esc(productMap[r.product_id]?.name || r.product_id)}</td>
-      <td class="num">${num.format(Number(r.units||0))}</td>
-      <td>${r.is_sale ? '<span class="stock-pill stock-ok">Venta</span>' : '<span class="stock-pill stock-warning">No venta</span>'}</td>
-      <td>${r.sale_generated ? '<span class="stock-pill stock-ok">Sí</span>' : '<span class="stock-pill stock-none">No</span>'}</td>
-      <td>${esc(r.created_at ? new Date(r.created_at).toLocaleString('es-DO') : '')}</td>
-    </tr>`).join('');
-}
-
-function reconRows(rows, branchMap, productMap){
-  if(!rows.length) return `<tr><td colspan="7" class="muted">No hay datos de conciliación visibles.</td></tr>`;
-  return rows.map(r=>`
-    <tr>
-      <td>${esc(r.dispatch_date || '')}</td>
-      <td>${esc(branchMap[r.branch_id]?.name || r.branch_id || '')}</td>
-      <td>${esc(productMap[r.product_id]?.name || productMap[r.product_id]?.code || r.product_id || '')}</td>
-      <td class="num">${num.format(Number(r.dispatched_sale_units||0))}</td>
-      <td class="num">${num.format(Number(r.recognized_sale_units||0))}</td>
-      <td class="num">${num.format(Number(r.difference_units||0))}</td>
-      <td>${Number(r.difference_units||0)===0 ? '<span class="status ok">OK</span>' : '<span class="status warn">Revisar</span>'}</td>
-    </tr>`).join('');
-}
+const num=new Intl.NumberFormat('es-DO',{maximumFractionDigits:2});
+function esc(value=''){return String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
+function defaultDates(){const today=new Date(),to=today.toISOString().slice(0,10),d=new Date(today);d.setDate(d.getDate()-7);return {from:d.toISOString().slice(0,10),to}}
+function statusClass(s=''){const x=String(s).toUpperCase();if(x==='CONFIRMADO')return'sale-confirmed';if(x==='CERRADO')return'sale-closed';if(x==='CANCELADO')return'sev-critical';return'sale-draft'}
+function dispatchRows(rows,branchMap){if(!rows.length)return`<tr><td colspan="7" class="muted">No hay despachos para los filtros seleccionados.</td></tr>`;return rows.map(r=>`<tr><td>${esc(r.dispatch_date)}</td><td>${esc(branchMap[r.branch_id]?.name||r.branch_id)}</td><td><span class="sale-status ${statusClass(r.status)}">${esc(r.status)}</span></td><td>${esc(r.dispatch_type||'venta')}</td><td>${esc(r.shift||'—')}</td><td>${esc(r.notes||'')}</td><td><button class="secondary compact" data-dispatch-id="${esc(r.id)}">Detalle</button></td></tr>`).join('')}
+function lineRows(rows,productMap){if(!rows.length)return`<tr><td colspan="5" class="muted">No hay líneas visibles.</td></tr>`;return rows.map(r=>`<tr><td>${esc(productMap[r.product_id]?.name||r.product_id)}</td><td class="num">${num.format(Number(r.units||0))}</td><td>${r.is_sale?'<span class="stock-pill stock-ok">Venta</span>':'<span class="stock-pill stock-warning">No venta</span>'}</td><td>${r.sale_generated?'<span class="stock-pill stock-ok">Sí</span>':'<span class="stock-pill stock-none">No</span>'}</td><td>${esc(r.created_at?new Date(r.created_at).toLocaleString('es-DO'):'')}</td></tr>`).join('')}
+function reconRows(rows,branchMap,productMap){if(!rows.length)return`<tr><td colspan="7" class="muted">No hay diferencias visibles.</td></tr>`;return rows.map(r=>`<tr><td>${esc(r.dispatch_date||'')}</td><td>${esc(branchMap[r.branch_id]?.name||r.branch_id||'')}</td><td>${esc(productMap[r.product_id]?.name||productMap[r.product_id]?.code||r.product_id||'')}</td><td class="num">${num.format(Number(r.dispatched_sale_units||0))}</td><td class="num">${num.format(Number(r.recognized_sale_units||0))}</td><td class="num"><strong>${num.format(Number(r.difference_units||0))}</strong></td><td>${Number(r.difference_units||0)===0?'<span class="status ok">OK</span>':'<span class="status warn">Revisar</span>'}</td></tr>`).join('')}
 
 export async function mountDispatches(root){
-  if(!root) return;
-  const dates=defaultDates();
-  root.innerHTML=`<section class="card"><h3>Despachos</h3><div class="status info">Cargando datos…</div></section>`;
-
+  if(!root)return;const dates=defaultDates();root.innerHTML=`<section class="card"><h3>Despachos</h3><div class="status info">Cargando datos…</div></section>`;
   try{
-    const [branches, products] = await Promise.all([
-      getBranches(),
-      getProductsForDispatch()
-    ]);
-
-    const branchMap=Object.fromEntries(branches.map(b=>[b.id,b]));
-    const productMap=Object.fromEntries(products.map(p=>[p.id,p]));
-    const state={branches,branchMap,products,productMap,current:null};
-
+    const [branches,products]=await Promise.all([getBranches(),getProductsForDispatch()]);const branchMap=Object.fromEntries(branches.map(b=>[b.id,b])),productMap=Object.fromEntries(products.map(p=>[p.id,p]));const state={current:null,onlyDifferences:true};
     root.innerHTML=`
-      <div class="sales-toolbar">
-        <div>
-          <h2 class="section-heading">Despachos operativos</h2>
-          <div class="muted">Despacho físico separado de venta reconocida.</div>
-        </div>
-        <button id="dispatch-refresh" class="secondary">Actualizar</button>
-      </div>
-
-      <section class="card filters-card">
-        <div class="filter-grid">
-          <label>Desde<input id="dispatch-from" type="date" value="${dates.from}"></label>
-          <label>Hasta<input id="dispatch-to" type="date" value="${dates.to}"></label>
-          <label>Sucursal
-            <select id="dispatch-branch">
-              <option value="">Todas las autorizadas</option>
-              ${branches.map(b=>`<option value="${esc(b.id)}">${esc(b.name)}</option>`).join('')}
-            </select>
-          </label>
-          <label>Estado
-            <select id="dispatch-status">
-              <option value="">Todos</option>
-              <option>BORRADOR</option>
-              <option>CONFIRMADO</option>
-              <option>CERRADO</option>
-              <option>CANCELADO</option>
-            </select>
-          </label>
-        </div>
-        <button id="dispatch-search">Aplicar filtros</button>
-      </section>
-
+      <div class="sales-toolbar"><div><h2 class="section-heading">Revisión de despachos</h2><div class="muted">Empieza por las diferencias. La creación de despachos permanece fuera de esta pantalla hasta disponer de escritura controlada.</div></div><button id="dispatch-refresh" class="secondary">Actualizar</button></div>
+      <section class="card quick-capture"><div class="quick-capture-head"><div><div class="eyebrow">Prioridad</div><h3>Conciliación despacho vs venta</h3></div><label><input id="dispatch-only-diff" type="checkbox" checked> Solo diferencias</label></div><div id="dispatch-diff-summary" class="muted">Cargando conciliación…</div></section>
+      <details class="card advanced-fields"><summary>Filtros de búsqueda</summary><div class="filter-grid"><label>Desde<input id="dispatch-from" type="date" value="${dates.from}"></label><label>Hasta<input id="dispatch-to" type="date" value="${dates.to}"></label><label>Sucursal<select id="dispatch-branch"><option value="">Todas las autorizadas</option>${branches.map(b=>`<option value="${esc(b.id)}">${esc(b.name)}</option>`).join('')}</select></label><label>Estado<select id="dispatch-status"><option value="">Todos</option><option>BORRADOR</option><option>CONFIRMADO</option><option>CERRADO</option><option>CANCELADO</option></select></label></div><button id="dispatch-search">Aplicar filtros</button></details>
       <div id="dispatch-errors"></div>
+      <section class="card"><div class="card-head"><h3>Diferencias a revisar</h3><span id="recon-count" class="muted"></span></div><div class="table-wrap"><table class="data-table"><thead><tr><th>Fecha</th><th>Sucursal</th><th>Producto</th><th>Despachado</th><th>Venta reconocida</th><th>Diferencia</th><th>Estado</th></tr></thead><tbody id="recon-body"></tbody></table></div></section>
+      <details class="card"><summary><strong>Ver despachos</strong> <span id="dispatch-count" class="muted"></span></summary><div class="table-wrap"><table class="data-table"><thead><tr><th>Fecha</th><th>Sucursal</th><th>Estado</th><th>Tipo</th><th>Turno</th><th>Notas</th><th></th></tr></thead><tbody id="dispatch-body"></tbody></table></div></details>
+      <section class="card hidden" id="dispatch-detail-card"><div class="card-head"><div><h3>Detalle de despacho</h3><div class="muted" id="dispatch-detail-meta"></div></div><button class="secondary" id="dispatch-detail-close">Cerrar</button></div><div class="table-wrap"><table class="data-table"><thead><tr><th>Producto</th><th>Unidades</th><th>Tipo</th><th>Venta generada</th><th>Creado</th></tr></thead><tbody id="dispatch-lines-body"></tbody></table></div></section>`;
 
-      <section class="card">
-        <div class="card-head"><h3>Despachos</h3><span id="dispatch-count" class="muted"></span></div>
-        <div class="table-wrap">
-          <table class="data-table">
-            <thead><tr>
-              <th>Fecha</th><th>Sucursal</th><th>Estado</th><th>Tipo</th>
-              <th>Turno</th><th>Cliente</th><th>Notas</th><th></th>
-            </tr></thead>
-            <tbody id="dispatch-body"></tbody>
-          </table>
-        </div>
-      </section>
-
-      <section class="card hidden" id="dispatch-detail-card">
-        <div class="card-head">
-          <div><h3>Detalle de despacho</h3><div class="muted" id="dispatch-detail-meta"></div></div>
-          <button class="secondary" id="dispatch-detail-close">Cerrar</button>
-        </div>
-        <div class="table-wrap">
-          <table class="data-table">
-            <thead><tr>
-              <th>Producto</th><th>Unidades</th><th>Tipo</th>
-              <th>Venta generada</th><th>Creado</th>
-            </tr></thead>
-            <tbody id="dispatch-lines-body"></tbody>
-          </table>
-        </div>
-      </section>
-
-      <section class="card">
-        <div class="card-head">
-          <h3>Conciliación despacho vs venta</h3>
-          <span class="muted">vw_dispatch_sales_reconciliation</span>
-        </div>
-        <div class="table-wrap">
-          <table class="data-table">
-            <thead><tr>
-              <th>Fecha</th><th>Sucursal</th><th>Producto</th>
-              <th>Despachado venta</th><th>Venta reconocida</th><th>Diferencia</th><th>Estado</th>
-            </tr></thead>
-            <tbody id="recon-body"></tbody>
-          </table>
-        </div>
-      </section>
-
-      <div class="debug-strip">[HEMOCURA_DISPATCH] schema v7.2 alineado</div>`;
-
-    async function load(){
-      const filters={
-        from:document.getElementById('dispatch-from').value,
-        to:document.getElementById('dispatch-to').value,
-        branchId:document.getElementById('dispatch-branch').value,
-        status:document.getElementById('dispatch-status').value
-      };
-
-      document.getElementById('dispatch-body').innerHTML=`<tr><td colspan="8">Consultando…</td></tr>`;
-      document.getElementById('recon-body').innerHTML=`<tr><td colspan="7">Consultando…</td></tr>`;
-
-      const ws=await loadDispatchWorkspace(filters);
-      state.current=ws;
-
-      document.getElementById('dispatch-body').innerHTML=dispatchRows(ws.dispatches,branchMap);
-      document.getElementById('dispatch-count').textContent=`${ws.dispatches.length} registro(s)`;
-      document.getElementById('recon-body').innerHTML=reconRows(ws.reconciliation,branchMap,productMap);
-
-      document.getElementById('dispatch-errors').innerHTML=ws.errors.length
-        ? `<div class="status warn">Carga parcial: ${esc(ws.errors.join(' · '))}</div>`
-        : '';
-
-      document.querySelectorAll('[data-dispatch-id]').forEach(btn=>{
-        btn.addEventListener('click',()=>openDetail(btn.dataset.dispatchId));
-      });
-
-      console.info('[HEMOCURA_DISPATCH] módulo OK');
-    }
-
-    async function openDetail(id){
-      const card=document.getElementById('dispatch-detail-card');
-      card.classList.remove('hidden');
-      document.getElementById('dispatch-lines-body').innerHTML=`<tr><td colspan="5">Cargando detalle…</td></tr>`;
-
-      const item=state.current?.dispatches?.find(x=>x.id===id);
-      document.getElementById('dispatch-detail-meta').textContent=item
-        ? `${item.dispatch_date} · ${branchMap[item.branch_id]?.name || item.branch_id} · ${item.status}`
-        : id;
-
-      try{
-        const lines=await getDispatchLines(id);
-        document.getElementById('dispatch-lines-body').innerHTML=lineRows(lines,productMap);
-      }catch(error){
-        document.getElementById('dispatch-lines-body').innerHTML=
-          `<tr><td colspan="5"><div class="status bad">${esc(error.message)}</div></td></tr>`;
-      }
-    }
-
-    document.getElementById('dispatch-search').addEventListener('click',()=>load().catch(showFatal));
-    document.getElementById('dispatch-refresh').addEventListener('click',()=>load().catch(showFatal));
-    document.getElementById('dispatch-detail-close').addEventListener('click',()=>{
-      document.getElementById('dispatch-detail-card').classList.add('hidden');
-    });
-
-    function showFatal(error){
-      console.error('[HEMOCURA_DISPATCH_ERROR]',error);
-      document.getElementById('dispatch-errors').innerHTML=`<div class="status bad">${esc(error.message)}</div>`;
-    }
-
+    function renderReconciliation(){const all=state.current?.reconciliation||[],rows=state.onlyDifferences?all.filter(r=>Number(r.difference_units||0)!==0):all;const totalDiff=rows.reduce((a,r)=>a+Math.abs(Number(r.difference_units||0)),0);document.getElementById('recon-body').innerHTML=reconRows(rows,branchMap,productMap);document.getElementById('recon-count').textContent=`${rows.length} registro(s)`;document.getElementById('dispatch-diff-summary').innerHTML=rows.length?`<span class="status warn"><strong>${rows.length}</strong> diferencia(s) · ${num.format(totalDiff)} unidad(es) por revisar</span>`:'<span class="status ok">Sin diferencias para los filtros actuales.</span>'}
+    async function load(){const filters={from:document.getElementById('dispatch-from').value,to:document.getElementById('dispatch-to').value,branchId:document.getElementById('dispatch-branch').value,status:document.getElementById('dispatch-status').value};document.getElementById('dispatch-body').innerHTML=`<tr><td colspan="7">Consultando…</td></tr>`;document.getElementById('recon-body').innerHTML=`<tr><td colspan="7">Consultando…</td></tr>`;const ws=await loadDispatchWorkspace(filters);state.current=ws;document.getElementById('dispatch-body').innerHTML=dispatchRows(ws.dispatches,branchMap);document.getElementById('dispatch-count').textContent=`${ws.dispatches.length} registro(s)`;renderReconciliation();document.getElementById('dispatch-errors').innerHTML=ws.errors.length?`<div class="status warn">Carga parcial: ${esc(ws.errors.join(' · '))}</div>`:'';document.querySelectorAll('[data-dispatch-id]').forEach(btn=>btn.addEventListener('click',()=>openDetail(btn.dataset.dispatchId)))}
+    async function openDetail(id){const card=document.getElementById('dispatch-detail-card');card.classList.remove('hidden');document.getElementById('dispatch-lines-body').innerHTML=`<tr><td colspan="5">Cargando detalle…</td></tr>`;const item=state.current?.dispatches?.find(x=>x.id===id);document.getElementById('dispatch-detail-meta').textContent=item?`${item.dispatch_date} · ${branchMap[item.branch_id]?.name||item.branch_id} · ${item.status}`:id;try{const lines=await getDispatchLines(id);document.getElementById('dispatch-lines-body').innerHTML=lineRows(lines,productMap)}catch(error){document.getElementById('dispatch-lines-body').innerHTML=`<tr><td colspan="5"><div class="status bad">${esc(error.message)}</div></td></tr>`}}
+    document.getElementById('dispatch-search').addEventListener('click',()=>load().catch(showFatal));document.getElementById('dispatch-refresh').addEventListener('click',()=>load().catch(showFatal));document.getElementById('dispatch-only-diff').addEventListener('change',e=>{state.onlyDifferences=e.target.checked;renderReconciliation()});document.getElementById('dispatch-detail-close').addEventListener('click',()=>document.getElementById('dispatch-detail-card').classList.add('hidden'));
+    function showFatal(error){console.error('[HEMOCURA_DISPATCH_ERROR]',error);document.getElementById('dispatch-errors').innerHTML=`<div class="status bad">${esc(error.message)}</div>`}
     await load();
-  }catch(error){
-    console.error('[HEMOCURA_DISPATCH_ERROR]',error);
-    root.innerHTML=`<section class="card"><h3>Despachos no disponible</h3><div class="status bad">${esc(error.message)}</div><p>Abra F12 → Console y busque <code>HEMOCURA_DISPATCH_ERROR</code>.</p></section>`;
-  }
+  }catch(error){console.error('[HEMOCURA_DISPATCH_ERROR]',error);root.innerHTML=`<section class="card"><h3>Despachos no disponible</h3><div class="status bad">${esc(error.message)}</div></section>`}
 }
