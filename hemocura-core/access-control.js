@@ -3,6 +3,7 @@ import { accessData } from './access-data.js';
 const ROUTE_PERMISSION={
   dashboard:'DASHBOARD_VIEW',
   command:'COMMAND_VIEW',
+  quickcapture:'DASHBOARD_VIEW',
   audit:'AUDIT_VIEW',
   releasegate:'RELEASE_GATE_VIEW',
   sales:'SALES_VIEW',
@@ -74,6 +75,4 @@ export async function filterRoutes(routeEntries){
   });
 }
 
-export function requiredPermission(route){
-  return ROUTE_PERMISSION[route]||'DASHBOARD_VIEW';
-}
+export function requiredPermission(route){return ROUTE_PERMISSION[route]||'DASHBOARD_VIEW'}
