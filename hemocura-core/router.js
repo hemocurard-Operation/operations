@@ -21,6 +21,7 @@ const ROUTES={
   hemovigilance:{title:'Hemovigilancia',subtitle:'Eventos adversos, casi eventos y retiros',group:'LABORATORIO Y SANGRE',order:80},
   resources:{title:'Recursos Críticos',subtitle:'Equipos, reactivos y ambiente',group:'LABORATORIO Y SANGRE',order:90},
 
+  dataquality:{title:'Calidad de Datos',subtitle:'Preflight de CSV, duplicados y errores heredados',group:'CALIDAD Y SEGURIDAD',order:5},
   quality:{title:'SGC',subtitle:'Incidencias, NC, CAPA y alertas',group:'CALIDAD Y SEGURIDAD',order:10},
   approvals:{title:'Aprobaciones',subtitle:'Segregación de funciones y decisiones',group:'CALIDAD Y SEGURIDAD',order:20},
   qmsgov:{title:'Gobierno QMS',subtitle:'Documentos, CAPA y aprobaciones',group:'CALIDAD Y SEGURIDAD',order:30},
