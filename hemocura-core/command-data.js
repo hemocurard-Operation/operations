@@ -5,6 +5,7 @@ export const commandData={
   branches:()=>q('Sucursales',sb().from('branches').select('id,code,name').eq('active',true).order('name')),
   today:()=>q('Operación diaria',sb().from('vw_daily_branch_operations').select('*').order('branch_name')),
   reconciliation:()=>q('Conciliación cierre',sb().from('vw_daily_close_reconciliation').select('*').order('branch_name')),
+  recentCloses:(limit=30)=>q('Cierres recientes',sb().from('daily_operational_closes').select('id,close_date,branch_id,status,donors_count,effective_donations,screened_units,available_units,dispatched_units,invoiced_amount,notes,closed_at').order('close_date',{ascending:false}).order('closed_at',{ascending:false}).limit(limit)),
   scorecard:()=>q('Scorecard',sb().from('vw_management_scorecard').select('*').order('management_score',{ascending:true})),
   exceptions:()=>q('Excepciones',sb().from('operational_exceptions').select('*').order('exception_date',{ascending:false}).limit(300)),
   actions:()=>q('Acciones',sb().from('vw_management_action_portfolio').select('*').limit(300)),
