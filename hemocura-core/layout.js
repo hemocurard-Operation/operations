@@ -56,7 +56,7 @@ const MOUNTS={
   bi:mountBI,projects:mountProjects,settings:mountSettings,qa:mountQA
 };
 
-function esc(v=''){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#039;'}[c]))}
+function esc(v=''){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
 function roleCodes(context={}){
   const raw=context.roles||[];
   if(Array.isArray(raw)) return raw.map(x=>typeof x==='string'?x:(x?.code||x?.role_code||'')).filter(Boolean);
