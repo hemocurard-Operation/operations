@@ -4,8 +4,10 @@
 
 **DISEÑADO: PASS**  
 **GENERADO: PASS**  
-**INSTALADO EN PRODUCCIÓN: NO**  
-**VALIDADO EN CI: PENDIENTE AL ABRIR PR**
+**VALIDADO EN CI: PASS**  
+**INSTALADO EN PRODUCCIÓN: NO**
+
+La rama `feat/c15a-simplified-form-capture` superó los cuatro gates ejecutados sobre el candidato: HemoCura Runtime Contract Gate, HemoCura Frontend Browser Smoke, HemoCura Frontend RPC Cutover y HemoCura Remediation Sequencer. La validación confirma integridad del frontend y sus contratos estáticos; no sustituye una prueba de escritura real con cada rol contra Supabase.
 
 Esta iteración usa como referencia los dos libros entregados por HemoCura y, para los formularios, los esquemas de respuesta presentes en `Hemocura_Hoja_Central_Hibrido.xlsx`. Los cinco enlaces `forms.gle` no pudieron ser leídos directamente desde el entorno de revisión, por lo que no se atribuye un enlace concreto a un formulario sin evidencia.
 
@@ -80,6 +82,10 @@ La regla es **“capturar una vez el contexto y repetir solo la línea variable�
 ## Impacto esperado
 
 La iteración reduce repetición de fecha/sucursal/turno, elimina columnas fijas por posición de ítem y aproxima la captura al flujo real: **encabezado + líneas**. Esto también hace más sencillo migrar gradualmente desde Google Forms/AppSheet hacia la Suite sin perder la trazabilidad histórica de las hojas existentes.
+
+## Gate antes de producción
+
+Antes del merge a `main` deben ejecutarse pruebas reales de escritura con los roles autorizados para confirmar políticas RLS y permisos de Supabase en cinco flujos: donante secuencial, tamizaje secuencial, requisición multilínea, incidencia y despacho BORRADOR con líneas. Hasta completar ese gate, C15-A permanece **VALIDADO EN CI / NO INSTALADO EN PRODUCCIÓN**.
 
 ## Fuera de alcance
 
