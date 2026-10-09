@@ -90,5 +90,71 @@ Validar la captura operativa simplificada, manteniendo trazabilidad y guardrails
     - Confirmar un único registro por fecha + sucursal en `daily_operational_closes`.
     - Confirmar que cerrar el reporte no ejecuta liberaciones ni decisiones clínicas.
 
+## Iteraciones adicionales I54–I68
+
+21. **Responsable autocompletado**
+    - Abrir `#dailyinventory` con un usuario cuyo nombre exista en el contexto de seguridad.
+    - Confirmar que Responsable/Bioanalista aparece prellenado y puede corregirse antes de guardar.
+
+22. **Totales automáticos de tamizaje**
+    - Agregar dos lotes.
+    - Confirmar actualización automática de recibidos, no reactivos, reactivos, pendientes y descartados en el pie de tabla.
+
+23. **Balance de lote**
+    - Crear un lote donde recibidos sea igual a la suma de las salidas.
+    - Confirmar estado `OK`.
+    - Cambiar una cantidad y confirmar advertencia de diferencia.
+
+24. **Lote duplicado**
+    - Registrar dos filas con el mismo lote/tanda.
+    - Confirmar advertencia y bloqueo del cierre hasta corregirlo.
+
+25. **Cierre bloqueado por inconsistencia**
+    - Dejar un lote desbalanceado.
+    - Confirmar que “Cerrar reporte” permanece deshabilitado.
+    - Corregir el lote y confirmar que se habilita.
+
+26. **Totales por grupo de inventario**
+    - Registrar cantidades en varias columnas de un grupo ABO/Rh.
+    - Confirmar cálculo automático del total de la fila.
+
+27. **Totales generales de inventario**
+    - Registrar cantidades en varios grupos.
+    - Confirmar totales de Sangre total, Paquete globular, Plasma, Plaquetas y Total general.
+
+28. **Total de despachos**
+    - Crear varios despachos consolidados.
+    - Confirmar que el contador superior suma correctamente las unidades.
+
+29. **Novedades de equipos**
+    - Tener un equipo ACTIVO sin alerta y uno con alerta/estado no ACTIVO.
+    - Confirmar que el contador muestra solo las novedades y que solo esas aparecen en el reporte.
+
+30. **Indicador de avance**
+    - Abrir un reporte nuevo e ir completando identificación y lotes.
+    - Confirmar que el porcentaje “listo” cambia y llega a 100% cuando los requisitos mínimos están conformes.
+
+31. **Protección de cambios sin guardar**
+    - Modificar una cantidad y pulsar “Cargar”.
+    - Confirmar advertencia antes de descartar cambios.
+    - Confirmar también advertencia al intentar abandonar/recargar la página.
+
+32. **Modo solo lectura después del cierre**
+    - Cerrar un reporte y recargarlo.
+    - Confirmar que lotes, inventario, despachos, responsable y observaciones quedan deshabilitados.
+
+33. **Confirmación explícita de cierre**
+    - Pulsar “Cerrar reporte” con un reporte válido.
+    - Confirmar diálogo de confirmación y que cancelar no cambia el estado.
+
+34. **Impresión operativa**
+    - Pulsar “Imprimir”.
+    - Confirmar que navegación, botones y controles de edición no aparecen en la salida impresa y que tablas/valores sí son legibles.
+
+35. **Filtros de consulta consolidados**
+    - En `#screening`, filtrar por sucursal y fechas y validar totales.
+    - En `#bloodinventory`, seleccionar sucursal y validar el último conteo manual y KPI.
+    - En `#dispatches`, filtrar por sucursal/fechas y validar registros, unidades y destinos.
+
 ## Criterio de salida
-El bloque puede pasar a UAT cuando los 20 smoke tests sean satisfactorios con al menos un usuario operativo y un usuario de Calidad autenticados.
+El bloque puede pasar a UAT cuando los 35 smoke tests sean satisfactorios con al menos un usuario operativo y un usuario de Calidad autenticados, incluyendo prueba en móvil/tablet y verificación de impresión.
