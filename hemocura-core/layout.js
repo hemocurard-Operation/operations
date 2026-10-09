@@ -28,6 +28,7 @@ import { mountBloodFlow } from './blood-flow.js';
 import { mountProduction } from './production.js';
 import { mountSupplyPlanning } from './supply-planning.js';
 import { mountBloodInventory } from './blood-inventory.js';
+import { mountDailyInventory } from './daily-inventory.js';
 import { mountDispatches } from './dispatch.js';
 import { mountInventory } from './inventory.js';
 import { mountRequisitions } from './requisitions.js';
@@ -50,7 +51,7 @@ const MOUNTS={
   uat:mountUat,integration:mountIntegration,continuity:mountContinuity,management:mountManagementReview,
   coldchain:mountColdChain,hemovigilance:mountHemovigilance,suppliers:mountSuppliers,sales:mountOperationalSales,
   donors:mountDonors,screening:mountScreening,bloodflow:mountBloodFlow,production:mountProduction,supply:mountSupplyPlanning,
-  bloodinventory:mountBloodInventory,dispatches:mountDispatches,inventory:mountInventory,requisitions:mountRequisitions,
+  bloodinventory:mountBloodInventory,dailyinventory:mountDailyInventory,dispatches:mountDispatches,inventory:mountInventory,requisitions:mountRequisitions,
   inspections:mountInspections,planning:mountPlanning,incidents:mountIncidentsQuick,quality:mountQuality,documents:mountDocuments,compliance:mountCompliance,
   bi:mountBI,projects:mountProjects,settings:mountSettings,qa:mountQA
 };
