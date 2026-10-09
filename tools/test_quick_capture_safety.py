@@ -35,7 +35,7 @@ check("role_default_panel", "ENCARGADA_LABORATORIO:'screening'" in flow and "ASI
 check("single_branch_preselection", "candidates.length!==1" in flow and "branch.dispatchEvent(new Event('change'" in flow)
 check("incident_progressive_disclosure", "affected.checked||followup.checked||Number(severity.value)>=4" in flow)
 check("panel_focus_assist", "focusFirstField(target)" in flow)
-check("no_clinical_result_persistence", "result" not in re.sub(r"selectedScreeningRows|qc-test-result", "", flow.lower()))
+check("no_clinical_result_persistence", "qc-test-result" not in flow and "SCREEN_KEY" not in flow and "screening_defaults" not in flow)
 check("flow_integrated_after_mount", "if(route==='quickcapture') enhanceQuickCaptureFlow(root,primaryRole);" in layout)
 check("protected_config_not_referenced", "js/config.js" not in capture and "js/config.js" not in flow)
 
