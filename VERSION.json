@@ -1,7 +1,7 @@
 {
   "project": "HemoCura Operations Intelligence + QMS + Compliance",
-  "version": "0.45.0",
-  "stage": "Role-aware UX + guided forms + access model",
+  "version": "0.45.1",
+  "stage": "Simplified capture center + batch forms",
   "release_channel": "RC",
   "protected_files": [
     "js/config.js"

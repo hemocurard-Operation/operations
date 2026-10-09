@@ -2,6 +2,7 @@ import { routeList,getRoute,getRouteMeta,navigate,routeGroups } from './router.j
 import { renderView,viewRootId } from './views.js';
 import { mountOpsDashboard } from './ops-dashboard.js';
 import { mountCommandCenter } from './command-center.js';
+import { mountQuickCapture } from './quick-capture.js';
 import { mountAudit } from './audit.js';
 import { mountReleaseGate } from './release-gate.js';
 import { mountSecurity } from './security.js';
@@ -43,7 +44,7 @@ import { mountQA } from './qa.js';
 import { signOut } from './auth.js';
 
 const MOUNTS={
-  dashboard:mountOpsDashboard,command:mountCommandCenter,audit:mountAudit,releasegate:mountReleaseGate,security:mountSecurity,
+  dashboard:mountOpsDashboard,command:mountCommandCenter,quickcapture:mountQuickCapture,audit:mountAudit,releasegate:mountReleaseGate,security:mountSecurity,
   diagnostics:mountDiagnostics,approvals:mountApprovals,qmsgov:mountQmsGovernance,internalaudits:mountInternalAudits,
   competencies:mountCompetencies,resources:mountResources,analyticalqc:mountAnalyticalQc,release1:mountFinalRelease,
   uat:mountUat,integration:mountIntegration,continuity:mountContinuity,management:mountManagementReview,
