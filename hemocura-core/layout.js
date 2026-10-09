@@ -3,6 +3,7 @@ import { renderView,viewRootId } from './views.js';
 import { mountOpsDashboard } from './ops-dashboard.js';
 import { mountCommandCenter } from './command-center.js';
 import { mountQuickCapture } from './quick-capture.js';
+import { mountDataQuality } from './data-quality.js';
 import { mountAudit } from './audit.js';
 import { mountReleaseGate } from './release-gate.js';
 import { mountSecurity } from './security.js';
@@ -44,7 +45,7 @@ import { mountQA } from './qa.js';
 import { signOut } from './auth.js';
 
 const MOUNTS={
-  dashboard:mountOpsDashboard,command:mountCommandCenter,quickcapture:mountQuickCapture,audit:mountAudit,releasegate:mountReleaseGate,security:mountSecurity,
+  dashboard:mountOpsDashboard,command:mountCommandCenter,quickcapture:mountQuickCapture,dataquality:mountDataQuality,audit:mountAudit,releasegate:mountReleaseGate,security:mountSecurity,
   diagnostics:mountDiagnostics,approvals:mountApprovals,qmsgov:mountQmsGovernance,internalaudits:mountInternalAudits,
   competencies:mountCompetencies,resources:mountResources,analyticalqc:mountAnalyticalQc,release1:mountFinalRelease,
   uat:mountUat,integration:mountIntegration,continuity:mountContinuity,management:mountManagementReview,
@@ -55,7 +56,7 @@ const MOUNTS={
   bi:mountBI,projects:mountProjects,settings:mountSettings,qa:mountQA
 };
 
-function esc(v=''){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
+function esc(v=''){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#039;'}[c]))}
 function roleCodes(context={}){
   const raw=context.roles||[];
   if(Array.isArray(raw)) return raw.map(x=>typeof x==='string'?x:(x?.code||x?.role_code||'')).filter(Boolean);
