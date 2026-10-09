@@ -1,7 +1,7 @@
 {
   "project": "HemoCura Operations Intelligence + QMS + Compliance",
-  "version": "0.45.2",
-  "stage": "Safe explicit form defaults + duplicate prevention",
+  "version": "0.45.3",
+  "stage": "Single-panel guided intake + normalized legacy workbook forms",
   "release_channel": "RC",
   "protected_files": [
     "js/config.js"
