@@ -3,6 +3,7 @@ import { renderView,viewRootId } from './views.js';
 import { mountOpsDashboard } from './ops-dashboard.js';
 import { mountCommandCenter } from './command-center.js';
 import { mountQuickCapture } from './quick-capture.js';
+import { enhanceQuickCaptureFlow } from './quick-capture-flow.js';
 import { mountAudit } from './audit.js';
 import { mountReleaseGate } from './release-gate.js';
 import { mountSecurity } from './security.js';
@@ -55,7 +56,7 @@ const MOUNTS={
   bi:mountBI,projects:mountProjects,settings:mountSettings,qa:mountQA
 };
 
-function esc(v=''){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
+function esc(v=''){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#039;'}[c]))}
 function roleCodes(context={}){
   const raw=context.roles||[];
   if(Array.isArray(raw)) return raw.map(x=>typeof x==='string'?x:(x?.code||x?.role_code||'')).filter(Boolean);
@@ -125,7 +126,10 @@ export async function mountLayout(session){
     const mount=MOUNTS[route],rootId=viewRootId(route),root=rootId?document.getElementById(rootId):null;
     if(!mount){document.getElementById('view').innerHTML=moduleError(route,new Error('No existe mount registrado para esta ruta'));return}
     if(!root){document.getElementById('view').innerHTML=moduleError(route,new Error(`Root no encontrado: ${rootId||'NULL'}`));return}
-    try{await mount(root)}catch(error){document.getElementById('view').innerHTML=moduleError(route,error)}
+    try{
+      await mount(root);
+      if(route==='quickcapture') enhanceQuickCaptureFlow(root,primaryRole);
+    }catch(error){document.getElementById('view').innerHTML=moduleError(route,error)}
   };
   window.addEventListener('hashchange',()=>render().catch(e=>console.error('[HEMOCURA_NAV_ERROR]',e)));
   await render();
