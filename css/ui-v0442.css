@@ -64,9 +64,20 @@
 .card>summary{cursor:pointer;min-height:28px}
 .data-table .status{white-space:nowrap}
 
+/* Captura diaria de inventario */
+.capture-counts{grid-template-columns:repeat(3,minmax(0,1fr))}
+.capture-box{display:flex;flex-direction:column;gap:8px;padding:14px;border:1px solid var(--line);border-radius:10px;background:var(--bg)}
+.capture-box strong{color:var(--navy)}
+.capture-box input{font-size:22px;font-weight:700;text-align:center;min-height:48px}
+.capture-table th{white-space:nowrap}
+.capture-table td{min-width:110px}
+.capture-table input,.capture-table select{width:100%;min-width:88px;padding:8px}
+.capture-table tbody th{font-size:14px;color:var(--navy);background:var(--bg)}
+#di-observations{width:100%;margin-top:8px}
+
 @media(max-width:1100px){.ops-task-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:1000px){.ops-kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.ops-actions{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:700px){.ops-hero{flex-direction:column}.ops-version{text-align:left}.ops-kpi-grid,.ops-actions,.ops-task-grid,.ops-core-grid{grid-template-columns:1fr}.ops-core-item{align-items:flex-start;flex-direction:column}.ops-task{min-height:auto}.quick-search,.search-result-row{align-items:stretch;flex-direction:column}.sales-dialog{width:min(96vw,640px)}.sales-dialog button,.quick-search button{min-height:44px}.filter-grid{grid-template-columns:1fr!important}.data-table{font-size:12px}.card{overflow:hidden}}
+@media(max-width:700px){.ops-hero{flex-direction:column}.ops-version{text-align:left}.ops-kpi-grid,.ops-actions,.ops-task-grid,.ops-core-grid,.capture-counts{grid-template-columns:1fr}.ops-core-item{align-items:flex-start;flex-direction:column}.ops-task{min-height:auto}.quick-search,.search-result-row{align-items:stretch;flex-direction:column}.sales-dialog{width:min(96vw,640px)}.sales-dialog button,.quick-search button{min-height:44px}.filter-grid{grid-template-columns:1fr!important}.data-table{font-size:12px}.card{overflow:hidden}.capture-table input,.capture-table select{min-height:44px}.capture-box input{min-height:52px}}
 
 /* Iteración de usabilidad: búsqueda accesible de módulos */
 .nav-search{display:block;padding:12px;font-size:14px}.nav-search input{display:block;width:100%;margin-top:6px;padding:10px;border:1px solid #DCE1E8;border-radius:6px}.nav [hidden]{display:none!important}
