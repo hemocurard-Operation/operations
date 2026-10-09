@@ -1,8 +1,8 @@
 {
   "project": "HemoCura Operations Intelligence + QMS + Compliance",
-  "version": "0.44.2",
-  "stage": "GitHub + Supabase verified frontend integration repair",
-  "release_channel": "FINAL_RC_HOTFIX",
+  "version": "0.45.0",
+  "stage": "Role-aware UX + guided forms + access model",
+  "release_channel": "RC",
   "protected_files": [
     "js/config.js"
   ],
