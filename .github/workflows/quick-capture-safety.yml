@@ -5,6 +5,8 @@ on:
     paths:
       - 'hemocura-core/quick-capture.js'
       - 'hemocura-core/quick-capture-data.js'
+      - 'hemocura-core/quick-capture-flow.js'
+      - 'hemocura-core/layout.js'
       - 'VERSION.json'
       - 'tools/test_quick_capture_safety.py'
       - '.github/workflows/quick-capture-safety.yml'
@@ -13,6 +15,8 @@ on:
     paths:
       - 'hemocura-core/quick-capture.js'
       - 'hemocura-core/quick-capture-data.js'
+      - 'hemocura-core/quick-capture-flow.js'
+      - 'hemocura-core/layout.js'
       - 'VERSION.json'
       - 'tools/test_quick_capture_safety.py'
       - '.github/workflows/quick-capture-safety.yml'
