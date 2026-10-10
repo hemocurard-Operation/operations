@@ -19,3 +19,42 @@
 .form-hint{display:block;margin-top:4px;color:var(--muted);font-size:11px}.quick-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.quick-form-grid .full{grid-column:1/-1}
 @media(max-width:1000px){.ops-kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.ops-actions{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:700px){.ops-hero{flex-direction:column}.ops-version{text-align:left}.ops-kpi-grid,.ops-actions,.ops-core-grid,.quick-form-grid{grid-template-columns:1fr}.ops-core-item{align-items:flex-start;flex-direction:column}.topbar-actions .muted{display:none}}
+
+/* v0.45.6 · Daily Operational Report ergonomics */
+#dailyinventory-root{display:grid;gap:14px}
+#dailyinventory-root>.card{margin:0}
+#dailyinventory-root .filter-grid{grid-template-columns:repeat(3,minmax(0,1fr));margin-bottom:0}
+#dailyinventory-root .inline-check{display:inline-flex;align-items:center;gap:7px;margin:0;font-weight:700;color:var(--navy)}
+#dailyinventory-root .inline-check input{width:auto;margin:0}
+#dailyinventory-root .dor-section-tools{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+#dailyinventory-root .dor-inactive-section{border-style:dashed;background:#fafbfc}
+#dailyinventory-root .dor-inactive-section .muted{opacity:.75}
+#dailyinventory-root .dor-capture-table input,#dailyinventory-root .dor-capture-table select{min-width:92px;padding:8px;margin:0}
+#dailyinventory-root #dor-lots input[data-f="lot"],#dailyinventory-root #dor-dispatches input[data-f="destination"]{min-width:170px}
+#dailyinventory-root #dor-dispatches select[data-f="component"]{min-width:150px}
+#dailyinventory-root .capture-balanced{color:var(--ok);font-weight:800}
+#dailyinventory-root .capture-unbalanced{color:var(--bad);font-weight:800;background:#fff4f4}
+#dailyinventory-root .dor-primary-actions{position:sticky;bottom:0;z-index:3;padding:10px;margin:14px -4px -4px;background:rgba(255,255,255,.96);border-top:1px solid var(--line);backdrop-filter:blur(5px)}
+#dailyinventory-root .dor-primary-actions button{min-height:42px}
+#dailyinventory-root details.card summary{cursor:pointer;color:var(--navy)}
+
+@media(max-width:800px){
+  #dailyinventory-root .filter-grid{grid-template-columns:1fr}
+  #dailyinventory-root .card{padding:13px}
+  #dailyinventory-root .card-head{align-items:flex-start}
+  #dailyinventory-root .card-head>div:last-child{width:100%;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  #dailyinventory-root .table-wrap{margin-left:-13px;margin-right:-13px;padding:0 13px;overscroll-behavior-inline:contain}
+  #dailyinventory-root .dor-capture-table{min-width:760px}
+  #dailyinventory-root #dor-inventory{min-width:610px}
+  #dailyinventory-root .dor-primary-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  #dailyinventory-root .dor-primary-actions button{width:100%;margin:0}
+  #dailyinventory-root .sales-toolbar{align-items:flex-start}
+  #dailyinventory-root .sales-toolbar .dialog-actions{width:100%;justify-content:flex-start}
+}
+
+@media(max-width:480px){
+  #dailyinventory-root .dor-primary-actions{grid-template-columns:1fr}
+  #dailyinventory-root .dor-section-tools{width:100%}
+  #dailyinventory-root .dor-section-tools button{width:100%}
+  #dailyinventory-root .content{padding:12px}
+}
