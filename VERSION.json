@@ -1,7 +1,7 @@
 {
   "project": "HemoCura Operations Intelligence + QMS + Compliance",
-  "version": "0.45.11",
-  "stage": "Security preflight + Supabase advisor baseline",
+  "version": "0.45.12",
+  "stage": "View security reconciliation + C13-B compatibility preflight",
   "release_channel": "RC",
   "protected_files": [
     "js/config.js"
