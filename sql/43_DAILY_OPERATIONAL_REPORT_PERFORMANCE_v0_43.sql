@@ -1,6 +1,7 @@
 -- HemoCura v0.43.0
 -- Rendimiento acotado al Reporte Operativo Diario.
 -- Esta migración NO altera lógica clínica, estados, RLS ni permisos.
+-- Estado: aplicada y verificada en Supabase el 2026-10-10.
 
 begin;
 
