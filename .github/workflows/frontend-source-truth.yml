@@ -7,7 +7,7 @@ on:
       - 'js/app.js'
       - 'hemocura-core/**'
       - '*.js'
-      - 'contracts/frontend-source-of-truth-v0.45.8.json'
+      - 'contracts/frontend-source-of-truth-v0.45.*.json'
       - 'tools/frontend_source_truth_gate.py'
       - '.github/workflows/frontend-source-truth.yml'
       - 'VERSION.json'
@@ -18,7 +18,7 @@ on:
       - 'js/app.js'
       - 'hemocura-core/**'
       - '*.js'
-      - 'contracts/frontend-source-of-truth-v0.45.8.json'
+      - 'contracts/frontend-source-of-truth-v0.45.*.json'
       - 'tools/frontend_source_truth_gate.py'
       - '.github/workflows/frontend-source-truth.yml'
       - 'VERSION.json'
@@ -38,7 +38,7 @@ jobs:
         with:
           python-version: '3.12'
       - name: Validate runtime ownership and duplicate budget
-        run: python tools/frontend_source_truth_gate.py contracts/frontend-source-of-truth-v0.45.8.json --json-out frontend-source-truth-report.json
+        run: python tools/frontend_source_truth_gate.py contracts/frontend-source-of-truth-v0.45.9.json --json-out frontend-source-truth-report.json
       - name: Upload source-of-truth report
         uses: actions/upload-artifact@v4
         with:
