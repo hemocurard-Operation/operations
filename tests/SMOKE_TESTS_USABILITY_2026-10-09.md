@@ -7,154 +7,123 @@ Rama: improve/usability-20261008
 Validar la captura operativa simplificada, manteniendo trazabilidad y guardrails clínicos. Durante esta fase de digitalización, tamizaje, inventario y despachos se capturan de forma consolidada en el Reporte Operativo Diario y no por registro individual.
 
 1. **Mi trabajo por permisos**
-   - Iniciar sesión con un usuario con permisos limitados.
-   - Confirmar que solo aparecen acciones permitidas.
-
+   - Confirmar que solo aparecen acciones permitidas por el perfil.
 2. **Reporte rápido de incidencia**
-   - Abrir `#incidents`.
    - Registrar descripción, sucursal, proceso y acción inmediata.
-   - Confirmar persistencia y `requires_quality_followup=true`.
-
 3. **Incidencia conserva datos ante error**
-   - Simular fallo de red o RLS.
-   - Confirmar que el diálogo permanece abierto y conserva campos.
-
-4. **Separación usuario operativo / Calidad**
-   - Confirmar que el reporte rápido no exige causa raíz, NC ni CAPA.
-   - Confirmar que `#quality` mantiene la gestión SGC completa.
-
+   - Simular fallo de red/RLS y confirmar conservación del formulario.
+4. **Separación operativo / Calidad**
+   - Confirmar que reporte rápido no exige causa raíz/NC/CAPA.
 5. **Cadena de frío: captura mínima**
-   - Seleccionar dispositivo y registrar temperatura.
-   - Confirmar fecha/hora automática desde Supabase.
-
+   - Registrar dispositivo + temperatura.
 6. **Cadena de frío: alerta fuera de rango**
-   - Registrar un valor fuera del rango configurado.
    - Confirmar advertencia sin decisión clínica automática.
-
 7. **Recursos: intervención rápida**
-   - Buscar equipo y registrar mantenimiento/calibración.
-   - Confirmar persistencia del evento.
-
+   - Registrar mantenimiento/calibración.
 8. **Ambiente: lectura rápida**
-   - Seleccionar punto ambiental y registrar valor.
-   - Confirmar advertencia si está fuera del rango.
-
+   - Registrar lectura y advertencia de fuera de rango.
 9. **Móvil**
-   - Probar ancho <=700px.
-   - Confirmar controles táctiles y tablas utilizables.
-
+   - Probar ancho <=700px y controles táctiles.
 10. **Guardrails clínicos**
-    - Confirmar que ninguna pantalla nueva libera unidades, descarta unidades, aprueba CAPA ni toma decisiones clínicas automáticamente.
-
-11. **Migración de reporte consolidado**
-    - Ejecutar `sql/40_DAILY_OPERATIONAL_REPORT_v0_40.sql`.
-    - Confirmar columnas `screening_lots`, `manual_inventory`, `manual_dispatches`, `equipment_snapshot` en `daily_operational_closes`.
-
+   - Confirmar ausencia de liberación/descarte/aprobación automática.
+11. **Migración reporte consolidado**
+   - Ejecutar `sql/40_DAILY_OPERATIONAL_REPORT_v0_40.sql`.
 12. **Tamizaje sin captura individual**
-    - Abrir `#screening`.
-    - Confirmar que no existe botón/formulario de “Nuevo tamizaje”.
-    - Confirmar que se muestran lotes/tandas diarios desde el reporte.
-
+   - Confirmar que `#screening` no permite alta individual.
 13. **Lote diario de tamizaje**
-    - Abrir `#dailyinventory`.
-    - Crear una fila de lote con recibidos, no reactivos, reactivos, pendientes y descartados.
-    - Guardar y recargar; confirmar persistencia exacta.
-
+   - Guardar y recargar una tanda consolidada.
 14. **Inventario sin captura individual**
-    - Abrir `#bloodinventory`.
-    - Confirmar que no existe formulario para registrar una unidad/bolsa individual.
-    - Confirmar que el último conteo manual consolidado es visible.
-
+   - Confirmar ausencia de alta por bolsa/unidad.
 15. **Inventario manual consolidado**
-    - En `#dailyinventory`, registrar cantidades para A+, A-, B+, B-, O+, O-, AB+, AB- en sangre total, paquete globular, plasma y plaquetas.
-    - Guardar y recargar; confirmar valores.
-
+   - Registrar matriz ABO/Rh × componente.
 16. **Despachos sin captura individual**
-    - Abrir `#dispatches`.
-    - Confirmar que no existe creación de despacho unitario.
-    - Confirmar que la captura operativa remite al reporte diario.
-
+   - Confirmar ausencia de alta unitaria.
 17. **Despacho consolidado**
-    - En `#dailyinventory`, agregar destino, grupo, componente, cantidad y observación.
-    - Guardar y recargar; confirmar persistencia.
-
+   - Registrar destino, grupo, componente y cantidad.
 18. **Históricos técnicos solo consulta**
-    - Confirmar que los antiguos resultados individuales de tamizaje, inventario calculado y conciliación técnica siguen visibles únicamente como consulta/trazabilidad.
-
+   - Confirmar histórico individual como referencia.
 19. **Centro de Mando sin captura duplicada**
-    - Abrir `#command`.
-    - Confirmar que funciona como supervisión/score y enlaza al Reporte Operativo Diario sin un segundo formulario de captura.
-
+   - Confirmar supervisión sin segundo formulario.
 20. **Cierre del reporte**
-    - Guardar primero como BORRADOR y luego como CERRADO.
-    - Confirmar un único registro por fecha + sucursal en `daily_operational_closes`.
-    - Confirmar que cerrar el reporte no ejecuta liberaciones ni decisiones clínicas.
+   - Guardar BORRADOR y luego CERRADO.
 
-## Iteraciones adicionales I54–I68
+## Iteraciones I54–I68
 
 21. **Responsable autocompletado**
-    - Abrir `#dailyinventory` con un usuario cuyo nombre exista en el contexto de seguridad.
-    - Confirmar que Responsable/Bioanalista aparece prellenado y puede corregirse antes de guardar.
-
 22. **Totales automáticos de tamizaje**
-    - Agregar dos lotes.
-    - Confirmar actualización automática de recibidos, no reactivos, reactivos, pendientes y descartados en el pie de tabla.
-
 23. **Balance de lote**
-    - Crear un lote donde recibidos sea igual a la suma de las salidas.
-    - Confirmar estado `OK`.
-    - Cambiar una cantidad y confirmar advertencia de diferencia.
-
 24. **Lote duplicado**
-    - Registrar dos filas con el mismo lote/tanda.
-    - Confirmar advertencia y bloqueo del cierre hasta corregirlo.
-
 25. **Cierre bloqueado por inconsistencia**
-    - Dejar un lote desbalanceado.
-    - Confirmar que “Cerrar reporte” permanece deshabilitado.
-    - Corregir el lote y confirmar que se habilita.
-
 26. **Totales por grupo de inventario**
-    - Registrar cantidades en varias columnas de un grupo ABO/Rh.
-    - Confirmar cálculo automático del total de la fila.
-
 27. **Totales generales de inventario**
-    - Registrar cantidades en varios grupos.
-    - Confirmar totales de Sangre total, Paquete globular, Plasma, Plaquetas y Total general.
-
 28. **Total de despachos**
-    - Crear varios despachos consolidados.
-    - Confirmar que el contador superior suma correctamente las unidades.
-
 29. **Novedades de equipos**
-    - Tener un equipo ACTIVO sin alerta y uno con alerta/estado no ACTIVO.
-    - Confirmar que el contador muestra solo las novedades y que solo esas aparecen en el reporte.
-
 30. **Indicador de avance**
-    - Abrir un reporte nuevo e ir completando identificación y lotes.
-    - Confirmar que el porcentaje “listo” cambia y llega a 100% cuando los requisitos mínimos están conformes.
-
 31. **Protección de cambios sin guardar**
-    - Modificar una cantidad y pulsar “Cargar”.
-    - Confirmar advertencia antes de descartar cambios.
-    - Confirmar también advertencia al intentar abandonar/recargar la página.
-
 32. **Modo solo lectura después del cierre**
-    - Cerrar un reporte y recargarlo.
-    - Confirmar que lotes, inventario, despachos, responsable y observaciones quedan deshabilitados.
-
 33. **Confirmación explícita de cierre**
-    - Pulsar “Cerrar reporte” con un reporte válido.
-    - Confirmar diálogo de confirmación y que cancelar no cambia el estado.
-
 34. **Impresión operativa**
-    - Pulsar “Imprimir”.
-    - Confirmar que navegación, botones y controles de edición no aparecen en la salida impresa y que tablas/valores sí son legibles.
-
 35. **Filtros de consulta consolidados**
-    - En `#screening`, filtrar por sucursal y fechas y validar totales.
-    - En `#bloodinventory`, seleccionar sucursal y validar el último conteo manual y KPI.
-    - En `#dispatches`, filtrar por sucursal/fechas y validar registros, unidades y destinos.
+
+## Iteraciones I69–I83
+
+36. **Copiar inventario anterior**
+   - En un reporte nuevo pulsar `Copiar inventario anterior`.
+   - Confirmar que toma únicamente el último inventario de la misma sucursal y fecha previa.
+   - Confirmar advertencia de verificación física antes del cierre.
+
+37. **Sin actividad de tamizaje**
+   - Marcar `Sin actividad`.
+   - Confirmar que no se exige crear una fila artificial de lote y que el reporte puede continuar.
+
+38. **Sin despachos**
+   - Marcar `Sin despachos`.
+   - Confirmar que no se exige una fila vacía y que el cierre puede continuar.
+
+39. **Catálogo de componentes en despacho**
+   - Confirmar que el componente se selecciona entre Sangre total, Paquete globular, Plasma y Plaquetas.
+   - Confirmar que no depende de texto libre para esos cuatro componentes.
+
+40. **Destinos recientes como sugerencia**
+   - Confirmar que los destinos utilizados recientemente aparecen como sugerencias sin impedir escribir un destino nuevo.
+
+41. **Duplicar fila de despacho**
+   - Crear un despacho y usar el botón `+` de la fila.
+   - Confirmar copia rápida para modificar grupo/cantidad sin reescribir el destino.
+
+42. **Despacho duplicado**
+   - Crear dos filas con mismo destino + grupo + componente.
+   - Confirmar advertencia y bloqueo del cierre hasta consolidar/corregir.
+
+43. **Resumen de despachos por componente**
+   - Capturar varios componentes.
+   - Confirmar resumen automático de cantidades por componente.
+
+44. **Estado visual por sección**
+   - Confirmar indicadores Completo/Revisar/Pendiente para identificación, tamizaje, inventario y despachos.
+
+45. **Borrador local automático**
+   - Modificar el reporte sin guardarlo en Supabase.
+   - Confirmar existencia de borrador local para la combinación fecha + sucursal.
+
+46. **Restauración de borrador local**
+   - Salir y volver al reporte sin un registro servidor existente.
+   - Confirmar que el sistema ofrece restaurar el borrador local.
+
+47. **Limpieza de borrador local después de guardar**
+   - Guardar exitosamente en Supabase.
+   - Confirmar que el borrador local correspondiente se elimina.
+
+48. **Acciones principales accesibles en móvil**
+   - En ancho <=700px confirmar que Guardar borrador y Cerrar reporte permanecen visibles y tienen altura táctil suficiente.
+
+49. **Confirmación resumida antes del cierre**
+   - Pulsar Cerrar reporte.
+   - Confirmar que el diálogo resume número de lotes, inventario total y unidades despachadas.
+
+50. **Reporte previo aislado por sucursal**
+   - Tener reportes previos en dos sucursales.
+   - Confirmar que `Copiar inventario anterior` nunca toma información de otra sucursal.
 
 ## Criterio de salida
-El bloque puede pasar a UAT cuando los 35 smoke tests sean satisfactorios con al menos un usuario operativo y un usuario de Calidad autenticados, incluyendo prueba en móvil/tablet y verificación de impresión.
+El bloque puede pasar a UAT cuando los 50 smoke tests sean satisfactorios con al menos un usuario operativo y un usuario de Calidad autenticados, incluyendo móvil/tablet, impresión y validación de RLS por sucursal.
