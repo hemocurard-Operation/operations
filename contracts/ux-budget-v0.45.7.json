@@ -1,0 +1,47 @@
+{
+  "contract_version": "0.45.7",
+  "scope": "Daily Operational Report + shared shell",
+  "purpose": "Prevent silent frontend growth and capture-complexity regressions without collecting user or clinical telemetry.",
+  "files": {
+    "hemocura-core/daily-inventory.js": 23000,
+    "hemocura-core/daily-inventory-flow.js": 6500,
+    "hemocura-core/command-data.js": 4500,
+    "hemocura-core/layout.js": 11000,
+    "css/ui-v0442.css": 8000
+  },
+  "aggregate_max_bytes": 52000,
+  "capture_complexity": {
+    "daily_inventory_source_input_tags_max": 30,
+    "daily_inventory_source_select_tags_max": 10,
+    "daily_inventory_source_textarea_tags_max": 4,
+    "daily_inventory_source_button_tags_max": 16,
+    "daily_inventory_source_total_controls_max": 55
+  },
+  "required_markers": [
+    "Sin actividad",
+    "Guardar borrador",
+    "Enviar a revisión",
+    "Cerrar y firmar",
+    "no libera componentes sanguíneos"
+  ],
+  "privacy": {
+    "forbidden_tokens_in_daily_report_ui": [
+      "navigator.sendBeacon",
+      "google-analytics",
+      "gtag(",
+      "mixpanel",
+      "segment.com",
+      "posthog",
+      "sentry.capture",
+      "localStorage",
+      "sessionStorage"
+    ],
+    "forbid_direct_supabase_rpc_in_flow": true,
+    "forbid_service_role": true
+  },
+  "notes": [
+    "Budgets are CI guardrails, not production telemetry.",
+    "Real task-time studies belong to supervised UAT using aggregate timings only and no clinical payloads.",
+    "Thresholds intentionally include limited headroom above the v0.45.6 baseline and should only be raised with documented justification."
+  ]
+}
