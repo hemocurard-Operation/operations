@@ -13,6 +13,7 @@ const ROUTE_PERMISSION={
   production:'BLOOD_INVENTORY_WRITE',
   supply:'SUPPLY_VIEW',
   bloodinventory:'BLOOD_INVENTORY_VIEW',
+  dailyinventory:'DAILY_REPORT_VIEW',
   dispatches:'DISPATCH_VIEW',
   inventory:'BLOOD_INVENTORY_VIEW',
   requisitions:'DISPATCH_VIEW',
