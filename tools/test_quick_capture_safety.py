@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from pathlib import Path
+import json
 import re
 import sys
 
@@ -8,14 +9,22 @@ capture = (ROOT / "hemocura-core" / "quick-capture.js").read_text(encoding="utf-
 flow = (ROOT / "hemocura-core" / "quick-capture-flow.js").read_text(encoding="utf-8")
 layout = (ROOT / "hemocura-core" / "layout.js").read_text(encoding="utf-8")
 data = (ROOT / "hemocura-core" / "quick-capture-data.js").read_text(encoding="utf-8")
-version = (ROOT / "VERSION.json").read_text(encoding="utf-8")
+version_raw = (ROOT / "VERSION.json").read_text(encoding="utf-8")
+version = json.loads(version_raw)
 
 checks = []
 
 def check(name, condition):
     checks.append((name, bool(condition)))
 
-check("version_0454", '"version": "0.45.4"' in version)
+def version_tuple(value):
+    try:
+        parts = str(value or '').split('.')
+        return tuple(int(x) for x in parts[:3])
+    except (TypeError, ValueError):
+        return (0, 0, 0)
+
+check("version_at_least_0454", version_tuple(version.get("version")) >= (0, 45, 4))
 check("blank_screening_result_option", '<option value="" selected>Seleccionar resultado…</option>' in capture)
 check("screening_results_disabled_until_selected", 'class="qc-test-result" data-i="${i}" disabled' in capture)
 check("explicit_result_validation", 'missing=selected.filter(x=>!x.result)' in capture)

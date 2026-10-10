@@ -28,4 +28,4 @@ jobs:
       - name: Enforce controlled RPC wrappers
         run: python tools/frontend_rpc_cutover_gate.py
       - name: Runtime contract declaration
-        run: python tools/runtime_contract_gate.py check-code contracts/runtime-contract-v0.44.json
+        run: python tools/runtime_contract_gate.py check-code contracts/runtime-contract-v0.45.json
