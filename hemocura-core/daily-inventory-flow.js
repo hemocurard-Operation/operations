@@ -3,6 +3,7 @@ import { commandData } from './command-data.js';
 const GROUPS=['A+','A-','B+','B-','O+','O-','AB+','AB-'];
 const key=g=>g.replace('+','p').replace('-','n');
 const n=v=>Math.max(0,Number(v||0));
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
 
 function setValue(root,id,value){
   const el=root.querySelector(`#${id}`);
@@ -57,10 +58,10 @@ async function copyPreviousInventory(root,button){
       setValue(root,`inv-${k}-plasma`,row.plasma);
       setValue(root,`inv-${k}-platelets`,row.platelets);
     }
-    message(root,`<div class="status info"><strong>Inventario anterior copiado.</strong> Verifique físicamente las cantidades antes de guardar. Origen: ${previous.close_date}.</div>`);
+    message(root,`<div class="status info"><strong>Inventario anterior copiado.</strong> Verifique físicamente las cantidades antes de guardar. Origen: ${esc(previous.close_date)}.</div>`);
     root.querySelector('#dor-inventory')?.scrollIntoView({behavior:'smooth',block:'center'});
   }catch(error){
-    message(root,`<div class="status bad">No se pudo copiar el inventario anterior: ${String(error?.message||error)}</div>`);
+    message(root,`<div class="status bad">No se pudo copiar el inventario anterior: ${esc(error?.message||error)}</div>`);
   }finally{
     button.disabled=false;
     button.textContent=label;
