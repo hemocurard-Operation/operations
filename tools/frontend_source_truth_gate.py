@@ -6,7 +6,7 @@ import re
 import sys
 
 ROOT=Path(__file__).resolve().parents[1]
-DEFAULT_CONTRACT=ROOT/'contracts'/'frontend-source-of-truth-v0.45.8.json'
+DEFAULT_CONTRACT=ROOT/'contracts'/'frontend-source-of-truth-v0.45.9.json'
 
 
 def evaluate(contract_path):
@@ -63,6 +63,12 @@ def evaluate(contract_path):
     for rel in protected:
         check(f'protected_file_exists:{rel}',(ROOT/rel).exists())
     check('no_core_config_shadow',not (core/'config.js').exists())
+
+    retired=contract.get('retired_exact_duplicates',[])
+    for item in retired:
+        check(f'retired_absent:{item["path"]}',not (ROOT/item['path']).exists())
+        canonical=ROOT/item['canonical']
+        check(f'canonical_present:{item["canonical"]}',canonical.exists())
 
     failed=[x for x in checks if not x['pass']]
     return {
