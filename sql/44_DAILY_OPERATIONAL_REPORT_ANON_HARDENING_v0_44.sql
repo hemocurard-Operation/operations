@@ -1,6 +1,7 @@
 -- HemoCura v0.44.0
 -- Hardening de acceso anónimo del Reporte Operativo Diario.
 -- No altera datos, lógica clínica ni estados del reporte.
+-- Estado: aplicada y verificada en Supabase el 2026-10-10.
 
 begin;
 
