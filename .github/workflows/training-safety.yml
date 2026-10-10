@@ -1,0 +1,47 @@
+name: HemoCura Training Safety
+
+on:
+  pull_request:
+    paths:
+      - 'training.html'
+      - 'hemocura-core/training-app.js'
+      - 'hemocura-core/router.js'
+      - 'hemocura-core/management-data.js'
+      - 'hemocura-core/management-review.js'
+      - 'supabase/functions/training-tutor/**'
+      - 'sql/migrations/*training*'
+      - '.github/workflows/training-safety.yml'
+  workflow_dispatch:
+
+jobs:
+  validate-training:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: JavaScript syntax
+        run: node --check hemocura-core/training-app.js
+      - name: HTML module link
+        run: grep -F './hemocura-core/training-app.js' training.html
+      - name: Clinical guardrails
+        run: |
+          grep -F 'elegibilidad del donante' hemocura-core/training-app.js
+          grep -F 'compatibilidad transfusional' hemocura-core/training-app.js
+          grep -F 'liberación de componentes' hemocura-core/training-app.js
+          ! grep -Eiq 'service[_-]?role' training.html hemocura-core/training-app.js
+      - name: Certification controls
+        run: |
+          grep -F 'uid===session.user.id' hemocura-core/training-app.js
+          grep -F "['ADMIN','CALIDAD','GERENCIA_OPERATIVA']" hemocura-core/training-app.js
+          grep -F 'training_practical_evidence' hemocura-core/training-app.js
+          grep -F 'training_certificates' hemocura-core/training-app.js
+      - name: Migration security controls
+        run: |
+          grep -F 'enable row level security' sql/migrations/20261010203726_training_release_1_0_foundation.sql
+          grep -F 'security_invoker = true' sql/migrations/20261010203726_training_release_1_0_foundation.sql
+          grep -F "set search_path = ''" sql/migrations/20261010203726_training_release_1_0_foundation.sql
+          ! grep -Eiq 'GRANT[[:space:]]+ALL|DISABLE[[:space:]]+ROW[[:space:]]+LEVEL[[:space:]]+SECURITY' sql/migrations/20261010203726_training_release_1_0_foundation.sql sql/migrations/20261010203854_training_recertification_and_management_inputs.sql
+      - name: UAT training cases are versioned
+        run: |
+          grep -F 'UAT-TRN-AO-001' sql/migrations/20261010203726_training_release_1_0_foundation.sql
+          grep -F 'UAT-TRN-LAB-001' sql/migrations/20261010203726_training_release_1_0_foundation.sql
+          grep -F 'UAT-TRN-ADM-001' sql/migrations/20261010203726_training_release_1_0_foundation.sql
