@@ -1,7 +1,7 @@
 {
   "project": "HemoCura Operations Intelligence + QMS + Compliance",
-  "version": "0.45.10",
-  "stage": "Legacy duplicate classification + exact cleanup",
+  "version": "0.45.11",
+  "stage": "Security preflight + Supabase advisor baseline",
   "release_channel": "RC",
   "protected_files": [
     "js/config.js"
