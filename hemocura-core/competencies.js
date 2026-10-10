@@ -1,6 +1,6 @@
 import { competencyData } from './competency-data.js';
 
-function esc(v=''){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
+function esc(v=''){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#039;'}[c]))}
 const today=()=>new Date().toISOString().slice(0,10);
 
 export async function mountCompetencies(root){
@@ -12,8 +12,8 @@ export async function mountCompetencies(root){
 
   root.innerHTML=`
   <div class="sales-toolbar"><div><h2 class="section-heading">Competencias y Capacitación</h2>
-  <div class="muted">Puesto → competencia → evaluación → evidencia → vigencia → brecha.</div></div>
-  <button id="comp-assess">Nueva evaluación</button></div>
+  <div class="muted">Puesto → competencia → entrenamiento → evaluación → evidencia → vigencia → brecha.</div></div>
+  <div class="dialog-actions"><button id="comp-open-training" class="secondary">🎓 Abrir capacitación</button><button id="comp-assess">Nueva evaluación</button></div></div>
 
   <div id="comp-msg"></div><div class="grid sales-kpis" id="comp-kpis"></div>
 
@@ -94,6 +94,7 @@ export async function mountCompetencies(root){
     }
   }
 
+  document.getElementById('comp-open-training').onclick=()=>location.href='./training.html';
   document.getElementById('comp-assess').onclick=()=>document.getElementById('comp-assess-dialog').showModal();
   document.getElementById('ca-cancel').onclick=()=>document.getElementById('comp-assess-dialog').close();
 
