@@ -1,7 +1,7 @@
 {
   "project": "HemoCura Operations Intelligence + QMS + Compliance",
-  "version": "0.45.8",
-  "stage": "Frontend source-of-truth governance",
+  "version": "0.45.9",
+  "stage": "Controlled removal of exact legacy duplicates",
   "release_channel": "RC",
   "protected_files": [
     "js/config.js"
