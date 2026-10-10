@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - 'sql/migrations/**/*.sql'
+      - 'sql/reconciled/**/*.sql'
       - 'tools/migration_security_linter.py'
       - 'tools/test_migration_security_linter.py'
       - '.github/workflows/migration-security-linter.yml'
@@ -29,20 +30,22 @@ jobs:
       - name: Unit tests
         run: python -m unittest tools/test_migration_security_linter.py -v
 
-      - name: Lint governed migrations
+      - name: Lint governed and reconciled SQL
         shell: bash
         run: |
           set -euo pipefail
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
             BASE="origin/${{ github.base_ref }}"
             git fetch origin "${{ github.base_ref }}" --depth=1 || true
-            mapfile -t FILES < <(git diff --name-only --diff-filter=ACMR "$BASE"...HEAD -- 'sql/migrations/**/*.sql' 'sql/migrations/*.sql')
+            mapfile -t FILES < <(git diff --name-only --diff-filter=ACMR "$BASE"...HEAD -- \
+              'sql/migrations/**/*.sql' 'sql/migrations/*.sql' \
+              'sql/reconciled/**/*.sql' 'sql/reconciled/*.sql')
           else
-            mapfile -t FILES < <(find sql/migrations -type f -name '*.sql' -print 2>/dev/null || true)
+            mapfile -t FILES < <(find sql/migrations sql/reconciled -type f -name '*.sql' -print 2>/dev/null || true)
           fi
 
           if (( ${#FILES[@]} == 0 )); then
-            echo 'HC-LINT PASS: no governed migrations to lint.'
+            echo 'HC-LINT PASS: no governed or reconciled SQL to lint.'
             exit 0
           fi
 
