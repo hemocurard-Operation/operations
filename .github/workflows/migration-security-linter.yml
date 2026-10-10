@@ -3,7 +3,7 @@ name: HemoCura Migration Security Linter
 on:
   pull_request:
     paths:
-      - 'sql/migrations/**/*.sql'
+      - 'sql/**/*.sql'
       - 'tools/migration_security_linter.py'
       - 'tools/test_migration_security_linter.py'
       - '.github/workflows/migration-security-linter.yml'
@@ -36,9 +36,9 @@ jobs:
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
             BASE="origin/${{ github.base_ref }}"
             git fetch origin "${{ github.base_ref }}" --depth=1 || true
-            mapfile -t FILES < <(git diff --name-only --diff-filter=ACMR "$BASE"...HEAD -- 'sql/migrations/**/*.sql' 'sql/migrations/*.sql')
+            mapfile -t FILES < <(git diff --name-only --diff-filter=ACMR "$BASE"...HEAD -- 'sql/**/*.sql' 'sql/*.sql')
           else
-            mapfile -t FILES < <(find sql/migrations -type f -name '*.sql' -print 2>/dev/null || true)
+            mapfile -t FILES < <(find sql -type f -name '*.sql' -print 2>/dev/null || true)
           fi
 
           if (( ${#FILES[@]} == 0 )); then
