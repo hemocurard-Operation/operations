@@ -1,0 +1,75 @@
+{
+  "iteration": "I-003",
+  "captured_date": "2026-10-10",
+  "supabase_project_ref": "tiothqiljipdamgudvcb",
+  "purpose": "Fingerprint the SQL actually applied in production and separate it from candidate SQL stored in PR #5.",
+  "applied_migrations": [
+    {
+      "technical_version": "20261010003020",
+      "name": "daily_operational_report_v0_40",
+      "statement_count": 1,
+      "applied_sql_md5": "464613766201281cd2def588dcea95be",
+      "candidate_pr5_path": "sql/40_DAILY_OPERATIONAL_REPORT_v0_40.sql",
+      "candidate_blob_sha": "c24b21fd0bc0291f052a8a0510b3edf5db133b9d",
+      "relation": "DIFFERS",
+      "notable_difference": "PR #5 adds an app_migrations write that is absent from the applied Supabase migration."
+    },
+    {
+      "technical_version": "20261010003155",
+      "name": "daily_operational_report_governance_v0_41",
+      "statement_count": 1,
+      "applied_sql_md5": "5b7a069604be62069945eaaab6624e23",
+      "candidate_pr5_path": "sql/41_DAILY_OPERATIONAL_REPORT_GOVERNANCE_v0_41.sql",
+      "candidate_blob_sha": "192563e423334c6f66301c76ffe7fab6526626ca",
+      "relation": "DIFFERS",
+      "notable_difference": "Applied history created close/reopen RPCs as SECURITY DEFINER; later v0.42 replaced them with SECURITY INVOKER. The PR #5 v0.41 file does not preserve that exact historical sequence."
+    },
+    {
+      "technical_version": "20261010003228",
+      "name": "daily_operational_report_hardening_v0_42",
+      "statement_count": 1,
+      "applied_sql_md5": "2b1a3154ad371ff35d63ab7961bb7d0c",
+      "candidate_pr5_path": "sql/42_DAILY_OPERATIONAL_REPORT_HARDENING_v0_42.sql",
+      "candidate_blob_sha": "0253c4af4c2921a089294e4b0add5b3efe12d750",
+      "relation": "SEMANTICALLY_CLOSE_NOT_BYTE_IDENTICAL",
+      "notable_difference": "Candidate includes extra private-schema setup statements not present in the recorded applied SQL."
+    },
+    {
+      "technical_version": "20261010065356",
+      "name": "daily_operational_report_performance_v0_43",
+      "statement_count": 1,
+      "applied_sql_md5": "dd58c75e04b87e98cbdb53bf85e4a3f0",
+      "candidate_pr5_path": "sql/43_DAILY_OPERATIONAL_REPORT_PERFORMANCE_v0_43.sql",
+      "candidate_blob_sha": "21f28b8333304d8aeb672d477d57af9d36e141d4",
+      "relation": "SEMANTIC_MATCH_WITH_WRAPPER_COMMENTS"
+    },
+    {
+      "technical_version": "20261010065410",
+      "name": "daily_operational_report_anon_hardening_v0_44",
+      "statement_count": 1,
+      "applied_sql_md5": "945ccd53166ca4cd9d33df5031e37e02",
+      "candidate_pr5_path": "sql/44_DAILY_OPERATIONAL_REPORT_ANON_HARDENING_v0_44.sql",
+      "candidate_blob_sha": "aaad3a5a1498cebd4904b059b5ccdc17b9242db1",
+      "relation": "SEMANTIC_MATCH_WITH_WRAPPER_COMMENTS"
+    }
+  ],
+  "current_production_contract": {
+    "daily_operational_closes_rls": true,
+    "daily_operational_report_versions_rls": true,
+    "rpcs": {
+      "save_daily_operational_report": {"security_definer": false, "search_path": "public", "anon_execute": false, "authenticated_execute": true},
+      "submit_daily_operational_report": {"security_definer": false, "search_path": "public", "anon_execute": false, "authenticated_execute": true},
+      "close_daily_operational_report": {"security_definer": false, "search_path": "public", "anon_execute": false, "authenticated_execute": true},
+      "reopen_daily_operational_report": {"security_definer": false, "search_path": "public", "anon_execute": false, "authenticated_execute": true}
+    },
+    "policies": [
+      "daily_operational_closes_insert",
+      "daily_operational_closes_select",
+      "daily_operational_closes_update",
+      "daily_report_versions_select"
+    ]
+  },
+  "rule": "Do not represent PR #5 SQL as exact applied history. Use Supabase schema_migrations fingerprints plus current catalog state as production truth until a normalized reproducible migration set is generated.",
+  "database_mutation_performed": false,
+  "next_iteration": "I-004"
+}
