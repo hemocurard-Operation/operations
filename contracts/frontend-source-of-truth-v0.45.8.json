@@ -1,0 +1,37 @@
+{
+  "contract_version": "0.45.8",
+  "runtime_chain": [
+    "index.html",
+    "js/app.js",
+    "hemocura-core/bootstrap.js",
+    "hemocura-core/layout.js"
+  ],
+  "canonical": {
+    "application_modules": "hemocura-core/",
+    "browser_entrypoint": "js/app.js",
+    "environment_config": "js/config.js",
+    "styles": "css/"
+  },
+  "protected": [
+    "js/config.js"
+  ],
+  "legacy_policy": {
+    "root_level_js_modules": "LEGACY_NOT_CANONICAL_DO_NOT_EDIT",
+    "max_root_shadow_modules": 27,
+    "forbidden_root_name_patterns": [
+      "\\s\\(\\d+\\)\\.js$",
+      "(?i)copy.*\\.js$",
+      "(?i)copia.*\\.js$"
+    ]
+  },
+  "required_entrypoint_markers": {
+    "index.html": "<script type=\"module\" src=\"./js/app.js\"></script>",
+    "js/app.js": "import { initApp } from '../hemocura-core/bootstrap.js';"
+  },
+  "rules": [
+    "New application modules belong under hemocura-core, not repository root.",
+    "Root-level legacy modules may only be removed after reference checks and CI validation.",
+    "The runtime entry chain must not be redirected to a legacy root module.",
+    "js/config.js remains a protected environment file and is not duplicated into hemocura-core."
+  ]
+}

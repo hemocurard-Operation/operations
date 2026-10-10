@@ -1,7 +1,7 @@
 {
   "project": "HemoCura Operations Intelligence + QMS + Compliance",
-  "version": "0.45.7",
-  "stage": "Privacy-safe UX performance budgets",
+  "version": "0.45.8",
+  "stage": "Frontend source-of-truth governance",
   "release_channel": "RC",
   "protected_files": [
     "js/config.js"

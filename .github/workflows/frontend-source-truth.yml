@@ -1,0 +1,46 @@
+name: HemoCura Frontend Source of Truth
+
+on:
+  pull_request:
+    paths:
+      - 'index.html'
+      - 'js/app.js'
+      - 'hemocura-core/**'
+      - '*.js'
+      - 'contracts/frontend-source-of-truth-v0.45.8.json'
+      - 'tools/frontend_source_truth_gate.py'
+      - '.github/workflows/frontend-source-truth.yml'
+      - 'VERSION.json'
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'js/app.js'
+      - 'hemocura-core/**'
+      - '*.js'
+      - 'contracts/frontend-source-of-truth-v0.45.8.json'
+      - 'tools/frontend_source_truth_gate.py'
+      - '.github/workflows/frontend-source-truth.yml'
+      - 'VERSION.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-of-truth:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate runtime ownership and duplicate budget
+        run: python tools/frontend_source_truth_gate.py contracts/frontend-source-of-truth-v0.45.8.json --json-out frontend-source-truth-report.json
+      - name: Upload source-of-truth report
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-source-truth-report
+          path: frontend-source-truth-report.json
