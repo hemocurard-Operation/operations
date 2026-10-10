@@ -52,12 +52,12 @@ jobs:
           grep -F 'enable row level security' sql/migrations/20261010203726_training_release_1_0_foundation.sql
           grep -F 'security_invoker = true' sql/migrations/20261010203726_training_release_1_0_foundation.sql
           grep -F "set search_path = ''" sql/migrations/20261010203726_training_release_1_0_foundation.sql
-          ! grep -Eiq 'GRANT[[:space:]]+ALL|DISABLE[[:space:]]+ROW[[:space:]]+LEVEL[[:space:]]+SECURITY' sql/migrations/20261010203726_training_release_1_0_foundation.sql sql/migrations/20261010203854_training_recertification_and_management_inputs.sql sql/migrations/20261010210000_training_assignment_document_and_bi_controls.sql sql/migrations/20261010212000_training_duration_and_module_performance.sql
+          ! grep -Eiq 'GRANT[[:space:]]+ALL|DISABLE[[:space:]]+ROW[[:space:]]+LEVEL[[:space:]]+SECURITY' sql/migrations/20261010203726_training_release_1_0_foundation.sql sql/migrations/20261010203854_training_recertification_and_management_inputs.sql sql/migrations/20261010205123_training_assignment_document_and_bi_controls.sql sql/migrations/20261010205336_training_duration_and_module_performance.sql
       - name: Assignment and document approval gates
         run: |
-          grep -F 'enforce_training_certificate_assignment' sql/migrations/20261010210000_training_assignment_document_and_bi_controls.sql
-          grep -F 'enforce_training_content_approval' sql/migrations/20261010210000_training_assignment_document_and_bi_controls.sql
-          grep -F 'HC-TRN-SUITE-001' sql/migrations/20261010210000_training_assignment_document_and_bi_controls.sql
+          grep -F 'enforce_training_certificate_assignment' sql/migrations/20261010205123_training_assignment_document_and_bi_controls.sql
+          grep -F 'enforce_training_content_approval' sql/migrations/20261010205123_training_assignment_document_and_bi_controls.sql
+          grep -F 'HC-TRN-SUITE-001' sql/migrations/20261010205123_training_assignment_document_and_bi_controls.sql
       - name: UAT training cases are versioned
         run: |
           grep -F 'UAT-TRN-AO-001' sql/migrations/20261010203726_training_release_1_0_foundation.sql
