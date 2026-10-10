@@ -1,0 +1,39 @@
+name: HemoCura Daily Report Safety
+
+on:
+  pull_request:
+    paths:
+      - 'hemocura-core/daily-inventory.js'
+      - 'hemocura-core/daily-inventory-flow.js'
+      - 'hemocura-core/command-data.js'
+      - 'hemocura-core/layout.js'
+      - 'VERSION.json'
+      - 'tools/test_daily_report_safety.py'
+      - '.github/workflows/daily-report-safety.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'hemocura-core/daily-inventory.js'
+      - 'hemocura-core/daily-inventory-flow.js'
+      - 'hemocura-core/command-data.js'
+      - 'hemocura-core/layout.js'
+      - 'VERSION.json'
+      - 'tools/test_daily_report_safety.py'
+      - '.github/workflows/daily-report-safety.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  safety:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate Daily Operational Report guardrails
+        run: python tools/test_daily_report_safety.py

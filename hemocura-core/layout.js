@@ -31,6 +31,7 @@ import { mountProduction } from './production.js';
 import { mountSupplyPlanning } from './supply-planning.js';
 import { mountBloodInventory } from './blood-inventory.js';
 import { mountDailyInventory } from './daily-inventory.js';
+import { enhanceDailyInventoryFlow } from './daily-inventory-flow.js';
 import { mountDispatches } from './dispatch.js';
 import { mountInventory } from './inventory.js';
 import { mountRequisitions } from './requisitions.js';
@@ -130,6 +131,7 @@ export async function mountLayout(session){
     try{
       await mount(root);
       if(route==='quickcapture') enhanceQuickCaptureFlow(root,primaryRole);
+      if(route==='dailyinventory') enhanceDailyInventoryFlow(root);
     }catch(error){document.getElementById('view').innerHTML=moduleError(route,error)}
   };
   window.addEventListener('hashchange',()=>render().catch(e=>console.error('[HEMOCURA_NAV_ERROR]',e)));
