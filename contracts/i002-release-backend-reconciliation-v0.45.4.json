@@ -1,0 +1,45 @@
+{
+  "iteration": "I-002",
+  "captured_date": "2026-10-10",
+  "frontend": {
+    "version": "0.45.4",
+    "main_baseline_commit": "0a4d6898cf6b0ccb09f284181ea66dbf828f33ba",
+    "release_manifest_version": "0.44.0",
+    "manifest_status": "STALE_PENDING_RECONCILIATION"
+  },
+  "supabase": {
+    "project_ref": "tiothqiljipdamgudvcb",
+    "status": "ACTIVE_HEALTHY",
+    "postgres_version": "17.11.0.002",
+    "daily_operational_report": {
+      "table_daily_operational_closes": true,
+      "table_daily_operational_report_versions": true,
+      "rpc_save": true,
+      "rpc_submit": true,
+      "rpc_close": true,
+      "rpc_reopen": true,
+      "supabase_migrations_applied": [
+        "daily_operational_report_v0_40",
+        "daily_operational_report_governance_v0_41",
+        "daily_operational_report_hardening_v0_42",
+        "daily_operational_report_performance_v0_43",
+        "daily_operational_report_anon_hardening_v0_44"
+      ],
+      "app_migrations_entries": 0
+    }
+  },
+  "github": {
+    "source_pr": 5,
+    "source_pr_state": "open_draft",
+    "source_branch": "improve/usability-20261008",
+    "integration_strategy": "PORT_SELECTIVELY_FROM_CURRENT_MAIN"
+  },
+  "drift": [
+    {"id": "D1", "severity": "P1", "type": "METADATA", "status": "OPEN"},
+    {"id": "D2", "severity": "P0", "type": "DATABASE_AHEAD_OF_MAIN", "status": "OPEN"},
+    {"id": "D3", "severity": "P0", "type": "MIGRATION_LEDGER", "status": "OPEN"},
+    {"id": "D4", "severity": "P0", "type": "BRANCH_DIVERGENCE", "status": "OPEN"}
+  ],
+  "next_iteration": "I-003",
+  "next_goal": "Port already-applied SQL into the current main lineage without re-executing production migrations."
+}
