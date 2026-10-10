@@ -1,7 +1,7 @@
 {
   "project": "HemoCura Operations Intelligence + QMS + Compliance",
-  "version": "0.45.4",
-  "stage": "Context-aware form ergonomics + consistency guards",
+  "version": "0.45.5",
+  "stage": "Daily operational report frontend reconciliation",
   "release_channel": "RC",
   "protected_files": [
     "js/config.js"
