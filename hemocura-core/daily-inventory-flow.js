@@ -16,14 +16,15 @@ function toggleActivity(root,checkboxId,bodyId,buttonId){
   const checkbox=root.querySelector(`#${checkboxId}`);
   const body=root.querySelector(`#${bodyId}`)?.closest('.table-wrap');
   const button=root.querySelector(`#${buttonId}`);
-  if(!checkbox||!body)return;
+  if(!checkbox||!body)return ()=>{};
   const apply=()=>{
     body.hidden=checkbox.checked;
-    if(button)button.disabled=checkbox.checked;
+    if(button)button.disabled=checkbox.checked||checkbox.disabled;
     checkbox.closest('section')?.classList.toggle('dor-inactive-section',checkbox.checked);
   };
   checkbox.addEventListener('change',apply);
   apply();
+  return apply;
 }
 
 function message(root,html){
@@ -63,22 +64,34 @@ async function copyPreviousInventory(root,button){
   }catch(error){
     message(root,`<div class="status bad">No se pudo copiar el inventario anterior: ${esc(error?.message||error)}</div>`);
   }finally{
-    button.disabled=false;
     button.textContent=label;
+    syncInventoryAssist(root,button);
   }
+}
+
+function syncInventoryAssist(root,button){
+  if(!button)return;
+  const firstInput=root.querySelector('#dor-inventory input');
+  const status=root.querySelector('#dor-status')?.textContent?.trim()||'BORRADOR';
+  button.disabled=!!firstInput?.disabled||!['BORRADOR','REABIERTO'].includes(status);
 }
 
 function addInventoryAssist(root){
   const body=root.querySelector('#dor-inventory');
   const card=body?.closest('section.card');
   const head=card?.querySelector('.card-head');
-  if(!head||head.querySelector('[data-copy-prev-inventory]'))return;
-  const tools=document.createElement('div');
-  tools.className='dor-section-tools';
-  tools.innerHTML='<button type="button" class="secondary compact" data-copy-prev-inventory>Usar inventario anterior</button><span class="form-hint">Copia asistida; requiere verificación física.</span>';
-  head.appendChild(tools);
-  const button=tools.querySelector('[data-copy-prev-inventory]');
-  button.addEventListener('click',()=>copyPreviousInventory(root,button));
+  if(!head)return null;
+  let button=head.querySelector('[data-copy-prev-inventory]');
+  if(!button){
+    const tools=document.createElement('div');
+    tools.className='dor-section-tools';
+    tools.innerHTML='<button type="button" class="secondary compact" data-copy-prev-inventory>Usar inventario anterior</button><span class="form-hint">Copia asistida; requiere verificación física.</span>';
+    head.appendChild(tools);
+    button=tools.querySelector('[data-copy-prev-inventory]');
+    button.addEventListener('click',()=>copyPreviousInventory(root,button));
+  }
+  syncInventoryAssist(root,button);
+  return button;
 }
 
 function addMobileHints(root){
@@ -92,10 +105,22 @@ function addMobileHints(root){
 export function enhanceDailyInventoryFlow(root){
   if(!root||root.dataset.dorEnhanced==='1')return;
   root.dataset.dorEnhanced='1';
-  toggleActivity(root,'dor-no-screening','dor-lots','dor-add-lot');
-  toggleActivity(root,'dor-no-dispatch','dor-dispatches','dor-add-dispatch');
-  addInventoryAssist(root);
+  const syncScreening=toggleActivity(root,'dor-no-screening','dor-lots','dor-add-lot');
+  const syncDispatch=toggleActivity(root,'dor-no-dispatch','dor-dispatches','dor-add-dispatch');
+  const inventoryButton=addInventoryAssist(root);
   addMobileHints(root);
+
+  const syncLoadedState=()=>{
+    syncScreening();
+    syncDispatch();
+    syncInventoryAssist(root,inventoryButton);
+    addMobileHints(root);
+  };
+  const status=root.querySelector('#dor-status');
+  if(status){
+    const observer=new MutationObserver(syncLoadedState);
+    observer.observe(status,{childList:true,subtree:true,characterData:true});
+  }
 
   const responsible=root.querySelector('#dor-responsible');
   if(responsible&&!responsible.value.trim())responsible.focus();
