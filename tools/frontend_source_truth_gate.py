@@ -6,7 +6,7 @@ import re
 import sys
 
 ROOT=Path(__file__).resolve().parents[1]
-DEFAULT_CONTRACT=ROOT/'contracts'/'frontend-source-of-truth-v0.45.9.json'
+DEFAULT_CONTRACT=ROOT/'contracts'/'frontend-source-of-truth-v0.45.10.json'
 
 
 def evaluate(contract_path):
@@ -59,16 +59,27 @@ def evaluate(contract_path):
     metrics['core_to_root_legacy_imports']=legacy_refs
     check('core_does_not_import_root_legacy_modules',not legacy_refs,legacy_refs,0)
 
-    protected=contract.get('protected',[])
-    for rel in protected:
+    for rel in contract.get('protected',[]):
         check(f'protected_file_exists:{rel}',(ROOT/rel).exists())
     check('no_core_config_shadow',not (core/'config.js').exists())
 
-    retired=contract.get('retired_exact_duplicates',[])
-    for item in retired:
-        check(f'retired_absent:{item["path"]}',not (ROOT/item['path']).exists())
+    for item in contract.get('retired_exact_duplicates',[]):
+        retired=ROOT/item['path']
         canonical=ROOT/item['canonical']
+        check(f'retired_absent:{item["path"]}',not retired.exists())
         check(f'canonical_present:{item["canonical"]}',canonical.exists())
+
+    divergent_metrics=[]
+    for item in contract.get('preserved_divergent_modules',[]):
+        legacy=ROOT/item['path']
+        canonical=ROOT/item['canonical']
+        both=legacy.exists() and canonical.exists()
+        different=both and legacy.read_bytes()!=canonical.read_bytes()
+        divergent_metrics.append({'legacy':item['path'],'canonical':item['canonical'],'both_present':both,'different':different})
+        check(f'divergent_legacy_present:{item["path"]}',legacy.exists())
+        check(f'divergent_canonical_present:{item["canonical"]}',canonical.exists())
+        check(f'divergent_content_preserved:{item["path"]}',different)
+    metrics['preserved_divergent_modules']=divergent_metrics
 
     failed=[x for x in checks if not x['pass']]
     return {
