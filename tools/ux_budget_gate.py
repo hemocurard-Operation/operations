@@ -66,7 +66,7 @@ def evaluate(contract_path):
     if privacy.get('forbid_service_role'):
         check('privacy_no_service_role','service_role' not in lower_scope)
 
-    check('no_production_telemetry_endpoint',not re.search(r'https?://[^\s\"\']+',flow,re.IGNORECASE))
+    check('no_production_telemetry_endpoint',not re.search(r"https?://[^\s\"']+",flow,re.IGNORECASE))
 
     failed=[c for c in checks if not c['pass']]
     return {
