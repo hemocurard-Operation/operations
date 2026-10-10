@@ -1,0 +1,48 @@
+name: HemoCura UX Performance Budget
+
+on:
+  pull_request:
+    paths:
+      - 'hemocura-core/daily-inventory.js'
+      - 'hemocura-core/daily-inventory-flow.js'
+      - 'hemocura-core/command-data.js'
+      - 'hemocura-core/layout.js'
+      - 'css/ui-v0442.css'
+      - 'contracts/ux-budget-v0.45.7.json'
+      - 'tools/ux_budget_gate.py'
+      - '.github/workflows/ux-performance-budget.yml'
+      - 'VERSION.json'
+  push:
+    branches: [main]
+    paths:
+      - 'hemocura-core/daily-inventory.js'
+      - 'hemocura-core/daily-inventory-flow.js'
+      - 'hemocura-core/command-data.js'
+      - 'hemocura-core/layout.js'
+      - 'css/ui-v0442.css'
+      - 'contracts/ux-budget-v0.45.7.json'
+      - 'tools/ux_budget_gate.py'
+      - '.github/workflows/ux-performance-budget.yml'
+      - 'VERSION.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ux-budget:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate privacy-safe UX budget
+        run: python tools/ux_budget_gate.py contracts/ux-budget-v0.45.7.json --json-out ux-budget-report.json
+      - name: Upload UX budget report
+        uses: actions/upload-artifact@v4
+        with:
+          name: ux-budget-report
+          path: ux-budget-report.json
