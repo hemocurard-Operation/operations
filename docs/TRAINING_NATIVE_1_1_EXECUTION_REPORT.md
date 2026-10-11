@@ -8,6 +8,7 @@ Convertir Capacitación de una aplicación paralela en un módulo nativo de la S
 - Permisos separados: `TRAINING_SELF`, `TRAINING_ASSESS`, `TRAINING_ADMIN`.
 - `SUPER_USUARIO` no obtiene permisos de evaluación/certificación por privilegio tecnológico.
 - Asignación de capacitación derivada del **puesto activo**; el usuario no selecciona manualmente un rol para certificarse.
+- Asignación formal de puesto disponible para `TRAINING_ADMIN` desde Competencias mediante `training_assign_job_role`; el sistema no infiere ni autoasigna puestos reales.
 - 7 programas gobernados, 11 mapeos puesto→programa y 35 preguntas en Supabase.
 - Contenido, práctica y microentrenamiento fuera del JavaScript y versionados en base de datos.
 - El banco de preguntas visible al navegador no expone `correct_index` ni explicación.
@@ -28,7 +29,7 @@ Convertir Capacitación de una aplicación paralela en un módulo nativo de la S
 `TRN-1.0-RC` permanece `DRAFT` y `HC-TRN-SUITE-001` permanece `BORRADOR`. El sistema no permite ofrecer el programa como contenido aprobado ni certificar mientras el documento controlado no esté `APROBADO` o `VIGENTE`.
 
 ## Gates humanos pendientes
-1. Asignar formalmente puestos a usuarios reales en `staff_job_assignments`.
+1. Asignar formalmente puestos a usuarios reales en `staff_job_assignments` mediante la nueva operación gobernada.
 2. Contar con participante y evaluador distintos.
 3. Aprobar el documento `HC-TRN-SUITE-001` mediante Control Documental.
 4. Ejecutar UAT-TRN-AO-001, UAT-TRN-LAB-001 y UAT-TRN-ADM-001 con usuarios reales.
@@ -37,6 +38,6 @@ Convertir Capacitación de una aplicación paralela en un módulo nativo de la S
 No se deben falsificar estos gates ni asignar puestos a una persona por inferencia del sistema.
 
 ## Seguridad
-Las vistas nuevas usan `security_invoker=true`. Los RPCs `training_submit_quiz`, `training_finalize_competency`, `training_authorize_system_use`, `training_revoke_certificate` y `training_revoke_authorization` son `SECURITY DEFINER` intencionales, con `SET search_path=''`, autenticación/permiso internos y sin `EXECUTE` para `PUBLIC`/`anon`. Esta exposición controlada permite mantener las tablas de evidencia sin escritura directa desde el navegador.
+Las vistas nuevas usan `security_invoker=true`. Los RPCs `training_assign_job_role`, `training_submit_quiz`, `training_finalize_competency`, `training_authorize_system_use`, `training_revoke_certificate` y `training_revoke_authorization` son `SECURITY DEFINER` intencionales, con `SET search_path=''`, autenticación/permiso internos y sin `EXECUTE` para `PUBLIC`/`anon`. Esta exposición controlada permite mantener las tablas de evidencia, certificados, autorizaciones y asignaciones críticas sin escritura privilegiada directa desde el navegador.
 
 La deuda legacy de Security Advisor sigue gobernada por la secuencia C12 → C13A → C13C1 → ...; este release no sustituye ni adelanta esa remediación.
