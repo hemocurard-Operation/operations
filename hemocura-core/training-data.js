@@ -25,6 +25,8 @@ export const trainingData={
   instructorQueue:()=>many('Cola del instructor',sb().from('vw_training_instructor_queue').select('*').order('due_date',{ascending:true,nullsFirst:false})),
   profiles:()=>many('Personal',sb().from('profiles').select('id,full_name,branch_id').order('full_name')),
   branches:()=>many('Sucursales',sb().from('branches').select('id,name,code').eq('active',true).order('name')),
+  jobRoles:()=>many('Puestos',sb().from('job_roles').select('id,role_code,title').eq('active',true).order('title')),
+  assignJobRole:(userId,jobRoleId,branchId,primaryRole=true,startDate=null)=>one('Asignar puesto',sb().rpc('training_assign_job_role',{p_user_id:userId,p_job_role_id:jobRoleId,p_branch_id:branchId,p_primary_role:primaryRole,p_start_date:startDate||new Date().toISOString().slice(0,10)})),
   async observePractice(assignmentId,taskCode,result,evidenceReference,notes){
     const a=await this.assignment(assignmentId);const u=await this.currentUser();
     const task=(a.practices||[]).find(x=>x.code===taskCode);if(!task)throw new Error('Práctica no pertenece al programa.');
