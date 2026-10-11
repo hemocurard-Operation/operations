@@ -1,6 +1,7 @@
 import { accessData } from './access-data.js';
 
 const ROUTE_PERMISSION={
+  mywork:'DASHBOARD_VIEW',
   dashboard:'DASHBOARD_VIEW',
   command:'COMMAND_VIEW',
   quickcapture:'DASHBOARD_VIEW',
