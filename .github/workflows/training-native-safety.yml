@@ -1,0 +1,69 @@
+name: HemoCura Training Native Safety
+
+on:
+  pull_request:
+    paths:
+      - 'hemocura-core/training*.js'
+      - 'hemocura-core/layout.js'
+      - 'hemocura-core/router.js'
+      - 'hemocura-core/views.js'
+      - 'hemocura-core/access-control.js'
+      - 'hemocura-core/competencies.js'
+      - 'sql/migrations/*training*'
+      - 'supabase/functions/training-tutor/**'
+      - 'contracts/**'
+      - '.github/workflows/training-native-safety.yml'
+  workflow_dispatch:
+
+jobs:
+  training-native-safety:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: JavaScript syntax
+        run: |
+          node --check hemocura-core/training.js
+          node --check hemocura-core/training-data.js
+          node --check hemocura-core/training-context.js
+          node --check hemocura-core/training-events.js
+          node --check hemocura-core/router.js
+          node --check hemocura-core/views.js
+          node --check hemocura-core/access-control.js
+          node --check hemocura-core/layout.js
+          node --check hemocura-core/competencies.js
+      - name: Native SPA contract
+        run: |
+          grep -q "training:{title:'Mi Capacitación'" hemocura-core/router.js
+          grep -q "training:'TRAINING_SELF'" hemocura-core/access-control.js
+          grep -q "training:'training-root'" hemocura-core/views.js
+          grep -q "training:mountTraining" hemocura-core/layout.js
+          test ! -f training.html
+      - name: No privileged browser key
+        run: |
+          ! grep -RniE "service[_-]?role|SUPABASE_SERVICE" hemocura-core/training*.js || (echo 'Privileged key reference found in frontend' && exit 1)
+      - name: Clinical guardrails
+        run: |
+          grep -qi "no concede autoridad clínica" hemocura-core/training.js
+          grep -qi "no es autoridad clínica" sql/migrations/*training* || true
+          grep -qi "clinical_decision:false" supabase/functions/training-tutor/index.ts
+      - name: Server-side evidence gates
+        run: |
+          grep -q "training_submit_quiz" hemocura-core/training-data.js
+          grep -q "training_finalize_competency" hemocura-core/training-data.js
+          grep -q "TRAINING_SELF_CERTIFICATION_FORBIDDEN" sql/migrations/20261011005400_training_native_1_1_schema.sql
+          grep -q "TRAINING_CONTROLLED_DOCUMENT_NOT_APPROVED" sql/migrations/20261011005400_training_native_1_1_schema.sql
+          grep -q "TRAINING_ACTIVE_JOB_ASSIGNMENT_REQUIRED" sql/migrations/20261011005400_training_native_1_1_schema.sql
+      - name: Migration security rules
+        run: |
+          ! grep -RniE "disable[[:space:]]+row[[:space:]]+level[[:space:]]+security" sql/migrations/*training* || exit 1
+          ! grep -RniE "grant[[:space:]]+all([[:space:]]+privileges)?[[:space:]]+on.*to[[:space:]]+(public|anon|authenticated)" sql/migrations/*training* || exit 1
+          ! grep -RniE "grant[[:space:]]+execute.*to[[:space:]]+(public|anon)" sql/migrations/*training* || exit 1
+          grep -q "security_invoker=true" sql/migrations/20261011005400_training_native_1_1_schema.sql
+          grep -q "security definer set search_path=''" sql/migrations/20261011005400_training_native_1_1_schema.sql
+      - name: No legacy training shell
+        run: |
+          ! grep -Rni "location.href='./training.html'" hemocura-core || exit 1
+          ! grep -Rni "MutationObserver" hemocura-core/training*.js || exit 1
