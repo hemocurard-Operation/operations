@@ -11,6 +11,8 @@ import { mountDiagnostics } from './diagnostics.js';
 import { mountApprovals } from './approvals.js';
 import { mountQmsGovernance } from './qms-governance.js';
 import { mountInternalAudits } from './internal-audits.js';
+import { mountTraining } from './training.js';
+import { attachTrainingContext } from './training-context.js';
 import { mountCompetencies } from './competencies.js';
 import { mountResources } from './resources.js';
 import { mountAnalyticalQc } from './analytical-qc.js';
@@ -48,7 +50,7 @@ import { signOut } from './auth.js';
 
 const MOUNTS={
   dashboard:mountOpsDashboard,command:mountCommandCenter,quickcapture:mountQuickCapture,audit:mountAudit,releasegate:mountReleaseGate,security:mountSecurity,
-  diagnostics:mountDiagnostics,approvals:mountApprovals,qmsgov:mountQmsGovernance,internalaudits:mountInternalAudits,
+  diagnostics:mountDiagnostics,approvals:mountApprovals,qmsgov:mountQmsGovernance,internalaudits:mountInternalAudits,training:mountTraining,
   competencies:mountCompetencies,resources:mountResources,analyticalqc:mountAnalyticalQc,release1:mountFinalRelease,
   uat:mountUat,integration:mountIntegration,continuity:mountContinuity,management:mountManagementReview,
   coldchain:mountColdChain,hemovigilance:mountHemovigilance,suppliers:mountSuppliers,sales:mountOperationalSales,
@@ -58,7 +60,7 @@ const MOUNTS={
   bi:mountBI,projects:mountProjects,settings:mountSettings,qa:mountQA
 };
 
-function esc(v=''){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
+function esc(v=''){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#039;'}[c]))}
 function roleCodes(context={}){
   const raw=context.roles||[];
   if(Array.isArray(raw)) return raw.map(x=>typeof x==='string'?x:(x?.code||x?.role_code||'')).filter(Boolean);
@@ -132,6 +134,7 @@ export async function mountLayout(session){
       await mount(root);
       if(route==='quickcapture') enhanceQuickCaptureFlow(root,primaryRole);
       if(route==='dailyinventory') enhanceDailyInventoryFlow(root);
+      if(route!=='training') attachTrainingContext(root,route);
     }catch(error){document.getElementById('view').innerHTML=moduleError(route,error)}
   };
   window.addEventListener('hashchange',()=>render().catch(e=>console.error('[HEMOCURA_NAV_ERROR]',e)));
