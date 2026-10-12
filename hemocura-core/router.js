@@ -4,6 +4,7 @@ const ROUTES={
   dashboard:{title:'Inicio',subtitle:'Resumen priorizado según tu rol',group:'INICIO',order:10},
   command:{title:'Centro de Mando',subtitle:'Cierre diario, score y excepciones',group:'INICIO',order:20},
   decisioncenter:{title:'Centro de Decisión',subtitle:'Señales priorizadas convertibles en acciones con seguimiento',group:'INICIO',order:25},
+  predictive:{title:'Cockpit Predictivo',subtitle:'Forecast, riesgo de stock, caja, clientes y prioridades recomendadas',group:'INICIO',order:27},
 
   quickcapture:{title:'Captura rápida',subtitle:'Donantes, tamizaje, requisiciones, despachos e incidencias en formularios simples',group:'TRABAJO DIARIO',order:5},
   dailyinventory:{title:'Reporte Operativo Diario',subtitle:'Lotes, inventario, despachos y novedades en una sola captura',group:'TRABAJO DIARIO',order:8},
