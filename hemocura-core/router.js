@@ -39,7 +39,8 @@ const ROUTES={
   continuity:{title:'Continuidad',subtitle:'Continuidad operativa e integridad de datos',group:'GESTIÓN',order:40},
   suppliers:{title:'Proveedores',subtitle:'Compras críticas y evaluación',group:'GESTIÓN',order:50},
 
-  settings:{title:'Configuración',subtitle:'Usuarios, roles y catálogos',group:'ADMINISTRACIÓN',order:10},
+  settings:{title:'Configuración',subtitle:'Catálogos y diagnóstico',group:'ADMINISTRACIÓN',order:10},
+  users:{title:'Usuarios y Roles',subtitle:'Crear usuarios y asignar acceso por rol y sucursal',group:'ADMINISTRACIÓN',order:15},
   security:{title:'Seguridad y Acceso',subtitle:'Roles, permisos, sucursal y RLS',group:'ADMINISTRACIÓN',order:20},
   diagnostics:{title:'Diagnóstico',subtitle:'Configuración, Auth, RLS y migraciones',group:'ADMINISTRACIÓN',order:30},
   audit:{title:'Auditoría del Sistema',subtitle:'Trazabilidad y revisión del proyecto',group:'ADMINISTRACIÓN',order:40},
