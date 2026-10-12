@@ -46,6 +46,7 @@ import { mountCompliance } from './compliance.js';
 import { mountBI } from './bi.js';
 import { mountProjects } from './projects.js';
 import { mountSettings } from './settings.js';
+import { mountUsers } from './users.js';
 import { mountQA } from './qa.js';
 import { signOut } from './auth.js';
 
@@ -58,7 +59,7 @@ const MOUNTS={
   donors:mountDonors,screening:mountScreening,bloodflow:mountBloodFlow,production:mountProduction,supply:mountSupplyPlanning,
   bloodinventory:mountBloodInventory,dailyinventory:mountDailyInventory,dispatches:mountDispatches,inventory:mountInventory,requisitions:mountRequisitions,
   inspections:mountInspections,planning:mountPlanning,quality:mountQuality,documents:mountDocuments,compliance:mountCompliance,
-  bi:mountBI,projects:mountProjects,settings:mountSettings,qa:mountQA
+  bi:mountBI,projects:mountProjects,settings:mountSettings,users:mountUsers,qa:mountQA
 };
 
 function esc(v=''){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#039;'}[c]))}
