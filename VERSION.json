@@ -1,11 +1,9 @@
 {
   "project": "HemoCura Operations Intelligence + QMS + Compliance",
-  "version": "0.45.12",
-  "stage": "Value Chain 50 · demand, donor outreach, customers and integrated actions",
+  "version": "0.46.0",
+  "stage": "Decision Chain 50 · SLA, collections, economics, medical network and decision center",
   "release_channel": "RC",
-  "protected_files": [
-    "js/config.js"
-  ],
+  "protected_files": ["js/config.js"],
   "config_policy": "PROTECTED_LOCAL_ENVIRONMENT_FILE",
   "clinical_core": "LIVE-LIMITED / CONTROLLED_RELEASE"
 }
