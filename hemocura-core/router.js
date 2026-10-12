@@ -1,5 +1,6 @@
 const GROUP_ORDER=['INICIO','TRABAJO DIARIO','LABORATORIO Y SANGRE','CALIDAD Y SEGURIDAD','GESTIÓN','ADMINISTRACIÓN'];
 const ROUTES={
+  mywork:{title:'Mi trabajo',subtitle:'Tus tareas y siguientes acciones según permisos',group:'INICIO',order:5},
   dashboard:{title:'Inicio',subtitle:'Resumen priorizado según tu rol',group:'INICIO',order:10},
   command:{title:'Centro de Mando',subtitle:'Cierre diario, score y excepciones',group:'INICIO',order:20},
 
@@ -55,6 +56,6 @@ export function routeList(){
   });
 }
 export function routeGroups(){return [...GROUP_ORDER]}
-export function getRoute(){const k=(location.hash||'#dashboard').replace('#','').split('?')[0];return ROUTES[k]?k:'dashboard'}
-export function getRouteMeta(k){return ROUTES[k]||ROUTES.dashboard}
-export function navigate(k){location.hash=`#${ROUTES[k]?k:'dashboard'}`}
+export function getRoute(){const k=(location.hash||'#mywork').replace('#','').split('?')[0];return ROUTES[k]?k:'mywork'}
+export function getRouteMeta(k){return ROUTES[k]||ROUTES.mywork}
+export function navigate(k){location.hash=`#${ROUTES[k]?k:'mywork'}`}

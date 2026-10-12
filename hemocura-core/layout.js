@@ -1,5 +1,6 @@
 import { routeList,getRoute,getRouteMeta,navigate,routeGroups } from './router.js';
 import { renderView,viewRootId } from './views.js';
+import { mountMyWork } from './my-work.js';
 import { mountOpsDashboard } from './ops-dashboard.js';
 import { mountCommandCenter } from './command-center.js';
 import { mountQuickCapture } from './quick-capture.js';
@@ -49,7 +50,7 @@ import { mountQA } from './qa.js';
 import { signOut } from './auth.js';
 
 const MOUNTS={
-  dashboard:mountOpsDashboard,command:mountCommandCenter,quickcapture:mountQuickCapture,audit:mountAudit,releasegate:mountReleaseGate,security:mountSecurity,
+  mywork:mountMyWork,dashboard:mountOpsDashboard,command:mountCommandCenter,quickcapture:mountQuickCapture,audit:mountAudit,releasegate:mountReleaseGate,security:mountSecurity,
   diagnostics:mountDiagnostics,approvals:mountApprovals,qmsgov:mountQmsGovernance,internalaudits:mountInternalAudits,training:mountTraining,
   competencies:mountCompetencies,resources:mountResources,analyticalqc:mountAnalyticalQc,release1:mountFinalRelease,
   uat:mountUat,integration:mountIntegration,continuity:mountContinuity,management:mountManagementReview,
@@ -103,7 +104,7 @@ export async function mountLayout(session){
       <nav class="nav">${nav}</nav>
     </aside>
     <section class="main-shell">
-      <header class="topbar"><div><button class="mobile-toggle secondary" id="menu-btn" aria-label="Abrir menú">☰</button><strong id="page-title">Centro de Operaciones</strong><div class="muted" id="page-subtitle"></div></div>
+      <header class="topbar"><div><button class="mobile-toggle secondary" id="menu-btn" aria-label="Abrir menú">☰</button><strong id="page-title">Mi trabajo</strong><div class="muted" id="page-subtitle"></div></div>
       <div class="topbar-actions"><span class="role-chip">${esc(humanRole(primaryRole))}</span><span class="muted">${esc(session.user?.email||'Usuario')}</span><button id="logout-btn">Salir</button></div></header>
       <main class="content"><div id="view"></div></main>
     </section>
