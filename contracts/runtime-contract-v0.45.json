@@ -9,7 +9,7 @@
   ],
   "optional_relations": [
     "compliance_penal_actions","compliance_penal_assessments","compliance_penal_requirements",
-    "clinical_demand_requests","value_chain_stage_catalog","vw_value_chain_scorecard",
+    "customers","clinical_demand_requests","value_chain_stage_catalog","vw_value_chain_scorecard",
     "donor_campaigns","vw_donor_campaign_performance",
     "customer_service_agreements","customer_feedback","vw_customer_value_summary",
     "integrated_actions","vw_integrated_actions_open"
