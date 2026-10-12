@@ -1,59 +1,68 @@
 import { listRisks, createRisk } from './integrated-qms-data.js';
+import { getBranches } from './sales-data.js';
+import { loadPenalCompliance, saveAssessment, createPenalAction, setPenalActionStatus } from './compliance-penal-data.js';
+
 function esc(v=''){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
+function statusPill(v=''){const s=String(v).toUpperCase();const cls=['IMPLEMENTADO','VERIFICADO','COMPLETADA'].includes(s)?'stock-ok':['BLOQUEADO','BLOQUEADA'].includes(s)?'stock-none':'stock-warning';return `<span class="stock-pill ${cls}">${esc(v)}</span>`}
+function today(){return new Date().toISOString().slice(0,10)}
+function daysUntil(date){if(!date)return null;return Math.ceil((new Date(`${date}T23:59:59`)-new Date())/86400000)}
+
 export async function mountCompliance(root){
+  const branches=await getBranches();
+  let scope='CORPORATE';
+  let state=null;
+  let risks=[];
+
   root.innerHTML=`
-    <div class="sales-toolbar"><div><h2 class="section-heading">Compliance</h2>
-    <div class="muted">Riesgos, controles, evidencia y seguimiento.</div></div><button id="risk-new">Nuevo riesgo</button></div>
-    <div id="risk-status"></div>
-    <section class="card"><div class="status info">Cadena: Riesgo → Control → Procedimiento → Responsable → Registro → Evidencia → KPI</div></section>
-    <section class="card"><div class="table-wrap"><table class="data-table">
-      <thead><tr><th>Código</th><th>Dominio</th><th>Proceso</th><th>Riesgo</th><th>P</th><th>I</th><th>Nivel</th><th>Estado</th></tr></thead>
-      <tbody id="risk-body"></tbody></table></div></section>
-    <section class="card"><div class="status warn">El contenido jurídico y los controles penales deben ser validados por asesor legal dominicano antes de aprobación formal.</div></section>
-    <dialog id="risk-dialog" class="sales-dialog"><form id="risk-form">
-      <h3>Nuevo riesgo</h3>
-      <label>Código<input id="risk-code" required placeholder="R-CMP-001"></label>
-      <label>Dominio<select id="risk-domain"><option>COMPLIANCE</option><option>LEGAL</option><option>SGC</option><option>OPERACIONAL</option><option>BIOSEGURIDAD</option><option>TECNOLOGIA</option></select></label>
-      <label>Proceso<input id="risk-process" required></label>
-      <label>Descripción<textarea id="risk-desc" required></textarea></label>
-      <label>Causa<textarea id="risk-cause"></textarea></label>
-      <label>Consecuencia<textarea id="risk-cons"></textarea></label>
-      <label>Probabilidad<input id="risk-p" type="number" min="1" max="5" value="3"></label>
-      <label>Impacto<input id="risk-i" type="number" min="1" max="5" value="3"></label>
-      <label>Controles existentes<textarea id="risk-controls"></textarea></label>
-      <label>Acción<textarea id="risk-action"></textarea></label>
-      <div class="dialog-actions"><button type="button" id="risk-cancel" class="secondary">Cancelar</button><button type="submit">Guardar</button></div>
-    </form></dialog>`;
-  async function load(){
-    try{
-      const rows=await listRisks();
-      document.getElementById('risk-body').innerHTML=rows.length?rows.map(r=>`<tr>
-        <td><code>${esc(r.risk_code)}</code></td><td>${esc(r.risk_domain)}</td><td>${esc(r.process_name)}</td>
-        <td>${esc(r.risk_description)}</td><td>${esc(r.probability)}</td><td>${esc(r.impact)}</td>
-        <td><strong>${esc(r.inherent_score)}</strong></td><td>${esc(r.status)}</td></tr>`).join(''):
-        `<tr><td colspan="8" class="muted">No hay riesgos registrados.</td></tr>`;
-      document.getElementById('risk-status').innerHTML='';
-    }catch(e){document.getElementById('risk-status').innerHTML=`<div class="status warn">${esc(e.message)} · Instale la migración v0.22.0.</div>`}
+    <div class="sales-toolbar"><div><h2 class="section-heading">Compliance Penal</h2><div class="muted">Implementación, desarrollo, evidencia y seguimiento del programa de prevención penal de HemoCura.</div></div><button id="cp-refresh" class="secondary">Actualizar</button></div>
+    <section class="card"><div class="status warn"><strong>Fecha de control:</strong> 5 de noviembre de 2026 para los arts. 8–11 de la Ley 74-25, modificada por Ley 44-26. Existe una propuesta legislativa para ampliar el plazo; hasta nueva promulgación, HemoCura debe trabajar contra la fecha vigente.</div></section>
+    <section class="card"><div class="filter-grid"><label>Alcance<select id="cp-scope"><option value="CORPORATE">Corporativo HemoCura</option>${branches.map(b=>`<option value="${esc(b.id)}">${esc(b.name)}</option>`).join('')}</select></label><div><small class="muted">El programa es corporativo, pero su efectividad debe verificarse también por sucursal.</small></div></div></section>
+    <div id="cp-status"></div><div id="cp-kpis"></div>
+    <section class="card"><div class="card-head"><div><h3>11 requisitos mínimos del programa</h3><div class="muted">Ley 74-25 art. 8, párr. VI, modificado por Ley 44-26.</div></div></div><div class="table-wrap"><table class="data-table"><thead><tr><th>#</th><th>Requisito</th><th>Estado</th><th>Madurez</th><th>Meta</th><th>Evidencia</th><th>Acción</th></tr></thead><tbody id="cp-req-body"></tbody></table></div></section>
+    <section class="card"><div class="card-head"><div><h3>Plan de implementación y remediación</h3><div class="muted">Toda acción debe cerrar con evidencia verificable.</div></div><button id="cp-action-new" class="secondary compact">Nueva acción</button></div><div class="table-wrap"><table class="data-table"><thead><tr><th>Requisito</th><th>Acción</th><th>Prioridad</th><th>Vence</th><th>Estado</th><th>Evidencia</th><th></th></tr></thead><tbody id="cp-action-body"></tbody></table></div></section>
+    <section class="card"><div class="card-head"><div><h3>Mapa de riesgos penales</h3><div class="muted">Riesgos del registro existente clasificados PENAL, COMPLIANCE o LEGAL.</div></div><button id="risk-new" class="secondary compact">Nuevo riesgo penal</button></div><div class="table-wrap"><table class="data-table"><thead><tr><th>Código</th><th>Proceso</th><th>Riesgo</th><th>P×I</th><th>Control</th><th>Estado</th></tr></thead><tbody id="risk-body"></tbody></table></div></section>
+    <section class="card"><h3>Rutina operativa diaria</h3><div class="quick-links"><span class="role-chip">1. Registrar incidentes y casi eventos</span><span class="role-chip">2. No borrar ni alterar evidencia</span><span class="role-chip">3. Escalar desviaciones críticas</span><span class="role-chip">4. Segregación de funciones</span><span class="role-chip">5. Validar autorizaciones</span><span class="role-chip">6. Conciliar inventario y documentos</span></div><p class="muted">El módulo no sustituye asesoría jurídica. Los riesgos penales, criterios de reporte a autoridades y decisiones disciplinarias requieren validación legal dominicana.</p></section>
+
+    <dialog id="cp-assess-dialog" class="sales-dialog"><form id="cp-assess-form"><h3>Evaluar requisito</h3><input type="hidden" id="cp-assess-id"><div id="cp-assess-title" class="status info"></div><label>Estado<select id="cp-assess-status"><option>NO_INICIADO</option><option>EN_DESARROLLO</option><option>IMPLEMENTADO</option><option>VERIFICADO</option><option>BLOQUEADO</option></select></label><label>Madurez (0–4)<input id="cp-assess-maturity" type="number" min="0" max="4" value="0"></label><label>Fecha objetivo<input id="cp-assess-target" type="date"></label><label>Evidencia / referencia<input id="cp-assess-evidence" placeholder="Código documental, expediente o URL controlada"></label><label>Notas<textarea id="cp-assess-notes"></textarea></label><div class="dialog-actions"><button type="button" id="cp-assess-cancel" class="secondary">Cancelar</button><button type="submit">Guardar evaluación</button></div></form></dialog>
+    <dialog id="cp-action-dialog" class="sales-dialog"><form id="cp-action-form"><h3>Nueva acción de compliance</h3><label>Requisito<select id="cp-action-req" required></select></label><label>Título<input id="cp-action-title" required></label><label>Descripción<textarea id="cp-action-desc"></textarea></label><label>Prioridad<select id="cp-action-priority"><option>MEDIA</option><option>ALTA</option><option>CRITICA</option><option>BAJA</option></select></label><label>Fecha límite<input id="cp-action-due" type="date"></label><label>Evidencia esperada<input id="cp-action-evidence"></label><div class="dialog-actions"><button type="button" id="cp-action-cancel" class="secondary">Cancelar</button><button type="submit">Crear acción</button></div></form></dialog>
+    <dialog id="risk-dialog" class="sales-dialog"><form id="risk-form"><h3>Nuevo riesgo penal</h3><label>Código<input id="risk-code" required placeholder="R-PEN-001"></label><label>Proceso<input id="risk-process" required></label><label>Descripción<textarea id="risk-desc" required></textarea></label><label>Causa<textarea id="risk-cause"></textarea></label><label>Consecuencia<textarea id="risk-cons"></textarea></label><label>Probabilidad<input id="risk-p" type="number" min="1" max="5" value="3"></label><label>Impacto<input id="risk-i" type="number" min="1" max="5" value="3"></label><label>Controles existentes<textarea id="risk-controls"></textarea></label><label>Tratamiento<textarea id="risk-action"></textarea></label><div class="dialog-actions"><button type="button" id="risk-cancel" class="secondary">Cancelar</button><button type="submit">Guardar riesgo</button></div></form></dialog>`;
+
+  function currentBranch(){return scope==='CORPORATE'?null:scope}
+  function assessmentFor(reqId){return (state?.assessments||[]).find(a=>a.requirement_id===reqId)||null}
+  function render(){
+    const reqs=state.requirements||[], actions=state.actions||[];
+    const implemented=reqs.filter(r=>['IMPLEMENTADO','VERIFICADO'].includes(assessmentFor(r.id)?.status)).length;
+    const verified=reqs.filter(r=>assessmentFor(r.id)?.status==='VERIFICADO').length;
+    const avg=reqs.length?reqs.reduce((s,r)=>s+Number(assessmentFor(r.id)?.maturity||0),0)/reqs.length:0;
+    const overdue=actions.filter(a=>a.due_date&&a.due_date<today()&&!['COMPLETADA','VERIFICADA'].includes(a.status)).length;
+    const until=daysUntil('2026-11-05');
+    document.getElementById('cp-kpis').innerHTML=`<div class="grid sales-kpis"><section class="card"><div class="muted">Requisitos implementados</div><div class="kpi">${implemented}/11</div></section><section class="card"><div class="muted">Verificados</div><div class="kpi">${verified}/11</div></section><section class="card"><div class="muted">Madurez promedio</div><div class="kpi">${avg.toFixed(1)}/4</div></section><section class="card"><div class="muted">Acciones vencidas</div><div class="kpi">${overdue}</div></section><section class="card"><div class="muted">Días al 05/11/2026</div><div class="kpi">${until}</div></section></div>`;
+    document.getElementById('cp-req-body').innerHTML=reqs.map(r=>{const a=assessmentFor(r.id);return `<tr><td>${r.sequence_no}</td><td><strong>${esc(r.requirement_code)} · ${esc(r.title)}</strong><br><small class="muted">${esc(r.objective)}</small></td><td>${statusPill(a?.status||'NO_INICIADO')}</td><td>${esc(a?.maturity??0)}/4</td><td>${esc(a?.target_date||'—')}</td><td>${esc(a?.evidence_reference||'—')}</td><td><button class="secondary compact" data-assess="${r.id}">Evaluar</button></td></tr>`}).join('');
+    const reqMap=Object.fromEntries(reqs.map(r=>[r.id,r]));
+    document.getElementById('cp-action-body').innerHTML=actions.length?actions.map(a=>`<tr><td>${esc(reqMap[a.requirement_id]?.requirement_code||'—')}</td><td><strong>${esc(a.title)}</strong><br><small>${esc(a.description||'')}</small></td><td>${esc(a.priority)}</td><td>${esc(a.due_date||'—')}</td><td>${statusPill(a.status)}</td><td>${esc(a.evidence_reference||'—')}</td><td>${['COMPLETADA','VERIFICADA'].includes(a.status)?'':`<button class="secondary compact" data-complete="${a.id}">Completar</button>`}</td></tr>`).join(''):'<tr><td colspan="7" class="muted">No hay acciones para este alcance.</td></tr>';
+    document.getElementById('risk-body').innerHTML=risks.length?risks.map(r=>`<tr><td><code>${esc(r.risk_code)}</code></td><td>${esc(r.process_name)}</td><td>${esc(r.risk_description)}</td><td><strong>${esc(r.inherent_score||Number(r.probability||0)*Number(r.impact||0))}</strong></td><td>${esc(r.existing_controls||'—')}</td><td>${esc(r.status)}</td></tr>`).join(''):'<tr><td colspan="6" class="muted">No hay riesgos penales clasificados.</td></tr>';
+    document.getElementById('cp-action-req').innerHTML=reqs.map(r=>`<option value="${r.id}">${esc(r.requirement_code)} · ${esc(r.title)}</option>`).join('');
+    document.querySelectorAll('[data-assess]').forEach(b=>b.onclick=()=>openAssessment(b.dataset.assess));
+    document.querySelectorAll('[data-complete]').forEach(b=>b.onclick=async()=>{await setPenalActionStatus(b.dataset.complete,'COMPLETADA');await load()});
   }
+
+  function openAssessment(reqId){const r=state.requirements.find(x=>x.id===reqId),a=assessmentFor(reqId);document.getElementById('cp-assess-id').value=reqId;document.getElementById('cp-assess-title').textContent=`${r.requirement_code} · ${r.title}`;document.getElementById('cp-assess-status').value=a?.status||'NO_INICIADO';document.getElementById('cp-assess-maturity').value=a?.maturity??0;document.getElementById('cp-assess-target').value=a?.target_date||'';document.getElementById('cp-assess-evidence').value=a?.evidence_reference||'';document.getElementById('cp-assess-notes').value=a?.notes||'';document.getElementById('cp-assess-dialog').showModal()}
+
+  async function load(){
+    document.getElementById('cp-status').innerHTML='<div class="status info">Actualizando compliance penal…</div>';
+    const [pc,allRisks]=await Promise.all([loadPenalCompliance(scope),listRisks()]);state=pc;risks=(allRisks||[]).filter(r=>['PENAL','COMPLIANCE','LEGAL'].includes(String(r.risk_domain).toUpperCase())&&(scope==='CORPORATE'||!r.branch_id||r.branch_id===scope));render();document.getElementById('cp-status').innerHTML='';
+  }
+
+  document.getElementById('cp-scope').onchange=async e=>{scope=e.target.value;await load()};
+  document.getElementById('cp-refresh').onclick=()=>load();
+  document.getElementById('cp-assess-cancel').onclick=()=>document.getElementById('cp-assess-dialog').close();
+  document.getElementById('cp-assess-form').onsubmit=async e=>{e.preventDefault();await saveAssessment({requirement_id:document.getElementById('cp-assess-id').value,branch_id:currentBranch(),status:document.getElementById('cp-assess-status').value,maturity:Number(document.getElementById('cp-assess-maturity').value),target_date:document.getElementById('cp-assess-target').value||null,evidence_reference:document.getElementById('cp-assess-evidence').value.trim()||null,notes:document.getElementById('cp-assess-notes').value.trim()||null});document.getElementById('cp-assess-dialog').close();await load()};
+  document.getElementById('cp-action-new').onclick=()=>document.getElementById('cp-action-dialog').showModal();
+  document.getElementById('cp-action-cancel').onclick=()=>document.getElementById('cp-action-dialog').close();
+  document.getElementById('cp-action-form').onsubmit=async e=>{e.preventDefault();await createPenalAction({requirement_id:document.getElementById('cp-action-req').value,branch_id:currentBranch(),title:document.getElementById('cp-action-title').value.trim(),description:document.getElementById('cp-action-desc').value.trim()||null,priority:document.getElementById('cp-action-priority').value,due_date:document.getElementById('cp-action-due').value||null,evidence_reference:document.getElementById('cp-action-evidence').value.trim()||null});e.target.reset();document.getElementById('cp-action-dialog').close();await load()};
   document.getElementById('risk-new').onclick=()=>document.getElementById('risk-dialog').showModal();
   document.getElementById('risk-cancel').onclick=()=>document.getElementById('risk-dialog').close();
-  document.getElementById('risk-form').onsubmit=async ev=>{
-    ev.preventDefault();
-    try{
-      await createRisk({
-        risk_code:document.getElementById('risk-code').value.trim(),
-        risk_domain:document.getElementById('risk-domain').value,
-        process_name:document.getElementById('risk-process').value.trim(),
-        risk_description:document.getElementById('risk-desc').value.trim(),
-        cause:document.getElementById('risk-cause').value.trim()||null,
-        consequence:document.getElementById('risk-cons').value.trim()||null,
-        probability:Number(document.getElementById('risk-p').value),
-        impact:Number(document.getElementById('risk-i').value),
-        existing_controls:document.getElementById('risk-controls').value.trim()||null,
-        treatment_action:document.getElementById('risk-action').value.trim()||null
-      });
-      document.getElementById('risk-dialog').close();ev.target.reset();await load();
-    }catch(e){document.getElementById('risk-status').innerHTML=`<div class="status bad">${esc(e.message)}</div>`}
-  };
-  await load();
+  document.getElementById('risk-form').onsubmit=async e=>{e.preventDefault();await createRisk({risk_code:document.getElementById('risk-code').value.trim(),branch_id:currentBranch(),risk_domain:'PENAL',process_name:document.getElementById('risk-process').value.trim(),risk_description:document.getElementById('risk-desc').value.trim(),cause:document.getElementById('risk-cause').value.trim()||null,consequence:document.getElementById('risk-cons').value.trim()||null,probability:Number(document.getElementById('risk-p').value),impact:Number(document.getElementById('risk-i').value),existing_controls:document.getElementById('risk-controls').value.trim()||null,treatment_action:document.getElementById('risk-action').value.trim()||null});e.target.reset();document.getElementById('risk-dialog').close();await load()};
+
+  try{await load()}catch(e){document.getElementById('cp-status').innerHTML=`<div class="status bad">${esc(e.message)}</div>`}
 }
