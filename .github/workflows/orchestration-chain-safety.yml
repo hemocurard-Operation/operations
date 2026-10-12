@@ -1,0 +1,43 @@
+name: HemoCura Orchestration Chain Safety
+on:
+  pull_request:
+    paths:
+      - 'hemocura-core/orchestration*.js'
+      - 'hemocura-core/router.js'
+      - 'hemocura-core/views.js'
+      - 'hemocura-core/access-control.js'
+      - 'hemocura-core/layout.js'
+      - 'hemocura-core/my-work.js'
+      - 'contracts/runtime-contract-v0.45.json'
+      - 'supabase/migrations/*orchestration_chain_50*.sql'
+      - 'VERSION.json'
+      - '.github/workflows/orchestration-chain-safety.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  orchestration-safety:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Orchestration guardrails
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -q "orchestration:mountOrchestration" hemocura-core/layout.js
+          grep -q "orchestration:'ORCHESTRATION_VIEW'" hemocura-core/access-control.js
+          grep -q "vw_branch_resilience_score" hemocura-core/orchestration-data.js
+          grep -q "orchestration_scenarios" hemocura-core/orchestration-data.js
+          grep -q "security_invoker=true" supabase/migrations/20261012123236_orchestration_chain_50_foundation.sql
+          grep -q "revoke all on public.orchestration_scenarios from anon" supabase/migrations/20261012123236_orchestration_chain_50_foundation.sql
+          grep -q "Human-in-the-loop" docs/ORCHESTRATION_CHAIN_50_EXECUTION_REPORT.md
+          ! grep -R "service_role" hemocura-core/orchestration*.js
+          python - <<'PY'
+          import json
+          v=json.load(open('VERSION.json'))
+          assert tuple(map(int,v['version'].split('.'))) >= (0,48,0)
+          c=json.load(open('contracts/runtime-contract-v0.45.json'))
+          for x in ['orchestration_scenarios','vw_branch_resilience_score','vw_scenario_impact','vw_orchestration_priority_queue']:
+              assert x in c['optional_relations']
+          print('Orchestration Chain guardrails OK')
+          PY
