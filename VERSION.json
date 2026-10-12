@@ -1,7 +1,7 @@
 {
   "project": "HemoCura Operations Intelligence + QMS + Compliance",
-  "version": "0.47.0",
-  "stage": "Predictive Chain 50 · forecast, stock risk, cash, customer health and human-in-the-loop decisions",
+  "version": "0.48.0",
+  "stage": "Orchestration Chain 50 · resilience, scenarios, data readiness and executive prioritization",
   "release_channel": "RC",
   "protected_files": ["js/config.js"],
   "config_policy": "PROTECTED_LOCAL_ENVIRONMENT_FILE",
