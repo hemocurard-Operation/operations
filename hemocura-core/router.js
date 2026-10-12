@@ -27,7 +27,8 @@ const ROUTES={
   qmsgov:{title:'Gobierno QMS',subtitle:'Documentos, CAPA y aprobaciones',group:'CALIDAD Y SEGURIDAD',order:30},
   internalaudits:{title:'Auditorías Internas',subtitle:'Programa, hallazgos y evidencia',group:'CALIDAD Y SEGURIDAD',order:40},
   inspections:{title:'Inspecciones',subtitle:'Inspección de sucursal y hallazgos',group:'CALIDAD Y SEGURIDAD',order:50},
-  competencies:{title:'Competencias',subtitle:'Puestos, capacitación y brechas',group:'CALIDAD Y SEGURIDAD',order:60},
+  training:{title:'Mi Capacitación',subtitle:'Aprendizaje, práctica, evaluación, competencia y recertificación',group:'CALIDAD Y SEGURIDAD',order:55},
+  competencies:{title:'Competencias',subtitle:'Puestos, matriz, vigencias y brechas',group:'CALIDAD Y SEGURIDAD',order:60},
   documents:{title:'Control Documental',subtitle:'Documentos y cambios',group:'CALIDAD Y SEGURIDAD',order:70},
   compliance:{title:'Compliance',subtitle:'Riesgos y cumplimiento',group:'CALIDAD Y SEGURIDAD',order:80},
 

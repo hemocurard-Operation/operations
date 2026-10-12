@@ -19,6 +19,7 @@ export const competencyData={
   createRole:async p=>{const {data,error}=await sb().from('job_roles').insert(p).select('*').single();if(error)throw new Error(`Puesto: ${error.message}`);return data},
   createCompetency:async p=>{const {data,error}=await sb().from('competency_catalog').insert(p).select('*').single();if(error)throw new Error(`Competencia: ${error.message}`);return data},
   assignRole:async p=>{const {data,error}=await sb().from('staff_job_assignments').insert(p).select('*').single();if(error)throw new Error(`Asignación: ${error.message}`);return data},
+  assignRoleGoverned:async p=>{const {data,error}=await sb().rpc('training_assign_job_role',{p_user_id:p.user_id,p_job_role_id:p.job_role_id,p_branch_id:p.branch_id,p_primary_role:p.primary_role!==false,p_start_date:p.start_date});if(error)throw new Error(`Asignación: ${error.message}`);return data},
   assignCompetency:async p=>{const {data,error}=await sb().from('job_role_competencies').upsert(p,{onConflict:'job_role_id,competency_id'}).select('*').single();if(error)throw new Error(`Matriz: ${error.message}`);return data},
   createAssessment:async p=>{const {data,error}=await sb().from('competency_assessments').insert(p).select('*').single();if(error)throw new Error(`Evaluación: ${error.message}`);return data},
   createTraining:async p=>{const {data,error}=await sb().from('training_events').insert(p).select('*').single();if(error)throw new Error(`Capacitación: ${error.message}`);return data}

@@ -20,6 +20,7 @@ const ROUTE_PERMISSION={
   inspections:'QUALITY_VIEW',
   planning:'SUPPLY_VIEW',
   quality:'QUALITY_VIEW',
+  training:'TRAINING_SELF',
   documents:'DOCUMENTS_VIEW',
   compliance:'COMPLIANCE_VIEW',
   bi:'BI_VIEW',
