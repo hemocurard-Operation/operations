@@ -1,7 +1,7 @@
 {
   "project": "HemoCura Operations Intelligence + QMS + Compliance",
-  "version": "0.45.11",
-  "stage": "Security preflight + Supabase advisor baseline",
+  "version": "0.45.12",
+  "stage": "Value Chain 50 · demand, donor outreach, customers and integrated actions",
   "release_channel": "RC",
   "protected_files": [
     "js/config.js"

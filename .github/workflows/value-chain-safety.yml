@@ -1,0 +1,55 @@
+name: HemoCura Value Chain Safety
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'hemocura-core/value-chain*.js'
+      - 'hemocura-core/donor-outreach*.js'
+      - 'hemocura-core/customers*.js'
+      - 'hemocura-core/integrated-actions*.js'
+      - 'hemocura-core/router.js'
+      - 'hemocura-core/layout.js'
+      - 'hemocura-core/views.js'
+      - 'hemocura-core/access-control.js'
+      - 'hemocura-core/my-work.js'
+      - 'supabase/migrations/*value_chain_50*.sql'
+      - 'contracts/runtime-contract-v0.45.json'
+      - '.github/workflows/value-chain-safety.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  value-chain-safety:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate module registration
+        run: |
+          grep -q "valuechain" hemocura-core/router.js
+          grep -q "donoroutreach" hemocura-core/router.js
+          grep -q "customers" hemocura-core/router.js
+          grep -q "actions" hemocura-core/router.js
+          grep -q "mountValueChain" hemocura-core/layout.js
+          grep -q "mountDonorOutreach" hemocura-core/layout.js
+          grep -q "mountCustomers" hemocura-core/layout.js
+          grep -q "mountIntegratedActions" hemocura-core/layout.js
+      - name: Validate permission boundaries
+        run: |
+          grep -q "VALUE_CHAIN_VIEW" hemocura-core/access-control.js
+          grep -q "DONOR_OUTREACH_VIEW" hemocura-core/access-control.js
+          grep -q "CUSTOMER_VIEW" hemocura-core/access-control.js
+          grep -q "ACTIONS_VIEW" hemocura-core/access-control.js
+          ! grep -R "service_role\|SUPABASE_SERVICE_ROLE_KEY" hemocura-core/value-chain*.js hemocura-core/donor-outreach*.js hemocura-core/customers*.js hemocura-core/integrated-actions*.js
+      - name: Validate database safety declarations
+        run: |
+          grep -q "security_invoker=true" supabase/migrations/20261012105117_value_chain_50_foundation_v2.sql
+          grep -q "enable row level security" supabase/migrations/20261012105117_value_chain_50_foundation_v2.sql
+          grep -q "clinical_demand_requests" contracts/runtime-contract-v0.45.json
+          grep -q "vw_value_chain_scorecard" contracts/runtime-contract-v0.45.json
+      - name: Preserve clinical authority boundary
+        run: |
+          grep -q "no decide elegibilidad clínica" hemocura-core/donor-outreach.js
+          ! grep -R "auto.*elegib\|compatibilidad automática\|liberación automática" hemocura-core/value-chain*.js hemocura-core/donor-outreach*.js hemocura-core/customers*.js hemocura-core/integrated-actions*.js

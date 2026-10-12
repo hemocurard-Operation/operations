@@ -1,4 +1,4 @@
-const GROUP_ORDER=['INICIO','TRABAJO DIARIO','LABORATORIO Y SANGRE','CALIDAD Y SEGURIDAD','GESTIÓN','ADMINISTRACIÓN'];
+const GROUP_ORDER=['INICIO','TRABAJO DIARIO','CADENA DE VALOR','LABORATORIO Y SANGRE','CALIDAD Y SEGURIDAD','GESTIÓN','ADMINISTRACIÓN'];
 const ROUTES={
   mywork:{title:'Mi trabajo',subtitle:'Tus tareas y siguientes acciones según permisos',group:'INICIO',order:5},
   dashboard:{title:'Inicio',subtitle:'Resumen priorizado según tu rol',group:'INICIO',order:10},
@@ -13,6 +13,10 @@ const ROUTES={
   supply:{title:'Abastecimiento',subtitle:'Demanda, cobertura y donantes requeridos',group:'TRABAJO DIARIO',order:50},
   planning:{title:'Planificación',subtitle:'Plan operativo y forecast SHADOW',group:'TRABAJO DIARIO',order:60},
 
+  valuechain:{title:'Cadena de Valor',subtitle:'Demanda, capacidad, abastecimiento, despacho, ingreso y mejora',group:'CADENA DE VALOR',order:10},
+  donoroutreach:{title:'Captación de Donantes',subtitle:'Campañas, metas y donaciones atribuidas',group:'CADENA DE VALOR',order:20},
+  customers:{title:'Clientes y SLA',subtitle:'Clientes, acuerdos de servicio, valor y retroalimentación',group:'CADENA DE VALOR',order:30},
+
   donors:{title:'Donantes',subtitle:'Captura y revisión humana de donantes',group:'LABORATORIO Y SANGRE',order:10},
   screening:{title:'Tamizaje',subtitle:'Pruebas, reactivos, lotes y resultados',group:'LABORATORIO Y SANGRE',order:20},
   production:{title:'Producción',subtitle:'Componentes producidos y rendimiento',group:'LABORATORIO Y SANGRE',order:30},
@@ -23,6 +27,7 @@ const ROUTES={
   hemovigilance:{title:'Hemovigilancia',subtitle:'Eventos adversos, casi eventos y retiros',group:'LABORATORIO Y SANGRE',order:80},
   resources:{title:'Recursos Críticos',subtitle:'Equipos, reactivos y ambiente',group:'LABORATORIO Y SANGRE',order:90},
 
+  actions:{title:'Acciones Integradas',subtitle:'Cartera única de acciones, evidencia y eficacia',group:'CALIDAD Y SEGURIDAD',order:5},
   quality:{title:'SGC',subtitle:'Incidencias, NC, CAPA y alertas',group:'CALIDAD Y SEGURIDAD',order:10},
   approvals:{title:'Aprobaciones',subtitle:'Segregación de funciones y decisiones',group:'CALIDAD Y SEGURIDAD',order:20},
   qmsgov:{title:'Gobierno QMS',subtitle:'Documentos, CAPA y aprobaciones',group:'CALIDAD Y SEGURIDAD',order:30},

@@ -40,6 +40,10 @@ import { mountInventory } from './inventory.js';
 import { mountRequisitions } from './requisitions.js';
 import { mountInspections } from './inspections.js';
 import { mountPlanning } from './planning.js';
+import { mountValueChain } from './value-chain.js';
+import { mountDonorOutreach } from './donor-outreach.js';
+import { mountCustomers } from './customers.js';
+import { mountIntegratedActions } from './integrated-actions.js';
 import { mountQuality } from './quality.js';
 import { mountDocuments } from './documents.js';
 import { mountCompliance } from './compliance.js';
@@ -58,8 +62,8 @@ const MOUNTS={
   coldchain:mountColdChain,hemovigilance:mountHemovigilance,suppliers:mountSuppliers,sales:mountOperationalSales,
   donors:mountDonors,screening:mountScreening,bloodflow:mountBloodFlow,production:mountProduction,supply:mountSupplyPlanning,
   bloodinventory:mountBloodInventory,dailyinventory:mountDailyInventory,dispatches:mountDispatches,inventory:mountInventory,requisitions:mountRequisitions,
-  inspections:mountInspections,planning:mountPlanning,quality:mountQuality,documents:mountDocuments,compliance:mountCompliance,
-  bi:mountBI,projects:mountProjects,settings:mountSettings,users:mountUsers,qa:mountQA
+  inspections:mountInspections,planning:mountPlanning,valuechain:mountValueChain,donoroutreach:mountDonorOutreach,customers:mountCustomers,actions:mountIntegratedActions,
+  quality:mountQuality,documents:mountDocuments,compliance:mountCompliance,bi:mountBI,projects:mountProjects,settings:mountSettings,users:mountUsers,qa:mountQA
 };
 
 function esc(v=''){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#039;'}[c]))}
@@ -80,7 +84,7 @@ function buildGroupedNav(entries){
   const byGroup=new Map(routeGroups().map(g=>[g,[]]));
   for(const entry of entries){const group=entry[1].group||'ADMINISTRACIÓN';if(!byGroup.has(group))byGroup.set(group,[]);byGroup.get(group).push(entry)}
   return [...byGroup.entries()].filter(([,items])=>items.length).map(([group,items],i)=>`
-    <details class="nav-group" ${i<3?'open':''}>
+    <details class="nav-group" ${i<4?'open':''}>
       <summary class="nav-group-label">${esc(group)} <span>${items.length}</span></summary>
       <div class="nav-group-items">${items.map(([key,meta])=>`<button data-route="${esc(key)}" data-nav-text="${esc(`${meta.title} ${meta.subtitle}`.toLowerCase())}" title="${esc(meta.subtitle||meta.title)}">${esc(meta.title)}</button>`).join('')}</div>
     </details>`).join('');
