@@ -34,6 +34,13 @@ jobs:
           grep -q "users:'ACCESS_ADMIN'" hemocura-core/access-control.js
           grep -q "users:'users-root'" hemocura-core/views.js
           grep -q "users:mountUsers" hemocura-core/layout.js
+      - name: Branch access UX contract
+        run: |
+          grep -q "LABORATORIO','CONSULTA','ENCARGADA_LABORATORIO" hemocura-core/users.js
+          grep -q "SUPER_USUARIO" hemocura-core/users.js
+          grep -q 'name="branch_ids"' hemocura-core/users.js
+          grep -q 'Sucursal operativa' hemocura-core/users.js
+          grep -q 'Todas las sucursales' hemocura-core/users.js
       - name: No privileged key in browser code
         run: |
           ! grep -RniE "service[_-]?role|SUPABASE_SERVICE_ROLE|sb_secret_" hemocura-core/users*.js || (echo 'Privileged key reference found in frontend' && exit 1)
@@ -42,3 +49,13 @@ jobs:
           grep -q "ACCESS_ADMIN" supabase/functions/admin-users/index.ts
           grep -q "auth.admin" supabase/functions/admin-users/index.ts
           grep -q "SUPABASE_SERVICE_ROLE_KEY" supabase/functions/admin-users/index.ts
+      - name: Role and branch enforcement
+        run: |
+          grep -q 'const SUPER_ROLE = "SUPER_USUARIO"' supabase/functions/admin-users/index.ts
+          grep -q '"LABORATORIO", "CONSULTA", "ENCARGADA_LABORATORIO"' supabase/functions/admin-users/index.ts
+          grep -q 'HemoCura permite un solo Superusuario global' supabase/functions/admin-users/index.ts
+          grep -q 'Seleccione al menos una sucursal' supabase/functions/admin-users/index.ts
+          grep -q 'sucursales son inválidas o están inactivas' supabase/functions/admin-users/index.ts
+          grep -q 'audit_events' supabase/functions/admin-users/index.ts
+          grep -q 'USER_INVITED' supabase/functions/admin-users/index.ts
+          grep -q 'ROLE_ASSIGNED' supabase/functions/admin-users/index.ts
