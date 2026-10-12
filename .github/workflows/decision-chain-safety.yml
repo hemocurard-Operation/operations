@@ -1,0 +1,38 @@
+name: HemoCura Decision Chain Safety
+
+on:
+  pull_request:
+    paths:
+      - 'hemocura-core/service-performance*.js'
+      - 'hemocura-core/collections*.js'
+      - 'hemocura-core/economics*.js'
+      - 'hemocura-core/medical-network*.js'
+      - 'hemocura-core/decision-center*.js'
+      - 'hemocura-core/router.js'
+      - 'hemocura-core/layout.js'
+      - 'hemocura-core/views.js'
+      - 'hemocura-core/access-control.js'
+      - 'contracts/runtime-contract-v0.45.json'
+      - 'supabase/migrations/*decision_chain_50*.sql'
+      - '.github/workflows/decision-chain-safety.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  decision-chain-safety:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: JavaScript syntax
+        run: |
+          for f in hemocura-core/service-performance-data.js hemocura-core/service-performance.js hemocura-core/collections-data.js hemocura-core/collections.js hemocura-core/economics-data.js hemocura-core/economics.js hemocura-core/medical-network-data.js hemocura-core/medical-network.js hemocura-core/decision-center-data.js hemocura-core/decision-center.js hemocura-core/router.js hemocura-core/layout.js hemocura-core/views.js hemocura-core/access-control.js; do node --check "$f"; done
+      - name: Security invariants
+        run: |
+          ! grep -R "service_role\|sb_secret_" hemocura-core/service-performance*.js hemocura-core/collections*.js hemocura-core/economics*.js hemocura-core/medical-network*.js hemocura-core/decision-center*.js
+          grep -q "security_invoker=true" supabase/migrations/20261012112438_decision_chain_50_foundation.sql
+          grep -q "to authenticated" supabase/migrations/20261012112931_decision_chain_50_access_hardening.sql
+      - name: Contract declarations
+        run: |
+          python tools/runtime_contract_gate.py check-code contracts/runtime-contract-v0.45.json
