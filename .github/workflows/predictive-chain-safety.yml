@@ -1,0 +1,43 @@
+name: HemoCura Predictive Chain Safety
+on:
+  pull_request:
+    paths:
+      - 'hemocura-core/predictive*.js'
+      - 'hemocura-core/router.js'
+      - 'hemocura-core/views.js'
+      - 'hemocura-core/access-control.js'
+      - 'hemocura-core/layout.js'
+      - 'hemocura-core/my-work.js'
+      - 'contracts/runtime-contract-v0.45.json'
+      - 'supabase/migrations/*predictive_chain_50*.sql'
+      - 'VERSION.json'
+      - '.github/workflows/predictive-chain-safety.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  predictive-safety:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Predictive guardrails
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -q "predictive:mountPredictive" hemocura-core/layout.js
+          grep -q "predictive:'PREDICTIVE_VIEW'" hemocura-core/access-control.js
+          grep -q "vw_predictive_action_queue" hemocura-core/predictive-data.js
+          grep -q "predictive_decision_reviews" hemocura-core/predictive-data.js
+          grep -q "security_invoker=true" supabase/migrations/20261012120555_predictive_chain_50_foundation.sql
+          grep -q "revoke all on public.predictive_decision_reviews from anon" supabase/migrations/20261012120555_predictive_chain_50_foundation.sql
+          grep -q "human-in-the-loop" docs/PREDICTIVE_CHAIN_50_EXECUTION_REPORT.md
+          ! grep -R "service_role" hemocura-core/predictive*.js
+          python - <<'PY'
+          import json
+          v=json.load(open('VERSION.json'))
+          assert tuple(map(int,v['version'].split('.'))) >= (0,47,0)
+          c=json.load(open('contracts/runtime-contract-v0.45.json'))
+          for x in ['predictive_decision_reviews','vw_predictive_action_queue','vw_stock_risk_projection']:
+              assert x in c['optional_relations']
+          print('Predictive Chain guardrails OK')
+          PY
