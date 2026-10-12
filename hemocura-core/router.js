@@ -3,6 +3,7 @@ const ROUTES={
   mywork:{title:'Mi trabajo',subtitle:'Tus tareas y siguientes acciones según permisos',group:'INICIO',order:5},
   dashboard:{title:'Inicio',subtitle:'Resumen priorizado según tu rol',group:'INICIO',order:10},
   command:{title:'Centro de Mando',subtitle:'Cierre diario, score y excepciones',group:'INICIO',order:20},
+  decisioncenter:{title:'Centro de Decisión',subtitle:'Señales priorizadas convertibles en acciones con seguimiento',group:'INICIO',order:25},
 
   quickcapture:{title:'Captura rápida',subtitle:'Donantes, tamizaje, requisiciones, despachos e incidencias en formularios simples',group:'TRABAJO DIARIO',order:5},
   dailyinventory:{title:'Reporte Operativo Diario',subtitle:'Lotes, inventario, despachos y novedades en una sola captura',group:'TRABAJO DIARIO',order:8},
@@ -14,8 +15,12 @@ const ROUTES={
   planning:{title:'Planificación',subtitle:'Plan operativo y forecast SHADOW',group:'TRABAJO DIARIO',order:60},
 
   valuechain:{title:'Cadena de Valor',subtitle:'Demanda, capacidad, abastecimiento, despacho, ingreso y mejora',group:'CADENA DE VALOR',order:10},
+  serviceperformance:{title:'Desempeño y SLA',subtitle:'Demanda a despacho, tiempo de respuesta y cumplimiento',group:'CADENA DE VALOR',order:15},
   donoroutreach:{title:'Captación de Donantes',subtitle:'Campañas, metas y donaciones atribuidas',group:'CADENA DE VALOR',order:20},
+  medicalnetwork:{title:'Red Médica',subtitle:'Referidores, especialidades, referencias y conversión',group:'CADENA DE VALOR',order:25},
   customers:{title:'Clientes y SLA',subtitle:'Clientes, acuerdos de servicio, valor y retroalimentación',group:'CADENA DE VALOR',order:30},
+  collections:{title:'Cobranza y Aging',subtitle:'Cuentas por cobrar, vencimiento, cobros y saldo',group:'CADENA DE VALOR',order:40},
+  economics:{title:'Economía y Merma',subtitle:'Rentabilidad, pérdidas, campañas y contribución por sucursal',group:'CADENA DE VALOR',order:50},
 
   donors:{title:'Donantes',subtitle:'Captura y revisión humana de donantes',group:'LABORATORIO Y SANGRE',order:10},
   screening:{title:'Tamizaje',subtitle:'Pruebas, reactivos, lotes y resultados',group:'LABORATORIO Y SANGRE',order:20},
@@ -55,12 +60,7 @@ const ROUTES={
   release1:{title:'Release 1.0',subtitle:'Gate final de liberación',group:'ADMINISTRACIÓN',order:80},
   qa:{title:'QA Técnico',subtitle:'Validación integral',group:'ADMINISTRACIÓN',order:90}
 };
-export function routeList(){
-  return Object.entries(ROUTES).sort((a,b)=>{
-    const ga=GROUP_ORDER.indexOf(a[1].group),gb=GROUP_ORDER.indexOf(b[1].group);
-    return (ga-gb)||((a[1].order||999)-(b[1].order||999))||a[1].title.localeCompare(b[1].title);
-  });
-}
+export function routeList(){return Object.entries(ROUTES).sort((a,b)=>{const ga=GROUP_ORDER.indexOf(a[1].group),gb=GROUP_ORDER.indexOf(b[1].group);return (ga-gb)||((a[1].order||999)-(b[1].order||999))||a[1].title.localeCompare(b[1].title)})}
 export function routeGroups(){return [...GROUP_ORDER]}
 export function getRoute(){const k=(location.hash||'#mywork').replace('#','').split('?')[0];return ROUTES[k]?k:'mywork'}
 export function getRouteMeta(k){return ROUTES[k]||ROUTES.mywork}
