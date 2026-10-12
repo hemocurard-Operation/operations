@@ -31,7 +31,7 @@ const ROUTES={
   training:{title:'Mi Capacitación',subtitle:'Aprendizaje, práctica, evaluación, competencia y recertificación',group:'CALIDAD Y SEGURIDAD',order:55},
   competencies:{title:'Competencias',subtitle:'Puestos, matriz, vigencias y brechas',group:'CALIDAD Y SEGURIDAD',order:60},
   documents:{title:'Control Documental',subtitle:'Documentos y cambios',group:'CALIDAD Y SEGURIDAD',order:70},
-  compliance:{title:'Compliance',subtitle:'Riesgos y cumplimiento',group:'CALIDAD Y SEGURIDAD',order:80},
+  compliance:{title:'Compliance Penal',subtitle:'Programa penal, riesgos, evidencia y seguimiento',group:'CALIDAD Y SEGURIDAD',order:80},
 
   bi:{title:'Inteligencia de Negocios',subtitle:'Indicadores y análisis operativo',group:'GESTIÓN',order:10},
   management:{title:'Revisión Dirección',subtitle:'Objetivos, riesgos y seguimiento',group:'GESTIÓN',order:20},
