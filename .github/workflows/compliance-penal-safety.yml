@@ -1,0 +1,39 @@
+name: HemoCura Compliance Penal Safety
+
+on:
+  pull_request:
+    paths:
+      - 'hemocura-core/compliance.js'
+      - 'hemocura-core/compliance-penal-data.js'
+      - 'supabase/migrations/*compliance_penal*'
+      - '.github/workflows/compliance-penal-safety.yml'
+  workflow_dispatch:
+
+jobs:
+  compliance-penal-safety:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: JavaScript syntax
+        run: |
+          node --check hemocura-core/compliance.js
+          node --check hemocura-core/compliance-penal-data.js
+      - name: Legal program contract
+        run: |
+          grep -q 'Compliance Penal' hemocura-core/compliance.js
+          grep -q '5 de noviembre de 2026' hemocura-core/compliance.js
+          grep -q '11 requisitos mínimos' hemocura-core/compliance.js
+          grep -q 'CP-11' supabase/migrations/*compliance_penal*.sql
+          grep -q 'Trazabilidad documental' supabase/migrations/*compliance_penal*.sql
+      - name: Branch and permission controls
+        run: |
+          grep -q "COMPLIANCE_VIEW" supabase/migrations/*compliance_penal*.sql
+          grep -q "COMPLIANCE_WRITE" supabase/migrations/*compliance_penal*.sql
+          grep -q "can_access_branch" supabase/migrations/*compliance_penal*.sql
+          grep -q "enable row level security" supabase/migrations/*compliance_penal*.sql
+      - name: No privileged keys in browser code
+        run: |
+          ! grep -RniE 'service[_-]?role|SUPABASE_SERVICE_ROLE|sb_secret_' hemocura-core/compliance*.js || (echo 'Privileged key reference found in frontend' && exit 1)
