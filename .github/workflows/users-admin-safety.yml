@@ -1,0 +1,44 @@
+name: HemoCura Users Admin Safety
+
+on:
+  pull_request:
+    paths:
+      - 'hemocura-core/users*.js'
+      - 'hemocura-core/router.js'
+      - 'hemocura-core/views.js'
+      - 'hemocura-core/layout.js'
+      - 'hemocura-core/access-control.js'
+      - 'supabase/functions/admin-users/**'
+      - '.github/workflows/users-admin-safety.yml'
+  workflow_dispatch:
+
+jobs:
+  users-admin-safety:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: JavaScript syntax
+        run: |
+          node --check hemocura-core/users.js
+          node --check hemocura-core/users-data.js
+          node --check hemocura-core/router.js
+          node --check hemocura-core/views.js
+          node --check hemocura-core/layout.js
+          node --check hemocura-core/access-control.js
+      - name: Route and permission contract
+        run: |
+          grep -q "users:{title:'Usuarios y Roles'" hemocura-core/router.js
+          grep -q "users:'ACCESS_ADMIN'" hemocura-core/access-control.js
+          grep -q "users:'users-root'" hemocura-core/views.js
+          grep -q "users:mountUsers" hemocura-core/layout.js
+      - name: No privileged key in browser code
+        run: |
+          ! grep -RniE "service[_-]?role|SUPABASE_SERVICE_ROLE|sb_secret_" hemocura-core/users*.js || (echo 'Privileged key reference found in frontend' && exit 1)
+      - name: Server-side admin boundary
+        run: |
+          grep -q "ACCESS_ADMIN" supabase/functions/admin-users/index.ts
+          grep -q "auth.admin" supabase/functions/admin-users/index.ts
+          grep -q "SUPABASE_SERVICE_ROLE_KEY" supabase/functions/admin-users/index.ts
