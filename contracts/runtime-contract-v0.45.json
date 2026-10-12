@@ -11,7 +11,7 @@
     "donor_campaigns","vw_donor_campaign_performance","customer_service_agreements","customer_feedback","vw_customer_value_summary","integrated_actions","vw_integrated_actions_open",
     "customer_payments","inventory_loss_events","medical_referrers","medical_referral_events",
     "vw_service_level_performance","vw_accounts_receivable","vw_customer_profitability","vw_inventory_loss_economics","vw_campaign_economics","vw_medical_network_performance","vw_branch_contribution","vw_decision_action_candidates",
-    "predictive_decision_reviews","vw_predictive_demand_30d","vw_stock_risk_projection","vw_cash_collection_forecast","vw_customer_health_score","vw_branch_productivity_30d","vw_avoidable_loss_signals","vw_predictive_action_candidates"
+    "predictive_decision_reviews","vw_predictive_demand_30d","vw_stock_risk_projection","vw_cash_collection_forecast","vw_customer_health_score","vw_branch_productivity_30d","vw_avoidable_loss_signals","vw_predictive_action_candidates","vw_predictive_action_queue","vw_referrer_effectiveness_score","vw_predictive_network_candidates"
   ],
   "optional_rpcs": ["hc_adjust_sale_line","hc_calculate_monthly_product_costs","hc_production_healthcheck"],
   "ignored_relations": [],
