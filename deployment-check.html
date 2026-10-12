@@ -28,7 +28,7 @@ import { CONFIG, validateConfig, maskKey, getSupabaseHost } from './js/config.js
 const files=[
  './VERSION.json','./index.html','./login.html','./js/app.js','./js/config.js',
  './hemocura-core/bootstrap.js','./hemocura-core/layout.js','./hemocura-core/router.js',
- './hemocura-core/views.js','./hemocura-core/ops-dashboard.js','./css/app.css','./css/ui-v0442.css'
+ './hemocura-core/views.js','./hemocura-core/ops-dashboard.js','./js/vendor/supabase-2.117.3.js','./css/app.css','./css/ui-v0442.css'
 ];
 
 const rows=[];
@@ -74,7 +74,19 @@ try{
 document.getElementById('supabase-summary').className=supabaseOk?'ok':'bad';
 document.getElementById('supabase-summary').textContent=supabaseOk?'SUPABASE READY':'SUPABASE ERROR';
 
-const allOk=staticOk&&config.ok&&supabaseOk;
+let modulesOk=false;
+let moduleDetail='';
+try{
+  await Promise.race([
+    Promise.all([import('./hemocura-core/bootstrap.js'),import('./js/vendor/supabase-2.117.3.js')]),
+    new Promise((_,reject)=>setTimeout(()=>reject(new Error('La carga de módulos superó 15 segundos')),15000))
+  ]);
+  modulesOk=true;
+  moduleDetail='Módulos de arranque y librería Supabase cargados';
+}catch(error){moduleDetail='Carga de módulos fallida: '+String(error?.message||error)}
+const moduleLine=document.createElement('p');moduleLine.className=modulesOk?'ok':'bad';moduleLine.textContent=moduleDetail;
+document.getElementById('supabase-summary').closest('.card').append(moduleLine);
+const allOk=staticOk&&config.ok&&supabaseOk&&modulesOk;
 document.getElementById('summary').innerHTML=`<strong class="${allOk?'ok':'bad'}">${allOk?'DEPLOYMENT READY':'DEPLOYMENT NOT READY'}</strong><br><span>${supabaseDetail}</span>`;
 </script>
 </body>

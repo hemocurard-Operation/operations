@@ -1,4 +1,4 @@
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+import { createClient } from '../js/vendor/supabase-2.117.3.js';
 import { CONFIG } from '../js/config.js';
 import { normalizeConfigValidation, diagnosticFromCode, formatDiagnostic } from './diagnostic-engine.js';
 
