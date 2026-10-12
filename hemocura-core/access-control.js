@@ -27,6 +27,7 @@ const ROUTE_PERMISSION={
   bi:'BI_VIEW',
   projects:'PROJECTS_VIEW',
   settings:'ADMIN_VIEW',
+  users:'ACCESS_ADMIN',
   qa:'RELEASE_GATE_VIEW',
   security:'ACCESS_ADMIN',
   diagnostics:'RELEASE_GATE_VIEW',
