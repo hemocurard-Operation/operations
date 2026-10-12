@@ -56,6 +56,21 @@ Deno.serve(async (req: Request) => {
     if (permErr) throw permErr;
     if (!adminPerms?.length) return json({ error: "ACCESS_ADMIN requerido" }, 403);
 
+    async function audit(action: string, entityId: string | null, beforeData: unknown, afterData: unknown, metadata: Record<string, unknown> = {}) {
+      const { error } = await admin.from("audit_events").insert({
+        user_id: callerData.user.id,
+        module: "USERS_ADMIN",
+        action,
+        entity_table: "auth.users",
+        entity_id: entityId,
+        entity_reference: entityId,
+        before_data: beforeData ?? null,
+        after_data: afterData ?? null,
+        metadata: { source: "admin-users-edge", ...metadata },
+      });
+      if (error) console.warn("[ADMIN_USERS_AUDIT]", error.message);
+    }
+
     const body = await req.json().catch(() => ({}));
     const action = String(body.action || "list");
 
@@ -101,14 +116,15 @@ Deno.serve(async (req: Request) => {
           full_name: p.full_name || u.user_metadata?.full_name || "",
           branch_id: p.branch_id || null,
           branch_name: (bm.get(p.branch_id) as any)?.name || "",
-          active: p.active !== false,
+          active: p.active !== false && !u.banned_until,
+          banned_until: u.banned_until || null,
           roles: rolesByUser.get(u.id) || [],
           created_at: u.created_at,
           last_sign_in_at: u.last_sign_in_at || null,
           email_confirmed_at: u.email_confirmed_at || null,
         };
       });
-      return json({ users, roles: roles || [], branches: branches || [] });
+      return json({ users, roles: roles || [], branches: branches || [], caller_user_id: callerData.user.id });
     }
 
     if (action === "invite" || action === "create") {
@@ -118,8 +134,8 @@ Deno.serve(async (req: Request) => {
       const branchId = requireText(body.branch_id, "Sucursal");
 
       const [{ data: role, error: roleCheckError }, { data: branch, error: branchCheckError }] = await Promise.all([
-        admin.from("roles").select("id").eq("id", roleId).maybeSingle(),
-        admin.from("branches").select("id,active").eq("id", branchId).maybeSingle(),
+        admin.from("roles").select("id,code,name").eq("id", roleId).maybeSingle(),
+        admin.from("branches").select("id,code,name,active").eq("id", branchId).maybeSingle(),
       ]);
       if (roleCheckError) throw roleCheckError;
       if (branchCheckError) throw branchCheckError;
@@ -161,6 +177,7 @@ Deno.serve(async (req: Request) => {
         throw e;
       }
 
+      await audit(action === "invite" ? "USER_INVITED" : "USER_CREATED", created.id, null, { email, full_name: fullName, role_id: roleId, branch_id: branchId });
       return json({ ok: true, user: { id: created.id, email, full_name: fullName } }, 201);
     }
 
@@ -170,6 +187,43 @@ Deno.serve(async (req: Request) => {
       const branchId = requireText(body.branch_id, "Sucursal");
       const { error } = await admin.from("user_roles").upsert({ user_id: userId, role_id: roleId, branch_id: branchId });
       if (error) throw error;
+      await audit("ROLE_ADDED", userId, null, { role_id: roleId, branch_id: branchId });
+      return json({ ok: true });
+    }
+
+    if (action === "remove_role") {
+      const userId = requireText(body.user_id, "Usuario");
+      const roleId = requireText(body.role_id, "Rol");
+      const branchId = requireText(body.branch_id, "Sucursal");
+      if (userId === callerData.user.id) {
+        const { data: roleAccess, error: roleAccessError } = await admin
+          .from("role_permissions")
+          .select("permission_code")
+          .eq("role_id", roleId)
+          .eq("permission_code", "ACCESS_ADMIN")
+          .limit(1);
+        if (roleAccessError) throw roleAccessError;
+        if (roleAccess?.length) return json({ error: "No puede retirarse a sí mismo un rol con ACCESS_ADMIN desde esta pantalla." }, 400);
+      }
+      const { data: before, error: beforeError } = await admin.from("user_roles").select("user_id,role_id,branch_id").eq("user_id", userId).eq("role_id", roleId).eq("branch_id", branchId);
+      if (beforeError) throw beforeError;
+      const { error } = await admin.from("user_roles").delete().eq("user_id", userId).eq("role_id", roleId).eq("branch_id", branchId);
+      if (error) throw error;
+      await audit("ROLE_REMOVED", userId, before || null, null, { role_id: roleId, branch_id: branchId });
+      return json({ ok: true });
+    }
+
+    if (action === "set_active") {
+      const userId = requireText(body.user_id, "Usuario");
+      const active = body.active === true;
+      if (!active && userId === callerData.user.id) return json({ error: "No puede desactivar su propio usuario." }, 400);
+      const { data: beforeProfile, error: profileReadError } = await admin.from("profiles").select("id,active").eq("id", userId).maybeSingle();
+      if (profileReadError) throw profileReadError;
+      const { data: authUpdated, error: authUpdateError } = await admin.auth.admin.updateUserById(userId, { ban_duration: active ? "none" : "876000h" });
+      if (authUpdateError) throw authUpdateError;
+      const { error: profileUpdateError } = await admin.from("profiles").update({ active, updated_at: new Date().toISOString() }).eq("id", userId);
+      if (profileUpdateError) throw profileUpdateError;
+      await audit(active ? "USER_REACTIVATED" : "USER_DEACTIVATED", userId, beforeProfile || null, { active, banned_until: authUpdated.user?.banned_until || null });
       return json({ ok: true });
     }
 
