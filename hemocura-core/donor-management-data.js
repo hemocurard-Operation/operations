@@ -20,14 +20,15 @@ async function write(label,query){
 }
 const sb=()=>getSupabase();
 export const donorManagement={
-  list:()=>all('Donantes',()=>sb().from('donors').select('*').order('registration_date',{ascending:false}).order('id')),
+  list:()=>all('Donantes',()=>sb().from('donors').select('id,donor_code,branch_id,full_name,cedula,sex,phone,preferred_channel,abo,rh,status,deferral_reason,effective_donation,observations,registration_date,donor_type').order('registration_date',{ascending:false}).order('id')),
   detail:async id=>{
-    const [donations,comments,contacts,visits]=await Promise.all([
+    const [donations,comments,contacts,visits,source]=await Promise.all([
       all('Historial',()=>sb().from('donations').select('*').eq('donor_id',id).order('donation_date',{ascending:false}).order('id')),
       all('Laboratorio',()=>sb().from('donor_lab_comments').select('*').eq('donor_id',id).order('created_at',{ascending:false}).order('id')),
       all('Contactos',()=>sb().from('donor_contacts').select('*').eq('donor_id',id).order('contacted_at',{ascending:false}).order('id')),
-      all('Agenda',()=>sb().from('donor_visits').select('*').eq('donor_id',id).order('starts_at',{ascending:false}).order('id'))
-    ]);return {donations,comments,contacts,visits};
+      all('Agenda',()=>sb().from('donor_visits').select('*').eq('donor_id',id).order('starts_at',{ascending:false}).order('id')),
+      read('Antecedentes importados',sb().from('donors').select('donor_import_metadata').eq('id',id).single())
+    ]);return {donations,comments,contacts,visits,imported:source.donor_import_metadata||null};
   },
   saveProfile:(id,payload)=>write('Ficha',id?sb().from('donors').update(payload).eq('id',id):sb().from('donors').insert(payload)),
   comment:p=>write('Comentario',sb().from('donor_lab_comments').insert(p)),

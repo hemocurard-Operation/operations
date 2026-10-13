@@ -1,9 +1,13 @@
 create function pg_temp.assert(ok boolean,label text) returns void language plpgsql as $$begin if not coalesce(ok,false) then raise exception 'FAIL %',label;end if;raise notice 'PASS %',label;end$$;
 create function pg_temp.expect_fail(statement text,label text) returns void language plpgsql as $$begin begin execute statement;exception when others then raise notice 'PASS %',label;return;end;raise exception 'FAIL %: allowed',label;end$$;
+update donors set donor_import_metadata='{"source_file":"fictitious.xlsx"}' where donor_code='D-TEST';
 select set_config('test.actor','e2000000-0000-0000-0000-000000000001',false);
+
 set role authenticated;
 select pg_temp.assert((select count(*)=1 from donors),'branch limits donor identity visibility');
 update donors set full_name='Persona prueba',cedula='00000000000',sex='FEMENINO' where donor_code='D-TEST';
+select pg_temp.expect_fail($q$update donors set donor_import_metadata='{}' where donor_code='D-TEST'$q$,'import provenance immutable for app users');
+select pg_temp.assert((select donor_import_metadata->>'source_file'='fictitious.xlsx' from donors where donor_code='D-TEST'),'profile updates preserve import source');
 select pg_temp.expect_fail($q$insert into donors(donor_code,branch_id,cedula) values('D-DUP','e1000000-0000-0000-0000-000000000001','00000000000')$q$,'duplicate cedula rejected');
 select pg_temp.expect_fail($q$update donors set cedula='123' where donor_code='D-TEST'$q$,'invalid cedula rejected');
 insert into donor_lab_comments(donor_id,branch_id,comment,created_by,responsible_name) values('e3000000-0000-0000-0000-000000000001','e1000000-0000-0000-0000-000000000001','Nota de prueba','e2000000-0000-0000-0000-000000000002','Falso');

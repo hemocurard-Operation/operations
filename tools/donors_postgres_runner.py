@@ -10,7 +10,7 @@ try:
   if subprocess.run(base+['exec',name,'pg_isready','-h','127.0.0.1','-U','postgres'],capture_output=True).returncode==0:break
   time.sleep(.2)
  else:raise RuntimeError('PostgreSQL did not become ready')
- for label,path in [('bootstrap',root/'tests/donors/database-bootstrap.sql'),('migration',root/'supabase/migrations/20261013183215_donor_management.sql'),('business',root/'tests/donors/business-rules.sql')]:
+ for label,path in [('bootstrap',root/'tests/donors/database-bootstrap.sql'),('migration',root/'supabase/migrations/20261013183215_donor_management.sql'),('provenance',root/'supabase/migrations/20261013190249_donor_import_provenance.sql'),('business',root/'tests/donors/business-rules.sql')]:
   r=subprocess.run(base+['exec','-i',name,'psql','-h','127.0.0.1','-U','postgres','-v','ON_ERROR_STOP=1'],input=path.read_text(),text=True,capture_output=True)
   (out/(label+'.log')).write_text(r.stdout+r.stderr)
   if r.returncode:raise RuntimeError(label+': '+r.stderr[-1500:])

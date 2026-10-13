@@ -1,0 +1,31 @@
+{
+  "environment": "isolated local PostgreSQL 17; authorization helper stubs",
+  "checks": [
+    "branch limits donor identity visibility",
+    "import provenance immutable for app users",
+    "profile updates preserve import source",
+    "duplicate cedula rejected",
+    "invalid cedula rejected",
+    "laboratory author set by server",
+    "laboratory comments immutable",
+    "contact cannot reference another branch donor",
+    "contact and followup persisted",
+    "future performed contact rejected",
+    "only one active visit per donor",
+    "reschedule preserves server history and increments revision",
+    "stale revision cannot overwrite visit",
+    "future attendance rejected",
+    "attendance does not alter clinical status or donation",
+    "closed visit cannot reopen",
+    "contact history cannot be deleted",
+    "view-only actor can read permitted history",
+    "view-only actor cannot edit identity",
+    "view-only actor cannot schedule",
+    "laboratory permission required",
+    "inactive profile cannot read history",
+    "agenda and comments audited",
+    "anonymous contact access denied",
+    "anonymous agenda access denied"
+  ],
+  "status": "PASS"
+}

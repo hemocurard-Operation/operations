@@ -1,0 +1,26 @@
+{
+  "source_rows": 5032,
+  "candidate_donors": 2742,
+  "represented_source_rows": 4326,
+  "merged_duplicate_rows": 1584,
+  "quarantine_rows": 706,
+  "quarantine_reasons": {
+    "Conflicto de identidad: cédula asociada a nombres distintos o nombre con cédulas distintas": 509,
+    "Sin nombre que permita identificar al donante": 197
+  },
+  "branch_candidates": {
+    "(Sin sucursal)": 2000,
+    "SANTIAGO": 741,
+    "PUERTO PLATA": 1
+  },
+  "missing_cedula": 1836,
+  "missing_phone": 1273,
+  "blood_group_conflicts": 9,
+  "source_sha256": "e621c1f4828169fc0f66573ffe3d1ecae4e28489a54f61ac3e08056892a0c088",
+  "imported_donors": 742,
+  "imported_santiago": 741,
+  "imported_puerto_plata": 1,
+  "pending_branch_assignment": 2000,
+  "source_data_published": false,
+  "all_imported_pending_clinical_review": true
+}
