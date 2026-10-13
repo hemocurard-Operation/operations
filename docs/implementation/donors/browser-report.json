@@ -1,0 +1,75 @@
+{
+  "status": "PASS",
+  "environment": "actual modules; injected local SDK; no remote data",
+  "checks": [
+    {
+      "name": "identity and history load in actual donor module",
+      "pass": true
+    },
+    {
+      "name": "laboratory comment includes responsible",
+      "pass": true
+    },
+    {
+      "name": "cedula search accepts separators",
+      "pass": true
+    },
+    {
+      "name": "history belongs only to selected donor",
+      "pass": true
+    },
+    {
+      "name": "identity editing preserves clinical state",
+      "pass": true
+    },
+    {
+      "name": "comments cannot inject markup",
+      "pass": true
+    },
+    {
+      "name": "followup stored with Santo Domingo timezone",
+      "pass": true
+    },
+    {
+      "name": "duplicate active appointment disabled",
+      "pass": true
+    },
+    {
+      "name": "reschedule updates selected visit",
+      "pass": true
+    },
+    {
+      "name": "visit confirmation does not change clinical status",
+      "pass": true
+    },
+    {
+      "name": "canceled visit leaves active agenda",
+      "pass": true
+    },
+    {
+      "name": "new donor stores normalized identity and pending review",
+      "pass": true
+    },
+    {
+      "name": "mobile layout fits without horizontal overflow",
+      "pass": true
+    },
+    {
+      "name": "mobile identity form fits",
+      "pass": true
+    },
+    {
+      "name": "view-only role has no write controls",
+      "pass": true
+    },
+    {
+      "name": "load failure exposes retry",
+      "pass": true
+    },
+    {
+      "name": "no browser runtime errors",
+      "pass": true
+    }
+  ],
+  "errors": []
+}

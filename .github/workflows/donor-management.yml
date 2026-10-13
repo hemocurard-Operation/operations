@@ -1,0 +1,36 @@
+name: Donor management regressions
+on:
+  push:
+    branches: [main]
+    paths: ['hemocura-core/donors.js', 'hemocura-core/donor-management-data.js', 'css/donors.css', 'tests/donors/**', 'tools/donors_*', 'supabase/migrations/*donor_management.sql', '.github/workflows/donor-management.yml']
+  pull_request:
+    paths: ['hemocura-core/donors.js', 'hemocura-core/donor-management-data.js', 'css/donors.css', 'tests/donors/**', 'tools/donors_*', 'supabase/migrations/*donor_management.sql', '.github/workflows/donor-management.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  donors:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Parse ES modules
+        run: python tools/javascript_syntax_gate.py hemocura-core/donors.js hemocura-core/donor-management-data.js
+      - name: PostgreSQL rules and branch permissions
+        run: python tools/donors_postgres_runner.py
+      - name: Install pinned browser test dependency
+        run: npm ci --prefix tests/wave50
+      - name: Install browser
+        run: node tests/wave50/node_modules/playwright/cli.js install --with-deps chromium
+      - name: Browser flows and mobile layout
+        run: node tools/donors_browser_runner.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: donor-management-regressions
+          path: |
+            /tmp/hemocura-donors-postgres
+            /tmp/hemocura-donors-browser

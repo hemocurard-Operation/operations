@@ -1,0 +1,29 @@
+.donor-page{--donor-accent:#a20d30;display:grid;gap:18px;min-width:0}
+.donor-page button:not(.secondary){background:var(--donor-accent);border-color:var(--donor-accent)}
+.donor-page .sales-toolbar{margin:0;gap:16px;flex-wrap:wrap}
+.donor-search{display:grid;grid-template-columns:minmax(180px,1fr) minmax(180px,1fr) auto;gap:14px;align-items:end}
+.donor-search label,.donor-page form label{display:grid;gap:7px}
+.donor-columns{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:20px;align-items:start}
+.donor-stack{display:grid;gap:18px;min-width:0}
+.donor-page .card{margin:0;min-width:0}
+.donor-page h3{margin:0 0 16px}.donor-card-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
+.donor-card-head h3{margin:0}.donor-identity{display:flex;align-items:center;gap:15px;margin-bottom:22px}
+.donor-avatar{width:60px;height:60px;flex:none;border-radius:50%;background:#edf2fa;color:#284566;display:grid;place-items:center;font-weight:700;font-size:22px}
+.donor-group{margin-left:auto;background:#a20d30;color:white;border-radius:12px;padding:14px;font-weight:700;font-size:26px;white-space:nowrap}
+.donor-name{font-size:22px;overflow-wrap:anywhere}.donor-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin:0}
+.donor-fields dt{font-size:13px;color:#53647e;margin-bottom:5px}.donor-fields dd{margin:0;overflow-wrap:anywhere}
+.donor-page input,.donor-page select,.donor-page select{min-height:42px;padding:9px 12px;border:1px solid #cbd5e1;border-radius:8px;background:white;color:#172338;font:inherit}
+.donor-page textarea{box-sizing:border-box;width:100%;min-width:0}
+.donor-page select{min-height:42px;padding:9px 12px;border:1px solid #cbd5e1;border-radius:8px;background:white;color:#172338;font:inherit}
+.donor-page textarea{resize:vertical;min-height:88px}.donor-page .filter-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+.donor-section{padding-top:22px;margin-top:22px;border-top:1px solid #e1e7ef}
+.donor-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}.donor-actions button{flex:1}
+.donor-entry{padding:13px;background:#f5f7fb;border-radius:9px;margin-bottom:12px;overflow-wrap:anywhere}
+.donor-entry p{margin:6px 0;white-space:pre-wrap}.donor-timeline{max-height:310px;overflow:auto}
+.donor-flow{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:16px;border:1px solid #e1e7ef;border-radius:12px;background:white;color:#53647e}
+.donor-page .sales-dialog{max-width:700px;width:calc(100% - 32px);box-sizing:border-box;max-height:90vh;overflow:auto}
+.donor-page .sales-dialog .full{grid-column:1/-1}.donor-page [role=status]:empty{display:none}
+.donor-page .status{overflow-wrap:anywhere}.donor-page .donor-lab-label{font-size:13px;margin:8px 0 16px}
+.donor-page .donor-selected{border-left:4px solid var(--donor-accent)}
+@media(max-width:850px){.donor-columns{grid-template-columns:1fr}.donor-search{grid-template-columns:1fr 1fr}.donor-search button{grid-column:1/-1}}
+@media(max-width:480px){.donor-search,.donor-fields,.donor-page .filter-grid{grid-template-columns:1fr}.donor-page .card{padding:16px}.donor-name{font-size:19px}.donor-group{font-size:22px;padding:10px}.donor-avatar{width:44px;height:44px;font-size:18px}.donor-card-head{align-items:start;flex-wrap:wrap}.donor-flow{font-size:13px}}

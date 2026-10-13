@@ -1,30 +1,95 @@
-import { localDay } from './workflow-domain.js';
+import { localDay, localDateTime, rdTimestamp } from './workflow-domain.js';
 import { bloodData } from './blood-operations-data.js';
-function esc(v=''){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
-const today=()=>localDay();
-
+import { donorManagement } from './donor-management-data.js';
+import { loadAccess } from './access-control.js';
+import { esc, field, table } from './workflow-ui.js';
+const GROUPS=[['','Pendiente'],'A','B','AB','O'];
+const RH=[['','Pendiente'],['POSITIVO','Positivo'],['NEGATIVO','Negativo']];
+const CHANNELS=[['LLAMADA','Llamada'],['WHATSAPP','WhatsApp'],['SMS','SMS'],['CORREO','Correo']];
+const VISIT_STATES={POR_CONFIRMAR:'Por confirmar',CONFIRMADA:'Confirmada',ASISTIO:'Asistió',NO_ASISTIO:'No asistió',CANCELADA:'Cancelada'};
+const ACTIVE=['POR_CONFIRMAR','CONFIRMADA'];
+const when=value=>localDateTime(value).replace('T',' · ')||'—';
+const group=d=>d.abo&&d.rh?`${d.abo}${d.rh==='POSITIVO'?'+':'−'}`:'Pendiente';
+const show=v=>esc(v||'Sin registrar');
+const stamp=()=>localDateTime(new Date().toISOString());
 export async function mountDonors(root){
- const branches=await bloodData.branches(); const bm=Object.fromEntries(branches.map(b=>[b.id,b.name]));
- root.innerHTML=`<div class="sales-toolbar"><div><h2 class="section-heading">Donantes</h2><div class="muted">Captura guiada con revisión humana; el sistema no determina elegibilidad clínica.</div></div><button id="don-new">Nuevo donante</button></div>
- <div id="don-msg"></div><div class="grid sales-kpis" id="don-kpis"></div>
- <section class="card"><div class="table-wrap"><table class="data-table"><thead><tr><th>Fecha</th><th>Código</th><th>Sucursal</th><th>Tipo</th><th>ABO</th><th>Rh</th><th>Estado</th><th>Donación</th></tr></thead><tbody id="don-body"></tbody></table></div></section>
- <dialog id="don-dialog" class="sales-dialog"><form id="don-form"><h3>Registro de donante</h3><div class="status info">La condición del donante debe ser confirmada por personal autorizado.</div>
- <div class="quick-form-grid"><label>Código<input id="don-code" list="don-codes" required placeholder="DON-2026-001" autocomplete="off"><datalist id="don-codes"></datalist><small class="form-hint">Puede reutilizar el formato de códigos recientes.</small></label><label>Fecha<input id="don-date" type="date" value="${today()}" required></label>
- <label>Sucursal<select id="don-branch" required><option value="">Seleccionar…</option>${branches.map(b=>`<option value="${esc(b.id)}">${esc(b.name)}</option>`).join('')}</select></label>
- <label>Tipo<select id="don-type"><option>VOLUNTARIO</option><option>REPOSICION</option><option>DIRIGIDO</option></select></label>
- <label>ABO<select id="don-abo"><option value="">Pendiente</option><option>A</option><option>B</option><option>AB</option><option>O</option></select></label>
- <label>Rh<select id="don-rh"><option value="">Pendiente</option><option>POSITIVO</option><option>NEGATIVO</option></select></label>
- <label>Estado de revisión humana<select id="don-status"><option>PENDIENTE</option><option>ACEPTADO</option><option>DIFERIDO</option></select></label>
- <label>Motivo de diferimiento<input id="don-reason" list="don-reasons" autocomplete="off"><datalist id="don-reasons"><option value="Hemoglobina fuera de criterio"><option value="Presión arterial fuera de criterio"><option value="Medicamento / tratamiento"><option value="Procedimiento reciente"><option value="Otro motivo documentado"></datalist></label>
- <label class="full"><input id="don-effective" type="checkbox"> Donación efectiva confirmada</label>
- <label class="full">Observaciones<textarea id="don-notes"></textarea></label></div>
- <div class="dialog-actions"><button type="button" id="don-cancel" class="secondary">Cancelar</button><button>Guardar</button></div></form></dialog>`;
- async function load(){try{const [rows,sum]=await Promise.all([bloodData.donors(),bloodData.donorSummary()]);document.getElementById('don-body').innerHTML=rows.length?rows.map(r=>`<tr><td>${esc(r.registration_date)}</td><td><code>${esc(r.donor_code)}</code></td><td>${esc(bm[r.branch_id]||r.branch_id)}</td><td>${esc(r.donor_type)}</td><td>${esc(r.abo||'—')}</td><td>${esc(r.rh||'—')}</td><td>${esc(r.status)}</td><td>${r.effective_donation?'Sí':'No'}</td></tr>`).join(''):'<tr><td colspan="8">Sin donantes.</td></tr>';
- const recent=[...new Set(rows.map(r=>r.donor_code).filter(Boolean))].slice(0,20);document.getElementById('don-codes').innerHTML=recent.map(x=>`<option value="${esc(x)}">`).join('');
- const total=sum.reduce((a,x)=>a+Number(x.total_donors||0),0), eff=sum.reduce((a,x)=>a+Number(x.effective_donations||0),0), def=sum.reduce((a,x)=>a+Number(x.deferred_donors||0),0);
- document.getElementById('don-kpis').innerHTML=`<section class="card"><div class="muted">Donantes</div><div class="kpi">${total}</div></section><section class="card"><div class="muted">Efectivos</div><div class="kpi">${eff}</div></section><section class="card"><div class="muted">Diferidos</div><div class="kpi">${def}</div></section>`;
- }catch(e){document.getElementById('don-msg').innerHTML=`<div class="status warn">${esc(e.message)}</div>`}}
- document.getElementById('don-new').onclick=()=>document.getElementById('don-dialog').showModal();document.getElementById('don-cancel').onclick=()=>document.getElementById('don-dialog').close();
- document.getElementById('don-form').onsubmit=async e=>{e.preventDefault();try{await bloodData.createDonor({donor_code:val('don-code'),branch_id:val('don-branch'),donor_type:val('don-type'),abo:val('don-abo')||null,rh:val('don-rh')||null,status:val('don-status'),deferral_reason:val('don-reason')||null,effective_donation:document.getElementById('don-effective').checked,observations:val('don-notes')||null,registration_date:val('don-date')});document.getElementById('don-dialog').close();e.target.reset();document.getElementById('don-date').value=today();await load()}catch(x){document.getElementById('don-msg').innerHTML=`<div class="status bad">${esc(x.message)}</div>`}};
- function val(id){return document.getElementById(id).value.trim()} await load();
+ if(!document.querySelector('[data-donor-styles]')){const link=document.createElement('link');link.rel='stylesheet';link.href=new URL('../css/donors.css',import.meta.url).href;link.dataset.donorStyles='';document.head.append(link)}
+ root.innerHTML='<div class="donor-page"><section class="card" role="status">Cargando donantes…</section></div>';
+ let branches,access,rows=[],selected=null,details=null,detailTicket=0,search='',busy=false;
+ try{[branches,access,rows]=await Promise.all([bloodData.branches(),loadAccess(),donorManagement.list()])}catch(e){root.innerHTML=`<section class="card"><div class="status bad" role="alert">${esc(e.message)}</div><button data-retry>Reintentar</button></section>`;root.querySelector('[data-retry]').onclick=()=>mountDonors(root);return}
+ const canWrite=access.permissions.has('DONORS_WRITE');
+ const canLab=access.permissions.has('SCREENING_WRITE');
+ const bm=Object.fromEntries(branches.map(b=>[b.id,b.name]));
+ const branchItems=[['','Seleccionar…'],...branches.map(b=>[b.id,b.name])];
+ root.innerHTML=`<div class="donor-page"><div class="sales-toolbar"><div><h2 class="section-heading">Gestión de donantes</h2><div class="muted">Identifica, contacta y coordina la próxima visita.</div></div>${canWrite?'<button id="don-new">+ Nuevo donante</button>':''}</div>
+ <div id="don-msg" role="status" aria-live="polite"></div>
+ <section class="card donor-search"><label>Buscar por nombre o cédula<input id="don-search" type="search" placeholder="Nombre, cédula o código" autocomplete="off"></label><label>Donante<select id="don-select"></select></label><button id="don-refresh" class="secondary">Actualizar</button></section>
+ <div id="don-detail"></div><div class="donor-flow"><span>1 · Identificar</span><span>2 · Contactar</span><span>3 · Agendar</span><span>4 · Confirmar</span><span>5 · Registrar donación</span></div>
+ <dialog id="don-dialog" class="sales-dialog"><form id="don-form"><h3 id="don-form-title"></h3><div id="don-form-fields" class="filter-grid"></div><div id="don-form-message" role="alert"></div><div class="dialog-actions"><button type="button" id="don-cancel" class="secondary">Cancelar</button><button type="submit">Guardar ficha</button></div></form></dialog>
+ <dialog id="don-contact-dialog" class="sales-dialog"><form id="don-contact-form"><h3>Registrar contacto</h3><div class="filter-grid">${field('channel','Canal','select','LLAMADA',{items:CHANNELS})}${field('contacted_at','Fecha y hora','datetime-local',stamp())}${field('outcome','Resultado','select','CONTACTADO',{items:[['CONTACTADO','Contactado'],['SIN_RESPUESTA','Sin respuesta'],['VOLVER_A_LLAMAR','Volver a llamar'],['NO_DESEA','No desea donar']]})}${field('next_contact_at','Próximo contacto','datetime-local','',{required:false})}${field('notes','Notas del contacto','textarea')}</div><div id="don-contact-message" role="alert"></div><div class="dialog-actions"><button type="button" data-close="don-contact-dialog" class="secondary">Cancelar</button><button type="submit">Guardar contacto</button></div></form></dialog></div>`;
+ const q=s=>root.querySelector(s);
+ const message=(text,bad=false)=>{q('#don-msg').innerHTML=`<div class="status ${bad?'bad':'ok'}">${esc(text)}</div>`};
+ function choices(){
+   const text=search.toLocaleLowerCase('es'),digits=search.replace(/\D/g,'');
+   const matches=rows.filter(d=>!text||[d.full_name,d.cedula,d.donor_code].some(v=>String(v||'').toLocaleLowerCase('es').includes(text))||(digits&&String(d.cedula||'').replace(/\D/g,'').includes(digits)));
+   q('#don-select').innerHTML=matches.length?'<option value="">Seleccionar donante…</option>'+matches.map(d=>`<option value="${esc(d.id)}">${esc(d.full_name||d.donor_code)} · ${esc(d.cedula||d.donor_code)}</option>`).join(''):'<option value="">Sin coincidencias</option>';
+   if(matches.some(d=>d.id===selected?.id))q('#don-select').value=selected.id;
+ }
+ async function select(id){
+   const ticket=++detailTicket;selected=rows.find(d=>d.id===id)||null;details=null;
+   q('#don-detail').innerHTML='<section class="card" role="status">'+(selected?'Cargando ficha…':'Seleccione un donante para ver su ficha y gestionar la visita.')+'</section>';
+   if(!selected)return;
+   try{const result=await donorManagement.detail(id);if(ticket!==detailTicket||!root.isConnected)return;details=result;renderDetail()}catch(e){if(ticket!==detailTicket)return;q('#don-detail').innerHTML='<section class="card">No se pudo cargar el historial y la agenda. Pulse Actualizar para reintentar.</section>';message(e.message,true)}
+ }
+ async function refresh(id=selected?.id){rows=await donorManagement.list();choices();await select(id)}
+ async function mutate(button,action,onSuccess,errorBox){
+   if(busy)return;busy=true;button.disabled=true;
+   let saved=false;try{await action();saved=true;onSuccess?.();await refresh();message('Registro guardado.')}catch(e){if(saved)message('El registro se guardó, pero no se pudo actualizar la ficha. Pulse Actualizar. '+e.message,true);else (errorBox||q('#don-msg')).innerHTML=`<div class="status bad">${esc(e.message)}</div>`}finally{busy=false;if(button.isConnected)button.disabled=false}
+ }
+ function renderDetail(){
+   const d=selected,{donations,comments,contacts,visits}=details;
+   const active=visits.filter(v=>ACTIVE.includes(v.status)).sort((a,b)=>a.starts_at.localeCompare(b.starts_at));
+   const contact=contacts.slice().sort((a,b)=>b.contacted_at.localeCompare(a.contacted_at))[0];
+   const next=contact?.next_contact_at;
+   const contactState=!contact?'Pendiente de contacto':({CONTACTADO:'Contactado',SIN_RESPUESTA:'Sin respuesta',VOLVER_A_LLAMAR:'Volver a llamar',NO_DESEA:'No desea donar'}[contact.outcome]||contact.outcome);
+   const initials=(d.full_name||d.donor_code||'D').split(/\s+/).slice(0,2).map(x=>x[0]).join('');
+   const entries=contacts.slice().sort((a,b)=>b.contacted_at.localeCompare(a.contacted_at));
+   q('#don-detail').innerHTML=`<div class="donor-columns"><div class="donor-stack"><section class="card donor-selected"><div class="donor-card-head"><h3>Identificación del donante</h3>${canWrite?'<button id="don-edit" class="secondary">Editar ficha</button>':''}</div>
+   <div class="donor-identity"><div class="donor-avatar" aria-hidden="true">${esc(initials)}</div><div><strong class="donor-name">${esc(d.full_name||'Nombre pendiente')}</strong><div class="muted">${esc(d.donor_code)}</div></div><div class="donor-group">${esc(group(d))}</div></div>
+   <dl class="donor-fields">${[['Nombre completo',d.full_name],['Número de cédula',d.cedula],['Sexo',{FEMENINO:'Femenino',MASCULINO:'Masculino',OTRO:'Otro',NO_INFORMADO:'No informado'}[d.sex]],['Grupo sanguíneo',group(d)],['Teléfono',d.phone],['Canal preferido',CHANNELS.find(([k])=>k===d.preferred_channel)?.[1]],['Sucursal',bm[d.branch_id]],['Estado de revisión humana',d.status]].map(([label,v])=>`<div><dt>${label}</dt><dd>${show(v)}</dd></div>`).join('')}</dl>${d.deferral_reason?`<p class="status warn">Motivo de diferimiento: ${esc(d.deferral_reason)}</p>`:''}${d.observations?`<p>Observaciones: ${esc(d.observations)}</p>`:''}</section>
+   <section class="card"><div class="donor-card-head"><h3>Historial de donaciones</h3><span class="muted">${donations.length} registradas</span></div>${table(['Fecha','Código / unidad','Centro','Estado'],donations.map(x=>[esc(x.donation_date||(x.collected_at?localDay(new Date(x.collected_at)):'—')),`${esc(x.donation_code)}<br><small>${esc(x.source_unit_code||'')}</small>`,esc(bm[x.branch_id]||'—'),esc(x.status||x.collection_status||'—')]))}<p class="muted">La asistencia a una cita se registra por separado de la donación.</p></section>
+   <section class="card"><h3>Comentarios de laboratorio</h3><p class="muted donor-lab-label">Fecha y responsable en cada anotación.</p><div class="donor-timeline">${comments.map(c=>`<article class="donor-entry"><strong>${esc(when(c.created_at))} · ${show(c.responsible_name||c.created_by)}</strong><p>${esc(c.comment)}</p></article>`).join('')||'<p class="muted">Sin comentarios de laboratorio.</p>'}</div>${canLab?`<form id="don-lab-form">${field('comment','Agregar comentario de laboratorio','textarea')}<div class="donor-actions"><button type="submit">Guardar comentario</button></div></form>`:'<p class="muted">Los comentarios los registra el personal autorizado de laboratorio.</p>'}</section></div>
+   <aside class="card"><div class="donor-card-head"><h3>Agenda y seguimiento</h3><span class="state-pill state-info">${esc(contactState)}</span></div><h4>Contacto del donante</h4><strong>${show(d.phone)}</strong>${canWrite?'<div class="donor-actions"><button id="don-contact">Registrar contacto</button></div>':''}
+   <section class="donor-section"><h3>Próxima visita</h3>${active.length?active.map(v=>`<article class="donor-entry"><strong>${esc(when(v.starts_at))}</strong><p>${show(bm[v.branch_id])} · ${esc(VISIT_STATES[v.status])}</p>${v.notes?`<p>${esc(v.notes)}</p>`:''}${canWrite?`<div class="donor-actions">${v.status==='POR_CONFIRMAR'?`<button data-visit-status="CONFIRMADA" data-visit-id="${esc(v.id)}">Confirmar</button>`:''}<button class="secondary" data-reschedule="${esc(v.id)}">Reprogramar</button><button class="secondary" data-visit-status="ASISTIO" data-visit-id="${esc(v.id)}">Registrar asistencia</button><button class="secondary" data-visit-status="NO_ASISTIO" data-visit-id="${esc(v.id)}">No asistió</button><button class="secondary" data-visit-status="CANCELADA" data-visit-id="${esc(v.id)}">Cancelar cita</button></div>`:''}</article>`).join(''):'<p class="muted">Sin visita programada.</p>'}
+   ${canWrite?`<form id="don-visit-form"><h4 id="don-visit-title">Agendar visita</h4><div class="filter-grid">${field('date','Fecha de la visita','date',localDay())}${field('time','Hora','time','09:00')}${field('branch_id','Centro de donación','select',d.branch_id,{items:branchItems})}${field('status','Estado de la cita','select','POR_CONFIRMAR',{items:[['POR_CONFIRMAR','Por confirmar'],['CONFIRMADA','Confirmada']]})}</div>${field('notes','Notas de la visita','textarea','',{required:false})}<div class="donor-actions"><button type="submit" id="don-visit-save" ${active.length?'disabled':''}>Agendar visita</button><button type="button" id="don-visit-reset" class="secondary" hidden>Cancelar edición</button></div><div id="don-visit-message" role="alert"></div></form>`:''}<p class="muted donor-lab-label">La visita queda sujeta a evaluación clínica.</p></section>
+   <section class="donor-section"><h3>Seguimiento de contacto</h3>${next?`<p class="donor-entry">Próximo contacto: <strong>${esc(when(next))}</strong></p>`:''}<div class="donor-timeline">${entries.map(c=>`<article class="donor-entry"><strong>${esc(when(c.contacted_at))} · ${esc(CHANNELS.find(([k])=>k===c.channel)?.[1]||c.channel)}</strong><p>${esc({CONTACTADO:'Contactado',SIN_RESPUESTA:'Sin respuesta',VOLVER_A_LLAMAR:'Volver a llamar',NO_DESEA:'No desea donar'}[c.outcome]||c.outcome)}</p><p>${esc(c.notes)}</p><small class="muted">${show(c.responsible_name||c.created_by)}</small></article>`).join('')||'<p class="muted">Sin contactos registrados.</p>'}</div></section>
+   <details class="donor-section"><summary>Historial de visitas (${visits.length})</summary>${visits.map(v=>`<article class="donor-entry"><strong>${esc(when(v.starts_at))} · ${esc(VISIT_STATES[v.status]||v.status)}</strong><p>${show(bm[v.branch_id])} · ${show(v.responsible_name||v.created_by)}</p>${(v.history||[]).map(h=>`<p class="muted">${esc(when(h.changed_at))}: ${esc(VISIT_STATES[h.status]||h.status)} · ${esc(when(h.starts_at))} · ${show(h.responsible_name||h.actor_id)}</p>`).join('')}</article>`).join('')||'<p class="muted">Sin visitas registradas.</p>'}</details></aside></div>`;
+   if(canWrite){q('#don-edit').onclick=()=>profile(d);q('#don-contact').onclick=()=>{q('#don-contact-form').reset();q('#don-contact-form [name=contacted_at]').value=stamp();q('#don-contact-message').innerHTML='';q('#don-contact-dialog').showModal()};
+     let editing=null;
+     const visitForm=q('#don-visit-form');if(active.length)q('#don-visit-message').textContent='Ya hay una visita activa. Utilice Reprogramar para cambiarla.';
+     q('#don-visit-reset').onclick=()=>{editing=null;visitForm.reset();q('#don-visit-title').textContent='Agendar visita';q('#don-visit-save').textContent='Agendar visita';q('#don-visit-reset').hidden=true;q('#don-visit-save').disabled=active.length>0};
+     q('#don-detail').querySelectorAll('[data-reschedule]').forEach(b=>b.onclick=()=>{editing=visits.find(v=>v.id===b.dataset.reschedule);const local=localDateTime(editing.starts_at);visitForm.elements.date.value=local.slice(0,10);visitForm.elements.time.value=local.slice(11);visitForm.elements.branch_id.value=editing.branch_id;visitForm.elements.status.value='POR_CONFIRMAR';visitForm.elements.notes.value=editing.notes||'';q('#don-visit-title').textContent='Reprogramar visita';q('#don-visit-save').textContent='Guardar nueva fecha';q('#don-visit-reset').hidden=false;q('#don-visit-save').disabled=false;q('#don-visit-message').textContent='';visitForm.elements.date.focus()});
+     visitForm.onsubmit=e=>{e.preventDefault();if(!visitForm.reportValidity())return;const p=Object.fromEntries(new FormData(visitForm));let starts;try{starts=rdTimestamp(`${p.date}T${p.time}`);if(Date.parse(starts)<=Date.now())throw new Error('Seleccione una fecha y hora futuras.')}catch(e){q('#don-visit-message').innerHTML=`<div class="status bad">${esc(e.message)}</div>`;return}
+       mutate(q('#don-visit-save'),()=>donorManagement.visit(editing?.id,editing?.revision,{...(editing?{}:{donor_id:d.id}),branch_id:p.branch_id,starts_at:starts,status:p.status,notes:p.notes.trim()||null}),null,q('#don-visit-message'))};
+     q('#don-detail').querySelectorAll('[data-visit-status]').forEach(b=>b.onclick=()=>{const v=visits.find(v=>v.id===b.dataset.visitId);mutate(b,()=>donorManagement.visit(v.id,v.revision,{status:b.dataset.visitStatus}))});
+   }
+   if(canLab)q('#don-lab-form').onsubmit=e=>{e.preventDefault();const comment=e.target.elements.comment.value.trim();if(!comment){e.target.elements.comment.setCustomValidity('Escriba el comentario.');e.target.reportValidity();e.target.elements.comment.oninput=()=>e.target.elements.comment.setCustomValidity('');return}mutate(e.target.querySelector('button'),()=>donorManagement.comment({donor_id:d.id,branch_id:d.branch_id,comment}))};
+ }
+ let editingProfile=null;
+ function profile(d=null){editingProfile=d;
+   q('#don-form-title').textContent=d?'Editar ficha del donante':'Nuevo donante';q('#don-form-message').innerHTML='';
+   q('#don-form-fields').innerHTML=field('full_name','Nombre completo','text',d?.full_name||'')+field('cedula','Número de cédula','text',d?.cedula||'')+field('sex','Sexo','select',d?.sex||'',{items:[['','Seleccionar…'],['FEMENINO','Femenino'],['MASCULINO','Masculino'],['OTRO','Otro'],['NO_INFORMADO','No informado']]})+field('phone','Teléfono','tel',d?.phone||'',{required:false})+field('preferred_channel','Canal preferido','select',d?.preferred_channel||'LLAMADA',{items:CHANNELS})+field('abo','ABO','select',d?.abo||'',{required:false,items:GROUPS})+field('rh','Rh','select',d?.rh||'',{required:false,items:RH})+(d?'':field('donor_code','Código de donante','text')+field('branch_id','Sucursal','select','',{items:branchItems})+field('registration_date','Fecha de registro','date',localDay())+field('donor_type','Tipo','select','VOLUNTARIO',{items:['VOLUNTARIO','REPOSICION','DIRIGIDO']}))+field('observations','Observaciones','textarea',d?.observations||'',{required:false});
+   q('#don-form [name=cedula]').inputMode='numeric';q('#don-form [name=cedula]').maxLength=13;q('#don-dialog').showModal();
+ }
+ if(canWrite)q('#don-new').onclick=()=>profile();
+ q('#don-cancel').onclick=()=>q('#don-dialog').close();root.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>q('#'+b.dataset.close).close());
+ q('#don-form').onsubmit=e=>{e.preventDefault();if(!canWrite||!e.target.reportValidity())return;const p=Object.fromEntries(new FormData(e.target)),cedula=p.cedula.replace(/\D/g,'');if(cedula.length!==11||!p.full_name.trim()){q('#don-form-message').innerHTML='<div class="status bad">Indique el nombre y una cédula de 11 dígitos.</div>';return}
+   const payload={full_name:p.full_name.trim(),cedula,sex:p.sex,phone:p.phone.trim()||null,preferred_channel:p.preferred_channel,abo:p.abo||null,rh:p.rh||null,observations:p.observations.trim()||null};
+   if(!editingProfile)Object.assign(payload,{donor_code:p.donor_code.trim(),branch_id:p.branch_id,registration_date:p.registration_date,donor_type:p.donor_type,status:'PENDIENTE',effective_donation:false});
+   mutate(e.target.querySelector('[type=submit]'),async()=>{const saved=await donorManagement.saveProfile(editingProfile?.id,payload);selected=saved},()=>q('#don-dialog').close(),q('#don-form-message'))};
+ q('#don-contact-form').onsubmit=e=>{e.preventDefault();if(!canWrite||!e.target.reportValidity())return;const p=Object.fromEntries(new FormData(e.target));let contacted_at,next_contact_at;try{contacted_at=rdTimestamp(p.contacted_at);next_contact_at=p.next_contact_at?rdTimestamp(p.next_contact_at):null;if(Date.parse(contacted_at)>Date.now())throw new Error('El contacto realizado no puede estar en el futuro.');if(next_contact_at&&Date.parse(next_contact_at)<=Math.max(Date.now(),Date.parse(contacted_at)))throw new Error('El próximo contacto debe tener una fecha futura.');if(!p.notes.trim())throw new Error('Escriba el resultado del contacto.')}catch(e){q('#don-contact-message').innerHTML=`<div class="status bad">${esc(e.message)}</div>`;return}
+   mutate(e.target.querySelector('[type=submit]'),()=>donorManagement.contact({donor_id:selected.id,branch_id:selected.branch_id,channel:p.channel,outcome:p.outcome,notes:p.notes.trim(),contacted_at,next_contact_at}),()=>q('#don-contact-dialog').close(),q('#don-contact-message'))};
+ q('#don-search').oninput=e=>{search=e.target.value;choices()};q('#don-select').onchange=e=>select(e.target.value);
+ q('#don-refresh').onclick=()=>mutate(q('#don-refresh'),async()=>{});
+ choices();await select(rows[0]?.id);if(selected)q('#don-select').value=selected.id;
 }

@@ -1,0 +1,26 @@
+-- Isolated test schema only. Never execute these stubs or fixtures on a hosted project.
+create role anon;create role authenticated;
+create schema auth;
+create function auth.uid() returns uuid language sql stable as $$select nullif(current_setting('test.actor',true),'')::uuid$$;
+create table public.branches(id uuid primary key,name text);
+create table public.profiles(id uuid primary key,full_name text,active boolean);
+create table public.test_permissions(actor uuid,permission text);
+create table public.test_branches(actor uuid,branch uuid);
+create function public.has_permission(p text) returns boolean language sql stable security definer set search_path=public as $$select exists(select 1 from test_permissions where actor=auth.uid() and permission=p)$$;
+create function public.can_access_branch(b uuid) returns boolean language sql stable security definer set search_path=public as $$select exists(select 1 from test_branches where actor=auth.uid() and branch=b)$$;
+create function public.wf_active_actor() returns boolean language sql stable security definer set search_path=public as $$select exists(select 1 from profiles where id=auth.uid() and active)$$;
+create table public.donors(id uuid primary key default gen_random_uuid(),donor_code text unique,branch_id uuid references branches(id),status text default 'PENDIENTE',effective_donation boolean default false);
+create table public.donations(id uuid primary key default gen_random_uuid(),donor_id uuid references donors(id),donation_date date);
+alter table donors enable row level security;
+create policy donors_branch_access on donors for all to authenticated using(can_access_branch(branch_id)) with check(can_access_branch(branch_id));
+grant usage on schema auth,public to authenticated,anon;
+grant select on profiles,branches to authenticated;
+grant select,insert,update,delete on donors to authenticated;
+create table public.workflow_audit(branch_id uuid,actor_id uuid,table_name text,record_id uuid,operation text);
+create function public.wf_audit_change() returns trigger language plpgsql security definer set search_path=public as $$begin insert into workflow_audit values(new.branch_id,auth.uid(),tg_table_name,new.id,tg_op);return new;end$$;
+insert into branches values('e1000000-0000-0000-0000-000000000001','Centro prueba'),('e1000000-0000-0000-0000-000000000002','Sucursal restringida');
+insert into profiles values('e2000000-0000-0000-0000-000000000001','Operador de prueba',true),('e2000000-0000-0000-0000-000000000002','Solo lectura',true),('e2000000-0000-0000-0000-000000000003','Desactivado',false);
+insert into test_permissions select 'e2000000-0000-0000-0000-000000000001'::uuid,unnest(array['DONORS_VIEW','DONORS_WRITE','SCREENING_WRITE']);
+insert into test_permissions values('e2000000-0000-0000-0000-000000000002','DONORS_VIEW'),('e2000000-0000-0000-0000-000000000003','DONORS_VIEW');
+insert into test_branches select id,'e1000000-0000-0000-0000-000000000001' from profiles;
+insert into donors(id,donor_code,branch_id) values('e3000000-0000-0000-0000-000000000001','D-TEST','e1000000-0000-0000-0000-000000000001'),('e3000000-0000-0000-0000-000000000002','D-PRIVATE','e1000000-0000-0000-0000-000000000002');
