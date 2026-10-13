@@ -1,0 +1,16 @@
+const {chromium}=require(require.resolve('playwright',{paths:[require('node:path').join(__dirname,'../tests/wave50')]}));
+const fs=require('node:fs'),path=require('node:path'),http=require('node:http');
+(async()=>{
+ const root=path.resolve(__dirname,'..'),out=process.env.HEMOCURA_CEDULA_REPORT_DIR||'/tmp/hemocura-cedula-ocr';fs.mkdirSync(out,{recursive:true});
+ const server=http.createServer((req,res)=>{const url=new URL(req.url,'http://localhost');if(url.pathname==='/test'){res.setHeader('Content-Type','text/html');return res.end('<!doctype html><html><body><script type="module">import {readCedulaImage} from "/hemocura-core/cedula-reader.js";window.read=readCedulaImage;window.ready=true;</script></body></html>')}if(!['/hemocura-core/','/js/vendor/ocr/'].some(p=>url.pathname.startsWith(p))){res.writeHead(403);return res.end()}const file=path.resolve(root,'.'+url.pathname);if(!file.startsWith(root+'/')){res.writeHead(403);return res.end()}fs.readFile(file,(err,b)=>{if(err){res.writeHead(404);return res.end()}res.setHeader('Content-Type',file.endsWith('.js')?'text/javascript':'application/octet-stream');res.end(b)})});
+ await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));const base='http://127.0.0.1:'+server.address().port;let browser;const requests=[],errors=[];let result,failure;
+ try{
+ browser=await chromium.launch({headless:true,executablePath:process.env.HEMOCURA_BROWSER||(fs.existsSync('/usr/bin/chromium')?'/usr/bin/chromium':undefined),args:['--no-sandbox','--disable-dev-shm-usage']});const context=await browser.newContext();
+ await context.route('**/*',route=>{const r=route.request(),u=new URL(r.url());requests.push({origin:u.origin,path:u.pathname,method:r.method()});if(u.origin!==base||r.method()!=='GET')return route.abort();return route.continue()});
+ const page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));await page.goto(base+'/test');await page.waitForFunction(()=>window.ready);
+ result=await page.evaluate(async()=>{const c=document.createElement('canvas');c.width=1600;c.height=550;const ctx=c.getContext('2d');ctx.fillStyle='white';ctx.fillRect(0,0,c.width,c.height);ctx.fillStyle='black';ctx.font='bold 38px Arial';for(const [i,t] of ['CEDULA DE IDENTIDAD','001-1234567-8','NOMBRES: CARMEN ELENA','APELLIDOS: PEREZ GARCIA','SEXO: F','FECHA DE NACIMIENTO: 20 JUN 1985'].entries())ctx.fillText(t,45,65+i*80);const b=await new Promise(r=>c.toBlob(r,'image/png'));return await window.read(new File([b],'documento-ficticio.png',{type:'image/png'}))});
+ if(result.cedula!=='00112345678'||result.birth_date!=='1985-06-20'||!result.full_name.includes('CARMEN'))throw Error('OCR did not read the synthetic identity fields');
+ if(errors.length)throw Error('Browser runtime errors');if(requests.some(r=>r.origin!==base||r.method!=='GET'))throw Error('Unexpected external request or image upload');
+ console.log('PASS actual local OCR: cedula, name, date of birth; no external calls or uploads');
+ }catch(e){failure=e.message;console.error(e)}finally{fs.writeFileSync(path.join(out,'report.json'),JSON.stringify({status:failure?'FAIL':'PASS',failure,environment:'actual vendored OCR on synthetic document only',result,requests,errors},null,2));if(browser)await browser.close();await new Promise(r=>server.close(r));}if(failure)process.exitCode=1;
+})();

@@ -21,6 +21,7 @@ async function write(label,query){
 const sb=()=>getSupabase();
 export const donorManagement={
   list:()=>all('Donantes',()=>sb().from('vw_donor_next_donation').select('*').order('registration_date',{ascending:false}).order('id')),
+  byCedula:async number=>{const {data,error}=await sb().from('vw_donor_next_donation').select('*').eq('cedula',number).maybeSingle();if(error)throw new Error(`Consultar cédula: ${error.message}`);return data||null},
   detail:async id=>{
     const [donations,comments,contacts,visits,source]=await Promise.all([
       all('Historial',()=>sb().from('donations').select('*').eq('donor_id',id).order('donation_date',{ascending:false}).order('id')),

@@ -5,7 +5,9 @@ select set_config('test.actor','e2000000-0000-0000-0000-000000000001',false);
 
 set role authenticated;
 select pg_temp.assert((select count(*)=1 from donors),'branch limits donor identity visibility');
-update donors set full_name='Persona prueba',cedula='00000000000',sex='FEMENINO' where donor_code='D-TEST';
+update donors set full_name='Persona prueba',cedula='00000000000',sex='FEMENINO',birth_date='1985-06-20' where donor_code='D-TEST';
+select pg_temp.assert((select birth_date='1985-06-20'::date from vw_donor_next_donation where donor_code='D-TEST'),'reviewed birth date included in donor lookup');
+select pg_temp.expect_fail($q$update donors set birth_date='2099-01-01' where donor_code='D-TEST'$q$,'future birth date rejected');
 select pg_temp.expect_fail($q$update donors set donor_import_metadata='{}' where donor_code='D-TEST'$q$,'import provenance immutable for app users');
 select pg_temp.assert((select donor_import_metadata->>'source_file'='fictitious.xlsx' from donors where donor_code='D-TEST'),'profile updates preserve import source');
 select pg_temp.expect_fail($q$insert into donors(donor_code,branch_id,cedula) values('D-DUP','e1000000-0000-0000-0000-000000000001','00000000000')$q$,'duplicate cedula rejected');

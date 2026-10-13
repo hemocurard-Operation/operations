@@ -1,0 +1,25 @@
+import assert from 'node:assert/strict';
+import { normalizeCedula,cedulaCheck,donationInterval,parseCedulaText } from '../../hemocura-core/cedula-reader.js';
+let checks=0;function check(fn){fn();checks++}
+check(()=>assert.equal(normalizeCedula('001-1234567-8\r\n'),'00112345678'));
+check(()=>assert.throws(()=>normalizeCedula('ABC00112345678')));
+check(()=>assert.throws(()=>normalizeCedula('1234567890')));
+check(()=>assert.equal(cedulaCheck('00000000000').checksumValid,false));
+check(()=>assert.equal(cedulaCheck('00112345673').checksumValid,true));
+check(()=>assert.equal(cedulaCheck('00112345678').checksumValid,false));
+check(()=>assert.equal(donationInterval({last_donation_date:'2026-07-21'},'2026-10-13').reached,true));
+check(()=>assert.equal(donationInterval({last_donation_date:'2026-07-22'},'2026-10-13').remainingDays,1));
+check(()=>assert.equal(donationInterval({last_donation_date:'2026-07-22'},'2026-10-13').nextDate,'2026-10-14'));
+check(()=>assert.equal(donationInterval({last_donation_date:'2024-02-01'},'2024-04-25').elapsedDays,84));
+check(()=>assert.equal(donationInterval({last_donation_date:null},'2026-10-13').state,'SIN_FECHA'));
+check(()=>assert.equal(donationInterval({last_donation_date:'2026-12-01'},'2026-10-13').state,'FECHA_POR_VERIFICAR'));
+check(()=>assert.equal(donationInterval({last_donation_date:'2026-02-30'},'2026-10-13').nextDate,null));
+const data=parseCedulaText('CEDULA DE IDENTIDAD\n001-1234567-8\nNOMBRES: CARMEN ELENA\nAPELLIDOS: PEREZ GARCIA\nSEXO: F\nFECHA DE NACIMIENTO: 20 JUN 1985');
+check(()=>assert.equal(data.cedula,'00112345678'));
+check(()=>assert.equal(data.full_name,'CARMEN ELENA PEREZ GARCIA'));
+check(()=>assert.equal(data.sex,'FEMENINO'));
+check(()=>assert.equal(data.birth_date,'1985-06-20'));
+check(()=>assert.equal(parseCedulaText('001-1234567-8\n002-1234567-8').cedula,''));
+check(()=>assert.equal(parseCedulaText('REPUBLICA DOMINICANA\nJUNTA CENTRAL ELECTORAL').full_name,''));
+check(()=>assert.equal(parseCedulaText('FECHA DE NACIMIENTO: 31 FEB 1985').birth_date,''));
+console.log(`PASS ${checks} cedula/interval/parser checks`);

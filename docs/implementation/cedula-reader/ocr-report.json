@@ -1,0 +1,54 @@
+{
+  "status": "PASS",
+  "environment": "actual vendored OCR on synthetic document only",
+  "result": {
+    "cedula": "00112345678",
+    "candidates": [
+      "00112345678"
+    ],
+    "full_name": "CARMEN ELENA PEREZ GARCIA",
+    "sex": "FEMENINO",
+    "birth_date": "1985-06-20",
+    "warnings": [],
+    "text": "CEDULA DE IDENTIDAD\n001-1234567-8\n\nNOMBRES: CARMEN ELENA\nAPELLIDOS: PEREZ GARCIA\n\nSEXO: F\n\nFECHA DE NACIMIENTO: 20 JUN 1985\n",
+    "confidence": 95
+  },
+  "requests": [
+    {
+      "origin": "http://127.0.0.1:46601",
+      "path": "/test",
+      "method": "GET"
+    },
+    {
+      "origin": "http://127.0.0.1:46601",
+      "path": "/hemocura-core/cedula-reader.js",
+      "method": "GET"
+    },
+    {
+      "origin": "http://127.0.0.1:46601",
+      "path": "/hemocura-core/workflow-domain.js",
+      "method": "GET"
+    },
+    {
+      "origin": "http://127.0.0.1:46601",
+      "path": "/js/vendor/ocr/tesseract.esm.min.js",
+      "method": "GET"
+    },
+    {
+      "origin": "http://127.0.0.1:46601",
+      "path": "/js/vendor/ocr/worker.min.js",
+      "method": "GET"
+    },
+    {
+      "origin": "http://127.0.0.1:46601",
+      "path": "/js/vendor/ocr/core/tesseract-core-simd-lstm.wasm.js",
+      "method": "GET"
+    },
+    {
+      "origin": "http://127.0.0.1:46601",
+      "path": "/js/vendor/ocr/lang/spa.traineddata.gz",
+      "method": "GET"
+    }
+  ],
+  "errors": []
+}
