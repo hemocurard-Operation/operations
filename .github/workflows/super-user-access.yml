@@ -1,0 +1,28 @@
+name: Super Usuario access regressions
+on:
+  push:
+    paths:
+      - 'hemocura-core/users*.js'
+      - 'supabase/functions/admin-users/**'
+      - 'supabase/migrations/*super_user_total_access.sql'
+      - 'tools/*super_user*'
+      - 'tools/wave50_admin_regressions.cjs'
+      - 'tests/roles/**'
+      - '.github/workflows/super-user-access.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: node --experimental-vm-modules tools/wave50_admin_regressions.cjs
+      - run: python tools/super_user_postgres_runner.py
+      - run: npm ci --prefix tests/wave50
+      - run: npx --prefix tests/wave50 playwright install --with-deps chromium
+      - run: node tools/super_user_browser_runner.cjs

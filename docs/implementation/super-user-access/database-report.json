@@ -1,0 +1,29 @@
+{
+  "status": "PASS",
+  "environment": "isolated PostgreSQL 17; representative schema and legacy branch fixture",
+  "checks": [
+    "super access administration",
+    "super training administration",
+    "super all active modules",
+    "super other branch",
+    "disabled permission denied",
+    "unknown permission denied",
+    "super future permission",
+    "future module visible",
+    "admin no account management",
+    "admin normal permissions preserved",
+    "admin branch preserved",
+    "admin other branch remains denied",
+    "admin direct permission write denied",
+    "mistaken ACCESS_ADMIN map remains ineffective",
+    "admin menu cannot expose users",
+    "inactive super permission denied",
+    "inactive super branch denied",
+    "inactive super menu empty",
+    "anon denied",
+    "non-super RPC denied",
+    "super own roles protected",
+    "second super blocked by database"
+  ],
+  "production_verified": false
+}
