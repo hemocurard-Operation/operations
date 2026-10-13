@@ -41,7 +41,9 @@ def main():
   for f in sorted((ROOT/'sql/migrations').glob('*.sql')):
    if f.name.startswith(('20261010','20261011')):apply(f)
   deferred=[]
+  access_migrations=[]
   for f in sorted((ROOT/'supabase/migrations').glob('*.sql')):
+   if f.name.endswith('_super_user_total_access.sql'):access_migrations.append(f);continue
    # The donor agenda depends on wf_active_actor and wf_audit_change from CANDIDATE.
    if f.name in ('20261013183215_donor_management.sql','20261013194849_donor_twelve_week_agenda.sql','20261013200735_donor_identity_capture.sql'):deferred.append(f);continue
    if f.name=='20261012105117_value_chain_50_foundation_v2.sql':apply(ROOT/'tests/wave50/external-prerequisites.sql')
@@ -67,6 +69,13 @@ def main():
   apply(ROOT/'sql/migrations/20261013133000_workflow_refinements.sql')
   sql("select 1/count(*) from pg_policies where schemaname='public' and tablename='hyperbaric_appointments';",'migration-repeatability')
   report['checks'].append({'name':'migration reapplies without removing records or permissions','pass':True})
+  # Production access migrations require an explicitly assigned, active global owner.
+  # Seed only that prerequisite after operational fixtures, without granting it to test operators.
+  if access_migrations:
+   sql("insert into branches(id,code,name) values('f9100000-0000-0000-0000-000000000001','WF-SUPER','Global owner fixture'); insert into auth.users(id,email) values('f9200000-0000-0000-0000-000000000001','super-owner@example.invalid'); insert into profiles(id,full_name,branch_id,active) values('f9200000-0000-0000-0000-000000000001','Global owner fixture','f9100000-0000-0000-0000-000000000001',true); insert into roles(code,name) values('SUPER_USUARIO','Super Usuario') on conflict(code) do nothing; insert into user_roles(user_id,role_id,branch_id) select 'f9200000-0000-0000-0000-000000000001',id,'f9100000-0000-0000-0000-000000000001' from roles where code='SUPER_USUARIO';",'super-owner-prerequisite')
+   for access_migration in access_migrations:apply(access_migration)
+   sql("begin;set local role authenticated;select set_config('request.jwt.claim.sub','f9200000-0000-0000-0000-000000000001',true);select set_config('request.jwt.claim.role','authenticated',true);do $$begin if exists(select 1 from app_permissions where active and not has_permission(permission_code)) then raise exception 'Missing super permission';end if;if exists(select 1 from branches where not can_access_branch(id)) then raise exception 'Missing super branch';end if;end$$;rollback;",'integrated-super-permissions')
+   report['checks'].append({'name':'complete role access on integrated operational schema','pass':True})
   print(f'PASS: {len(report["checks"])} PostgreSQL checks; {len(report["migrations"])} baseline/candidate files. Production not verified.')
   return 0
  except Exception as e:
