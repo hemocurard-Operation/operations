@@ -1,0 +1,20 @@
+[
+  {
+    "file": "hemocura-core/donors.js",
+    "status": 200,
+    "sha256": "bde69c04a8ce55a60da0dae21a9c3bb7398070275b028fb80e5a729c7be9e582",
+    "matches": true
+  },
+  {
+    "file": "hemocura-core/donor-management-data.js",
+    "status": 200,
+    "sha256": "49b06e068fb0e56958357b69676da2efc2ae02c3c351ee53fa30e6866d299f04",
+    "matches": true
+  },
+  {
+    "file": "css/donors.css",
+    "status": 200,
+    "sha256": "c0ba8f0a90936b96312cfb51526c4a96d587746b5ca0e95e0ef108c867fedf96",
+    "matches": true
+  }
+]

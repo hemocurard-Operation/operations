@@ -40,13 +40,17 @@ def main():
   apply(ROOT/'sql/reconciled/45_DAILY_OPERATIONAL_REPORT_RECONCILED_BASELINE.sql')
   for f in sorted((ROOT/'sql/migrations').glob('*.sql')):
    if f.name.startswith(('20261010','20261011')):apply(f)
+  deferred=[]
   for f in sorted((ROOT/'supabase/migrations').glob('*.sql')):
+   # The donor agenda depends on wf_active_actor and wf_audit_change from CANDIDATE.
+   if f.name=='20261013183215_donor_management.sql':deferred.append(f);continue
    if f.name=='20261012105117_value_chain_50_foundation_v2.sql':apply(ROOT/'tests/wave50/external-prerequisites.sql')
    apply(f)
   for f in sorted((ROOT/'sql/migrations').glob('*.sql')):
    if f.name.startswith('20261012'):apply(f)
   apply(CANDIDATE)
   apply(ROOT/'sql/migrations/20261013133000_workflow_refinements.sql')
+  for f in deferred:apply(f)
   result=sql((ROOT/'tests/workflow/business-rules.sql').read_text(),'workflow-business-rules')
   checks=re.findall(r'PASS ([^\n]+)',result.stderr+result.stdout)
   if not checks:raise RuntimeError('Zero business-rule checks executed')

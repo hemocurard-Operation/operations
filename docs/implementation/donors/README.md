@@ -19,3 +19,5 @@ node tools/donors_browser_runner.cjs
 ```
 
 El runner de PostgreSQL requiere Docker local y utiliza un contenedor desechable sin red. El navegador usa Chromium del sistema, `HEMOCURA_BROWSER` o el Chromium de Playwright instalado. La CI ejecuta ambos.
+
+Publicación: https://hemocurard-operation.github.io/operations/#donors. Primera entrega `a7b28dc1ba963cf875deda861b659910e4e10b92`; despliegue de GitHub Pages completado. Los tres archivos de interfaz publicados coinciden por hash SHA-256 con los archivos validados. La CI de donantes, frontend y fuente canónica pasó. El verificador operativo general necesitó diferir esta migración hasta cargar las funciones de la ruta operativa; corregido el orden, pasaron sus 70 comprobaciones PostgreSQL en la base aislada.
