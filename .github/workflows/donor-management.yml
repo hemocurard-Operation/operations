@@ -2,9 +2,9 @@ name: Donor management regressions
 on:
   push:
     branches: [main]
-    paths: ['hemocura-core/donors.js', 'hemocura-core/donor-management-data.js', 'css/donors.css', 'tests/donors/**', 'tools/donors_*', 'supabase/migrations/*donor_management.sql', '.github/workflows/donor-management.yml']
+    paths: ['hemocura-core/donors.js', 'hemocura-core/donor-management-data.js', 'hemocura-core/donor-agenda.js', 'css/donors.css', 'tests/donors/**', 'tools/donors_*', 'supabase/migrations/*donor*.sql', '.github/workflows/donor-management.yml']
   pull_request:
-    paths: ['hemocura-core/donors.js', 'hemocura-core/donor-management-data.js', 'css/donors.css', 'tests/donors/**', 'tools/donors_*', 'supabase/migrations/*donor_management.sql', '.github/workflows/donor-management.yml']
+    paths: ['hemocura-core/donors.js', 'hemocura-core/donor-management-data.js', 'hemocura-core/donor-agenda.js', 'css/donors.css', 'tests/donors/**', 'tools/donors_*', 'supabase/migrations/*donor*.sql', '.github/workflows/donor-management.yml']
   workflow_dispatch:
 permissions:
   contents: read

@@ -18,7 +18,15 @@ const fs=require('node:fs'),path=require('node:path'),http=require('node:http');
  check(await page.evaluate(()=>window.fixture.tables.donations.length===1&&window.fixture.tables.donor_contacts.length===0&&window.fixture.tables.donor_visits.length===0),'imported history creates no governed donations contacts or appointments');
  check(await page.locator('#don-detail img').count()===0,'imported notes are escaped');
 
- await page.screenshot({path:path.join(out,'donors-desktop.png'),fullPage:true});
+ 
+ check((await page.locator('#don-agenda').innerText()).includes('2026-10-04'),'agenda shows calculated next donation date');
+ await page.locator('#don-agenda [name=agenda_state]').selectOption('SIN_FECHA');check(!(await page.locator('#don-agenda [data-agenda-table]').innerText()).includes('María López'),'agenda state filter isolates missing-date donors');
+ await page.locator('#don-agenda [name=agenda_search]').fill('000-0000000-0');check(await page.locator('#don-agenda [data-agenda-open]').count()===0,'numeric search cannot bypass agenda state filter');
+ await page.locator('#don-agenda [name=agenda_search]').fill('');await page.locator('#don-agenda [name=agenda_state]').selectOption('');
+ await page.locator('#don-agenda [name=agenda_start]').fill('2026-10-05');check(await page.locator('#don-agenda [data-agenda-open]').count()===0,'agenda dates filter calculated reference');await page.locator('#don-agenda [name=agenda_start]').fill('');
+ await page.locator('#don-agenda [data-agenda-open="d2"]').click();await page.waitForFunction(()=>document.querySelector('.donor-name')?.textContent==='Pedro Pérez');check((await page.locator('#don-detail').innerText()).includes('Pendiente de verificar'),'agenda opens selected donor without inventing date');
+ await page.locator('#don-select').selectOption('d1');await page.waitForSelector('#don-lab-form');
+await page.screenshot({path:path.join(out,'donors-desktop.png'),fullPage:true});
  await page.locator('#don-search').fill('111-1111111-1');check(await page.locator('#don-select option').count()===2,'cedula search accepts separators');
  await page.locator('#don-select').selectOption('d2');await page.waitForFunction(()=>document.querySelector('.donor-name')?.textContent==='Pedro Pérez');
  check(!(await page.locator('#don-detail').innerText()).includes('DN-001'),'history belongs only to selected donor');

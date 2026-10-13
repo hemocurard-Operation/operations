@@ -27,3 +27,6 @@
 .donor-page .donor-selected{border-left:4px solid var(--donor-accent)}
 @media(max-width:850px){.donor-columns{grid-template-columns:1fr}.donor-search{grid-template-columns:1fr 1fr}.donor-search button{grid-column:1/-1}}
 @media(max-width:480px){.donor-search,.donor-fields,.donor-page .filter-grid{grid-template-columns:1fr}.donor-page .card{padding:16px}.donor-name{font-size:19px}.donor-group{font-size:22px;padding:10px}.donor-avatar{width:44px;height:44px;font-size:18px}.donor-card-head{align-items:start;flex-wrap:wrap}.donor-flow{font-size:13px}}
+
+.donor-agenda summary{cursor:pointer;padding-bottom:8px}.donor-agenda-filters{margin:18px 0}.donor-agenda [data-agenda-count]{align-self:center;white-space:nowrap}.donor-agenda .table-wrap{max-height:600px;overflow:auto}
+#don-agenda{min-width:0}.donor-agenda{min-width:0}.donor-agenda [data-agenda-table]{min-width:0}

@@ -20,7 +20,7 @@ async function write(label,query){
 }
 const sb=()=>getSupabase();
 export const donorManagement={
-  list:()=>all('Donantes',()=>sb().from('donors').select('id,donor_code,branch_id,full_name,cedula,sex,phone,preferred_channel,abo,rh,status,deferral_reason,effective_donation,observations,registration_date,donor_type').order('registration_date',{ascending:false}).order('id')),
+  list:()=>all('Donantes',()=>sb().from('vw_donor_next_donation').select('*').order('registration_date',{ascending:false}).order('id')),
   detail:async id=>{
     const [donations,comments,contacts,visits,source]=await Promise.all([
       all('Historial',()=>sb().from('donations').select('*').eq('donor_id',id).order('donation_date',{ascending:false}).order('id')),
