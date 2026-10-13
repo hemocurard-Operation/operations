@@ -77,12 +77,14 @@ export async function getCapa() {
   return data || [];
 }
 
-export async function getOpenQualityAlerts() {
-  const { data, error } = await getSupabase()
+export async function getOpenQualityAlerts(filters = {}) {
+  let query = getSupabase()
     .from('vw_open_management_alerts')
     .select('id,alert_date,branch_id,branch,category,severity,title,description,status,due_at')
     .order('alert_date', { ascending: false })
     .limit(50);
+  if (filters.branchId) query = query.eq('branch_id', filters.branchId);
+  const { data, error } = await query;
 
   if (error) {
     console.error('[HEMOCURA_QUALITY_ERROR] alerts', error);

@@ -1,6 +1,7 @@
+import { localDay } from './workflow-domain.js';
 import { supplyData } from './supply-data.js';
 function esc(v=''){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
-const today=()=>new Date().toISOString().slice(0,10);
+const today=()=>localDay();
 const COMPONENTS=['SANGRE_TOTAL','CONCENTRADO_HEMATIES','PLASMA_FRESCO_CONGELADO','PLAQUETAS','CRIOPRECIPITADO'];
 export async function mountProduction(root){
  const branches=await supplyData.branches(),bm=Object.fromEntries(branches.map(b=>[b.id,b.name]));

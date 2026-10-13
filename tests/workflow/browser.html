@@ -1,0 +1,39 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Workflow functional fixture</title><link rel="stylesheet" href="/css/app.css"><link rel="stylesheet" href="/css/ui-v0442.css"></head><body><div id="app"></div><script type="module">
+import { fixture } from '/hemocura-core/supabase.js';
+import { resetAccessCache } from '/hemocura-core/access-control.js';
+import { mountLayout } from '/hemocura-core/layout.js';
+import { localDay } from '/hemocura-core/workflow-domain.js';
+window.fixture=fixture;const day=localDay();fixture.day=day;
+const A='e2000000-0000-0000-0000-000000000001',B='e2000000-0000-0000-0000-000000000002',USER='e1000000-0000-0000-0000-000000000001',OTHER='e1000000-0000-0000-0000-000000000003',CLIENT='e4000000-0000-0000-0000-000000000001';
+fixture.permissions=['DASHBOARD_VIEW','WORKFLOW_VIEW','COMMERCIAL_VIEW','COMMERCIAL_WRITE','HYPERBARIC_VIEW','HYPERBARIC_WRITE','HYPERBARIC_SESSION_WRITE','HYPERBARIC_BILLING','SALES_VIEW','SALES_WRITE','COLLECTIONS_VIEW','QUALITY_VIEW','QUALITY_WRITE','QUALITY_DAILY_REVIEW','BLOOD_INVENTORY_VIEW','BLOOD_INVENTORY_WRITE','UNIT_RELEASE','SUPPLY_VIEW','DISPATCH_VIEW','REQUISITION_WRITE','ACCESS_ADMIN','DAILY_REPORT_VIEW','DAILY_REPORT_WRITE'];
+fixture.context={user_id:USER,roles:['SUPER_USUARIO'],email:'fixture@example.invalid',profile_branch_id:A,full_name:'Local test operator'};
+fixture.tables={
+ branches:[{id:A,code:'A',name:'Sucursal A',active:true},{id:B,code:'B',name:'Sucursal B',active:true}],customers:[{id:CLIENT,name:'Centro de ejemplo',active:true}],
+ products:[{id:'p1',code:'P1',name:'Guantes M',unit_of_measure:'caja',active:true}],
+ commercial_visits:[{id:'visit1',branch_id:A,customer_id:CLIENT,agent_id:USER,scheduled_at:day+'T13:00:00-04:00',purpose:'Revisar demanda',status:'PROPUESTA',commitment:'Seguimiento',followup_at:day+'T08:00:00-04:00'}],
+ commercial_locations:[{id:'loc1',branch_id:A,customer_id:CLIENT,address:'Dirección de prueba',latitude:19.45,longitude:-70.69,verified_at:day}],
+ commercial_plans:[{id:'plan1',branch_id:A,agent_id:USER,cycle_start:day,goal:'Visitas con seguimiento',target_visits:12,tactics:'Revisar compromisos'}],
+ commercial_opportunities:[],medical_referrers:[{id:'md1',branch_id:A,full_name:'Dr. Báez'}],
+ hyperbaric_resources:[{id:'resource1',branch_id:A,name:'Cámara de prueba',capacity:1,active:true,procedure_reference:'TEST'}],
+ hyperbaric_appointments:[{id:'appt1',branch_id:A,resource_id:'resource1',patient_name:'Carmen Abreu',patient_phone:'829-727-8852',starts_at:day+'T13:00:00-04:00',ends_at:day+'T14:00:00-04:00',operational_date:day,shift:'DIURNO',price:100,currency:'USD',session_label:'1 por el momento',referrer_name:'Dr. Báez',note:'no requiere transporte',status:'SOLICITADA'}],
+ hyperbaric_sessions:[],vw_hyperbaric_finance:[{id:'charge1',branch_id:A,session_id:'session1',invoice_number:'TEST-INVOICE',invoice_date:day,currency:'USD',amount:100,paid:60,outstanding:40,status:'FACTURADA'}],
+ workflow_service_events:[{id:'service1',branch_id:A,session_id:'session1',service_date:day,shift:'DIURNO',status:'REALIZADA',currency:'USD',price:100}],
+ vw_workflow_shift_sales:[{source_id:'sale1',source_type:'SANGRE',branch_id:A,operational_date:day,shift:'DIURNO',currency:'DOP',client_name:'Centro de ejemplo',treating_doctor:'Médico tratante',invoiced:6500,paid:6500,status:'COBRADA'},{source_id:'charge1',source_type:'CAMARA_HIPERBARICA',branch_id:A,operational_date:day,shift:'DIURNO',currency:'USD',client_name:'Servicio hiperbárico',invoiced:100,paid:60,status:'FACTURADA'}],
+ vw_workflow_receipts:[{id:'receipt1',branch_id:A,payment_date:day,currency:'USD',amount:60,source_type:'CAMARA_HIPERBARICA'}],
+ blood_quality_tasks:[{id:'task1',branch_id:A,task_date:day,shift:'DIURNO',title:'Cadena de frío',process:'Almacenamiento',procedure_reference:'PROC-01/v1',priority:'CRITICA',owner_id:USER,due_at:day+'T09:00:00-04:00',status:'PENDIENTE'},{id:'task2',branch_id:A,task_date:day,shift:'DIURNO',title:'Relevo',process:'Continuidad',procedure_reference:'PROC-02/v1',priority:'NORMAL',owner_id:OTHER,due_at:day+'T17:00:00-04:00',status:'EN_REVISION',evidence:'REG-01'}],
+ blood_quality_templates:[{id:'template1',branch_id:A,title:'Rutina de turno',frequency:'POR_TURNO',due_time:'17:00',owner_id:OTHER,active:false,version:1}],
+ vw_open_management_alerts:[{id:'alert1',branch_id:A,title:'Excursión de prueba',severity:'CRITICA',status:'ABIERTA',description:'Evaluación pendiente'}],nonconformities:[],
+ blood_inventory_units:[{id:'unit1',unit_code:'TEST-U1',branch_id:A,component_name:'PG',abo:'O',rh:'POSITIVO',expiry_date:'2027-12-31',quantity:1,screening_status:'APTO',inventory_status:'DISPONIBLE'}],
+ blood_transfers:[{id:'transfer1',branch_id:B,destination_branch_id:A,batch_code:'TEST-TRANSFER',sent_at:day+'T08:00:00-04:00',status:'EN_TRANSITO'}],
+ vw_workflow_transfer_lines:[{branch_id:B,destination_branch_id:A,unit_code:'TEST-U2',component_name:'PG',id:'line1',transfer_id:'transfer1',unit_id:'unit2',received_at:null}],
+ requisitions:[],
+ workflow_supply_catalog:[{id:'item1',code:'HC-SUP-001',source_label:'Bolsa recolección',product_id:null},{id:'item2',code:'HC-SUP-002',source_label:'Guantes M',approved_name:'Guantes M',reviewed_at:day,unit_of_measure:'caja',product_id:'p1'}],
+ vw_inventory_status:[{branch_id:A,product_id:'p1',product_name:'Guantes M',theoretical_qty:1}],inventory_policies:[{branch_id:A,product_id:'p1',minimum_stock:3,warning_stock:5,target_stock:10,active:true}],
+ daily_operational_closes:[{id:'report1',branch_id:A,close_date:day,status:'BORRADOR',report_version:1,responsible_name:'Test',screening_lots:[],manual_inventory:{},manual_dispatches:[],equipment_snapshot:[]}],workflow_daily_sections:[],
+};
+fixture.rpcHandler=async(name,args)=>{
+ if(name==='wf_quality_task'&&args.p_id){const task=fixture.tables.blood_quality_tasks.find(t=>t.id===args.p_id);Object.assign(task,args.p_data)}
+ return {data:crypto.randomUUID(),error:null};
+};
+resetAccessCache();location.hash='#workflow';await mountLayout({user:{id:USER,email:'fixture@example.invalid'}});window.workflowReady=true;
+</script></body></html>

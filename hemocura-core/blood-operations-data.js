@@ -19,7 +19,7 @@ export const bloodData={
   inventoryUnits:()=>query('Unidades',sb().from('blood_inventory_units').select('*').order('production_date',{ascending:false}).limit(300)),
   createInventoryUnit:async p=>{const {data,error}=await sb().from('blood_inventory_units').insert(p).select('*').single();if(error)throw new Error(`Unidad: ${error.message}`);return data},
   sales:()=>query('Ventas/Salidas',sb().from('operational_sales').select('*').order('sale_date',{ascending:false}).limit(200)),
-  createSale:async(h,l)=>{const {data:s,error}=await sb().from('operational_sales').insert(h).select('*').single();if(error)throw new Error(`Venta: ${error.message}`);if(l?.length){const {error:le}=await sb().from('operational_sale_lines').insert(l.map(x=>({...x,sale_id:s.id})));if(le)throw new Error(`Detalle venta: ${le.message}`)}return s},
+  createSale:async(h,l)=>{const {data,error}=await sb().rpc('wf_create_blood_sale',{p_header:h,p_lines:l});if(error)throw new Error(`Venta: ${error.message}`);return data},
   screeningSummary:()=>query('Reporte tamizaje',sb().from('vw_screening_summary').select('*').order('screening_date',{ascending:false}).limit(300)),
   donorSummary:()=>query('Reporte donantes',sb().from('vw_donor_summary').select('*').order('registration_date',{ascending:false}).limit(300)),
   salesSummary:()=>query('Reporte ventas',sb().from('vw_sales_operational_summary').select('*').order('sale_date',{ascending:false}).limit(300)),

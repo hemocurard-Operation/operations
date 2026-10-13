@@ -1,6 +1,7 @@
 const GROUP_ORDER=['INICIO','TRABAJO DIARIO','CADENA DE VALOR','LABORATORIO Y SANGRE','CALIDAD Y SEGURIDAD','GESTIÓN','ADMINISTRACIÓN'];
 const ROUTES={
   mywork:{title:'Mi trabajo',subtitle:'Tus tareas y siguientes acciones según permisos',group:'INICIO',order:5},
+  workflow:{title:'Ruta operativa',subtitle:'Ocho etapas por sucursal y módulos enlazados',group:'INICIO',order:12},
   dashboard:{title:'Inicio',subtitle:'Resumen priorizado según tu rol',group:'INICIO',order:10},
   command:{title:'Centro de Mando',subtitle:'Cierre diario, score y excepciones',group:'INICIO',order:20},
   decisioncenter:{title:'Centro de Decisión',subtitle:'Señales priorizadas convertibles en acciones con seguimiento',group:'INICIO',order:25},
@@ -12,6 +13,10 @@ const ROUTES={
   dispatches:{title:'Despachos',subtitle:'Despacho físico y conciliación',group:'TRABAJO DIARIO',order:10},
   requisitions:{title:'Requisiciones',subtitle:'Solicitud y autorización de insumos',group:'TRABAJO DIARIO',order:20},
   sales:{title:'Ventas / Salidas',subtitle:'Salidas y facturación operativa',group:'TRABAJO DIARIO',order:30},
+  hyperbaric:{title:'Cámara hiperbárica',subtitle:'Citas, sesiones documentadas, factura y cobro',group:'TRABAJO DIARIO',order:35},
+  shiftreport:{title:'Ventas por turno',subtitle:'Sangre y servicios por sucursal, turno y moneda',group:'TRABAJO DIARIO',order:32},
+  transfers:{title:'Entre sucursales',subtitle:'Envío, recepción y revisión de unidades',group:'TRABAJO DIARIO',order:12},
+  supplycatalog:{title:'Catálogo de suministros',subtitle:'Insumos, unidades aprobadas y umbrales por sucursal',group:'TRABAJO DIARIO',order:42},
   inventory:{title:'Insumos',subtitle:'Inventario de reactivos y materiales',group:'TRABAJO DIARIO',order:40},
   supply:{title:'Abastecimiento',subtitle:'Demanda, cobertura y donantes requeridos',group:'TRABAJO DIARIO',order:50},
   planning:{title:'Planificación',subtitle:'Plan operativo y forecast SHADOW',group:'TRABAJO DIARIO',order:60},
@@ -21,6 +26,7 @@ const ROUTES={
   donoroutreach:{title:'Captación de Donantes',subtitle:'Campañas, metas y donaciones atribuidas',group:'CADENA DE VALOR',order:20},
   medicalnetwork:{title:'Red Médica',subtitle:'Referidores, especialidades, referencias y conversión',group:'CADENA DE VALOR',order:25},
   customers:{title:'Clientes y SLA',subtitle:'Clientes, acuerdos de servicio, valor y retroalimentación',group:'CADENA DE VALOR',order:30},
+  commercial:{title:'Gestión comercial',subtitle:'Clientes, visitas, compromisos, mapa y 12 semanas',group:'CADENA DE VALOR',order:35},
   collections:{title:'Cobranza y Aging',subtitle:'Cuentas por cobrar, vencimiento, cobros y saldo',group:'CADENA DE VALOR',order:40},
   economics:{title:'Economía y Merma',subtitle:'Rentabilidad, pérdidas, campañas y contribución por sucursal',group:'CADENA DE VALOR',order:50},
 
@@ -35,6 +41,7 @@ const ROUTES={
   resources:{title:'Recursos Críticos',subtitle:'Equipos, reactivos y ambiente',group:'LABORATORIO Y SANGRE',order:90},
 
   actions:{title:'Acciones Integradas',subtitle:'Cartera única de acciones, evidencia y eficacia',group:'CALIDAD Y SEGURIDAD',order:5},
+  bloodquality:{title:'Calidad del banco de sangre',subtitle:'Tareas diarias, evidencia y revisión independiente',group:'CALIDAD Y SEGURIDAD',order:12},
   quality:{title:'SGC',subtitle:'Incidencias, NC, CAPA y alertas',group:'CALIDAD Y SEGURIDAD',order:10},
   approvals:{title:'Aprobaciones',subtitle:'Segregación de funciones y decisiones',group:'CALIDAD Y SEGURIDAD',order:20},
   qmsgov:{title:'Gobierno QMS',subtitle:'Documentos, CAPA y aprobaciones',group:'CALIDAD Y SEGURIDAD',order:30},

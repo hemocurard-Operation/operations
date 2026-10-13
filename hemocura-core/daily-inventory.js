@@ -1,12 +1,13 @@
 import { commandData } from './command-data.js';
 import { resourcesData } from './resources-data.js';
 import { loadAccess } from './access-control.js';
+import { localDay } from './workflow-domain.js';
 
 const GROUPS=['A+','A-','B+','B-','O+','O-','AB+','AB-'];
 const COMPONENTS=['Sangre total','Paquete globular','Plasma','Plaquetas'];
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
 const n=v=>Math.max(0,Number(v||0));
-const today=()=>new Date().toISOString().slice(0,10);
+const today=()=>localDay();
 const key=g=>g.replace('+','p').replace('-','n');
 
 function lotRow(x={}){
@@ -60,7 +61,7 @@ export async function mountDailyInventory(root){
   const canSubmit=permissions.has('DAILY_REPORT_SUBMIT');
   const canClose=permissions.has('DAILY_REPORT_CLOSE');
   const canReopen=permissions.has('DAILY_REPORT_REOPEN');
-  const preferred=access?.context?.branch_id||access?.context?.current_branch_id||'';
+  const preferred=access?.context?.branch_id||access?.context?.current_branch_id||access?.context?.profile_branch_id||'';
   const displayName=access?.context?.full_name||access?.context?.name||access?.context?.email||'';
   let current=null;
   let loading=false;

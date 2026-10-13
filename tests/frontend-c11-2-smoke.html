@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>HemoCura 0.45.0 · Frontend Smoke</title>
+<title>HemoCura 0.49.1 · Frontend Smoke</title>
 <style>body{font-family:Arial,sans-serif;margin:24px;color:#172131}.pass{color:#23703B}.fail{color:#8B0000}pre{background:#f4f6f8;padding:12px;border-radius:8px;white-space:pre-wrap}</style>
 </head>
 <body>
-<h1>HemoCura 0.45.0 · Frontend Smoke</h1>
+<h1>HemoCura 0.49.1 · Frontend Smoke</h1>
 <div id="result">Ejecutando…</div>
 <pre id="detail"></pre>
 <script type="module">
@@ -28,7 +28,7 @@ let roleUxOk=false,roleUxDetail='';
 try{
   const r=await fetch('../VERSION.json',{cache:'no-store'});
   const v=await r.json();
-  versionOk=v.version==='0.45.0';
+  versionOk=v.version==='0.49.1';
   versionDetail=`VERSION=${v.version}`;
 }catch(e){versionDetail=e.message}
 try{

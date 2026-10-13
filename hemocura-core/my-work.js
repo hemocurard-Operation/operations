@@ -1,6 +1,10 @@
 import { filterRoutes } from './access-control.js';
 import { routeList,navigate } from './router.js';
 const PRIORITY={
+  workflow:{label:'Seguir ruta operativa',hint:'Abrir las ocho etapas por sucursal y sus registros.',priority:0},
+  commercial:{label:'Gestionar visitas y compromisos',hint:'Cartera, agenda, oportunidades y ciclo de 12 semanas.',priority:3.1},
+  hyperbaric:{label:'Gestionar cámara hiperbárica',hint:'Asignar citas y seguir sesiones, facturas y cobros.',priority:3.2},
+  bloodquality:{label:'Completar calidad diaria',hint:'Tareas del turno con evidencia y revisión independiente.',priority:3.3},
   quickcapture:{label:'Capturar ahora',hint:'Registrar la operación con el mínimo de campos y completar después.',priority:1},
   orchestration:{label:'Orquestar prioridades y escenarios',hint:'Comparar resiliencia, calidad de datos y escenarios antes de decidir.',priority:2},
   predictive:{label:'Revisar prioridades predictivas',hint:'Anticipar riesgo de stock, cobranza, clientes y acciones de calidad/compliance.',priority:3},

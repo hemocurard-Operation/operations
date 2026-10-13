@@ -12,7 +12,9 @@
     "environment_config": "js/config.js",
     "styles": "css/"
   },
-  "protected": ["js/config.js"],
+  "protected": [
+    "js/config.js"
+  ],
   "legacy_policy": {
     "root_level_js_modules": "LEGACY_NOT_CANONICAL_DO_NOT_EDIT",
     "max_root_shadow_modules": 11,
@@ -24,38 +26,157 @@
   },
   "required_entrypoint_markers": {
     "index.html": "<script type=\"module\" src=\"./js/app.js\"></script>",
-    "js/app.js": "import { initApp } from '../hemocura-core/bootstrap.js';"
+    "js/app.js": "const {initApp}=await import('../hemocura-core/bootstrap.js');"
   },
   "retired_exact_duplicates": [
-    {"path":"bi.js","canonical":"hemocura-core/bi.js","blob_sha":"3ebaffd06306225b9ebe8f3a932dbe6e8c93797b"},
-    {"path":"blood-flow-data.js","canonical":"hemocura-core/blood-flow-data.js","blob_sha":"bc487d534df3ec65027e69bc1237de609fa03e45"},
-    {"path":"blood-flow.js","canonical":"hemocura-core/blood-flow.js","blob_sha":"aa384d97630af3072f166283e07cf179c7152052"},
-    {"path":"blood-inventory.js","canonical":"hemocura-core/blood-inventory.js","blob_sha":"d04268fa07403c828a18f3c03e90e88f26d9797f"},
-    {"path":"command-center.js","canonical":"hemocura-core/command-center.js","blob_sha":"a9cb798474b48920b64f9280201bb51e5b919186"},
-    {"path":"compliance.js","canonical":"hemocura-core/compliance.js","blob_sha":"040ee494fb1c3eda7a7d978bb5a2133373f9847e"},
-    {"path":"documents.js","canonical":"hemocura-core/documents.js","blob_sha":"0efa9ba5bdcb7c316eb28f0295c87f973ae377c3"},
-    {"path":"inspections.js","canonical":"hemocura-core/inspections.js","blob_sha":"3d71efdbfe37d85fe71c764754a41a75ae8f75e0"},
-    {"path":"integrated-qms-data.js","canonical":"hemocura-core/integrated-qms-data.js","blob_sha":"ba828dba4f90d38a0856daf1c84e050e9221b78d"},
-    {"path":"projects.js","canonical":"hemocura-core/projects.js","blob_sha":"c29e09af3161086d511260c5dc4b1591cf6b7555"},
-    {"path":"qms-action-board.js","canonical":"hemocura-core/qms-action-board.js","blob_sha":"d13bdd312a0393f50252dee08dbbd286c1866527"},
-    {"path":"quality.js","canonical":"hemocura-core/quality.js","blob_sha":"0ea22f8c57f85db6e47a383d8bcfc2147c37736d"},
-    {"path":"requisitions.js","canonical":"hemocura-core/requisitions.js","blob_sha":"839c74b04e87605cabc8e1b419e926b894459ef9"},
-    {"path":"supply-data.js","canonical":"hemocura-core/supply-data.js","blob_sha":"0057187e59129a194e00a2132c0eb887f961b889"},
-    {"path":"supply-planning.js","canonical":"hemocura-core/supply-planning.js","blob_sha":"15c1043e0661be1b912418d3167bd956d10e6b7e"},
-    {"path":"operational-sales.js","canonical":"hemocura-core/operational-sales.js","blob_sha":"d8aab1a9619ea14136d78b6591dcfcd5011e4b50"}
+    {
+      "path": "bi.js",
+      "canonical": "hemocura-core/bi.js",
+      "blob_sha": "3ebaffd06306225b9ebe8f3a932dbe6e8c93797b"
+    },
+    {
+      "path": "blood-flow-data.js",
+      "canonical": "hemocura-core/blood-flow-data.js",
+      "blob_sha": "bc487d534df3ec65027e69bc1237de609fa03e45"
+    },
+    {
+      "path": "blood-flow.js",
+      "canonical": "hemocura-core/blood-flow.js",
+      "blob_sha": "aa384d97630af3072f166283e07cf179c7152052"
+    },
+    {
+      "path": "blood-inventory.js",
+      "canonical": "hemocura-core/blood-inventory.js",
+      "blob_sha": "d04268fa07403c828a18f3c03e90e88f26d9797f"
+    },
+    {
+      "path": "command-center.js",
+      "canonical": "hemocura-core/command-center.js",
+      "blob_sha": "a9cb798474b48920b64f9280201bb51e5b919186"
+    },
+    {
+      "path": "compliance.js",
+      "canonical": "hemocura-core/compliance.js",
+      "blob_sha": "040ee494fb1c3eda7a7d978bb5a2133373f9847e"
+    },
+    {
+      "path": "documents.js",
+      "canonical": "hemocura-core/documents.js",
+      "blob_sha": "0efa9ba5bdcb7c316eb28f0295c87f973ae377c3"
+    },
+    {
+      "path": "inspections.js",
+      "canonical": "hemocura-core/inspections.js",
+      "blob_sha": "3d71efdbfe37d85fe71c764754a41a75ae8f75e0"
+    },
+    {
+      "path": "integrated-qms-data.js",
+      "canonical": "hemocura-core/integrated-qms-data.js",
+      "blob_sha": "ba828dba4f90d38a0856daf1c84e050e9221b78d"
+    },
+    {
+      "path": "projects.js",
+      "canonical": "hemocura-core/projects.js",
+      "blob_sha": "c29e09af3161086d511260c5dc4b1591cf6b7555"
+    },
+    {
+      "path": "qms-action-board.js",
+      "canonical": "hemocura-core/qms-action-board.js",
+      "blob_sha": "d13bdd312a0393f50252dee08dbbd286c1866527"
+    },
+    {
+      "path": "quality.js",
+      "canonical": "hemocura-core/quality.js",
+      "blob_sha": "0ea22f8c57f85db6e47a383d8bcfc2147c37736d"
+    },
+    {
+      "path": "requisitions.js",
+      "canonical": "hemocura-core/requisitions.js",
+      "blob_sha": "839c74b04e87605cabc8e1b419e926b894459ef9"
+    },
+    {
+      "path": "supply-data.js",
+      "canonical": "hemocura-core/supply-data.js",
+      "blob_sha": "0057187e59129a194e00a2132c0eb887f961b889"
+    },
+    {
+      "path": "supply-planning.js",
+      "canonical": "hemocura-core/supply-planning.js",
+      "blob_sha": "15c1043e0661be1b912418d3167bd956d10e6b7e"
+    },
+    {
+      "path": "operational-sales.js",
+      "canonical": "hemocura-core/operational-sales.js",
+      "blob_sha": "d8aab1a9619ea14136d78b6591dcfcd5011e4b50"
+    }
   ],
   "preserved_divergent_modules": [
-    {"path":"blood-operations-data.js","canonical":"hemocura-core/blood-operations-data.js","root_sha":"bc17f4d19062d4b84e4ff258aae42bb78302cac5","core_sha":"e58711876ab76c35155389186a5635d1d39a2f5f"},
-    {"path":"command-data.js","canonical":"hemocura-core/command-data.js","root_sha":"9685c5fc1afd06a01641ae02a95de2a75201bdf8","core_sha":"be7e9e9bd2f7619efdec71cbbf1e13b923d9acc2"},
-    {"path":"donors.js","canonical":"hemocura-core/donors.js","root_sha":"fb52a7a7e5bccbd5c16997bbf6ffd667a96a47ee","core_sha":"d3181583c1abca453252d145c06eb4033bb4ff60"},
-    {"path":"layout.js","canonical":"hemocura-core/layout.js","root_sha":"06f067ae0943c3ed202facdd385e5a55416890db","core_sha":"aa98b55440cdc528008d7616ced925ae72793ff1"},
-    {"path":"ops-dashboard.js","canonical":"hemocura-core/ops-dashboard.js","root_sha":"7a4345cb4d97c56a3cdc9b3dcc666e197ec29365","core_sha":"61c980ce4afcab4a5c52f14dc6754804257ab7fa"},
-    {"path":"production.js","canonical":"hemocura-core/production.js","root_sha":"13c11be162cdc10d5ba50dd5bd831f2dc8c550f0","core_sha":"07e180f174089ca23f5e057ae61b01b70eb57acb"},
-    {"path":"release-data.js","canonical":"hemocura-core/release-data.js","root_sha":"9a304f20ae5b18701abea99e9160178c523ccc1b","core_sha":"db811f55a8cd62335a6b5c142747ff9cbee0f76a"},
-    {"path":"release-gate.js","canonical":"hemocura-core/release-gate.js","root_sha":"deb8ab74aa5bac56757dd69c14df3629ba3e985a","core_sha":"42ad06a916d2f416f9fb1666e47e9258a9e5ad1d"},
-    {"path":"router.js","canonical":"hemocura-core/router.js","root_sha":"bf58d3828bb0dd67a4a60406842d504a87b35386","core_sha":"0e2fba999e5937dd6ab96d82402b54f36797ed4a"},
-    {"path":"screening.js","canonical":"hemocura-core/screening.js","root_sha":"d1c3a9cbebd39e0d864621c63686fbd0e1d37bf4","core_sha":"5c2727a5418835e179e24e6269b2aadeb22dcad1"},
-    {"path":"views.js","canonical":"hemocura-core/views.js","root_sha":"f9081a19770487cf32c3c7e5745382214fc8e0ed","core_sha":"0f77c43e147fcb3e7350de72b777172052f62a8f"}
+    {
+      "path": "blood-operations-data.js",
+      "canonical": "hemocura-core/blood-operations-data.js",
+      "root_sha": "bc17f4d19062d4b84e4ff258aae42bb78302cac5",
+      "core_sha": "e58711876ab76c35155389186a5635d1d39a2f5f"
+    },
+    {
+      "path": "command-data.js",
+      "canonical": "hemocura-core/command-data.js",
+      "root_sha": "9685c5fc1afd06a01641ae02a95de2a75201bdf8",
+      "core_sha": "be7e9e9bd2f7619efdec71cbbf1e13b923d9acc2"
+    },
+    {
+      "path": "donors.js",
+      "canonical": "hemocura-core/donors.js",
+      "root_sha": "fb52a7a7e5bccbd5c16997bbf6ffd667a96a47ee",
+      "core_sha": "d3181583c1abca453252d145c06eb4033bb4ff60"
+    },
+    {
+      "path": "layout.js",
+      "canonical": "hemocura-core/layout.js",
+      "root_sha": "06f067ae0943c3ed202facdd385e5a55416890db",
+      "core_sha": "aa98b55440cdc528008d7616ced925ae72793ff1"
+    },
+    {
+      "path": "ops-dashboard.js",
+      "canonical": "hemocura-core/ops-dashboard.js",
+      "root_sha": "7a4345cb4d97c56a3cdc9b3dcc666e197ec29365",
+      "core_sha": "61c980ce4afcab4a5c52f14dc6754804257ab7fa"
+    },
+    {
+      "path": "production.js",
+      "canonical": "hemocura-core/production.js",
+      "root_sha": "13c11be162cdc10d5ba50dd5bd831f2dc8c550f0",
+      "core_sha": "07e180f174089ca23f5e057ae61b01b70eb57acb"
+    },
+    {
+      "path": "release-data.js",
+      "canonical": "hemocura-core/release-data.js",
+      "root_sha": "9a304f20ae5b18701abea99e9160178c523ccc1b",
+      "core_sha": "db811f55a8cd62335a6b5c142747ff9cbee0f76a"
+    },
+    {
+      "path": "release-gate.js",
+      "canonical": "hemocura-core/release-gate.js",
+      "root_sha": "deb8ab74aa5bac56757dd69c14df3629ba3e985a",
+      "core_sha": "42ad06a916d2f416f9fb1666e47e9258a9e5ad1d"
+    },
+    {
+      "path": "router.js",
+      "canonical": "hemocura-core/router.js",
+      "root_sha": "bf58d3828bb0dd67a4a60406842d504a87b35386",
+      "core_sha": "0e2fba999e5937dd6ab96d82402b54f36797ed4a"
+    },
+    {
+      "path": "screening.js",
+      "canonical": "hemocura-core/screening.js",
+      "root_sha": "d1c3a9cbebd39e0d864621c63686fbd0e1d37bf4",
+      "core_sha": "5c2727a5418835e179e24e6269b2aadeb22dcad1"
+    },
+    {
+      "path": "views.js",
+      "canonical": "hemocura-core/views.js",
+      "root_sha": "f9081a19770487cf32c3c7e5745382214fc8e0ed",
+      "core_sha": "0f77c43e147fcb3e7350de72b777172052f62a8f"
+    }
   ],
   "rules": [
     "New application modules belong under hemocura-core, not repository root.",

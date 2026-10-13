@@ -1,6 +1,7 @@
+import { localDay } from './workflow-domain.js';
 import { bloodData } from './blood-operations-data.js';
 function esc(v=''){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
-const today=()=>new Date().toISOString().slice(0,10);
+const today=()=>localDay();
 
 export async function mountDonors(root){
  const branches=await bloodData.branches(); const bm=Object.fromEntries(branches.map(b=>[b.id,b.name]));

@@ -1,6 +1,7 @@
+import { localDay } from './workflow-domain.js';
 import { bloodData } from './blood-operations-data.js';
 function esc(v=''){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#039;'}[c]))}
-const today=()=>new Date().toISOString().slice(0,10);
+const today=()=>localDay();
 const TESTS=['VIH 1/2','HBsAg','Anti-HCV','Sífilis','Chagas','HTLV I/II','Hemoglobina','ABO/Rh'];
 
 export async function mountScreening(root){

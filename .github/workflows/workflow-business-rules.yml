@@ -1,0 +1,60 @@
+name: HemoCura operational route and service rules
+on:
+  pull_request:
+    paths:
+      - 'hemocura-core/**'
+      - 'css/app.css'
+      - 'VERSION.json'
+      - 'sql/migrations/20261013120000_workflow_commercial_quality.sql'
+      - 'sql/migrations/20261013133000_workflow_refinements.sql'
+      - 'tests/workflow/**'
+      - 'tools/workflow_*'
+      - '.github/workflows/workflow-business-rules.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'hemocura-core/**'
+      - 'css/app.css'
+      - 'sql/migrations/20261013120000_workflow_commercial_quality.sql'
+      - 'sql/migrations/20261013133000_workflow_refinements.sql'
+      - 'tests/workflow/**'
+      - 'tools/workflow_*'
+      - '.github/workflows/workflow-business-rules.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  workflow-rules:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install pinned browser test dependency
+        run: npm ci --prefix tests/wave50 --ignore-scripts --no-audit --no-fund
+      - name: Parse modules, check migration privileges, and test pure rules
+        run: |
+          python3 tools/javascript_syntax_gate.py
+          python3 tools/migration_security_linter.py sql/migrations/20261013120000_workflow_commercial_quality.sql
+          python3 tools/migration_security_linter.py sql/migrations/20261013133000_workflow_refinements.sql
+          node --test tests/workflow/domain.test.mjs
+      - name: Verify schema, RLS, ledger and concurrent requests locally
+        run: python3 tools/workflow_postgres_runner.py --allow-external-prerequisite-fixture --report-dir /tmp/workflow-postgres
+      - name: Find browser and verify frontend with isolated fixtures
+        shell: bash
+        run: |
+          set -euo pipefail
+          HEMOCURA_BROWSER="$(command -v google-chrome || command -v chromium || command -v chromium-browser)"
+          export HEMOCURA_BROWSER
+          HEMOCURA_WORKFLOW_REPORT_DIR=/tmp/workflow-browser node tools/workflow_browser_runner.cjs
+      - name: Upload local test evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: workflow-local-evidence
+          path: |
+            /tmp/workflow-postgres/report.json
+            /tmp/workflow-browser/report.json
+            /tmp/workflow-browser/*.png

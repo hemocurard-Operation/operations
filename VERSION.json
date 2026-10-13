@@ -1,9 +1,13 @@
 {
   "project": "HemoCura Operations Intelligence + QMS + Compliance",
-  "version": "0.48.0",
-  "stage": "Orchestration Chain 50 · resilience, scenarios, data readiness and executive prioritization",
+  "version": "0.49.1",
+  "stage": "Ruta operativa por sucursal · Comercial · Cámara hiperbárica · Calidad del banco de sangre",
   "release_channel": "RC",
-  "protected_files": ["js/config.js"],
+  "protected_files": [
+    "js/config.js"
+  ],
   "config_policy": "PROTECTED_LOCAL_ENVIRONMENT_FILE",
-  "clinical_core": "LIVE-LIMITED / CONTROLLED_RELEASE"
+  "clinical_core": "LIVE-LIMITED / CONTROLLED_RELEASE",
+  "workflow_migration": "20261013120000_workflow_commercial_quality",
+  "workflow_refinements_migration": "20261013133000_workflow_refinements"
 }
