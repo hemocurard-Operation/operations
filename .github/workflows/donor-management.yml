@@ -2,9 +2,9 @@ name: Donor management regressions
 on:
   push:
     branches: [main]
-    paths: ['hemocura-core/donors.js', 'hemocura-core/donor-management-data.js', 'hemocura-core/donor-agenda.js', 'css/donors.css', 'tests/donors/**', 'tools/donors_*', 'supabase/migrations/*donor*.sql', '.github/workflows/donor-management.yml']
+    paths: ['hemocura-core/donors.js', 'hemocura-core/donor-management-data.js', 'hemocura-core/donor-agenda.js', 'hemocura-core/cedula-reader*.js', 'js/vendor/ocr/**', 'css/donors.css', 'tests/donors/**', 'tools/donors_*', 'tools/cedula_ocr_runner.cjs', 'supabase/migrations/*donor*.sql', '.github/workflows/donor-management.yml']
   pull_request:
-    paths: ['hemocura-core/donors.js', 'hemocura-core/donor-management-data.js', 'hemocura-core/donor-agenda.js', 'css/donors.css', 'tests/donors/**', 'tools/donors_*', 'supabase/migrations/*donor*.sql', '.github/workflows/donor-management.yml']
+    paths: ['hemocura-core/donors.js', 'hemocura-core/donor-management-data.js', 'hemocura-core/donor-agenda.js', 'hemocura-core/cedula-reader*.js', 'js/vendor/ocr/**', 'css/donors.css', 'tests/donors/**', 'tools/donors_*', 'tools/cedula_ocr_runner.cjs', 'supabase/migrations/*donor*.sql', '.github/workflows/donor-management.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -19,6 +19,8 @@ jobs:
           node-version: 22
       - name: Parse ES modules
         run: python tools/javascript_syntax_gate.py hemocura-core/donors.js hemocura-core/donor-management-data.js
+      - name: Cedula and donation interval rules
+        run: node tests/donors/cedula-rules.mjs
       - name: PostgreSQL rules and branch permissions
         run: python tools/donors_postgres_runner.py
       - name: Install pinned browser test dependency
@@ -27,6 +29,8 @@ jobs:
         run: node tests/wave50/node_modules/playwright/cli.js install --with-deps chromium
       - name: Browser flows and mobile layout
         run: node tools/donors_browser_runner.cjs
+      - name: Local OCR with synthetic image only
+        run: node tools/cedula_ocr_runner.cjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -34,3 +38,4 @@ jobs:
           path: |
             /tmp/hemocura-donors-postgres
             /tmp/hemocura-donors-browser
+            /tmp/hemocura-cedula-ocr

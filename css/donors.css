@@ -30,3 +30,5 @@
 
 .donor-agenda summary{cursor:pointer;padding-bottom:8px}.donor-agenda-filters{margin:18px 0}.donor-agenda [data-agenda-count]{align-self:center;white-space:nowrap}.donor-agenda .table-wrap{max-height:600px;overflow:auto}
 #don-agenda{min-width:0}.donor-agenda{min-width:0}.donor-agenda [data-agenda-table]{min-width:0}
+
+#don-identity-reader{min-width:0}.cedula-dialog label{display:grid;gap:7px;margin:12px 0}.cedula-dialog form{display:grid;gap:12px}.cedula-dialog video{width:100%;max-height:350px;object-fit:contain;border-radius:8px;background:#172338}.cedula-dialog .cedula-confirm{display:flex;gap:8px;align-items:center}.cedula-dialog .cedula-confirm input{width:auto;flex:none}.cedula-dialog [data-id-text]{min-height:160px}.cedula-dialog [data-id-review]>button{margin-top:8px}
