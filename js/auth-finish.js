@@ -7,8 +7,11 @@ async function boot(){
   const url=new URL(location.href);
   const hash=new URLSearchParams(location.hash.slice(1));
   if(url.searchParams.has('error')||hash.has('error'))throw Error('El enlace no es válido o ha vencido. Solicita una nueva invitación.');
-  if(url.searchParams.has('code')){const {error}=await client.auth.exchangeCodeForSession(url.searchParams.get('code'));if(error)throw error}
-  const {data,error}=await client.auth.getSession();if(error)throw error;
+  // getSession waits for SDK initialization, which may already consume a PKCE code.
+  // Only exchange explicitly if initialization has not established a session.
+  let result=await client.auth.getSession();if(result.error)throw result.error;
+  if(url.searchParams.has('code')&&!result.data.session){const {error}=await client.auth.exchangeCodeForSession(url.searchParams.get('code'));if(error)throw error;result=await client.auth.getSession();if(result.error)throw result.error}
+  const data=result.data;
   // Remove tokens/codes from the visible URL after session initialization.
   history.replaceState(null,'',location.pathname);
   if(!data.session)throw Error('El enlace no está activo. Solicita una nueva invitación.');

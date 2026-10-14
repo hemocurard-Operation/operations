@@ -8,4 +8,4 @@ La configuración de Auth apunta al sitio real y permite el callback de activaci
 
 El envío fiable de correos requiere un proveedor SMTP configurado. La configuración actual no dispone de SMTP propio; esta dependencia se comunicó al usuario y no se afirmó entrega de correos.
 
-Validación: 49 pruebas del servidor con SDK simulado; 25 comprobaciones PostgreSQL aisladas; 11 pruebas del navegador para administración y activación. Se comprobó en producción que el rol de operaciones accede a sus tres sucursales asignadas y no recibe privilegios administrativos. No se intentó adivinar contraseñas ni se registraron claves o enlaces privados.
+Validación: 49 pruebas del servidor con SDK simulado; 25 comprobaciones PostgreSQL aisladas; 12 pruebas del navegador para administración y activación. Se comprobó en producción que el rol de operaciones accede a sus tres sucursales asignadas y no recibe privilegios administrativos. No se intentó adivinar contraseñas ni se registraron claves o enlaces privados.
