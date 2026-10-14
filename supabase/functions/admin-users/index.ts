@@ -7,6 +7,7 @@ const corsHeaders = {
 };
 
 const SUPER_ROLE = "SUPER_USUARIO";
+const ACCESS_REDIRECT = "https://hemocurard-operation.github.io/operations/auth-finish.html";
 const BRANCH_SCOPED_ROLES = new Set(["LABORATORIO", "CONSULTA", "ENCARGADA_LABORATORIO"]);
 
 class HttpError extends Error {
@@ -221,13 +222,14 @@ Deno.serve(async (req: Request) => {
 
       let created: any;
       if (action === "invite") {
-        const { data, error } = await admin.auth.admin.inviteUserByEmail(email, { data: { full_name: fullName } });
+        const { data, error } = await admin.auth.admin.inviteUserByEmail(email, { data: { full_name: fullName }, redirectTo: ACCESS_REDIRECT });
         if (error) throw error;
         created = data.user;
       } else {
-        const password = requireText(body.password, "Contraseña temporal");
+        const password = typeof body.password === "string" ? body.password : "";
         if (password.length < 12 || password.length > 128) return json({ error: "La contraseña temporal debe tener entre 12 y 128 caracteres" }, 400);
-        const { data, error } = await admin.auth.admin.createUser({ email, password, email_confirm: false, user_metadata: { full_name: fullName } });
+        // This is an administrative creation with a provided temporary key, not an email invitation.
+        const { data, error } = await admin.auth.admin.createUser({ email, password, email_confirm: true, user_metadata: { full_name: fullName } });
         if (error) throw error;
         created = data.user;
       }
@@ -246,7 +248,7 @@ Deno.serve(async (req: Request) => {
         throw e;
       }
 
-      return json({ ok: true, user: { id: created.id, email, full_name: fullName }, role: resolved.role.code, branches: resolved.branches.map((b: any) => b.code) }, 201);
+      return json({ ok: true, user: { id: created.id, email, full_name: fullName }, role: resolved.role.code, branches: resolved.branches.map((b: any) => b.code), email_requested: action === "invite", message: action === "invite" ? "Invitación solicitada al proveedor de correo. El usuario debe abrir el enlace y definir su clave." : "Usuario habilitado para ingresar con la clave temporal indicada. Este modo no envía correo." }, 201);
     }
 
     if (action === "remove_role") {

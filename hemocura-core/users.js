@@ -99,13 +99,13 @@ export async function mountUsers(root){
           ${superUser?`<div class="status ok"><strong>${esc(superUser.full_name||superUser.email)}</strong> · ${esc(superUser.email)} · Todas las sucursales activas</div>`:'<div class="status warn">No existe Superusuario asignado.</div>'}
         </section>
         <section class="card">
-          <div class="card-head"><div><h3>Crear usuario</h3><div class="muted">Recomendado: enviar invitación para que la persona defina su acceso.</div></div></div>
+          <div class="card-head"><div><h3>Crear usuario</h3><div class="muted">La invitación permite definir una clave mediante correo. El acceso inmediato no envía correo; requiere comunicar la clave temporal al usuario.</div></div></div>
           <form id="user-create-form" class="form-grid">
             <label>Nombre completo<input name="full_name" required autocomplete="name"></label>
             <label>Correo<input name="email" type="email" required autocomplete="email"></label>
             <label>Rol<select name="role_id" required><option value="">Seleccionar…</option>${options(state.roles)}</select></label>
             <div id="user-create-branches"></div>
-            <label>Modo<select name="mode"><option value="invite">Enviar invitación</option><option value="create">Crear con contraseña temporal</option></select></label>
+            <label>Modo<select name="mode"><option value="invite">Enviar invitación por correo</option><option value="create">Acceso inmediato con clave temporal (sin correo)</option></select></label>
             <label id="temp-password-wrap" hidden>Contraseña temporal<input name="password" type="password" minlength="12" maxlength="128" autocomplete="new-password"></label>
             <div class="form-actions"><button type="submit">Crear usuario</button></div>
           </form>
@@ -157,8 +157,9 @@ export async function mountUsers(root){
         btn.disabled=true;status.innerHTML='<div class="status info">Procesando…</div>';
         const payload=payloadFromForm(form);
         try{
-          if(payload.mode==='invite')await inviteUser(payload);else await createUser(payload);
+          const result=payload.mode==='invite'?await inviteUser(payload):await createUser(payload);
           state=await loadUsersAdmin();render();
+          root.querySelector('#user-admin-status').textContent=result.message||'Usuario creado.';
         }catch(err){status.innerHTML=`<div class="status bad">${esc(err.message)}</div>`;btn.disabled=false}
       });
 

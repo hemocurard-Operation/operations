@@ -36,7 +36,7 @@ const assert=require('node:assert/strict');
    return{data:this.one?rows[0]||null:rows,error:null};
   }).then(resolve,reject)}
  }
- const client={from:table=>new Query(table),auth:{getUser:async()=>mode==='invalid'?{data:{user:null},error:{message:'invalid'}}:{data:{user:{id:'caller'}},error:null},admin:{updateUserById:async(userId,values)=>{writes.push({table:'auth-password',payload:{userId,values}});return{data:{user:{id:userId}},error:mode==='password-error'?{message:'secret provider error'}:null}},listUsers:async()=>({data:{users:mode.startsWith('list-')?[{id:'target',email:'fixture@example.invalid',created_at:'2026-01-01T00:00:00Z'}]:[]},error:null})}}};
+ const client={from:table=>new Query(table),auth:{getUser:async()=>mode==='invalid'?{data:{user:null},error:{message:'invalid'}}:{data:{user:{id:'caller'}},error:null},admin:{updateUserById:async(userId,values)=>{writes.push({table:'auth-password',payload:{userId,values}});return{data:{user:{id:userId}},error:mode==='password-error'?{message:'secret provider error'}:null}},createUser:async payload=>{writes.push({table:"auth-create",payload});return{data:{user:{id:"new-fixture"}},error:null}},inviteUserByEmail:async(email,options)=>{writes.push({table:"auth-invite",payload:{email,options}});return{data:{user:{id:"invited-fixture"}},error:null}},listUsers:async()=>({data:{users:mode.startsWith('list-')?[{id:'target',email:'fixture@example.invalid',created_at:'2026-01-01T00:00:00Z'}]:[]},error:null})}}};
  const callerClient={...client,rpc:async(name,params)=>{
   rpcCalls.push({name,params});
   if(mode==='rpc-forbidden')return{data:null,error:{code:'42501',message:'Unauthorized branch'}};
@@ -131,9 +131,13 @@ const assert=require('node:assert/strict');
  assert.equal(passwordCount(),beforePasswords,'Rejected password request mutated Auth');
  assert(writes.filter(x=>x.table==='audit_events').every(x=>!JSON.stringify(x.payload).includes('synthetic-test-key-123')),'Audit leaked password');
  await run('Provider failure returns controlled error','Bearer fixture',{action:'change_password',user_id:'target',password:'synthetic-test-key-123'},400,'password-error');
+ await run('Temporary key creates an enabled account','Bearer fixture',{action:'create',email:'created@example.invalid',full_name:'Created Fixture',role_id:'lab-role',branch_ids:['branch-a'],password:'synthetic-create-key-123'},201);
+ assert.equal(writes.find(x=>x.table==='auth-create').payload.email_confirm,true);
+ await run('Invitation uses real onboarding redirect','Bearer fixture',{action:'invite',email:'invited@example.invalid',full_name:'Invited Fixture',role_id:'lab-role',branch_ids:['branch-a']},201);
+ assert.equal(writes.find(x=>x.table==='auth-invite').payload.options.redirectTo,'https://hemocurard-operation.github.io/operations/auth-finish.html');
  assert(writes.some(x=>x.table==='audit_events'&&x.payload.user_id==='caller'&&x.payload.action==='ROLE_ASSIGNED'));
  assert(writes.some(x=>x.table==='user_roles'&&x.payload[0].branch_id==='branch-a'));
- assert.equal(writes.filter(x=>x.table==='user_roles').length,1,'rejected requests wrote roles');
+ assert.equal(writes.filter(x=>x.table==='user_roles').length,3,'rejected requests wrote roles');
  if(process.env.HEMOCURA_ADMIN_REPORT)fs.writeFileSync(process.env.HEMOCURA_ADMIN_REPORT,JSON.stringify({environment:'node-vm-edge-handler-with-mocked-sdk',production_verified:false,checks:results},null,2));
  console.log(`${results.length}/${results.length} Edge handler regressions passed`);
 })().catch(error=>{console.error(error.message);process.exitCode=1});

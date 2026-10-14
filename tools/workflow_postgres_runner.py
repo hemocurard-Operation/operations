@@ -43,7 +43,7 @@ def main():
   deferred=[]
   access_migrations=[]
   for f in sorted((ROOT/'supabase/migrations').glob('*.sql')):
-   if f.name.endswith('_super_user_total_access.sql'):access_migrations.append(f);continue
+   if f.name.endswith(('_super_user_total_access.sql','_assigned_role_branch_access.sql')):access_migrations.append(f);continue
    # The donor agenda depends on wf_active_actor and wf_audit_change from CANDIDATE.
    if f.name in ('20261013183215_donor_management.sql','20261013194849_donor_twelve_week_agenda.sql','20261013200735_donor_identity_capture.sql'):deferred.append(f);continue
    if f.name=='20261012105117_value_chain_50_foundation_v2.sql':apply(ROOT/'tests/wave50/external-prerequisites.sql')
