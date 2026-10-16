@@ -1,0 +1,10 @@
+import assert from 'node:assert/strict';
+import {overdue,taskMetrics,visibleTasks,taskCsv} from '../../hemocura-core/area-agenda-domain.js';
+const now=Date.now(),past=new Date(now-86400000).toISOString(),future=new Date(now+86400000).toISOString();
+const tasks=[{id:'1',status:'PENDIENTE',due_at:past,owner_id:'u1',area_code:'OPERACIONES',title:'=FORMULA',owner_name:'Operador'},{id:'2',status:'EN_REVISION',due_at:future,owner_id:'u2',area_code:'CALIDAD',title:'Evidencia'},{id:'3',status:'COMPLETADA',due_at:future,original_due_at:past,submitted_at:past,completed_at:future,owner_id:'u1',area_code:'CALIDAD'}];
+assert(overdue(tasks[0],now));assert(!overdue(tasks[2],now));
+const m=taskMetrics(tasks,now);assert.equal(m.open,2);assert.equal(m.review,1);assert.equal(m.overdue,1);assert.equal(m.onTime,0);assert.equal(m.executionOnTime,100);
+assert.equal(visibleTasks(tasks,{owner:'u1'}).length,1);assert.equal(visibleTasks(tasks,{area:'CALIDAD'}).length,1);assert.equal(visibleTasks(tasks,{state:'TODAS'}).length,3);
+assert.equal(visibleTasks(tasks,{until:new Date(now-3600000).toISOString()})[0].id,'1');
+assert(taskCsv(tasks).includes('"\'=FORMULA"'));assert.equal(taskMetrics([]).onTime,null);
+console.log('PASS 13 area agenda domain checks');

@@ -1,0 +1,27 @@
+{
+  "status": "PASS",
+  "checks": [
+    "personal workday shows assigned tasks only",
+    "overdue work remains visible",
+    "operations sees area workload and source backlog",
+    "responsibilities are specific to each area",
+    "executor cannot approve their own submitted work",
+    "failed save preserves checklist and evidence",
+    "submission records the checklist and evidence atomically",
+    "own task still has no self review control",
+    "quality review can close another employee task",
+    "weekly routine creates concrete tasks with local time",
+    "replanning preserves original due date",
+    "source failure is shown instead of a misleading zero",
+    "quality view separates execution and closure timing",
+    "authorized task report can be downloaded",
+    "task information is escaped",
+    "daily responsibilities appear in My Work",
+    "area agenda fits mobile viewport",
+    "read only role has no task creation review or management actions",
+    "task actions never mutate source records",
+    "no browser runtime errors"
+  ],
+  "errors": [],
+  "production_data_used": false
+}
