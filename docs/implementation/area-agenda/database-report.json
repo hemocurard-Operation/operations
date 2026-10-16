@@ -280,7 +280,7 @@
       "sha256": "9dc15285dc767031a60ac13a89c950fcabb5df4ede6135794a8d80a60f59855c"
     },
     {
-      "file": "supabase/migrations/20261016223853_area_task_agenda.sql",
+      "file": "supabase/migrations/20261016234508_area_task_agenda.sql",
       "sha256": "d7e3a497f2d7546097909c52cac0ff64fead686f1d4cd7a7a3d536de0f5e6eb1"
     }
   ],

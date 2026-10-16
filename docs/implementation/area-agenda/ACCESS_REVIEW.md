@@ -1,8 +1,6 @@
 # Alcance de autorización para la agenda por área
 
-Estado: código y pruebas preparados. La revisión automática rechazó aplicar la migración de producción por requerir autorización explícita para sus nuevos privilegios. No se aplicó la migración ni se publicó la interfaz dependiente.
-
-Se solicita autorizar esta migración de Supabase y la publicación posterior de la interfaz en `hemocurard-Operation/operations` y su sitio de GitHub Pages.
+Estado: alcance autorizado explícitamente por el usuario el 16 de octubre de 2026. Migración aplicada en producción como `20261016234508_area_task_agenda`. Publicación de la interfaz autorizada en `hemocurard-Operation/operations` y GitHub Pages.
 
 ## Nuevos permisos y áreas
 
