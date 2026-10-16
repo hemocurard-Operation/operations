@@ -1,0 +1,29 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="/css/app.css"><title>Compras · fixture aislado</title></head><body><main id="root"></main><script type="module">
+import {fixture} from '/hemocura-core/supabase.js';
+import {mountProcurement} from '/hemocura-core/procurement.js';
+import {resetAccessCache} from '/hemocura-core/access-control.js';
+window.fixture=fixture;
+fixture.permissions=['PURCHASE_VIEW','PURCHASE_WRITE','PURCHASE_APPROVE','PURCHASE_RECEIVE'];
+fixture.tables.branches=[{id:'b1',name:'Santiago',active:true},{id:'b2',name:'Otra sucursal',active:true}];
+fixture.tables.suppliers=[{id:'s1',legal_name:'Proveedor sintético <img src=x onerror="window.evil=1">',status:'ACTIVO',tax_id:'TEST',phone:'8095550100'}];
+fixture.tables.purchase_orders=[];fixture.tables.purchase_order_lines=[];fixture.tables.purchase_receipts=[];
+fixture.rpcHandler=async(name,{p_action:a,p_payload:p})=>{
+ if(name!=='procurement_action')return {error:{message:'RPC ajena'}};
+ const orders=fixture.tables.purchase_orders,ls=fixture.tables.purchase_order_lines;let o=orders.find(x=>x.id===p.id);
+ if(fixture.rejectNext){fixture.rejectNext=false;return {error:{message:'La orden cambió. Actualice antes de guardar.'}}}
+ if(a==='SUPPLIER'){fixture.tables.suppliers.push({...p,id:'s2',status:'ACTIVO'});return {data:{id:'s2'}}}
+ if(a==='CREATE'||a==='UPDATE'){
+  if(!o){o={id:crypto.randomUUID(),po_code:'OC-TEST-1',revision:1,status:'BORRADOR',supplier_snapshot:fixture.tables.suppliers[0],branch_snapshot:{name:'Santiago'}};orders.push(o)}
+  const oid=o.id;Object.assign(o,p);o.id=oid;delete o.lines;o.revision=1;
+  fixture.tables.purchase_order_lines=ls.filter(x=>x.purchase_order_id!==o.id);fixture.tables.purchase_order_lines.push(...p.lines.map(l=>({...l,id:crypto.randomUUID(),purchase_order_id:o.id,received_quantity:0})));
+  o.total_amount=p.lines.reduce((s,l)=>s+Number(l.quantity)*Number(l.unit_price),0);return {data:{id:o.id}}
+ }
+ if(a==='APPROVE')o.status='APROBADA';if(a==='SEND')o.status='ENVIADA';if(a==='CANCEL')o.status='CANCELADA';
+ if(a==='RECEIVE'){
+  const details=p.lines.map(x=>{const l=ls.find(l=>l.id===x.line_id);l.received_quantity=Number(l.received_quantity)+Number(x.accepted_quantity);return {...x,purchase_order_line_id:x.line_id}});
+  fixture.tables.purchase_receipts.push({...p,id:crypto.randomUUID(),purchase_order_id:o.id,receipt_code:'REC-TEST-1',recorded_at:new Date().toISOString(),receiver_name:'Operador sintético',purchase_receipt_lines:details});
+  o.status=ls.filter(l=>l.purchase_order_id===o.id).every(l=>Number(l.received_quantity)===Number(l.quantity))?'RECIBIDA':'PARCIAL';
+ }o.revision++;return {data:{id:o.id}}
+};
+window.remount=async()=>{resetAccessCache();await mountProcurement(document.querySelector('#root'))};await window.remount();window.purchaseReady=true;
+</script></body></html>

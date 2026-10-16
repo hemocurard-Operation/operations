@@ -20,7 +20,7 @@ def main():
  name=f'hemocura-workflow-test-{os.getpid()}';started=False
  report={'production_verified':False,'external_prerequisite_fixture':True,'environment':'disposable isolated PostgreSQL','migrations':[],'checks':[],'container':name}
  def sql(text,label):
-  r=subprocess.run(['docker','exec','-i',name,'psql','-U','postgres','-v','ON_ERROR_STOP=1','-At'],input=text,capture_output=True,text=True,timeout=120)
+  r=subprocess.run(['docker','exec','-i',name,'psql','-h','127.0.0.1','-U','postgres','-v','ON_ERROR_STOP=1','-At'],input=text,capture_output=True,text=True,timeout=120)
   (out/(label+'.log')).write_text(r.stdout+r.stderr)
   if r.returncode:raise RuntimeError(label+': failed; see '+str(out/(label+'.log')))
   return r
@@ -43,7 +43,9 @@ def main():
   deferred=[]
   access_migrations=[]
   coordination_migrations=[]
+  purchase_migrations=[]
   for f in sorted((ROOT/'supabase/migrations').glob('*.sql')):
+   if f.name.endswith('_purchase_receiving.sql'):purchase_migrations.append(f);continue
    if f.name.endswith('_operations_coordination.sql'):coordination_migrations.append(f);continue
    if f.name.endswith(('_super_user_total_access.sql','_assigned_role_branch_access.sql')):access_migrations.append(f);continue
    # The donor agenda depends on wf_active_actor and wf_audit_change from CANDIDATE.
@@ -57,6 +59,7 @@ def main():
   apply(ROOT/'tests/workflow/donor-agenda-prerequisite.sql')
   for f in deferred:apply(f)
   for f in coordination_migrations:apply(f)
+  for f in purchase_migrations:apply(f)
   result=sql((ROOT/'tests/workflow/business-rules.sql').read_text(),'workflow-business-rules')
   checks=re.findall(r'PASS ([^\n]+)',result.stderr+result.stdout)
   if not checks:raise RuntimeError('Zero business-rule checks executed')

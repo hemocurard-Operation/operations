@@ -1,0 +1,41 @@
+const fs=require('node:fs'),path=require('node:path'),http=require('node:http'),assert=require('node:assert/strict');
+const {chromium}=require(require.resolve('playwright',{paths:[path.join(__dirname,'../tests/wave50')]}));
+(async()=>{
+ const root=path.resolve(__dirname,'..'),out=process.env.HEMOCURA_PURCHASE_BROWSER||'/tmp/hemocura-purchase-browser';fs.mkdirSync(out,{recursive:true});
+ const server=http.createServer((req,res)=>{const p=new URL(req.url,'http://fixture.invalid').pathname,file=path.resolve(root,'.'+p);if(!file.startsWith(root+'/')||!['/hemocura-core/','/tests/','/css/','/VERSION.json'].some(x=>p.startsWith(x))){res.writeHead(403);return res.end()}fs.readFile(file,(err,data)=>{if(err){res.writeHead(404);return res.end()}res.setHeader('Content-Type',file.endsWith('.js')?'text/javascript':file.endsWith('.css')?'text/css':'text/html');res.end(data)})});
+ await new Promise(r=>server.listen(0,'127.0.0.1',r));const origin='http://127.0.0.1:'+server.address().port;let browser;const checks=[],errors=[];
+ const check=(name,ok)=>{assert(ok,name);checks.push(name);console.log('PASS '+name)};
+ try{
+  browser=await chromium.launch({executablePath:fs.existsSync('/usr/bin/chromium')?'/usr/bin/chromium':undefined,args:['--no-sandbox','--disable-dev-shm-usage']});const page=await browser.newPage({viewport:{width:1440,height:1000}});page.on('pageerror',e=>errors.push(e.message));
+  await page.route('**/*',route=>route.request().url().startsWith(origin)?route.continue():route.abort());
+  await page.route('**/hemocura-core/supabase.js',r=>r.fulfill({contentType:'text/javascript',body:fs.readFileSync(path.join(root,'tests/workflow/supabase-fixture.js'),'utf8')}));
+  await page.goto(origin+'/tests/procurement/browser.html');await page.waitForFunction(()=>window.purchaseReady);
+  await page.locator('[data-action=new]').click();const form=page.locator('[data-purchase-dialog] form');
+  await form.locator('[name=supplier_id]').selectOption('s1');await form.locator('[name=description]').fill('Reactivo sintético');await form.locator('[name=quantity]').fill('10');await form.locator('[name=unit_price]').fill('25');await form.locator('[name=payment_terms]').fill('30 días');await form.locator('[name=delivery_address]').fill('Santiago');await form.locator('[name=notes]').fill('Conservar cadena de frío');
+  check('total updates while preparing order',(await form.locator('[data-order-total]').innerText()).includes('250'));
+  await form.locator('[type=submit]').click();await page.waitForSelector('[data-action=approve]');
+  check('order persists complete line items',await page.evaluate(()=>window.fixture.tables.purchase_order_lines.length===1&&window.fixture.tables.purchase_order_lines[0].quantity==='10'));
+  check('supplier text is escaped',await page.locator('[data-purchase-detail] img').count()===0&&await page.evaluate(()=>!window.evil));
+  check('draft has no receipt action',await page.locator('[data-action=receive]').count()===0);
+  await page.locator('[data-action=edit]').click();check('draft editor restores terms',(await form.locator('[name=payment_terms]').inputValue())==='30 días');await form.locator('[data-close]').click();
+  await page.locator('[data-action=approve]').click();await page.waitForSelector('[data-action=receive]');check('approved order hides editing',await page.locator('[data-action=edit]').count()===0);
+  await page.locator('[data-action=send]').click();await page.waitForFunction(()=>window.fixture.tables.purchase_orders[0].status==='ENVIADA');
+  const popupPromise=page.waitForEvent('popup');await page.locator('[data-action=print]').click();const popup=await popupPromise;await popup.waitForLoadState();check('printable purchase document includes price and terms',(await popup.locator('body').innerText()).includes('30 días')&&(await popup.locator('body').innerText()).includes('Reactivo sintético'));check('print document escapes supplier content',await popup.locator('img').count()===0);await popup.close();
+  await page.locator('[data-action=receive]').click();await form.locator('[name=delivery_reference]').fill('FAC-123');await form.locator('[name=condition]').selectOption('OBSERVADA');await form.locator('[name=temperature_c]').fill('4');await form.locator(':scope > .filter-grid [name=notes]').fill('Empaque revisado al recibir');
+  let r=form.locator('[data-receipt-line]').first();await r.locator('[name=quantity]').fill('4');await r.locator('[name=accepted_quantity]').fill('3');await r.locator('[name=unit_price]').fill('26');await r.locator('[name=lot]').fill('LOTE-A');await r.locator('[name=expiry_date]').fill('2030-12-31');await r.locator('[name=notes]').fill('Una unidad dañada');
+  await form.locator('[data-action=add-lot]').click();r=form.locator('[data-receipt-line]').last();await r.locator('[name=quantity]').fill('2');await r.locator('[name=accepted_quantity]').fill('2');await r.locator('[name=lot]').fill('LOTE-B');await r.locator('[name=expiry_date]').fill('2031-12-31');
+  await page.evaluate(()=>window.fixture.rejectNext=true);await form.locator('[type=submit]').click();await page.waitForFunction(()=>document.querySelector('[data-dialog-error]').textContent.includes('La orden cambió'));check('failed receipt keeps form and lot values',(await form.locator('[data-receipt-line]').first().locator('[name=lot]').inputValue())==='LOTE-A');
+  await form.locator('[type=submit]').click();await page.waitForFunction(()=>window.fixture.tables.purchase_receipts.length===1);await page.waitForFunction(()=>!document.querySelector('[data-purchase-dialog]').open);
+  check('receipt header notes stay separate from lot notes',await page.evaluate(()=>window.fixture.tables.purchase_receipts[0].notes==='Empaque revisado al recibir'&&window.fixture.tables.purchase_receipts[0].purchase_receipt_lines[0].notes==='Una unidad dañada'));
+  check('one receipt can contain several lots',await page.evaluate(()=>window.fixture.tables.purchase_receipts[0].purchase_receipt_lines.length===2));
+  check('partial reception tracks accepted quantities',await page.evaluate(()=>window.fixture.tables.purchase_order_lines[0].received_quantity===5&&window.fixture.tables.purchase_orders[0].status==='PARCIAL'));
+  check('history renders lot expiry and temperature',(await page.locator('[data-purchase-detail]').innerText()).includes('LOTE-B')&&(await page.locator('[data-purchase-detail]').innerText()).includes('2030-12-31')&&(await page.locator('[data-purchase-detail]').innerText()).includes('4 °C'));
+  check('received order no longer offers cancellation',await page.locator('[data-action=cancel]').count()===0);
+  const submitted=await page.evaluate(()=>window.fixture.rpcCalls.filter(c=>c.args.p_action==='RECEIVE').map(c=>c.args.p_payload));check('retry keeps receipt idempotency token',submitted.length===2&&submitted[0].request_id===submitted[1].request_id);
+  await page.setViewportSize({width:390,height:844});check('purchasing fits mobile viewport',await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));await page.locator('[data-action=receive]').click();check('receipt form fits mobile viewport',await page.locator('[data-purchase-dialog]').evaluate(d=>d.getBoundingClientRect().width<=innerWidth));await form.locator('[data-close]').click();await page.screenshot({path:path.join(out,'purchase-mobile.png'),fullPage:true});
+  await page.evaluate(async()=>{window.fixture.permissions=['PURCHASE_VIEW'];await window.remount()});await page.locator('[data-order]').click();check('read only user has no mutation controls',await page.locator('[data-action=new],[data-action=supplier],[data-action=approve],[data-action=receive],[data-action=cancel]').count()===0);
+  check('only purchasing RPCs issued',await page.evaluate(()=>window.fixture.rpcCalls.filter(x=>x.name!=='log_access').every(c=>['procurement_action','log_access_event'].includes(c.name))));
+  check('no browser runtime errors',errors.length===0);
+  fs.writeFileSync(path.join(out,'report.json'),JSON.stringify({status:'PASS',checks,errors,production_verified:false},null,2));console.log(`${checks.length}/${checks.length} purchase browser checks passed`);
+ }finally{await browser?.close();await new Promise(r=>server.close(r))}
+})().catch(e=>{console.error(e);process.exitCode=1});

@@ -56,7 +56,7 @@ const ROUTES={
   management:{title:'Revisión Dirección',subtitle:'Objetivos, riesgos y seguimiento',group:'GESTIÓN',order:20},
   projects:{title:'Proyectos',subtitle:'Portafolio, avance y dependencias',group:'GESTIÓN',order:30},
   continuity:{title:'Continuidad',subtitle:'Continuidad operativa e integridad de datos',group:'GESTIÓN',order:40},
-  suppliers:{title:'Proveedores',subtitle:'Compras críticas y evaluación',group:'GESTIÓN',order:50},
+  suppliers:{title:'Pedidos y proveedores',subtitle:'Órdenes de compra, recepción e historial',group:'GESTIÓN',order:50},
 
   settings:{title:'Configuración',subtitle:'Catálogos y diagnóstico',group:'ADMINISTRACIÓN',order:10},
   users:{title:'Usuarios y Roles',subtitle:'Crear usuarios y asignar acceso por rol y sucursal',group:'ADMINISTRACIÓN',order:15},

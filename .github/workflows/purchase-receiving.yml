@@ -1,0 +1,36 @@
+name: Purchase orders and receiving
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'hemocura-core/procurement*.js'
+      - 'hemocura-core/suppliers.js'
+      - 'css/procurement.css'
+      - 'supabase/migrations/*purchase_receiving.sql'
+      - 'tests/procurement/**'
+      - 'tools/procurement_*'
+      - '.github/workflows/purchase-receiving.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  purchasing:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node tests/procurement/domain.test.mjs
+      - run: python tools/procurement_postgres_runner.py
+      - run: npm ci --prefix tests/wave50
+      - run: node tests/wave50/node_modules/playwright/cli.js install --with-deps chromium
+      - run: node tools/procurement_browser_runner.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: purchase-receiving-evidence
+          path: |
+            /tmp/hemocura-purchase-postgres
+            /tmp/hemocura-purchase-browser

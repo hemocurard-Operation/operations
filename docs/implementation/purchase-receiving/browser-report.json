@@ -1,0 +1,27 @@
+{
+  "status": "PASS",
+  "checks": [
+    "total updates while preparing order",
+    "order persists complete line items",
+    "supplier text is escaped",
+    "draft has no receipt action",
+    "draft editor restores terms",
+    "approved order hides editing",
+    "printable purchase document includes price and terms",
+    "print document escapes supplier content",
+    "failed receipt keeps form and lot values",
+    "receipt header notes stay separate from lot notes",
+    "one receipt can contain several lots",
+    "partial reception tracks accepted quantities",
+    "history renders lot expiry and temperature",
+    "received order no longer offers cancellation",
+    "retry keeps receipt idempotency token",
+    "purchasing fits mobile viewport",
+    "receipt form fits mobile viewport",
+    "read only user has no mutation controls",
+    "only purchasing RPCs issued",
+    "no browser runtime errors"
+  ],
+  "errors": [],
+  "production_verified": false
+}

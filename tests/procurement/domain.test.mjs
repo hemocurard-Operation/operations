@@ -1,0 +1,11 @@
+import assert from 'node:assert/strict';
+import {pending,lineTotal,receiptTotals,validateLines} from '../../hemocura-core/procurement-domain.js';
+assert.equal(pending({quantity:10,received_quantity:4}),6);
+assert.equal(pending({quantity:10,received_quantity:10}),0);
+assert.equal(lineTotal([{quantity:3,unit_price:1.235}]),3.71);
+assert.equal(lineTotal([{quantity:1,unit_price:1.005}]),1.01);
+assert.equal(lineTotal([{quantity:1e-3,unit_price:1005}]),1.01);
+assert.deepEqual(receiptTotals([{quantity:10,accepted_quantity:8,unit_price:25}]),{received:10,accepted:8,rejected:2,value:200});
+for(const bad of [[],[{description:'x',quantity:0,unit_price:1}],[{description:'x',quantity:1,unit_price:-1}],[{description:' ',quantity:1,unit_price:1}],[{description:'x',quantity:Infinity,unit_price:1}]])assert.throws(()=>validateLines(bad));
+assert.equal(validateLines([{description:'Reactivo',quantity:1,unit_price:0}]).length,1);
+console.log('PASS 12 purchasing domain checks');
