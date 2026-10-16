@@ -14,13 +14,13 @@ async function all(label, makeQuery) {
 }
 async function write(label,query){
   const {data,error}=await query.select('*').single();
-  if(error)throw new Error(`${label}: ${error.message}`);
+  if(error){if(error.code==='PGRST116')throw new Error('El registro cambió o no tiene permisos. Actualice la ficha.');if(error.code==='23505'&&label==='Visita')throw new Error('Este donante ya tiene una cita activa. Coordine su reprogramación.');throw new Error(`${label}: ${error.message}`)}
   if(!data)throw new Error('El registro cambió o no tiene permisos. Actualice la ficha.');
   return data;
 }
 const sb=()=>getSupabase();
 export const donorManagement={
-  list:()=>all('Donantes',()=>sb().from('vw_donor_next_donation').select('*').order('registration_date',{ascending:false}).order('id')),
+  list:()=>all('Donantes',()=>sb().from('vw_donor_coordination').select('*').order('registration_date',{ascending:false}).order('id')),
   byCedula:async number=>{const {data,error}=await sb().from('vw_donor_next_donation').select('*').eq('cedula',number).maybeSingle();if(error)throw new Error(`Consultar cédula: ${error.message}`);return data||null},
   detail:async id=>{
     const [donations,comments,contacts,visits,source]=await Promise.all([

@@ -42,7 +42,9 @@ def main():
    if f.name.startswith(('20261010','20261011')):apply(f)
   deferred=[]
   access_migrations=[]
+  coordination_migrations=[]
   for f in sorted((ROOT/'supabase/migrations').glob('*.sql')):
+   if f.name.endswith('_operations_coordination.sql'):coordination_migrations.append(f);continue
    if f.name.endswith(('_super_user_total_access.sql','_assigned_role_branch_access.sql')):access_migrations.append(f);continue
    # The donor agenda depends on wf_active_actor and wf_audit_change from CANDIDATE.
    if f.name in ('20261013183215_donor_management.sql','20261013194849_donor_twelve_week_agenda.sql','20261013200735_donor_identity_capture.sql'):deferred.append(f);continue
@@ -54,6 +56,7 @@ def main():
   apply(ROOT/'sql/migrations/20261013133000_workflow_refinements.sql')
   apply(ROOT/'tests/workflow/donor-agenda-prerequisite.sql')
   for f in deferred:apply(f)
+  for f in coordination_migrations:apply(f)
   result=sql((ROOT/'tests/workflow/business-rules.sql').read_text(),'workflow-business-rules')
   checks=re.findall(r'PASS ([^\n]+)',result.stderr+result.stdout)
   if not checks:raise RuntimeError('Zero business-rule checks executed')

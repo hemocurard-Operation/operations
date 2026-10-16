@@ -1,0 +1,40 @@
+name: Operations and donor coordination
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'hemocura-core/coordination*.js'
+      - 'hemocura-core/operations-planner.js'
+      - 'hemocura-core/donor-coordination.js'
+      - 'hemocura-core/donors.js'
+      - 'hemocura-core/donor-management-data.js'
+      - 'hemocura-core/workflow.js'
+      - 'css/coordination.css'
+      - 'supabase/migrations/*operations_coordination.sql'
+      - 'tests/coordination/**'
+      - 'tools/coordination_*'
+      - '.github/workflows/operations-coordination.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  coordination:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node tests/coordination/domain.test.mjs
+      - run: python tools/coordination_postgres_runner.py
+      - run: npm ci --prefix tests/wave50
+      - run: node tests/wave50/node_modules/playwright/cli.js install --with-deps chromium
+      - run: node tools/coordination_browser_runner.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: operations-coordination-evidence
+          path: |
+            /tmp/hemocura-coordination-postgres
+            /tmp/hemocura-coordination-browser

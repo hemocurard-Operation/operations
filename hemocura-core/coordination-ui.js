@@ -1,0 +1,1 @@
+export function coordinationStyles(){if(!document.querySelector('[data-coordination-styles]')){const link=document.createElement('link');link.rel='stylesheet';link.href=new URL('../css/coordination.css',import.meta.url).href;link.dataset.coordinationStyles='';document.head.append(link)}}
