@@ -1,0 +1,24 @@
+{
+  "status": "PASS",
+  "checks": [
+    "followup queue identifies overdue contacts",
+    "declined donor has no message action",
+    "message contains no donor identity number",
+    "WhatsApp opens only through a reviewed user action",
+    "preparing message never records contact",
+    "latest declined result blocks a stale message action",
+    "calendar includes existing appointment",
+    "reminder contains exact RD appointment time",
+    "capacity configuration persists actual chosen limit",
+    "order data is escaped",
+    "overdue urgent order is highlighted",
+    "new order is administrative pending work",
+    "order can move to managed state",
+    "orders do not generate donations or inventory writes",
+    "planning and calendar fit mobile viewport",
+    "read-only users have no order contact or capacity write controls",
+    "no browser runtime errors"
+  ],
+  "errors": [],
+  "production_verified": false
+}

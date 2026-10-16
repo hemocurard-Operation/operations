@@ -29,6 +29,8 @@ jobs:
         run: node tests/wave50/node_modules/playwright/cli.js install --with-deps chromium
       - name: Browser flows and mobile layout
         run: node tools/donors_browser_runner.cjs
+      - name: Profile navigation and directory filters
+        run: node tools/donors_navigation_runner.cjs
       - name: Local OCR with synthetic image only
         run: node tools/cedula_ocr_runner.cjs
       - uses: actions/upload-artifact@v4
@@ -38,4 +40,5 @@ jobs:
           path: |
             /tmp/hemocura-donors-postgres
             /tmp/hemocura-donors-browser
+            /tmp/hemocura-donor-navigation
             /tmp/hemocura-cedula-ocr

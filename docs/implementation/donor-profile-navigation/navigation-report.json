@@ -1,0 +1,32 @@
+{
+  "status": "PASS",
+  "checks": [
+    "profile precedes directory and operational tools",
+    "only essential donor details are expanded",
+    "directory begins with 25 and exposes total",
+    "first profile disables previous",
+    "next traverses page boundary without opening directory",
+    "directory highlights the current profile",
+    "previous traverses boundary back",
+    "load more retains every existing row",
+    "last profile disables next",
+    "navigation uses matching search results",
+    "formatted identity search finds the matching profile",
+    "numeric search cannot bypass branch filter",
+    "numeric search cannot bypass blood group filter",
+    "combined filters apply to every displayed row",
+    "browsing does not write donor or clinical records",
+    "declining discard keeps selected donor and draft",
+    "accepted discard navigates without writing",
+    "late history response never replaces a newer profile",
+    "navigation and filters lock during a save",
+    "save remains attached to the correct donor",
+    "appointment action opens the relevant form",
+    "profile and navigation fit a mobile screen",
+    "read only users can navigate without write actions",
+    "empty directory has no stale profile or enabled navigation",
+    "no browser runtime errors"
+  ],
+  "errors": [],
+  "production_data_used": false
+}
