@@ -1,0 +1,40 @@
+name: Area task agenda and management
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'hemocura-core/area-agenda*.js'
+      - 'hemocura-core/my-work.js'
+      - 'hemocura-core/access-control.js'
+      - 'hemocura-core/router.js'
+      - 'hemocura-core/views.js'
+      - 'hemocura-core/workflow-mounts.js'
+      - 'css/area-agenda.css'
+      - 'supabase/migrations/*area_task_agenda.sql'
+      - 'tests/area-agenda/**'
+      - 'tools/area_agenda_*'
+      - '.github/workflows/area-task-agenda.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  agenda:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node tests/area-agenda/domain.test.mjs
+      - run: python tools/workflow_postgres_runner.py --allow-external-prerequisite-fixture --report-dir /tmp/hemocura-area-agenda-postgres
+      - run: npm ci --prefix tests/wave50
+      - run: node tests/wave50/node_modules/playwright/cli.js install --with-deps chromium
+      - run: node tools/area_agenda_browser_runner.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: area-agenda-evidence
+          path: |
+            /tmp/hemocura-area-agenda-postgres
+            /tmp/hemocura-area-agenda-browser
