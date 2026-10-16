@@ -1,0 +1,41 @@
+name: Role based module views
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'hemocura-core/access-control.js'
+      - 'hemocura-core/access-data.js'
+      - 'hemocura-core/module-management.js'
+      - 'hemocura-core/security.js'
+      - 'hemocura-core/my-work.js'
+      - 'hemocura-core/layout.js'
+      - 'hemocura-core/workflow.js'
+      - 'css/module-management.css'
+      - 'contracts/role-module-defaults.json'
+      - 'supabase/migrations/*role_module_views.sql'
+      - 'tests/module-views/**'
+      - 'tools/module_views_*'
+      - '.github/workflows/role-module-views.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  module-views:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: python tools/module_views_postgres_runner.py
+      - run: npm ci --prefix tests/wave50
+      - run: node tests/wave50/node_modules/playwright/cli.js install --with-deps chromium
+      - run: node tools/module_views_browser_runner.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: role-module-views-evidence
+          path: |
+            /tmp/hemocura-module-views-postgres
+            /tmp/hemocura-module-views-browser

@@ -44,7 +44,9 @@ def main():
   access_migrations=[]
   coordination_migrations=[]
   purchase_migrations=[]
+  module_migrations=[]
   for f in sorted((ROOT/'supabase/migrations').glob('*.sql')):
+   if f.name.endswith('_role_module_views.sql'):module_migrations.append(f);continue
    if f.name.endswith('_purchase_receiving.sql'):purchase_migrations.append(f);continue
    if f.name.endswith('_operations_coordination.sql'):coordination_migrations.append(f);continue
    if f.name.endswith(('_super_user_total_access.sql','_assigned_role_branch_access.sql')):access_migrations.append(f);continue
@@ -82,6 +84,10 @@ def main():
    for access_migration in access_migrations:apply(access_migration)
    sql("begin;set local role authenticated;select set_config('request.jwt.claim.sub','f9200000-0000-0000-0000-000000000001',true);select set_config('request.jwt.claim.role','authenticated',true);do $$begin if exists(select 1 from app_permissions where active and not has_permission(permission_code)) then raise exception 'Missing super permission';end if;if exists(select 1 from branches where not can_access_branch(id)) then raise exception 'Missing super branch';end if;end$$;rollback;",'integrated-super-permissions')
    report['checks'].append({'name':'complete role access on integrated operational schema','pass':True})
+  for f in module_migrations:apply(f)
+  if module_migrations:
+   sql("begin;set local role authenticated;select set_config('request.jwt.claim.sub','f9200000-0000-0000-0000-000000000001',true);select set_config('request.jwt.claim.role','authenticated',true);do $$begin if exists(select 1 from vw_my_module_access where not enabled) or (select count(*) from vw_my_module_access)<>62 then raise exception 'Super modules missing';end if;end$$;rollback;",'integrated-super-modules')
+   report['checks'].append({'name':'role windows preserve complete super access on integrated schema','pass':True})
   print(f'PASS: {len(report["checks"])} PostgreSQL checks; {len(report["migrations"])} baseline/candidate files. Production not verified.')
   return 0
  except Exception as e:

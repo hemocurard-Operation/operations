@@ -1,3 +1,4 @@
+import { ROUTE_PERMISSION } from './access-control.js';
 // Browser unit fixture. No remote requests; this does not emulate or prove RLS.
 export const fixture={tables:{},writes:[],permissions:[],session:null,error:null,context:null,admin:null,adminError:null,adminCalls:[],rpcCalls:[],rpcHandler:null,user:undefined,writeGate:null,readHook:null};
 class Query {
@@ -20,6 +21,7 @@ class Query {
     if(this.kind==='select'&&fixture.readHook){const reply=await fixture.readHook(this);if(reply!==undefined)return reply;}
     if(this.kind!=='select'&&fixture.writeGate)await fixture.writeGate;
     let rows=this.table==='vw_my_access'?fixture.permissions.map(permission_code=>({permission_code})):fixture.tables[this.table]||[];
+    if(this.table==='vw_my_module_access')rows=fixture.tables.vw_my_module_access||Object.entries(ROUTE_PERMISSION).map(([route_key,permission_code])=>({route_key,permission_code,enabled:fixture.permissions.includes(permission_code)}));
     if(this.table==='vw_donor_coordination')rows=(fixture.tables.vw_donor_next_donation||fixture.tables.donors||[]).map(d=>{const c=(fixture.tables.donor_contacts||[]).filter(c=>c.donor_id===d.id).sort((a,b)=>String(b.contacted_at).localeCompare(String(a.contacted_at)))[0],v=(fixture.tables.donor_visits||[]).find(v=>v.donor_id===d.id&&['POR_CONFIRMAR','CONFIRMADA'].includes(v.status));return{...d,last_contact_id:c?.id,last_contact_at:c?.contacted_at,last_contact_outcome:c?.outcome,next_contact_at:c?.next_contact_at,active_visit_id:v?.id,visit_starts_at:v?.starts_at,visit_branch_id:v?.branch_id,visit_status:v?.status}});
     if(this.table==='vw_donor_appointment_agenda')rows=(fixture.tables.donor_visits||[]).map(v=>({...((fixture.tables.donors||[]).find(d=>d.id===v.donor_id)||{}),...v}));
     if(this.table==='vw_my_security_context')rows=[fixture.context||{roles:['FINANZAS'],email:'fixture@example.invalid'}];

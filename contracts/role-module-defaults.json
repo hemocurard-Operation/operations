@@ -1,0 +1,764 @@
+{
+  "modules": [
+    {
+      "route_key": "mywork",
+      "title": "Mi trabajo",
+      "group_name": "INICIO",
+      "permission_code": "DASHBOARD_VIEW"
+    },
+    {
+      "route_key": "workflow",
+      "title": "Ruta operativa",
+      "group_name": "INICIO",
+      "permission_code": "WORKFLOW_VIEW"
+    },
+    {
+      "route_key": "dashboard",
+      "title": "Inicio",
+      "group_name": "INICIO",
+      "permission_code": "DASHBOARD_VIEW"
+    },
+    {
+      "route_key": "command",
+      "title": "Centro de Mando",
+      "group_name": "INICIO",
+      "permission_code": "COMMAND_VIEW"
+    },
+    {
+      "route_key": "decisioncenter",
+      "title": "Centro de Decisión",
+      "group_name": "INICIO",
+      "permission_code": "DECISION_CENTER_VIEW"
+    },
+    {
+      "route_key": "predictive",
+      "title": "Cockpit Predictivo",
+      "group_name": "INICIO",
+      "permission_code": "PREDICTIVE_VIEW"
+    },
+    {
+      "route_key": "orchestration",
+      "title": "Orquestación y Resiliencia",
+      "group_name": "INICIO",
+      "permission_code": "ORCHESTRATION_VIEW"
+    },
+    {
+      "route_key": "quickcapture",
+      "title": "Captura rápida",
+      "group_name": "TRABAJO DIARIO",
+      "permission_code": "DASHBOARD_VIEW"
+    },
+    {
+      "route_key": "dailyinventory",
+      "title": "Reporte Operativo Diario",
+      "group_name": "TRABAJO DIARIO",
+      "permission_code": "DAILY_REPORT_VIEW"
+    },
+    {
+      "route_key": "dispatches",
+      "title": "Despachos",
+      "group_name": "TRABAJO DIARIO",
+      "permission_code": "DISPATCH_VIEW"
+    },
+    {
+      "route_key": "requisitions",
+      "title": "Requisiciones",
+      "group_name": "TRABAJO DIARIO",
+      "permission_code": "DISPATCH_VIEW"
+    },
+    {
+      "route_key": "sales",
+      "title": "Ventas / Salidas",
+      "group_name": "TRABAJO DIARIO",
+      "permission_code": "SALES_VIEW"
+    },
+    {
+      "route_key": "hyperbaric",
+      "title": "Cámara hiperbárica",
+      "group_name": "TRABAJO DIARIO",
+      "permission_code": "HYPERBARIC_VIEW"
+    },
+    {
+      "route_key": "shiftreport",
+      "title": "Ventas por turno",
+      "group_name": "TRABAJO DIARIO",
+      "permission_code": "SALES_VIEW"
+    },
+    {
+      "route_key": "transfers",
+      "title": "Entre sucursales",
+      "group_name": "TRABAJO DIARIO",
+      "permission_code": "BLOOD_INVENTORY_VIEW"
+    },
+    {
+      "route_key": "supplycatalog",
+      "title": "Catálogo de suministros",
+      "group_name": "TRABAJO DIARIO",
+      "permission_code": "SUPPLY_VIEW"
+    },
+    {
+      "route_key": "inventory",
+      "title": "Insumos",
+      "group_name": "TRABAJO DIARIO",
+      "permission_code": "BLOOD_INVENTORY_VIEW"
+    },
+    {
+      "route_key": "supply",
+      "title": "Abastecimiento",
+      "group_name": "TRABAJO DIARIO",
+      "permission_code": "SUPPLY_VIEW"
+    },
+    {
+      "route_key": "planning",
+      "title": "Planificación",
+      "group_name": "TRABAJO DIARIO",
+      "permission_code": "SUPPLY_VIEW"
+    },
+    {
+      "route_key": "valuechain",
+      "title": "Cadena de Valor",
+      "group_name": "CADENA DE VALOR",
+      "permission_code": "VALUE_CHAIN_VIEW"
+    },
+    {
+      "route_key": "serviceperformance",
+      "title": "Desempeño y SLA",
+      "group_name": "CADENA DE VALOR",
+      "permission_code": "SERVICE_PERFORMANCE_VIEW"
+    },
+    {
+      "route_key": "donoroutreach",
+      "title": "Captación de Donantes",
+      "group_name": "CADENA DE VALOR",
+      "permission_code": "DONOR_OUTREACH_VIEW"
+    },
+    {
+      "route_key": "medicalnetwork",
+      "title": "Red Médica",
+      "group_name": "CADENA DE VALOR",
+      "permission_code": "MEDICAL_NETWORK_VIEW"
+    },
+    {
+      "route_key": "customers",
+      "title": "Clientes y SLA",
+      "group_name": "CADENA DE VALOR",
+      "permission_code": "CUSTOMER_VIEW"
+    },
+    {
+      "route_key": "commercial",
+      "title": "Gestión comercial",
+      "group_name": "CADENA DE VALOR",
+      "permission_code": "COMMERCIAL_VIEW"
+    },
+    {
+      "route_key": "collections",
+      "title": "Cobranza y Aging",
+      "group_name": "CADENA DE VALOR",
+      "permission_code": "COLLECTIONS_VIEW"
+    },
+    {
+      "route_key": "economics",
+      "title": "Economía y Merma",
+      "group_name": "CADENA DE VALOR",
+      "permission_code": "ECONOMICS_VIEW"
+    },
+    {
+      "route_key": "donors",
+      "title": "Donantes",
+      "group_name": "LABORATORIO Y SANGRE",
+      "permission_code": "DONORS_VIEW"
+    },
+    {
+      "route_key": "screening",
+      "title": "Tamizaje",
+      "group_name": "LABORATORIO Y SANGRE",
+      "permission_code": "SCREENING_VIEW"
+    },
+    {
+      "route_key": "production",
+      "title": "Producción",
+      "group_name": "LABORATORIO Y SANGRE",
+      "permission_code": "BLOOD_INVENTORY_WRITE"
+    },
+    {
+      "route_key": "bloodinventory",
+      "title": "Inventario de Sangre",
+      "group_name": "LABORATORIO Y SANGRE",
+      "permission_code": "BLOOD_INVENTORY_VIEW"
+    },
+    {
+      "route_key": "bloodflow",
+      "title": "Flujo Sanguíneo",
+      "group_name": "LABORATORIO Y SANGRE",
+      "permission_code": "BLOOD_INVENTORY_VIEW"
+    },
+    {
+      "route_key": "analyticalqc",
+      "title": "Calidad Analítica",
+      "group_name": "LABORATORIO Y SANGRE",
+      "permission_code": "ANALYTICAL_QC_VIEW"
+    },
+    {
+      "route_key": "coldchain",
+      "title": "Cadena de Frío",
+      "group_name": "LABORATORIO Y SANGRE",
+      "permission_code": "COLD_CHAIN_VIEW"
+    },
+    {
+      "route_key": "hemovigilance",
+      "title": "Hemovigilancia",
+      "group_name": "LABORATORIO Y SANGRE",
+      "permission_code": "HEMOVIGILANCE_VIEW"
+    },
+    {
+      "route_key": "resources",
+      "title": "Recursos Críticos",
+      "group_name": "LABORATORIO Y SANGRE",
+      "permission_code": "RESOURCES_VIEW"
+    },
+    {
+      "route_key": "actions",
+      "title": "Acciones Integradas",
+      "group_name": "CALIDAD Y SEGURIDAD",
+      "permission_code": "ACTIONS_VIEW"
+    },
+    {
+      "route_key": "bloodquality",
+      "title": "Calidad del banco de sangre",
+      "group_name": "CALIDAD Y SEGURIDAD",
+      "permission_code": "QUALITY_VIEW"
+    },
+    {
+      "route_key": "quality",
+      "title": "SGC",
+      "group_name": "CALIDAD Y SEGURIDAD",
+      "permission_code": "QUALITY_VIEW"
+    },
+    {
+      "route_key": "approvals",
+      "title": "Aprobaciones",
+      "group_name": "CALIDAD Y SEGURIDAD",
+      "permission_code": "APPROVAL_VIEW"
+    },
+    {
+      "route_key": "qmsgov",
+      "title": "Gobierno QMS",
+      "group_name": "CALIDAD Y SEGURIDAD",
+      "permission_code": "QUALITY_VIEW"
+    },
+    {
+      "route_key": "internalaudits",
+      "title": "Auditorías Internas",
+      "group_name": "CALIDAD Y SEGURIDAD",
+      "permission_code": "INTERNAL_AUDIT_VIEW"
+    },
+    {
+      "route_key": "inspections",
+      "title": "Inspecciones",
+      "group_name": "CALIDAD Y SEGURIDAD",
+      "permission_code": "QUALITY_VIEW"
+    },
+    {
+      "route_key": "training",
+      "title": "Mi Capacitación",
+      "group_name": "CALIDAD Y SEGURIDAD",
+      "permission_code": "TRAINING_SELF"
+    },
+    {
+      "route_key": "competencies",
+      "title": "Competencias",
+      "group_name": "CALIDAD Y SEGURIDAD",
+      "permission_code": "COMPETENCY_VIEW"
+    },
+    {
+      "route_key": "documents",
+      "title": "Control Documental",
+      "group_name": "CALIDAD Y SEGURIDAD",
+      "permission_code": "DOCUMENTS_VIEW"
+    },
+    {
+      "route_key": "compliance",
+      "title": "Compliance Penal",
+      "group_name": "CALIDAD Y SEGURIDAD",
+      "permission_code": "COMPLIANCE_VIEW"
+    },
+    {
+      "route_key": "bi",
+      "title": "Inteligencia de Negocios",
+      "group_name": "GESTIÓN",
+      "permission_code": "BI_VIEW"
+    },
+    {
+      "route_key": "management",
+      "title": "Revisión Dirección",
+      "group_name": "GESTIÓN",
+      "permission_code": "MANAGEMENT_REVIEW_VIEW"
+    },
+    {
+      "route_key": "projects",
+      "title": "Proyectos",
+      "group_name": "GESTIÓN",
+      "permission_code": "PROJECTS_VIEW"
+    },
+    {
+      "route_key": "continuity",
+      "title": "Continuidad",
+      "group_name": "GESTIÓN",
+      "permission_code": "CONTINUITY_VIEW"
+    },
+    {
+      "route_key": "suppliers",
+      "title": "Pedidos y proveedores",
+      "group_name": "GESTIÓN",
+      "permission_code": "SUPPLIERS_VIEW"
+    },
+    {
+      "route_key": "settings",
+      "title": "Configuración",
+      "group_name": "ADMINISTRACIÓN",
+      "permission_code": "ADMIN_VIEW"
+    },
+    {
+      "route_key": "users",
+      "title": "Usuarios y Roles",
+      "group_name": "ADMINISTRACIÓN",
+      "permission_code": "ACCESS_ADMIN"
+    },
+    {
+      "route_key": "security",
+      "title": "Seguridad y Acceso",
+      "group_name": "ADMINISTRACIÓN",
+      "permission_code": "ACCESS_ADMIN"
+    },
+    {
+      "route_key": "diagnostics",
+      "title": "Diagnóstico",
+      "group_name": "ADMINISTRACIÓN",
+      "permission_code": "RELEASE_GATE_VIEW"
+    },
+    {
+      "route_key": "audit",
+      "title": "Auditoría del Sistema",
+      "group_name": "ADMINISTRACIÓN",
+      "permission_code": "AUDIT_VIEW"
+    },
+    {
+      "route_key": "uat",
+      "title": "Validación UAT",
+      "group_name": "ADMINISTRACIÓN",
+      "permission_code": "RELEASE_GATE_VIEW"
+    },
+    {
+      "route_key": "integration",
+      "title": "Integración",
+      "group_name": "ADMINISTRACIÓN",
+      "permission_code": "RELEASE_GATE_VIEW"
+    },
+    {
+      "route_key": "releasegate",
+      "title": "Release Gate",
+      "group_name": "ADMINISTRACIÓN",
+      "permission_code": "RELEASE_GATE_VIEW"
+    },
+    {
+      "route_key": "release1",
+      "title": "Release 1.0",
+      "group_name": "ADMINISTRACIÓN",
+      "permission_code": "RELEASE_GATE_VIEW"
+    },
+    {
+      "route_key": "qa",
+      "title": "QA Técnico",
+      "group_name": "ADMINISTRACIÓN",
+      "permission_code": "RELEASE_GATE_VIEW"
+    }
+  ],
+  "profiles": {
+    "SUPER_USUARIO": [
+      "mywork",
+      "workflow",
+      "dashboard",
+      "command",
+      "decisioncenter",
+      "predictive",
+      "orchestration",
+      "quickcapture",
+      "dailyinventory",
+      "dispatches",
+      "requisitions",
+      "sales",
+      "hyperbaric",
+      "shiftreport",
+      "transfers",
+      "supplycatalog",
+      "inventory",
+      "supply",
+      "planning",
+      "valuechain",
+      "serviceperformance",
+      "donoroutreach",
+      "medicalnetwork",
+      "customers",
+      "commercial",
+      "collections",
+      "economics",
+      "donors",
+      "screening",
+      "production",
+      "bloodinventory",
+      "bloodflow",
+      "analyticalqc",
+      "coldchain",
+      "hemovigilance",
+      "resources",
+      "actions",
+      "bloodquality",
+      "quality",
+      "approvals",
+      "qmsgov",
+      "internalaudits",
+      "inspections",
+      "training",
+      "competencies",
+      "documents",
+      "compliance",
+      "bi",
+      "management",
+      "projects",
+      "continuity",
+      "suppliers",
+      "settings",
+      "users",
+      "security",
+      "diagnostics",
+      "audit",
+      "uat",
+      "integration",
+      "releasegate",
+      "release1",
+      "qa"
+    ],
+    "ADMIN": [
+      "mywork",
+      "workflow",
+      "dashboard",
+      "command",
+      "decisioncenter",
+      "quickcapture",
+      "dailyinventory",
+      "dispatches",
+      "requisitions",
+      "sales",
+      "hyperbaric",
+      "shiftreport",
+      "transfers",
+      "supplycatalog",
+      "inventory",
+      "supply",
+      "planning",
+      "valuechain",
+      "serviceperformance",
+      "donoroutreach",
+      "medicalnetwork",
+      "customers",
+      "commercial",
+      "collections",
+      "economics",
+      "donors",
+      "screening",
+      "production",
+      "bloodinventory",
+      "bloodflow",
+      "analyticalqc",
+      "coldchain",
+      "hemovigilance",
+      "resources",
+      "actions",
+      "bloodquality",
+      "quality",
+      "approvals",
+      "qmsgov",
+      "internalaudits",
+      "inspections",
+      "training",
+      "competencies",
+      "documents",
+      "compliance",
+      "bi",
+      "management",
+      "projects",
+      "continuity",
+      "suppliers",
+      "settings"
+    ],
+    "ASISTENTE_OPERACIONES": [
+      "mywork",
+      "dashboard",
+      "training",
+      "documents",
+      "workflow",
+      "donors",
+      "donoroutreach",
+      "dailyinventory",
+      "bloodinventory",
+      "dispatches",
+      "requisitions",
+      "supplycatalog",
+      "supply",
+      "suppliers",
+      "customers",
+      "commercial",
+      "medicalnetwork",
+      "sales",
+      "shiftreport"
+    ],
+    "LABORATORIO": [
+      "mywork",
+      "dashboard",
+      "training",
+      "documents",
+      "workflow",
+      "donors",
+      "screening",
+      "production",
+      "bloodinventory",
+      "bloodflow",
+      "dailyinventory",
+      "transfers",
+      "dispatches",
+      "requisitions",
+      "supplycatalog",
+      "supply",
+      "resources",
+      "coldchain",
+      "analyticalqc",
+      "bloodquality",
+      "hemovigilance"
+    ],
+    "ENCARGADA_LABORATORIO": [
+      "mywork",
+      "dashboard",
+      "training",
+      "documents",
+      "workflow",
+      "donors",
+      "screening",
+      "production",
+      "bloodinventory",
+      "bloodflow",
+      "dailyinventory",
+      "transfers",
+      "dispatches",
+      "requisitions",
+      "supplycatalog",
+      "supply",
+      "resources",
+      "coldchain",
+      "analyticalqc",
+      "bloodquality",
+      "hemovigilance",
+      "suppliers",
+      "quality",
+      "inspections",
+      "approvals",
+      "actions",
+      "competencies"
+    ],
+    "INVENTARIO": [
+      "mywork",
+      "dashboard",
+      "training",
+      "documents",
+      "workflow",
+      "inventory",
+      "supplycatalog",
+      "supply",
+      "bloodinventory",
+      "dailyinventory",
+      "transfers",
+      "dispatches",
+      "requisitions",
+      "suppliers",
+      "resources",
+      "coldchain"
+    ],
+    "FINANZAS": [
+      "mywork",
+      "dashboard",
+      "training",
+      "documents",
+      "sales",
+      "shiftreport",
+      "collections",
+      "economics",
+      "customers",
+      "suppliers",
+      "bi",
+      "commercial"
+    ],
+    "CALIDAD": [
+      "mywork",
+      "dashboard",
+      "training",
+      "documents",
+      "workflow",
+      "quality",
+      "bloodquality",
+      "qmsgov",
+      "inspections",
+      "internalaudits",
+      "actions",
+      "approvals",
+      "analyticalqc",
+      "coldchain",
+      "hemovigilance",
+      "resources",
+      "competencies",
+      "compliance",
+      "management",
+      "suppliers",
+      "dailyinventory",
+      "bloodinventory"
+    ],
+    "GERENCIA_OPERATIVA": [
+      "mywork",
+      "dashboard",
+      "training",
+      "documents",
+      "workflow",
+      "command",
+      "decisioncenter",
+      "dailyinventory",
+      "donors",
+      "donoroutreach",
+      "bloodinventory",
+      "transfers",
+      "dispatches",
+      "requisitions",
+      "supplycatalog",
+      "supply",
+      "suppliers",
+      "sales",
+      "shiftreport",
+      "commercial",
+      "customers",
+      "medicalnetwork",
+      "serviceperformance",
+      "valuechain",
+      "quality",
+      "bloodquality",
+      "actions",
+      "approvals",
+      "management",
+      "bi",
+      "projects"
+    ],
+    "GERENCIA_GENERAL": [
+      "mywork",
+      "dashboard",
+      "training",
+      "documents",
+      "command",
+      "decisioncenter",
+      "sales",
+      "shiftreport",
+      "collections",
+      "economics",
+      "suppliers",
+      "customers",
+      "commercial",
+      "medicalnetwork",
+      "serviceperformance",
+      "valuechain",
+      "quality",
+      "approvals",
+      "management",
+      "bi",
+      "projects",
+      "compliance"
+    ],
+    "SOCIO": [
+      "mywork",
+      "dashboard",
+      "training",
+      "documents",
+      "sales",
+      "shiftreport",
+      "collections",
+      "economics",
+      "customers",
+      "serviceperformance",
+      "valuechain",
+      "management",
+      "bi"
+    ],
+    "MEDICO_GERENTE_TECNICO": [
+      "mywork",
+      "dashboard",
+      "training",
+      "documents",
+      "workflow",
+      "donors",
+      "screening",
+      "production",
+      "bloodinventory",
+      "bloodflow",
+      "dailyinventory",
+      "transfers",
+      "dispatches",
+      "requisitions",
+      "supplycatalog",
+      "supply",
+      "resources",
+      "coldchain",
+      "analyticalqc",
+      "bloodquality",
+      "hemovigilance",
+      "hyperbaric",
+      "quality",
+      "actions"
+    ],
+    "SUCURSAL": [
+      "mywork",
+      "dashboard",
+      "training",
+      "documents",
+      "workflow",
+      "donors",
+      "screening",
+      "bloodinventory",
+      "dailyinventory",
+      "transfers",
+      "dispatches",
+      "requisitions",
+      "supplycatalog",
+      "supply",
+      "sales",
+      "shiftreport",
+      "customers",
+      "quality"
+    ],
+    "CONSULTA": [
+      "mywork",
+      "dashboard",
+      "training",
+      "documents",
+      "bloodinventory",
+      "supply",
+      "dailyinventory",
+      "quality",
+      "bi"
+    ],
+    "TI": [
+      "training",
+      "diagnostics",
+      "audit",
+      "integration",
+      "releasegate",
+      "release1",
+      "qa",
+      "uat",
+      "continuity"
+    ]
+  }
+}

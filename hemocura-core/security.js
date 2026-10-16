@@ -1,3 +1,4 @@
+import {mountModuleManagement} from './module-management.js';
 import { accessData } from './access-data.js';
 import { loadAccess, resetAccessCache } from './access-control.js';
 
@@ -10,7 +11,7 @@ export async function mountSecurity(root){
       <div class="muted">Auth, perfil, sucursal, roles, permisos y eventos de acceso.</div></div>
       <button id="sec-refresh" class="secondary">Actualizar</button>
     </div>
-    <div id="sec-msg"></div>
+    <div id="sec-msg"></div><div data-role-modules></div>
     <div class="grid sales-kpis" id="sec-kpis"></div>
     <section class="card"><h3>Mi contexto</h3><div id="sec-context"></div></section>
     <section class="card"><h3>Permisos efectivos</h3>
@@ -33,6 +34,7 @@ export async function mountSecurity(root){
         accessData.accessEvents()
       ]);
 
+      await mountModuleManagement(root.querySelector('[data-role-modules]'));
       const c=a.context||{};
       document.getElementById('sec-context').innerHTML=`
         <p><strong>Usuario:</strong> ${esc(c.email||'—')}</p>

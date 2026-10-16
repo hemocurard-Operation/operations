@@ -13,6 +13,7 @@ async function many(label,p){
 }
 
 export const accessData={
+  modules:()=>many('Módulos por rol',sb().from('vw_my_module_access').select('*').order('route_key')),
   context:()=>one('Contexto de seguridad',sb().from('vw_my_security_context').select('*').single()),
   permissions:()=>many('Permisos',sb().from('vw_my_access').select('*').order('module').order('permission_code')),
   readiness:()=>one('Security readiness',sb().from('vw_security_readiness').select('*').single()),

@@ -1,0 +1,15 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="/css/app.css"><title>Vistas por rol · fixture</title></head><body><main class="content"><div id="home"></div><div data-role-modules id="editor"></div><div id="workflow"></div></main><script type="module">
+import {fixture} from '/hemocura-core/supabase.js';
+import {canRoute,filterRoutes,resetAccessCache,ROUTE_PERMISSION} from '/hemocura-core/access-control.js';
+import {routeList} from '/hemocura-core/router.js';
+import {mountMyWork} from '/hemocura-core/my-work.js';
+import {mountModuleManagement} from '/hemocura-core/module-management.js';
+import {mountWorkflow} from '/hemocura-core/workflow.js';
+window.fixture=fixture;window.canRoute=canRoute;window.filterRoutes=()=>filterRoutes(routeList());
+window.mountHome=async()=>{resetAccessCache();await mountMyWork(document.querySelector('#home'))};
+window.mountEditor=async()=>{resetAccessCache();await mountModuleManagement(document.querySelector('#editor'))};
+window.mountWorkflow=()=>mountWorkflow(document.querySelector('#workflow'));
+fixture.permissions=Object.values(ROUTE_PERMISSION);fixture.context={roles:['ASISTENTE_OPERACIONES']};fixture.tables.branches=[];
+fixture.tables.vw_my_module_access=Object.entries(ROUTE_PERMISSION).map(([route_key,permission_code])=>({route_key,permission_code,enabled:['mywork','dashboard','donors','suppliers','commercial','workflow','training'].includes(route_key)}));
+await window.mountHome();window.modulesReady=true;
+</script></body></html>
