@@ -50,7 +50,9 @@ def main():
   sgc_migrations=[]
   lab_migrations=[]
   lab_followups=[]
+  trip_migrations=[]
   for f in sorted((ROOT/'supabase/migrations').glob('*.sql')):
+   if f.name.endswith('_logistics_extra_trips.sql'):trip_migrations.append(f);continue
    if f.name.endswith(('_lab_release_permissions.sql','_lab_validated_result_integrity.sql')):lab_followups.append(f);continue
    if f.name.endswith('_lab_management_workspace.sql'):lab_migrations.append(f);continue
    if f.name.endswith('_sgc_implementation_project.sql'):sgc_migrations.append(f);continue
@@ -120,6 +122,12 @@ def main():
   if lab_migrations:
    result=sql((ROOT/'tests/lab-management/business-rules.sql').read_text(),'lab-management-business-rules')
    report['checks'].extend({'name':c.strip(),'pass':True} for c in re.findall(r'PASS ([^\n]+)',result.stderr+result.stdout))
+  for f in trip_migrations:apply(f)
+  if trip_migrations:
+   result=sql((ROOT/'tests/logistics-trips/business-rules.sql').read_text(),'logistics-trips-business-rules')
+   report['checks'].extend({'name':c.strip(),'pass':True} for c in re.findall(r'PASS ([^\n]+)',result.stderr+result.stdout))
+   spec=importlib.util.spec_from_file_location('trip_concurrency',ROOT/'tests/logistics-trips/concurrency.py');module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
+   report['checks'].extend(module.verify(name,out,ROOT))
   print(f'PASS: {len(report["checks"])} PostgreSQL checks; {len(report["migrations"])} baseline/candidate files. Production not verified.')
   return 0
  except Exception as e:

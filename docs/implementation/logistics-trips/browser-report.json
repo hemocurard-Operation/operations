@@ -1,0 +1,32 @@
+{
+  "status": "PASS",
+  "production_data_used": false,
+  "checks": [
+    "worker starts directly in a simple three-step form",
+    "worker does not see supervisor or payroll controls",
+    "single assigned branch does not add a technical dropdown",
+    "incomplete form has plain-language feedback",
+    "second step has clear departure and arrival labels",
+    "working-hours arrival is blocked before submitting",
+    "confirmation shows route, hours and pending incentive",
+    "mobile confirmation fits viewport",
+    "failed submission preserves confirmation and no false success",
+    "successful submission shows a human-readable receipt",
+    "retry uses same request key",
+    "returned trip shows feedback and a correction button",
+    "correction is prefilled without losing trip identity",
+    "review uses preserved schedule rather than a worker-entered cutoff",
+    "supervisor submits reviewed amount with revision",
+    "finance does not receive trip approval controls",
+    "selected settlement shows only approved amount",
+    "settlement uses approved trip revisions and a reference",
+    "failed source blocks export instead of showing a false zero",
+    "failed source marks incentive totals unavailable",
+    "reviewer cannot be chosen or impersonated in worker form",
+    "all primary touch targets are at least 48 pixels",
+    "mobile initial form fits viewport",
+    "read-only access cannot edit, withdraw or settle claims",
+    "no browser runtime errors"
+  ],
+  "errors": []
+}
