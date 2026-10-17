@@ -1,0 +1,48 @@
+name: Quality information and management decisions
+on:
+  pull_request:
+    paths:
+      - 'hemocura-core/quality*.js'
+      - 'hemocura-core/qms-governance*.js'
+      - 'hemocura-core/management-*.js'
+      - 'css/quality-workspace.css'
+      - 'supabase/migrations/*quality_information_decisions.sql'
+      - 'tests/qms/**'
+      - 'tools/qms_*'
+      - '.github/workflows/quality-information.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'hemocura-core/quality*.js'
+      - 'hemocura-core/qms-governance*.js'
+      - 'hemocura-core/management-*.js'
+      - 'css/quality-workspace.css'
+      - 'supabase/migrations/*quality_information_decisions.sql'
+      - 'tests/qms/**'
+      - 'tools/qms_*'
+      - '.github/workflows/quality-information.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: node --test tests/qms/domain.test.mjs
+      - run: python tools/migration_security_linter.py supabase/migrations/*quality_information_decisions.sql
+      - run: python tools/workflow_postgres_runner.py --allow-external-prerequisite-fixture --report-dir /tmp/hemocura-qms-postgres
+      - run: npm ci --prefix tests/wave50 --ignore-scripts --no-audit --no-fund
+      - run: node tests/wave50/node_modules/playwright/cli.js install --with-deps chromium
+      - run: node tools/qms_browser_runner.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: quality-information-evidence
+          path: |
+            /tmp/hemocura-qms-postgres
+            /tmp/hemocura-qms-browser
