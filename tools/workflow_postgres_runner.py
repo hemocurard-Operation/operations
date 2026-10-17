@@ -51,7 +51,9 @@ def main():
   lab_migrations=[]
   lab_followups=[]
   trip_migrations=[]
+  role_task_migrations=[]
   for f in sorted((ROOT/'supabase/migrations').glob('*.sql')):
+   if f.name.endswith('_role_task_access_hardening.sql'):role_task_migrations.append(f);continue
    if f.name.endswith('_logistics_extra_trips.sql'):trip_migrations.append(f);continue
    if f.name.endswith(('_lab_release_permissions.sql','_lab_validated_result_integrity.sql')):lab_followups.append(f);continue
    if f.name.endswith('_lab_management_workspace.sql'):lab_migrations.append(f);continue
@@ -128,6 +130,14 @@ def main():
    report['checks'].extend({'name':c.strip(),'pass':True} for c in re.findall(r'PASS ([^\n]+)',result.stderr+result.stdout))
    spec=importlib.util.spec_from_file_location('trip_concurrency',ROOT/'tests/logistics-trips/concurrency.py');module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
    report['checks'].extend(module.verify(name,out,ROOT))
+  if role_task_migrations:apply(ROOT/'tests/role-tasks/catalog-prerequisite.sql')
+  for f in role_task_migrations:apply(f)
+  if role_task_migrations:
+   result=sql((ROOT/'tests/role-tasks/business-rules.sql').read_text(),'role-task-business-rules')
+   report['checks'].extend({'name':c.strip(),'pass':True} for c in re.findall(r'PASS ([^\n]+)',result.stderr+result.stdout))
+  if role_task_migrations and lab_migrations:
+   result=sql((ROOT/'tests/lab-management/business-rules.sql').read_text(),'lab-after-role-hardening')
+   report['checks'].extend({'name':'after role hardening: '+c.strip(),'pass':True} for c in re.findall(r'PASS ([^\n]+)',result.stderr+result.stdout))
   print(f'PASS: {len(report["checks"])} PostgreSQL checks; {len(report["migrations"])} baseline/candidate files. Production not verified.')
   return 0
  except Exception as e:

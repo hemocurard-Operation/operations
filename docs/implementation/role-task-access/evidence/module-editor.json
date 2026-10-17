@@ -1,0 +1,30 @@
+{
+  "status": "PASS",
+  "checks": [
+    "home prioritizes the operational donor workspace",
+    "home hides financial laboratory and technical windows",
+    "enabled donor route is accepted",
+    "disabled direct link is denied despite data permission",
+    "unknown routes fail closed",
+    "module revocation is checked without resetting access cache",
+    "operational map shows only enabled destinations",
+    "non super user has no module editor",
+    "configuration paginates beyond 500 role module records",
+    "super user settings are locked on",
+    "super has all registered routes",
+    "identity administration cannot be enabled for another role",
+    "editor distinguishes missing data permissions",
+    "save includes only explicit pending changes",
+    "conflict preserves pending configuration",
+    "save locks role and checkbox changes",
+    "module configuration persists successfully",
+    "configuration never modifies data permission assignments",
+    "unsaved role changes are protected",
+    "module catalog can be searched",
+    "role module configuration fits mobile viewport",
+    "unavailable policy does not fall back to allowing routes",
+    "no browser runtime errors"
+  ],
+  "errors": [],
+  "production_data_used": false
+}

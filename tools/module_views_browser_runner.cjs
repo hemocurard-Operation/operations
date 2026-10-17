@@ -2,7 +2,7 @@ const fs=require('node:fs'),path=require('node:path'),http=require('node:http'),
 const {chromium}=require(require.resolve('playwright',{paths:[path.join(__dirname,'../tests/wave50')]}));
 (async()=>{
  const root=path.resolve(__dirname,'..'),out=process.env.HEMOCURA_MODULE_BROWSER_REPORT||'/tmp/hemocura-module-views-browser';fs.mkdirSync(out,{recursive:true});
- const config=JSON.parse(fs.readFileSync(path.join(root,'contracts/role-module-defaults.json'),'utf8'));
+ const config=JSON.parse(fs.readFileSync(path.join(root,'contracts/role-task-access-defaults.json'),'utf8'));
  const server=http.createServer((req,res)=>{const p=new URL(req.url,'http://fixture.invalid').pathname,file=path.resolve(root,'.'+p);if(!file.startsWith(root+'/')||!['/hemocura-core/','/tests/','/css/','/VERSION.json'].some(x=>p.startsWith(x))){res.writeHead(403);return res.end()}fs.readFile(file,(err,data)=>{if(err){res.writeHead(404);return res.end()}res.setHeader('Content-Type',file.endsWith('.js')?'text/javascript':file.endsWith('.css')?'text/css':'text/html');res.end(data)})});
  await new Promise(r=>server.listen(0,'127.0.0.1',r));const origin='http://127.0.0.1:'+server.address().port;let browser;const checks=[],errors=[];let failure;
  const check=(name,ok)=>{assert(ok,name);checks.push(name);console.log('PASS '+name)};
@@ -22,7 +22,7 @@ const {chromium}=require(require.resolve('playwright',{paths:[path.join(__dirnam
    const codes=Object.keys(config.profiles);fixture.context={roles:['SUPER_USUARIO']};fixture.permissions=[...new Set(config.modules.map(m=>m.permission_code))];
    fixture.tables.roles=codes.map(code=>({id:code,code,name:code}));fixture.tables.app_module_catalog=config.modules;
    fixture.tables.role_module_access=codes.flatMap(role_id=>config.modules.map(m=>({role_id,route_key:m.route_key,enabled:config.profiles[role_id].includes(m.route_key),revision:1})));
-   fixture.tables.role_permissions=codes.flatMap(role_id=>config.modules.filter(m=>!(role_id==='ASISTENTE_OPERACIONES'&&m.route_key==='screening')).map(m=>({role_id,permission_code:m.permission_code})));
+   fixture.tables.role_permissions=codes.flatMap(role_id=>config.role_permissions[role_id].map(permission_code=>({role_id,permission_code})));
    fixture.tables.vw_my_module_access=config.modules.map(m=>({...m,enabled:true}));
    fixture.rpcHandler=async(name,args)=>{
     if(name==='set_role_modules'){
@@ -32,9 +32,9 @@ const {chromium}=require(require.resolve('playwright',{paths:[path.join(__dirnam
     }return {data:null,error:null}
    };await window.mountEditor();
   },config);
-  check('configuration paginates beyond 500 role module records',await page.locator('[data-module-toggle]').count()===62&&await page.locator('[data-module-role] option').count()===15);
-  await page.locator('[data-module-role]').selectOption('SUPER_USUARIO');check('super user settings are locked on',await page.locator('[data-module-toggle]:enabled').count()===0&&await page.locator('[data-module-toggle]:checked').count()===62);
-  check('super has all registered routes',await page.evaluate(async()=>(await window.filterRoutes()).length===62));
+  check('configuration paginates beyond 500 role module records',await page.locator('[data-module-toggle]').count()===config.modules.length&&await page.locator('[data-module-role] option').count()===Object.keys(config.profiles).length);
+  await page.locator('[data-module-role]').selectOption('SUPER_USUARIO');check('super user settings are locked on',await page.locator('[data-module-toggle]:enabled').count()===0&&await page.locator('[data-module-toggle]:checked').count()===config.modules.length);
+  check('super has all registered routes',(await page.evaluate(async()=>(await window.filterRoutes()).length))===config.modules.length);
   await page.locator('[data-module-role]').selectOption('ASISTENTE_OPERACIONES');check('identity administration cannot be enabled for another role',await page.locator('[data-module-toggle=users]').isDisabled()&&await page.locator('[data-module-toggle=security]').isDisabled());
   const row=page.locator('[data-module-table] tr').filter({has:page.locator('[data-module-toggle=screening]')});check('editor distinguishes missing data permissions',(await row.innerText()).includes('Sin permiso de datos'));
   await page.locator('[data-module-toggle=donors]').uncheck();check('save includes only explicit pending changes',(await page.locator('[data-module-summary]').innerText()).includes('1 cambios pendientes'));
