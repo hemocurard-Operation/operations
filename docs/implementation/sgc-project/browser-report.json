@@ -1,0 +1,30 @@
+{
+  "status": "PASS",
+  "production_data_used": false,
+  "checks": [
+    "blueprint preview does not invent an implemented project",
+    "new project excludes its author from reviewer choices",
+    "project has six explicit implementation phases",
+    "progress starts with actual zero verified evidence",
+    "step explains how to execute and expected evidence",
+    "only approved document versions are offered",
+    "failed mutation preserves draft evidence",
+    "submission retains document version and step revision",
+    "executor cannot verify own evidence",
+    "independent reviewer can record conclusion",
+    "later phases explain dependency without hiding preparatory work",
+    "all twelve gates are visible",
+    "training programme is tied to implementation tasks",
+    "document intake is not automatic approval",
+    "outdated evidence is flagged and excluded from progress",
+    "project monitoring exports applied project scope",
+    "reopening explicitly warns about affected gates",
+    "scope-specific steps preserve explicit criteria and phase",
+    "guided implementation fits mobile viewport",
+    "source failure cannot display false compliance",
+    "read-only role cannot create implementation projects",
+    "read-only role cannot modify or review steps",
+    "no runtime browser errors"
+  ],
+  "errors": []
+}

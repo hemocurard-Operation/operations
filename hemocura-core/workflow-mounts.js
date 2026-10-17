@@ -8,4 +8,4 @@ import { mountShiftReport } from './workflow-sales.js';
 import { mountSupplyCatalog } from './supply-catalog.js';
 export { enhanceWorkflowDaily } from './workflow-daily.js';
 
-export const WORKFLOW_MOUNTS={areaagenda:mountAreaAgenda,workflow:mountWorkflow,commercial:mountCommercial,hyperbaric:mountHyperbaric,bloodquality:mountBloodQuality,transfers:mountBloodTransfers,shiftreport:mountShiftReport,supplycatalog:mountSupplyCatalog};
+export const WORKFLOW_MOUNTS={sgcimplementation:async root=>(await import('./sgc-project.js')).mountSgcProject(root),areaagenda:mountAreaAgenda,workflow:mountWorkflow,commercial:mountCommercial,hyperbaric:mountHyperbaric,bloodquality:mountBloodQuality,transfers:mountBloodTransfers,shiftreport:mountShiftReport,supplycatalog:mountSupplyCatalog};

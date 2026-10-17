@@ -1,0 +1,58 @@
+name: Guided SGC implementation project
+on:
+  pull_request:
+    paths:
+      - 'hemocura-core/sgc-*.js'
+      - 'hemocura-core/documents.js'
+      - 'hemocura-core/router.js'
+      - 'hemocura-core/views.js'
+      - 'hemocura-core/access-control.js'
+      - 'hemocura-core/workflow-mounts.js'
+      - 'css/sgc-project.css'
+      - 'supabase/migrations/*sgc_implementation_project.sql'
+      - 'docs/recursos/HC-SGC*'
+      - 'docs/recursos/HC-CMP*'
+      - 'tests/sgc-implementation/**'
+      - 'tools/sgc_project*'
+      - '.github/workflows/sgc-implementation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'hemocura-core/sgc-*.js'
+      - 'hemocura-core/documents.js'
+      - 'hemocura-core/router.js'
+      - 'hemocura-core/views.js'
+      - 'hemocura-core/access-control.js'
+      - 'hemocura-core/workflow-mounts.js'
+      - 'css/sgc-project.css'
+      - 'supabase/migrations/*sgc_implementation_project.sql'
+      - 'docs/recursos/HC-SGC*'
+      - 'docs/recursos/HC-CMP*'
+      - 'tests/sgc-implementation/**'
+      - 'tools/sgc_project*'
+      - '.github/workflows/sgc-implementation.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  implementation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: node --test tests/sgc-implementation/domain.test.mjs
+      - run: python tools/migration_security_linter.py supabase/migrations/*sgc_implementation_project.sql
+      - run: python tools/workflow_postgres_runner.py --allow-external-prerequisite-fixture --report-dir /tmp/hemocura-sgc-postgres
+      - run: npm ci --prefix tests/wave50 --ignore-scripts --no-audit --no-fund
+      - run: node tests/wave50/node_modules/playwright/cli.js install --with-deps chromium
+      - run: node tools/sgc_project_browser_runner.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: sgc-implementation-evidence
+          path: |
+            /tmp/hemocura-sgc-postgres
+            /tmp/hemocura-sgc-browser

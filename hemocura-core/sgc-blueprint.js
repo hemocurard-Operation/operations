@@ -1,0 +1,840 @@
+export const SGC_BLUEPRINT={
+  "code": "HC-SGC-IMP-1.0",
+  "version": "1.0",
+  "title": "Ruta de implementación del SGC HemoCura",
+  "source": "HC-SGC-MC-01 v2: MC-11, MC-14 y MC-15; adaptación operativa propuesta",
+  "phases": [
+    {
+      "code": "F0",
+      "title": "Decisión, alcance y gobernanza",
+      "target_month": 1,
+      "steps": [
+        {
+          "code": "GOV1",
+          "title": "Compromiso de la Dirección y política de calidad",
+          "source_route": "management",
+          "document_required": true,
+          "minimum_months": 0,
+          "optional": false,
+          "instructions": "Formalizar el mandato, objetivos iniciales, patrocinio y recursos; someter el documento a aprobación.",
+          "criteria": [
+            "Acta y política con código y versión",
+            "Patrocinador y recursos identificados",
+            "Aprobación documentada y difusión prevista"
+          ],
+          "deliverable": "Documento aprobado y evidencia de aplicación"
+        },
+        {
+          "code": "GOV2",
+          "title": "Responsables, imparcialidad y segregación de funciones",
+          "source_route": "documents",
+          "document_required": true,
+          "minimum_months": 0,
+          "optional": false,
+          "instructions": "Definir responsable de Calidad, dirección técnica, operaciones y suplencias; separar decisiones comerciales y técnicas.",
+          "criteria": [
+            "Organigrama y funciones por puesto",
+            "Delegaciones técnicas y suplencias por escrito",
+            "Conflictos de interés y líneas de reporte evaluados"
+          ],
+          "deliverable": "Documento aprobado y evidencia de aplicación"
+        },
+        {
+          "code": "GOV3",
+          "title": "Alcance real por sucursal y servicio",
+          "source_route": "documents",
+          "document_required": true,
+          "minimum_months": 0,
+          "optional": false,
+          "instructions": "Precisar qué procesos y servicios se incluyen en esta sucursal; justificar exclusiones y decidir el alcance de servicios adicionales.",
+          "criteria": [
+            "Sucursal y servicios reales identificados",
+            "Procesos incluidos y excluidos justificados",
+            "Responsables técnicos validaron el alcance"
+          ],
+          "deliverable": "Documento aprobado y evidencia de aplicación"
+        },
+        {
+          "code": "GOV4",
+          "title": "Matriz legal, habilitaciones y esquema aplicable",
+          "source_route": "compliance",
+          "document_required": true,
+          "minimum_months": 0,
+          "optional": false,
+          "instructions": "Solicitar validación jurídica de fuentes oficiales, vigencia, habilitación, protección de datos y requisitos del organismo evaluador; no tratar propuestas de ley como obligaciones vigentes.",
+          "criteria": [
+            "Fuentes oficiales, fecha y responsable de consulta",
+            "Requisitos legales y referencias voluntarias separados",
+            "Dictamen o validación de aplicabilidad y pendientes registrados"
+          ],
+          "deliverable": "Documento aprobado y evidencia de aplicación"
+        },
+        {
+          "code": "GOV5",
+          "title": "Plan, recursos, presupuesto y riesgos del proyecto",
+          "source_route": "management",
+          "document_required": true,
+          "minimum_months": 0,
+          "optional": false,
+          "instructions": "Planificar con cotizaciones reales, dedicación disponible, fechas y presupuesto por fase. El horizonte es ajustable y no garantiza acreditación.",
+          "criteria": [
+            "Cronograma y recursos por fase",
+            "Presupuesto respaldado por cotizaciones o aprobación",
+            "Riesgos del proyecto y decisiones de financiación registrados"
+          ],
+          "deliverable": "Documento aprobado y evidencia de aplicación"
+        },
+        {
+          "code": "GOV6",
+          "title": "Lanzamiento y comunicación del proyecto",
+          "source_route": "areaagenda",
+          "document_required": false,
+          "minimum_months": 0,
+          "optional": false,
+          "instructions": "Comunicar responsabilidades y mecanismos de reporte al personal incluido en el alcance.",
+          "criteria": [
+            "Audiencias y responsables definidos",
+            "Registro de presentación y comprensión",
+            "Canal de dudas, reporte y seguimiento establecido"
+          ],
+          "deliverable": "Registro verificable y conclusión documentada"
+        }
+      ]
+    },
+    {
+      "code": "F1",
+      "title": "Diagnóstico y priorización",
+      "target_month": 3,
+      "steps": [
+        {
+          "code": "DIA1",
+          "title": "Inventario documental y registros existentes",
+          "source_route": "documents",
+          "document_required": false,
+          "minimum_months": 0,
+          "optional": false,
+          "instructions": "Identificar versiones, propietarios, ubicaciones, estado de aprobación y registros faltantes sin asumir que un archivo equivale a cumplimiento.",
+          "criteria": [
+            "Lista maestra levantada",
+            "Versiones y estado verificados",
+            "Brechas y duplicados identificados"
+          ],
+          "deliverable": "Registro verificable y conclusión documentada"
+        },
+        {
+          "code": "DIA2",
+          "title": "Habilitación, infraestructura y bioseguridad",
+          "source_route": "compliance",
+          "document_required": false,
+          "minimum_months": 0,
+          "optional": false,
+          "instructions": "Verificar certificados, vencimientos, exequátur/delegaciones cuando apliquen y condiciones de infraestructura contra requisitos validados.",
+          "criteria": [
+            "Certificados y fechas comprobados",
+            "Responsables de renovación asignados",
+            "Hallazgos de infraestructura y bioseguridad registrados"
+          ],
+          "deliverable": "Registro verificable y conclusión documentada"
+        },
+        {
+          "code": "DIA3",
+          "title": "Equipos, reactivos y metrología",
+          "source_route": "resources",
+          "document_required": false,
+          "minimum_months": 0,
+          "optional": false,
+          "instructions": "Levantar equipos críticos, mantenimiento, calibración, reactivos y condiciones de conservación.",
+          "criteria": [
+            "Inventario con identificación y criticidad",
+            "Certificados y vencimientos verificados",
+            "Equipos y materiales no conformes segregados o tratados"
+          ],
+          "deliverable": "Registro verificable y conclusión documentada"
+        },
+        {
+          "code": "DIA4",
+          "title": "Diagnóstico de información y trazabilidad",
+          "source_route": "bloodflow",
+          "document_required": false,
+          "minimum_months": 0,
+          "optional": false,
+          "instructions": "Reconstruir casos de prueba autorizados de trazabilidad; evaluar accesos, respaldo y recuperación sin copiar datos personales al proyecto.",
+          "criteria": [
+            "Casos de prueba referenciados en repositorio autorizado",
+            "Brechas y recuperación evaluadas",
+            "Conclusión técnica y plan registrados"
+          ],
+          "deliverable": "Registro verificable y conclusión documentada"
+        },
+        {
+          "code": "DIA5",
+          "title": "Análisis de brechas y prioridades",
+          "source_route": "quality",
+          "document_required": true,
+          "minimum_months": 0,
+          "optional": false,
+          "instructions": "Comparar la situación real con el alcance y requisitos validados. Clasificar por seguridad, urgencia y recursos.",
+          "criteria": [
+            "Requisito y fuente identificados",
+            "Evidencia y brecha por proceso",
+            "Plan priorizado con responsable y plazo"
+          ],
+          "deliverable": "Documento aprobado y evidencia de aplicación"
+        },
+        {
+          "code": "DIA6",
+          "title": "Riesgos y criterios de aceptación",
+          "source_route": "quality",
+          "document_required": true,
+          "minimum_months": 0,
+          "optional": false,
+          "instructions": "Evaluar riesgos inherentes y residuales; someter criterios de aceptación a la Dirección y asignar tratamientos.",
+          "criteria": [
+            "Criterios aprobados de evaluación y aceptación",
+            "Registro de riesgos con controles y residual",
+            "Tratamientos, responsables y fechas definidos"
+          ],
+          "deliverable": "Documento aprobado y evidencia de aplicación"
+        },
+        {
+          "code": "DIA7",
+          "title": "Mapa de procesos, interacción y propietarios",
+          "source_route": "documents",
+          "document_required": true,
+          "minimum_months": 0,
+          "optional": false,
+          "instructions": "Definir entradas, salidas, controles, recursos e indicadores de cada proceso crítico del alcance.",
+          "criteria": [
+            "Mapa e interacciones aprobados",
+            "Fichas de procesos críticos disponibles",
+            "Propietarios y criterios de aceptación definidos"
+          ],
+          "deliverable": "Documento aprobado y evidencia de aplicación"
+        }
+      ]
+    },
+    {
+      "code": "F2",
+      "title": "Construcción documental y técnica",
+      "target_month": 8,
+      "steps": [
+        {
+          "code": "DOC1",
+          "title": "Control de documentos y registros",
+          "source_route": "documents",
+          "document_required": true,
+          "minimum_months": 0,
+          "optional": false,
+          "instructions": "Establecer elaboración, revisión, aprobación, publicación, cambios, retiro y retención. Mantener disponibles las versiones vigentes.",
+          "criteria": [
+            "Codificación, lista maestra y control de versiones",
+            "Aprobaciones y retiro de copias obsoletas",
+            "Retención, integridad, acceso y recuperación de registros"
+          ],
+          "deliverable": "Documento aprobado y evidencia de aplicación"
+        },
+        {
+          "code": "DOC2",
+          "title": "Procedimientos de gestión del SGC",
+          "source_route": "documents",
+          "document_required": true,
+          "minimum_months": 0,
+          "optional": false,
+          "instructions": "Preparar el conjunto de procedimientos de NC/CAPA, auditorías, revisión por Dirección, riesgos, quejas y seguimiento.",
+          "criteria": [
+            "Procedimientos aplicables completos y aprobados",
+            "Formularios y criterios de aceptación asociados",
+            "Responsables y escalamiento definidos"
+          ],
+          "deliverable": "Documento aprobado y evidencia de aplicación"
+        },
+        {
+          "code": "DOC3",
+          "title": "POE de donación y cadena de hemocomponentes",
+          "source_route": "documents",
+          "document_required": true,
+          "minimum_months": 0,
+          "optional": false,
+          "instructions": "Documentar los procesos aplicables de selección, identificación, colecta, procesamiento, tamizaje, cuarentena, liberación, conservación, despacho y transporte.",
+          "criteria": [
+            "POE del alcance con criterios y registros",
+            "Autoridad de liberación y segregación definidas",
+            "Trazabilidad y manejo de producto no conforme previstos"
+          ],
+          "deliverable": "Documento aprobado y evidencia de aplicación"
+        },
+        {
+          "code": "DOC4",
+          "title": "Métodos analíticos y control de calidad",
+          "source_route": "analyticalqc",
+          "document_required": true,
+          "minimum_months": 0,
+          "optional": false,
+          "instructions": "Verificar o validar métodos según aplicabilidad; definir controles, reglas de aceptación, investigación y participación externa.",
+          "criteria": [
+            "Informes técnicos y criterios aprobados",
+            "Control interno y tratamiento de resultados no conformes",
+            "Programa de evaluación externa y responsables"
+          ],
+          "deliverable": "Documento aprobado y evidencia de aplicación"
+        },
+        {
+          "code": "DOC5",
+          "title": "Cadena de frío, instalaciones y bioseguridad",
+          "source_route": "coldchain",
+          "document_required": true,
+          "minimum_months": 0,
+          "optional": false,
+          "instructions": "Documentar conservación, transporte, alarmas, excursiones, limpieza, residuos y respuesta ante contingencias.",
+          "criteria": [
+            "Condiciones y criterios técnicos aprobados",
+            "Mapeo/verificación y respuesta a excursiones",
+            "Procedimientos de bioseguridad y residuos validados"
+          ],
+          "deliverable": "Documento aprobado y evidencia de aplicación"
+        },
+        {
+          "code": "DOC6",
+          "title": "Proveedores, compras y recepción",
+          "source_route": "suppliers",
+          "document_required": true,
+          "minimum_months": 0,
+          "optional": false,
+          "instructions": "Definir homologación y evaluación de proveedores críticos, especificaciones de compra y aceptación de lotes al recibir.",
+          "criteria": [
+            "Proveedores críticos y especificaciones",
+            "Criterios de cantidad, lote, vencimiento y condición",
+            "Rechazo, cuarentena y seguimiento previstos"
+          ],
+          "deliverable": "Documento aprobado y evidencia de aplicación"
+        },
+        {
+          "code": "DOC7",
+          "title": "Programa de capacitación y matriz de competencias",
+          "source_route": "competencies",
+          "document_required": true,
+          "minimum_months": 0,
+          "optional": false,
+          "instructions": "Adaptar HC-TRN-SUITE-001 a puestos y POE; definir evaluación práctica, autorización nominal y reevaluación.",
+          "criteria": [
+            "Matriz puesto–tarea–competencia aprobada",
+            "Plan N1 a N6 o equivalencia justificada",
+            "Criterios, evaluadores y vigencias definidos"
+          ],
+          "deliverable": "Documento aprobado y evidencia de aplicación"
+        },
+        {
+          "code": "DOC8",
+          "title": "Información, privacidad y continuidad",
+          "source_route": "continuity",
+          "document_required": true,
+          "minimum_months": 0,
+          "optional": false,
+          "instructions": "Definir acceso por responsabilidad, respaldo probado, recuperación, confidencialidad y continuidad del servicio.",
+          "criteria": [
+            "Matriz de acceso y confidencialidad",
+            "Prueba de respaldo y recuperación planificada",
+            "Contingencias, responsables y comunicación"
+          ],
+          "deliverable": "Documento aprobado y evidencia de aplicación"
+        },
+        {
+          "code": "DOC9",
+          "title": "Quejas, hemovigilancia y retirada",
+          "source_route": "hemovigilance",
+          "document_required": true,
+          "minimum_months": 0,
+          "optional": false,
+          "instructions": "Definir notificación, investigación, respuesta y seguimiento de eventos, quejas y retirada/look-back según el alcance y la normativa validada.",
+          "criteria": [
+            "Canales, responsabilidades y tiempos definidos",
+            "Trazabilidad e investigación de eventos previstas",
+            "Comunicación y criterio de cierre documentados"
+          ],
+          "deliverable": "Documento aprobado y evidencia de aplicación"
+        }
+      ]
+    },
+    {
+      "code": "F3",
+      "title": "Capacitación y puesta en práctica",
+      "target_month": 13,
+      "steps": [
+        {
+          "code": "IMP1",
+          "title": "Inducción, documentación y difusión",
+          "source_route": "training",
+          "document_required": true,
+          "minimum_months": 0,
+          "optional": false,
+          "instructions": "Ejecutar formación N1 a N3 y capacitación en las versiones aprobadas aplicables; usar el módulo de capacitación para los expedientes individuales.",
+          "criteria": [
+            "Personal incluido en el alcance identificado",
+            "Evaluaciones y difusión por versión referenciadas",
+            "Brechas de aprendizaje y seguimiento documentados"
+          ],
+          "deliverable": "Documento aprobado y evidencia de aplicación"
+        },
+        {
+          "code": "IMP2",
+          "title": "Competencia práctica y autorización por tarea",
+          "source_route": "competencies",
+          "document_required": true,
+          "minimum_months": 0,
+          "optional": false,
+          "instructions": "Ejecutar formación específica N4/N5, observar desempeño y registrar autorización nominal; asistencia no equivale a competencia.",
+          "criteria": [
+            "Evaluación teórico-práctica por tarea",
+            "Evaluador competente y evidencia verificable",
+            "Autorización y vencimiento registrados en el módulo correspondiente"
+          ],
+          "deliverable": "Documento aprobado y evidencia de aplicación"
+        },
+        {
+          "code": "IMP3",
+          "title": "Control interno y participación externa operativos",
+          "source_route": "analyticalqc",
+          "document_required": false,
+          "minimum_months": 0,
+          "optional": false,
+          "instructions": "Poner en marcha controles con criterios de aceptación; registrar decisiones y participación externa real.",
+          "criteria": [
+            "Registros de controles y decisiones",
+            "Desviaciones investigadas y referenciadas",
+            "Participación externa con identificación del programa"
+          ],
+          "deliverable": "Registro verificable y conclusión documentada"
+        },
+        {
+          "code": "IMP4",
+          "title": "Uso real de procedimientos y registros",
+          "source_route": "quality",
+          "document_required": false,
+          "minimum_months": 1,
+          "optional": false,
+          "instructions": "Verificar uso real en punto de trabajo durante al menos un mes calendario incluido en el alcance.",
+          "criteria": [
+            "Período de registros reales identificado",
+            "Muestreo por proceso y personal",
+            "Desviaciones, acciones y conclusión de aplicación"
+          ],
+          "deliverable": "Registro verificable y conclusión documentada"
+        },
+        {
+          "code": "IMP5",
+          "title": "Ciclo de no conformidad y CAPA",
+          "source_route": "quality",
+          "document_required": false,
+          "minimum_months": 0,
+          "optional": true,
+          "instructions": "Referenciar casos reales y su eficacia. Si no hubo eventos, justificar la no aplicabilidad del caso real; un ejercicio debe identificarse como tal y no contarse como una NC real.",
+          "criteria": [
+            "Origen y acciones trazables",
+            "Evidencia de ejecución y revisión independiente",
+            "Conclusión de eficacia o justificación de ausencia de casos reales"
+          ],
+          "deliverable": "Registro verificable y conclusión documentada"
+        },
+        {
+          "code": "IMP6",
+          "title": "Recepción y trazabilidad de insumos",
+          "source_route": "suppliers",
+          "document_required": false,
+          "minimum_months": 0,
+          "optional": false,
+          "instructions": "Muestrear recepciones reales y comprobar cantidades, precios cuando proceda, lotes, vencimientos y condiciones contra lo solicitado.",
+          "criteria": [
+            "Recepciones y lotes referenciados",
+            "Condiciones y aceptación documentadas",
+            "Incumplimientos gestionados con el proveedor"
+          ],
+          "deliverable": "Registro verificable y conclusión documentada"
+        },
+        {
+          "code": "IMP7",
+          "title": "Comunicación, quejas y reporte de eventos",
+          "source_route": "hemovigilance",
+          "document_required": false,
+          "minimum_months": 0,
+          "optional": false,
+          "instructions": "Comprobar canales de comunicación y respuesta; si no hubo casos, documentar verificación del canal sin inventar eventos.",
+          "criteria": [
+            "Canales accesibles y responsables conocidos",
+            "Registro real o prueba explícitamente identificada",
+            "Respuesta y seguimiento comprobados"
+          ],
+          "deliverable": "Registro verificable y conclusión documentada"
+        },
+        {
+          "code": "IMP8",
+          "title": "Verificación del despliegue en el alcance",
+          "source_route": "quality",
+          "document_required": false,
+          "minimum_months": 0,
+          "optional": false,
+          "instructions": "Comprobar consistencia entre turnos y áreas de esta sucursal; para otras sedes, usar sus proyectos y consolidar la cartera.",
+          "criteria": [
+            "Muestreo representativo documentado",
+            "Versiones vigentes en puntos de uso",
+            "Brechas por área y turno con responsable"
+          ],
+          "deliverable": "Registro verificable y conclusión documentada"
+        }
+      ]
+    },
+    {
+      "code": "F4",
+      "title": "Verificación y eficacia",
+      "target_month": 18,
+      "steps": [
+        {
+          "code": "VER1",
+          "title": "Serie de indicadores y línea base",
+          "source_route": "quality",
+          "document_required": false,
+          "minimum_months": 6,
+          "optional": false,
+          "instructions": "Reunir al menos seis meses calendario de registros e indicadores con denominador, fuente y alcance. Fijar metas con datos reales y aprobación.",
+          "criteria": [
+            "Serie y período de seis meses trazables",
+            "Fórmulas, denominadores y datos incompletos identificados",
+            "Análisis de tendencias y decisiones documentados"
+          ],
+          "deliverable": "Registro verificable y conclusión documentada"
+        },
+        {
+          "code": "VER2",
+          "title": "Evaluación externa y desempeño técnico",
+          "source_route": "analyticalqc",
+          "document_required": false,
+          "minimum_months": 0,
+          "optional": false,
+          "instructions": "Revisar al menos un ciclo externo aplicable; identificar resultados y tratamiento de desviaciones.",
+          "criteria": [
+            "Informe del programa y ciclo referenciado",
+            "Resultados comparados contra criterio aplicable",
+            "Investigación y seguimiento de desviaciones"
+          ],
+          "deliverable": "Registro verificable y conclusión documentada"
+        },
+        {
+          "code": "VER3",
+          "title": "Auditoría interna independiente",
+          "source_route": "internalaudits",
+          "document_required": true,
+          "minimum_months": 0,
+          "optional": false,
+          "instructions": "Ejecutar el programa sobre procesos críticos con auditores competentes e independientes de lo auditado.",
+          "criteria": [
+            "Programa, criterios, alcance y muestreo",
+            "Competencia e independencia del equipo auditor",
+            "Informe y hallazgos referenciados"
+          ],
+          "deliverable": "Documento aprobado y evidencia de aplicación"
+        },
+        {
+          "code": "VER4",
+          "title": "Cierre de hallazgos y eficacia CAPA",
+          "source_route": "quality",
+          "document_required": false,
+          "minimum_months": 0,
+          "optional": false,
+          "instructions": "Revisar los hallazgos y acciones críticos; no confundir ejecución con eficacia ni declarar cierres desde el proyecto.",
+          "criteria": [
+            "Hallazgos vinculados a expedientes de origen",
+            "Acciones críticas resueltas y eficacia comprobada",
+            "Pendientes residuales y decisión registrados"
+          ],
+          "deliverable": "Registro verificable y conclusión documentada"
+        },
+        {
+          "code": "VER5",
+          "title": "Pruebas de trazabilidad y continuidad",
+          "source_route": "continuity",
+          "document_required": false,
+          "minimum_months": 0,
+          "optional": false,
+          "instructions": "Ejecutar escenarios autorizados de reconstrucción, retirada, excursión y recuperación; registrar resultados sin datos personales.",
+          "criteria": [
+            "Escenarios y criterios de aceptación",
+            "Resultados, fallos y acciones",
+            "Revisión de riesgos y planes de contingencia"
+          ],
+          "deliverable": "Registro verificable y conclusión documentada"
+        },
+        {
+          "code": "VER6",
+          "title": "Reevaluación de competencias y autorizaciones",
+          "source_route": "competencies",
+          "document_required": false,
+          "minimum_months": 0,
+          "optional": false,
+          "instructions": "Comprobar vigencias, cambios de POE y reevaluación del personal incluido en el alcance.",
+          "criteria": [
+            "Matriz actualizada y vencimientos",
+            "Reevaluación ante cambios o desempeño",
+            "Autorizaciones restringidas o renovadas con evidencia"
+          ],
+          "deliverable": "Registro verificable y conclusión documentada"
+        },
+        {
+          "code": "VER7",
+          "title": "Informe de suficiencia y pendientes",
+          "source_route": "quality",
+          "document_required": true,
+          "minimum_months": 0,
+          "optional": false,
+          "instructions": "Consolidar evidencia de aplicación, riesgos residuales y pendientes antes de la revisión gerencial.",
+          "criteria": [
+            "Matriz requisito–proceso–riesgo–control–registro",
+            "Pendientes y riesgos residuales explícitos",
+            "Conclusión sustentada y recomendación gerencial"
+          ],
+          "deliverable": "Documento aprobado y evidencia de aplicación"
+        }
+      ]
+    },
+    {
+      "code": "F5",
+      "title": "Revisión, preparación externa y sostenimiento",
+      "target_month": 24,
+      "steps": [
+        {
+          "code": "DIR1",
+          "title": "Revisión por la Dirección",
+          "source_route": "management",
+          "document_required": true,
+          "minimum_months": 0,
+          "optional": false,
+          "instructions": "Registrar entradas, resultados, decisiones, recursos, responsables y plazos en Revisión por la Dirección.",
+          "criteria": [
+            "Acta y entradas de revisión",
+            "Decisiones y recursos justificados",
+            "Compromisos registrados y responsables informados"
+          ],
+          "deliverable": "Documento aprobado y evidencia de aplicación"
+        },
+        {
+          "code": "DIR2",
+          "title": "Resolución de brechas críticas",
+          "source_route": "quality",
+          "document_required": false,
+          "minimum_months": 0,
+          "optional": false,
+          "instructions": "Confirmar resolución de hallazgos críticos y riesgos no aceptables antes de declarar preparación.",
+          "criteria": [
+            "Revisión de hallazgos y riesgos críticos",
+            "Evidencias de cierre en los módulos de origen",
+            "Restricciones y decisiones de continuar documentadas"
+          ],
+          "deliverable": "Registro verificable y conclusión documentada"
+        },
+        {
+          "code": "DIR3",
+          "title": "Preparación para evaluación externa",
+          "source_route": "compliance",
+          "document_required": true,
+          "minimum_months": 0,
+          "optional": false,
+          "instructions": "Confirmar esquema y requisitos actuales con el organismo competente; preparar expediente y preevaluación sin declarar acreditación.",
+          "criteria": [
+            "Alcance y esquema confirmados por fuente competente",
+            "Expediente y lista de requisitos revisados",
+            "Conclusión de preparación y pendientes documentados"
+          ],
+          "deliverable": "Documento aprobado y evidencia de aplicación"
+        },
+        {
+          "code": "DIR4",
+          "title": "Solicitud y evaluación externa, si se decide",
+          "source_route": "documents",
+          "document_required": false,
+          "minimum_months": 0,
+          "optional": true,
+          "instructions": "Si está incluida en el alcance, registrar solicitud y evaluación. Su aceptación depende del organismo externo, no del sistema.",
+          "criteria": [
+            "Decisión de solicitar y alcance",
+            "Acuse y expediente o justificación de exclusión",
+            "Informe del evaluador cuando corresponda"
+          ],
+          "deliverable": "Registro verificable y conclusión documentada"
+        },
+        {
+          "code": "DIR5",
+          "title": "Atención de observaciones externas",
+          "source_route": "quality",
+          "document_required": false,
+          "minimum_months": 0,
+          "optional": true,
+          "instructions": "Si hubo evaluación, referenciar observaciones y evidencias aceptadas; no marcar aceptación externa sin respaldo.",
+          "criteria": [
+            "Observaciones vinculadas al expediente externo",
+            "Respuestas y evidencias presentadas",
+            "Aceptación del organismo o pendientes identificados"
+          ],
+          "deliverable": "Registro verificable y conclusión documentada"
+        },
+        {
+          "code": "DIR6",
+          "title": "Plan de mantenimiento y mejora",
+          "source_route": "areaagenda",
+          "document_required": true,
+          "minimum_months": 0,
+          "optional": false,
+          "instructions": "Programar revisiones, auditorías, indicadores, competencias, documentos, metrología y continuidad con responsables reales.",
+          "criteria": [
+            "Calendario y frecuencias aprobadas",
+            "Responsables y recursos de mantenimiento",
+            "Agenda por área planificada y seguimiento establecido"
+          ],
+          "deliverable": "Documento aprobado y evidencia de aplicación"
+        },
+        {
+          "code": "DIR7",
+          "title": "Entrega del sistema implementado y lecciones",
+          "source_route": "management",
+          "document_required": true,
+          "minimum_months": 0,
+          "optional": false,
+          "instructions": "Formalizar la entrega a los dueños de proceso, registrar lecciones y revisar periódicamente el SGC. El cierre del proyecto no otorga acreditación.",
+          "criteria": [
+            "Acta de entrega y responsabilidades",
+            "Lecciones, pendientes y controles de mantenimiento",
+            "Aprobación independiente de cierre del proyecto"
+          ],
+          "deliverable": "Documento aprobado y evidencia de aplicación"
+        }
+      ]
+    }
+  ],
+  "gates": [
+    {
+      "code": "G1",
+      "phase": "F0",
+      "title": "Gobernanza y alcance",
+      "steps": [
+        "GOV1",
+        "GOV2",
+        "GOV3",
+        "GOV4",
+        "GOV5",
+        "GOV6"
+      ]
+    },
+    {
+      "code": "G2",
+      "phase": "F1",
+      "title": "Diagnóstico completo",
+      "steps": [
+        "DIA1",
+        "DIA2",
+        "DIA3",
+        "DIA4"
+      ]
+    },
+    {
+      "code": "G3",
+      "phase": "F1",
+      "title": "Brechas, riesgos y procesos priorizados",
+      "steps": [
+        "DIA5",
+        "DIA6",
+        "DIA7"
+      ]
+    },
+    {
+      "code": "G4",
+      "phase": "F2",
+      "title": "Procesos y gestión definidos",
+      "steps": [
+        "DOC1",
+        "DOC2",
+        "DOC7"
+      ]
+    },
+    {
+      "code": "G5",
+      "phase": "F2",
+      "title": "Documentación técnica crítica aprobada",
+      "steps": [
+        "DOC3",
+        "DOC4",
+        "DOC5",
+        "DOC6",
+        "DOC8",
+        "DOC9"
+      ]
+    },
+    {
+      "code": "G6",
+      "phase": "F3",
+      "title": "Personal capacitado y competente",
+      "steps": [
+        "IMP1",
+        "IMP2"
+      ]
+    },
+    {
+      "code": "G7",
+      "phase": "F3",
+      "title": "Procesos en uso real",
+      "steps": [
+        "IMP3",
+        "IMP4",
+        "IMP5",
+        "IMP6",
+        "IMP7",
+        "IMP8"
+      ]
+    },
+    {
+      "code": "G8",
+      "phase": "F4",
+      "title": "Evidencia longitudinal suficiente",
+      "steps": [
+        "VER1",
+        "VER2"
+      ]
+    },
+    {
+      "code": "G9",
+      "phase": "F4",
+      "title": "Auditoría interna realizada",
+      "steps": [
+        "VER3"
+      ]
+    },
+    {
+      "code": "G10",
+      "phase": "F4",
+      "title": "Eficacia y suficiencia verificadas",
+      "steps": [
+        "VER4",
+        "VER5",
+        "VER6",
+        "VER7"
+      ]
+    },
+    {
+      "code": "G11",
+      "phase": "F5",
+      "title": "Revisión gerencial y brechas críticas",
+      "steps": [
+        "DIR1",
+        "DIR2"
+      ]
+    },
+    {
+      "code": "G12",
+      "phase": "F5",
+      "title": "Preparación externa y sostenimiento",
+      "steps": [
+        "DIR3",
+        "DIR4",
+        "DIR5",
+        "DIR6",
+        "DIR7"
+      ]
+    }
+  ]
+};
