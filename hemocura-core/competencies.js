@@ -8,6 +8,7 @@ export async function mountCompetencies(root){
   const [profiles,branches,roles,competencies,access]=await Promise.all([
     competencyData.profiles(),competencyData.branches(),competencyData.roles(),competencyData.competencies(),loadAccess()
   ]);
+  const canAssess=access.permissions.has('COMPETENCY_WRITE')||access.permissions.has('COMPETENCY_ASSESS');
   const canAdminTraining=access.permissions?.has('TRAINING_ADMIN');
   const um=Object.fromEntries(profiles.map(x=>[x.id,x.full_name||x.id]));
   const bm=Object.fromEntries(branches.map(x=>[x.id,x.name]));
@@ -15,7 +16,7 @@ export async function mountCompetencies(root){
   root.innerHTML=`
   <div class="sales-toolbar"><div><h2 class="section-heading">Competencias</h2>
   <div class="muted">Puesto → competencia requerida → evidencia → vigencia → brecha.</div></div>
-  <div class="dialog-actions"><button id="comp-training" class="secondary">🎓 Mi Capacitación</button>${canAdminTraining?'<button id="comp-assign-role" class="secondary">Asignar puesto</button>':''}<button id="comp-assess">Evaluación manual externa</button></div></div>
+  <div class="dialog-actions"><button id="comp-training" class="secondary">🎓 Mi Capacitación</button>${canAdminTraining?'<button id="comp-assign-role" class="secondary">Asignar puesto</button>':''}${canAssess?'<button id="comp-assess">Evaluación manual externa</button>':''}</div></div>
 
   <div id="comp-msg"></div><div class="grid sales-kpis" id="comp-kpis"></div>
 
@@ -51,7 +52,7 @@ export async function mountCompetencies(root){
   <label>Código<input id="ca-code" required placeholder="EVA-2026-001"></label>
   <label>Persona<select id="ca-user" required><option value="">Seleccionar…</option>${profiles.map(x=>`<option value="${x.id}">${esc(x.full_name||x.id)}</option>`).join('')}</select></label>
   <label>Competencia<select id="ca-comp" required><option value="">Seleccionar…</option>${competencies.map(x=>`<option value="${x.id}">${esc(x.competency_code)} · ${esc(x.title)}</option>`).join('')}</select></label>
-  <label>Evaluador<select id="ca-assessor" required><option value="">Seleccionar…</option>${profiles.map(x=>`<option value="${x.id}">${esc(x.full_name||x.id)}</option>`).join('')}</select></label>
+  <p>Evaluador: ${esc(access.context.full_name||'Usuario de la sesión')}</p>
   <label>Sucursal<select id="ca-branch"><option value="">General</option>${branches.map(x=>`<option value="${x.id}">${esc(x.name)}</option>`).join('')}</select></label>
   <label>Fecha<input id="ca-date" type="date" value="${today()}" required></label>
   <label>Método<input id="ca-method" required placeholder="Observación directa / prueba / revisión de registros"></label>
@@ -83,8 +84,8 @@ export async function mountCompetencies(root){
     document.getElementById('cr-cancel').onclick=()=>document.getElementById('comp-role-dialog').close();
     document.getElementById('comp-role-form').onsubmit=async e=>{e.preventDefault();try{await competencyData.assignRoleGoverned({user_id:document.getElementById('cr-user').value,job_role_id:document.getElementById('cr-role').value,branch_id:document.getElementById('cr-branch').value,start_date:document.getElementById('cr-start').value,primary_role:document.getElementById('cr-primary').checked});document.getElementById('comp-role-dialog').close();document.getElementById('comp-msg').innerHTML='<div class="status ok">Puesto asignado. Mi Capacitación derivará la ruta correspondiente cuando el contenido esté aprobado.</div>';await load()}catch(err){document.getElementById('comp-msg').innerHTML=`<div class="status bad">${esc(err.message)}</div>`}};
   }
-  document.getElementById('comp-assess').onclick=()=>document.getElementById('comp-assess-dialog').showModal();
+  const assessButton=root.querySelector('#comp-assess');if(assessButton)assessButton.onclick=()=>document.getElementById('comp-assess-dialog').showModal();
   document.getElementById('ca-cancel').onclick=()=>document.getElementById('comp-assess-dialog').close();
-  document.getElementById('comp-assess-form').onsubmit=async e=>{e.preventDefault();try{await competencyData.createAssessment({assessment_code:document.getElementById('ca-code').value.trim(),user_id:document.getElementById('ca-user').value,competency_id:document.getElementById('ca-comp').value,assessor_user_id:document.getElementById('ca-assessor').value,branch_id:document.getElementById('ca-branch').value||null,assessment_date:document.getElementById('ca-date').value,method:document.getElementById('ca-method').value.trim(),level_achieved:document.getElementById('ca-level').value?Number(document.getElementById('ca-level').value):null,result:document.getElementById('ca-result').value,valid_until:document.getElementById('ca-valid').value||null,evidence_reference:document.getElementById('ca-evidence').value.trim(),notes:document.getElementById('ca-notes').value.trim()||null});document.getElementById('comp-assess-dialog').close();e.target.reset();await load()}catch(err){document.getElementById('comp-msg').innerHTML=`<div class="status bad">${esc(err.message)}</div>`}};
+  document.getElementById('comp-assess-form').onsubmit=async e=>{e.preventDefault();if(!canAssess)return;try{await competencyData.createAssessment({assessment_code:document.getElementById('ca-code').value.trim(),user_id:document.getElementById('ca-user').value,competency_id:document.getElementById('ca-comp').value,assessor_user_id:access.context.user_id,branch_id:document.getElementById('ca-branch').value||null,assessment_date:document.getElementById('ca-date').value,method:document.getElementById('ca-method').value.trim(),level_achieved:document.getElementById('ca-level').value?Number(document.getElementById('ca-level').value):null,result:document.getElementById('ca-result').value,valid_until:document.getElementById('ca-valid').value||null,evidence_reference:document.getElementById('ca-evidence').value.trim(),notes:document.getElementById('ca-notes').value.trim()||null});document.getElementById('comp-assess-dialog').close();e.target.reset();await load()}catch(err){document.getElementById('comp-msg').innerHTML=`<div class="status bad">${esc(err.message)}</div>`}};
   await load();
 }

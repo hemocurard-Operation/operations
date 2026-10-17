@@ -1,0 +1,53 @@
+name: Role task access controls
+on:
+  pull_request:
+    paths:
+      - 'hemocura-core/access-control.js'
+      - 'hemocura-core/approvals.js'
+      - 'hemocura-core/production.js'
+      - 'hemocura-core/blood-inventory.js'
+      - 'hemocura-core/competencies.js'
+      - 'supabase/migrations/*role_task_access_hardening.sql'
+      - 'tests/role-tasks/**'
+      - 'contracts/role-task-access-defaults.json'
+      - 'tools/role_tasks_browser_runner.cjs'
+      - '.github/workflows/role-task-access.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'hemocura-core/access-control.js'
+      - 'hemocura-core/approvals.js'
+      - 'hemocura-core/production.js'
+      - 'hemocura-core/blood-inventory.js'
+      - 'hemocura-core/competencies.js'
+      - 'supabase/migrations/*role_task_access_hardening.sql'
+      - 'tests/role-tasks/**'
+      - 'contracts/role-task-access-defaults.json'
+      - 'tools/role_tasks_browser_runner.cjs'
+      - '.github/workflows/role-task-access.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  authorization:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: python tools/migration_security_linter.py supabase/migrations/*role_task_access_hardening.sql
+      - run: python tools/workflow_postgres_runner.py --allow-external-prerequisite-fixture --report-dir /tmp/hemocura-role-tasks-postgres
+      - run: npm ci --prefix tests/wave50 --ignore-scripts --no-audit --no-fund
+      - run: node tests/wave50/node_modules/playwright/cli.js install --with-deps chromium
+      - run: node tools/role_tasks_browser_runner.cjs
+      - run: node tools/module_views_browser_runner.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: role-task-access-evidence
+          path: |
+            /tmp/hemocura-role-tasks-postgres
+            /tmp/hemocura-role-task-browser
+            /tmp/hemocura-module-views-browser

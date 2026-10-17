@@ -1,0 +1,16 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="/css/app.css"><title>Permisos por tarea · fixture</title></head><body><main class="content"><div id="test-root"></div></main><script type="module">
+import {fixture} from '/hemocura-core/supabase.js';
+import {resetAccessCache,filterRoutes,canRoute} from '/hemocura-core/access-control.js';
+import {routeList} from '/hemocura-core/router.js';
+import {mountProduction} from '/hemocura-core/production.js';
+import {mountBloodInventory} from '/hemocura-core/blood-inventory.js';
+import {mountApprovals} from '/hemocura-core/approvals.js';
+import {mountCompetencies} from '/hemocura-core/competencies.js';
+window.fixture=fixture;window.routes=()=>filterRoutes(routeList());window.canRoute=canRoute;
+window.setRole=(code,config)=>{fixture.context={roles:[code],user_id:'actor',full_name:'Usuario ficticio'};fixture.permissions=config.role_permissions[code];fixture.tables.vw_my_module_access=config.modules.map(m=>({route_key:m.route_key,permission_code:m.permission_code,enabled:config.profiles[code].includes(m.route_key)}));resetAccessCache()};
+window.mount=async(name)=>{resetAccessCache();document.querySelector('#test-root').replaceChildren();await ({production:mountProduction,inventory:mountBloodInventory,approvals:mountApprovals,competencies:mountCompetencies})[name](document.querySelector('#test-root'))};
+fixture.tables.branches=[{id:'b1',name:'Sucursal ficticia',active:true}];
+fixture.tables.production_batches=[{id:'p1',production_code:'P-001',branch_id:'b1',component_name:'PLASMA',quantity:1}];
+fixture.tables.vw_approval_inbox=[{id:'a1',request_code:'APR-1',status:'PENDIENTE',required_permission:'UNIT_RELEASE',requested_by:'another'},{id:'a2',request_code:'APR-2',status:'APROBADA',required_permission:'UNIT_RELEASE',requested_by:'another'},{id:'a3',request_code:'APR-3',status:'PENDIENTE',required_permission:'UNIT_RELEASE',requested_by:'actor'}];
+window.ready=true;
+</script></body></html>

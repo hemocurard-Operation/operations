@@ -1,9 +1,12 @@
+import { loadAccess } from './access-control.js';
 import { approvalData } from './approval-data.js';
 
 function esc(v=''){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
 
 export async function mountApprovals(root){
+  const access=await loadAccess(),can=p=>access.permissions.has(p),user=access.context?.user_id;
   const branches=await approvalData.branches();
+  const requestActions=[['UNIT_RELEASE','Liberación de unidad','UNIT_RELEASE'],['DAILY_CLOSE','Cierre diario','DAILY_CLOSE_EXECUTE'],['DOCUMENT_APPROVAL','Aprobación documental','DOCUMENTS_WRITE'],['CAPA_CLOSE','Cierre CAPA','QUALITY_WRITE']].filter(x=>can(x[2]));
   const bm=Object.fromEntries(branches.map(b=>[b.id,b.name]));
 
   root.innerHTML=`
@@ -12,7 +15,7 @@ export async function mountApprovals(root){
       <h2 class="section-heading">Aprobaciones</h2>
       <div class="muted">Solicitud → revisión → aprobación/rechazo → ejecución → auditoría.</div>
     </div>
-    <button id="apr-new">Nueva solicitud</button>
+    ${requestActions.length?'<button id="apr-new">Nueva solicitud</button>':'<span class="muted">Solo consulta</span>'}
   </div>
   <div id="apr-msg"></div>
   <div class="grid sales-kpis" id="apr-kpis"></div>
@@ -38,10 +41,7 @@ export async function mountApprovals(root){
       <h3>Nueva solicitud</h3>
       <label>Tipo de acción
         <select id="apr-action" required>
-          <option value="UNIT_RELEASE">Liberación de unidad</option>
-          <option value="DAILY_CLOSE">Cierre diario</option>
-          <option value="DOCUMENT_APPROVAL">Aprobación documental</option>
-          <option value="CAPA_CLOSE">Cierre CAPA</option>
+          ${requestActions.map(([value,label])=>`<option value="${esc(value)}">${esc(label)}</option>`).join('')}
         </select>
       </label>
       <label>Sucursal<select id="apr-branch"><option value="">General</option>${branches.map(b=>`<option value="${esc(b.id)}">${esc(b.name)}</option>`).join('')}</select></label>
@@ -78,8 +78,8 @@ export async function mountApprovals(root){
         <td>${esc(r.approvals_count)}/${esc(r.required_approvals)}</td>
         <td>${esc(r.age_days)} d</td>
         <td>
-          ${['PENDIENTE','EN_REVISION'].includes(r.status)?`<button class="secondary compact" data-decide="${r.id}">Decidir</button>`:''}
-          ${r.status==='APROBADA'?`<button class="compact" data-execute="${r.id}">Ejecutar</button>`:''}
+          ${can('APPROVAL_DECIDE')&&can(r.required_permission)&&r.requested_by!==user&&['PENDIENTE','EN_REVISION'].includes(r.status)?`<button class="secondary compact" data-decide="${r.id}">Decidir</button>`:''}
+          ${can('APPROVAL_EXECUTE')&&can(r.required_permission)&&r.requested_by!==user&&r.status==='APROBADA'?`<button class="compact" data-execute="${r.id}">Ejecutar</button>`:''}
         </td>
       </tr>`).join(''):'<tr><td colspan="9">Sin solicitudes.</td></tr>';
 
@@ -121,11 +121,11 @@ export async function mountApprovals(root){
 
       document.getElementById('apr-msg').innerHTML='';
     }catch(e){
-      document.getElementById('apr-msg').innerHTML=`<div class="status warn">${esc(e.message)} · Ejecute sql/31_APPROVALS_SOD_v0_31.sql.</div>`;
+      document.getElementById('apr-msg').innerHTML=`<div class="status warn">${esc(e.message)}</div>`;
     }
   }
 
-  document.getElementById('apr-new').onclick=()=>document.getElementById('apr-new-dialog').showModal();
+  const create=root.querySelector('#apr-new');if(create)create.onclick=()=>document.getElementById('apr-new-dialog').showModal();
   document.getElementById('apr-new-cancel').onclick=()=>document.getElementById('apr-new-dialog').close();
   document.getElementById('apr-decision-cancel').onclick=()=>document.getElementById('apr-decision-dialog').close();
 
@@ -156,6 +156,7 @@ export async function mountApprovals(root){
 
   document.getElementById('apr-decision-form').onsubmit=async e=>{
     e.preventDefault();
+    if(!can('APPROVAL_DECIDE'))return;
     try{
       await approvalData.decide(
         document.getElementById('apr-id').value,
