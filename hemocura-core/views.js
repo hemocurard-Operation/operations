@@ -1,4 +1,5 @@
 const ROOT_IDS={
+  extratrips:'extra-trips-root',
   laboratory:'laboratory-root',
   sgcimplementation:'sgc-implementation-root',
   areaagenda:'area-agenda-root',
