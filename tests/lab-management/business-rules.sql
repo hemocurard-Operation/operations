@@ -5,6 +5,9 @@ insert into branches(id,code,name) values('ac100000-0000-0000-0000-000000000001'
 insert into auth.users(id,email) values('ac200000-0000-0000-0000-000000000001','lab-owner@example.invalid'),('ac200000-0000-0000-0000-000000000002','lab-review@example.invalid'),('ac200000-0000-0000-0000-000000000003','lab-reader@example.invalid');
 insert into profiles(id,full_name,branch_id,active) select v.id,v.name,'ac100000-0000-0000-0000-000000000001',true from(values('ac200000-0000-0000-0000-000000000001'::uuid,'Encargada ficticia'),('ac200000-0000-0000-0000-000000000002'::uuid,'Revisora ficticia'),('ac200000-0000-0000-0000-000000000003'::uuid,'Consulta ficticia'))v(id,name);
 insert into user_roles(user_id,role_id,branch_id) select v.id,r.id,'ac100000-0000-0000-0000-000000000001' from(values('ac200000-0000-0000-0000-000000000001'::uuid,'ENCARGADA_LABORATORIO'),('ac200000-0000-0000-0000-000000000002'::uuid,'ENCARGADA_LABORATORIO'),('ac200000-0000-0000-0000-000000000003'::uuid,'CONSULTA'))v(id,code)join roles r on r.code=v.code;
+insert into roles(code,name) values('LAB_TEST_RELEASE','Revisor técnico sin edición de inventario');
+insert into role_permissions(role_id,permission_code) select r.id,p.permission_code from roles r cross join app_permissions p where r.code='LAB_TEST_RELEASE' and p.permission_code in ('UNIT_RELEASE','SCREENING_VIEW','BLOOD_INVENTORY_VIEW');
+insert into user_roles(user_id,role_id,branch_id) select 'ac200000-0000-0000-0000-000000000003',id,'ac100000-0000-0000-0000-000000000001' from roles where code='LAB_TEST_RELEASE';
 insert into lab_equipment(id,equipment_code,branch_id,equipment_type,status) values('ac300000-0000-0000-0000-000000000001','LAB-EQ','ac100000-0000-0000-0000-000000000001','Analizador','ACTIVO');
 insert into lab_methods(id,method_code,test_name,branch_id,status) values('ac400000-0000-0000-0000-000000000001','LAB-M','Método ficticio','ac100000-0000-0000-0000-000000000001','EN_VERIFICACION');
 insert into eqa_programs(id,program_code,provider,program_name) values('ac500000-0000-0000-0000-000000000001','LAB-EQA','Proveedor ficticio','Programa ficticio');
@@ -54,6 +57,9 @@ select pg_temp.ok((select verification_status='APROBADO' and verified_by=auth.ui
 select lab_operation('ac100000-0000-0000-0000-000000000001','SCREENING_REVIEW',(select jsonb_build_object('id',id,'before',to_jsonb(r),'decision','VALIDADO','evidence','REVISION') from screening_tests r where screening_code='LAB-S'));
 select review_and_release_unit('LAB-U','APTO','Batería revisada según procedimiento ficticio','REF-LIBERACION');
 select pg_temp.ok((select screening_status='APTO' and inventory_status='DISPONIBLE' from blood_inventory_units where unit_code='LAB-COMP'),'supervisor role alone can execute authorized independent release');
+select set_config('request.jwt.claim.sub','ac200000-0000-0000-0000-000000000003',true);
+select review_and_release_unit('LAB-U','APTO','Revisión técnica sin edición de inventario','REF-TECNICO');
+select pg_temp.ok(not has_permission('BLOOD_INVENTORY_WRITE'),'technical release permission does not require inventory administration');
 select set_config('request.jwt.claim.sub','ac200000-0000-0000-0000-000000000001',true);
 select pg_temp.denied($q$select review_and_release_unit('LAB-U','APTO','Revisión','REF')$q$,'release rejects original test executor');
 insert into screening_tests(screening_code,source_unit_code,branch_id,test_type,result) values('LAB-S2','LAB-U','ac100000-0000-0000-0000-000000000001','Repetición ficticia','REACTIVO');

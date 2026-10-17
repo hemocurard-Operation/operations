@@ -49,7 +49,9 @@ def main():
   qms_migrations=[]
   sgc_migrations=[]
   lab_migrations=[]
+  lab_followups=[]
   for f in sorted((ROOT/'supabase/migrations').glob('*.sql')):
+   if f.name.endswith('_lab_release_permissions.sql'):lab_followups.append(f);continue
    if f.name.endswith('_lab_management_workspace.sql'):lab_migrations.append(f);continue
    if f.name.endswith('_sgc_implementation_project.sql'):sgc_migrations.append(f);continue
    if f.name.endswith('_quality_information_decisions.sql'):qms_migrations.append(f);continue
@@ -114,6 +116,7 @@ def main():
    result=sql((ROOT/'tests/sgc-implementation/business-rules.sql').read_text(),'sgc-project-business-rules')
    report['checks'].extend({'name':c.strip(),'pass':True} for c in re.findall(r'PASS ([^\n]+)',result.stderr+result.stdout))
   for f in lab_migrations:apply(f)
+  for f in lab_followups:apply(f)
   if lab_migrations:
    result=sql((ROOT/'tests/lab-management/business-rules.sql').read_text(),'lab-management-business-rules')
    report['checks'].extend({'name':c.strip(),'pass':True} for c in re.findall(r'PASS ([^\n]+)',result.stderr+result.stdout))

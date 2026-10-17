@@ -266,6 +266,10 @@
     {
       "file": "supabase/migrations/20261017084848_lab_management_workspace.sql",
       "sha256": "2ec3753dd18d321c983c2420f1687eb7db372c84fb009daff9abc5df6735b7b2"
+    },
+    {
+      "file": "supabase/migrations/20261017085156_lab_release_permissions.sql",
+      "sha256": "5db074c806f9a6ab3db555cd023b34fdd35c46a77d837a9dd7ed40b8f40daa23"
     }
   ],
   "checks": [
@@ -1086,6 +1090,10 @@
       "pass": true
     },
     {
+      "name": "technical release permission does not require inventory administration",
+      "pass": true
+    },
+    {
       "name": "release rejects original test executor",
       "pass": true
     },
@@ -1114,6 +1122,6 @@
       "pass": true
     }
   ],
-  "container": "hemocura-workflow-test-95961",
+  "container": "hemocura-workflow-test-99232",
   "status": "PASS"
 }
