@@ -1,8 +1,7 @@
 {
-  "state": "migration_applied_audited_publication_pending",
+  "state": "production_database_audited_release_approved",
   "production_migration": "20261017005235_quality_information_decisions",
   "production_migration_applied": true,
-  "production_interface_published": false,
   "reason": "Explicit retry authorized. MCP migration calls failed twice with invalid_request_state; the official Management API migration endpoint returned HTTP 200. Migration history and access controls were independently verified before publication.",
   "migration_file": "supabase/migrations/20261017005235_quality_information_decisions.sql",
   "migration_sha256": "90036e555cdfa5347c68e27e2c351bfb72969608a0e4c2461edae3ffbf38efb2",
@@ -40,5 +39,7 @@
     "no_new_advisor_findings": true,
     "security_definer_view_findings_before": 66,
     "security_definer_view_findings_after": 60
-  }
+  },
+  "interface_publication": "This release includes the interface. GitHub Pages publishes it after merge; consult repository Actions for the current deployment state.",
+  "publication_workflows": "https://github.com/hemocurard-Operation/operations/actions"
 }

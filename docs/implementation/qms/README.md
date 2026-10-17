@@ -4,7 +4,7 @@ Implementación solicitada tras comparar HemoCura con MasterControl, Reliance y 
 
 ## Estado
 
-Migración `20261017005235_quality_information_decisions` aplicada tras autorización expresa de reintento. La auditoría de producción comprobó RLS, funciones con seguridad del llamante, prohibición de acceso anónimo, historial protegido y conservación de los 2742 donantes y 11 vínculos de roles. Publicación de interfaz pendiente de completar los controles de GitHub.
+Migración `20261017005235_quality_information_decisions` aplicada tras autorización expresa de reintento. La auditoría de producción comprobó RLS, funciones con seguridad del llamante, prohibición de acceso anónimo, historial protegido y conservación de los 2742 donantes y 11 vínculos de roles. La interfaz forma parte de esta entrega. Su publicación se realiza mediante GitHub Pages después de integrar los cambios; el estado del despliegue se consulta en las Actions del repositorio.
 
 El asesor de seguridad no registró hallazgos nuevos. Las vistas con seguridad del definidor señaladas bajaron de 66 a 60; permanecen hallazgos preexistentes en otros objetos del sistema y configuración Auth. Esta auditoría verifica el alcance de la mejora y no certifica la seguridad de toda la aplicación. Referencia: https://supabase.com/docs/guides/database/database-linter?lint=0010_security_definer_view
 
