@@ -1,0 +1,921 @@
+{
+  "files": 183,
+  "failed": 0,
+  "checks": [
+    {
+      "file": "/workspace/work/lab-management/repo/blood-operations-data.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/command-data.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/config.example.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/donors.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/acceptance.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/access-control.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/access-data.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/analytical-qc-data.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/analytical-qc.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/approval-data.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/approvals.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/area-agenda-data.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/area-agenda-domain.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/area-agenda.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/audit-data.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/audit.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/auth.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/bi.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/blood-flow-data.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/blood-flow.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/blood-inventory.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/blood-operations-data.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/blood-quality.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/blood-transfers.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/bootstrap.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/cedula-reader-ui.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/cedula-reader.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/cold-chain-data.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/cold-chain.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/collections-data.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/collections.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/command-center.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/command-data.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/commercial.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/competencies.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/competency-data.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/compliance-penal-data.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/compliance.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/continuity-data.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/continuity.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/coordination-data.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/coordination-domain.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/coordination-ui.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/costs-data.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/costs.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/customers-data.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/customers.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/daily-inventory-flow.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/daily-inventory.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/dashboard.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/data-pages.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/data.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/decision-center-data.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/decision-center.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/diagnostic-data.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/diagnostic-engine.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/diagnostics.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/dispatch-data.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/dispatch.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/documents.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/donor-agenda.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/donor-coordination.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/donor-management-data.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/donor-outreach-data.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/donor-outreach.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/donors.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/economics-data.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/economics.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/evidence.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/final-release-data.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/final-release.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/freeze.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/frontend-health.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/hemovig-data.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/hemovigilance.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/hyperbaric.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/inspections.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/integrated-actions-data.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/integrated-actions.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/integrated-qms-data.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/integration-data.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/integration.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/internal-audit-data.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/internal-audits.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/inventory-data.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/inventory.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/lab-data.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/lab-domain.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/laboratory.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/layout.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/management-data.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/management-review.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/medical-network-data.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/medical-network.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/module-management.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/my-work.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/operational-sales.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/operations-planner.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/ops-dashboard.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/orchestration-data.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/orchestration.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/planning-data.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/planning.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/predictive-data.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/predictive.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/procurement-data.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/procurement-domain.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/procurement.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/production.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/projects.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/qa-data.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/qa.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/qms-action-board.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/qms-governance-data.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/qms-governance.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/quality-data.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/quality-domain.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/quality-support-data.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/quality.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/quick-capture-data.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/quick-capture-flow.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/quick-capture.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/release-data.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/release-gate.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/release.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/requisitions.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/resources-data.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/resources.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/role-labels.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/router.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/sales-data.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/sales.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/screening.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/security.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/service-performance-data.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/service-performance.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/settings-data.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/settings.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/sgc-blueprint.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/sgc-project-data.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/sgc-project-domain.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/sgc-project.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/supabase.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/supplier-data.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/suppliers.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/supply-catalog.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/supply-data.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/supply-planning.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/training-context.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/training-data.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/training-events.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/training.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/uat-data.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/uat.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/users-data.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/users.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/value-chain-data.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/value-chain.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/views.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/workflow-daily.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/workflow-data.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/workflow-domain.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/workflow-mounts.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/workflow-sales.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/workflow-ui.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/hemocura-core/workflow.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/js/app.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/js/auth-finish.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/js/config.example.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/js/config.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/js/login.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/js/promotion.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/js/setup.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/js/status.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/layout.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/ops-dashboard.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/production.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/release-data.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/release-gate.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/router.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/screening.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/sw.js",
+      "pass": true,
+      "diagnostic": ""
+    },
+    {
+      "file": "/workspace/work/lab-management/repo/views.js",
+      "pass": true,
+      "diagnostic": ""
+    }
+  ]
+}

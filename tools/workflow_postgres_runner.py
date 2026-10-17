@@ -48,7 +48,9 @@ def main():
   agenda_migrations=[]
   qms_migrations=[]
   sgc_migrations=[]
+  lab_migrations=[]
   for f in sorted((ROOT/'supabase/migrations').glob('*.sql')):
+   if f.name.endswith('_lab_management_workspace.sql'):lab_migrations.append(f);continue
    if f.name.endswith('_sgc_implementation_project.sql'):sgc_migrations.append(f);continue
    if f.name.endswith('_quality_information_decisions.sql'):qms_migrations.append(f);continue
    if f.name.endswith('_area_task_agenda.sql'):agenda_migrations.append(f);continue
@@ -91,6 +93,7 @@ def main():
    sql("begin;set local role authenticated;select set_config('request.jwt.claim.sub','f9200000-0000-0000-0000-000000000001',true);select set_config('request.jwt.claim.role','authenticated',true);do $$begin if exists(select 1 from app_permissions where active and not has_permission(permission_code)) then raise exception 'Missing super permission';end if;if exists(select 1 from branches where not can_access_branch(id)) then raise exception 'Missing super branch';end if;end$$;rollback;",'integrated-super-permissions')
    report['checks'].append({'name':'complete role access on integrated operational schema','pass':True})
   if agenda_migrations:apply(ROOT/'tests/area-agenda/catalog-prerequisite.sql')
+  if lab_migrations:apply(ROOT/'tests/lab-management/catalog-prerequisite.sql')
   for f in module_migrations:apply(f)
   for f in agenda_migrations:apply(f)
   if agenda_migrations:
@@ -109,6 +112,10 @@ def main():
   for f in sgc_migrations:apply(f)
   if sgc_migrations:
    result=sql((ROOT/'tests/sgc-implementation/business-rules.sql').read_text(),'sgc-project-business-rules')
+   report['checks'].extend({'name':c.strip(),'pass':True} for c in re.findall(r'PASS ([^\n]+)',result.stderr+result.stdout))
+  for f in lab_migrations:apply(f)
+  if lab_migrations:
+   result=sql((ROOT/'tests/lab-management/business-rules.sql').read_text(),'lab-management-business-rules')
    report['checks'].extend({'name':c.strip(),'pass':True} for c in re.findall(r'PASS ([^\n]+)',result.stderr+result.stdout))
   print(f'PASS: {len(report["checks"])} PostgreSQL checks; {len(report["migrations"])} baseline/candidate files. Production not verified.')
   return 0

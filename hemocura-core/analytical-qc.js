@@ -9,7 +9,7 @@ export async function mountAnalyticalQc(root){
 
   root.innerHTML=`
   <div class="sales-toolbar"><div><h2 class="section-heading">Control de Calidad Analítico</h2>
-  <div class="muted">Métodos, IQC, desviaciones y EQA/PT con trazabilidad.</div></div>
+  <div class="muted">Métodos, IQC, desviaciones y EQA/PT con trazabilidad. La verificación y revisión independiente se realizan en Gestión del Laboratorio.</div></div>
   <button id="aqc-method-new">Nuevo método</button></div>
   <div id="aqc-msg"></div><div class="grid sales-kpis" id="aqc-kpis"></div>
 
@@ -44,7 +44,7 @@ export async function mountAnalyticalQc(root){
   <label>Sucursal<select id="am-branch"><option value="">General</option>${branches.map(x=>`<option value="${x.id}">${esc(x.name)}</option>`).join('')}</select></label>
   <label>Equipo<select id="am-equipment"><option value="">Sin asignar</option>${equipment.map(x=>`<option value="${x.id}">${esc(x.equipment_code)} · ${esc(x.equipment_type)}</option>`).join('')}</select></label>
   <label>Código reactivo<input id="am-reagent"></label>
-  <label>Estado<select id="am-status"><option>EN_VERIFICACION</option><option>APROBADO</option><option>SUSPENDIDO</option></select></label>
+  <label>Estado<select id="am-status"><option>EN_VERIFICACION</option><option>SUSPENDIDO</option></select></label>
   <label>Próxima revisión<input id="am-review" type="date"></label>
   <div class="dialog-actions"><button type="button" id="am-cancel" class="secondary">Cancelar</button><button>Guardar</button></div>
   </form></dialog>`;
