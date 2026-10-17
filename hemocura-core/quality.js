@@ -1,371 +1,42 @@
-import { mountQmsActionBoard } from './qms-action-board.js';
-import {
-  loadQualityWorkspace,
-  createNonconformity,
-  createCapa
-} from './quality-data.js';
-import { getBranches } from './sales-data.js';
-
-const num = new Intl.NumberFormat('es-DO', { maximumFractionDigits:2 });
-
-function esc(v='') {
-  return String(v ?? '').replace(/[&<>"']/g, c => ({
-    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'
-  }[c]));
-}
-
-function todayISO(){ return new Date().toISOString().slice(0,10); }
-function daysAgoISO(days=30){
-  const d=new Date(); d.setDate(d.getDate()-days);
-  return d.toISOString().slice(0,10);
-}
-
-function statusPill(status='') {
-  const s=String(status).toUpperCase();
-  const cls = ['CERRADA','CERRADO','EFECTIVA','COMPLETADA'].includes(s) ? 'stock-ok'
-    : ['ABIERTA','ABIERTO','PENDIENTE'].includes(s) ? 'stock-warning'
-    : 'stock-none';
-  return `<span class="stock-pill ${cls}">${esc(status)}</span>`;
-}
-
-function severityPill(severity) {
-  const n=Number(severity||0);
-  const cls = n >= 5 ? 'sev-critical' : n >= 4 ? 'sev-high' : n >= 3 ? 'sev-medium' : 'sev-low';
-  return `<span class="severity ${cls}">S${esc(n || '—')}</span>`;
-}
-
-function measurementRows(rows, branchMap) {
-  if(!rows.length) return `<tr><td colspan="7" class="muted">No hay mediciones visibles para el filtro.</td></tr>`;
-  return rows.map(r=>`
-    <tr>
-      <td>${esc(r.measurement_date)}</td>
-      <td>${esc(branchMap[r.branch_id]?.name || (r.branch_id || 'Corporativo'))}</td>
-      <td>${esc(r.process_code)} · ${esc(r.process_name)}</td>
-      <td>${esc(r.indicator_code)}</td>
-      <td><strong>${esc(r.indicator_name)}</strong></td>
-      <td class="num">${num.format(Number(r.value||0))}</td>
-      <td>${statusPill(r.status)}</td>
-    </tr>`).join('');
-}
-
-function incidentRows(rows, branchMap) {
-  if(!rows.length) return `<tr><td colspan="8" class="muted">No hay incidencias visibles.</td></tr>`;
-  return rows.map(r=>`
-    <tr>
-      <td>${esc(r.incident_date)} ${esc(r.incident_time || '')}</td>
-      <td>${esc(r.incident_code || '—')}</td>
-      <td>${esc(branchMap[r.branch_id]?.name || 'Corporativo')}</td>
-      <td>${esc(r.classification || '—')}</td>
-      <td>${severityPill(r.severity)}</td>
-      <td>${esc(r.process_name || '—')}</td>
-      <td>${esc(r.description)}</td>
-      <td>${r.requires_quality_followup ? '<span class="status warn">Seguimiento</span>' : '<span class="status ok">No requerido</span>'}</td>
-    </tr>`).join('');
-}
-
-function ncRows(rows, branchMap) {
-  if(!rows.length) return `<tr><td colspan="7" class="muted">No hay no conformidades visibles.</td></tr>`;
-  return rows.map(r=>`
-    <tr>
-      <td>${esc(r.code)}</td>
-      <td>${esc(r.detected_at ? new Date(r.detected_at).toLocaleString('es-DO') : '')}</td>
-      <td>${esc(branchMap[r.branch_id]?.name || 'Corporativo')}</td>
-      <td>${esc(r.description)}</td>
-      <td>${esc(r.root_cause || 'Pendiente')}</td>
-      <td>${statusPill(r.status)}</td>
-      <td>${esc(r.due_date || '—')}</td>
-    </tr>`).join('');
-}
-
-function capaRows(rows) {
-  if(!rows.length) return `<tr><td colspan="8" class="muted">No hay acciones CAPA visibles.</td></tr>`;
-  return rows.map(r=>`
-    <tr>
-      <td>${esc(r.code)}</td>
-      <td>${esc(r.problem)}</td>
-      <td>${esc(r.root_cause || 'Pendiente')}</td>
-      <td>${esc(r.action_plan)}</td>
-      <td>${esc(r.due_date || '—')}</td>
-      <td>${statusPill(r.status)}</td>
-      <td>${statusPill(r.effectiveness_status)}</td>
-      <td>${esc(r.effectiveness_notes || '')}</td>
-    </tr>`).join('');
-}
-
-function alertRows(rows) {
-  if(!rows.length) return `<div class="status ok">No hay alertas abiertas visibles.</div>`;
-  return rows.map(a=>`
-    <article class="alert-row">
-      <div>
-        <span class="severity ${String(a.severity).toUpperCase()==='CRITICA'?'sev-critical':'sev-medium'}">${esc(a.severity)}</span>
-        <strong>${esc(a.title)}</strong>
-        <div class="muted">${esc(a.branch || 'Corporativo')} · ${esc(a.category)}</div>
-      </div>
-      <p>${esc(a.description || '')}</p>
-    </article>`).join('');
-}
-
-function summarize(ws) {
-  const openNc = ws.nonconformities.filter(x=>!['CERRADA','CERRADO'].includes(String(x.status).toUpperCase())).length;
-  const openCapa = ws.capa.filter(x=>!['CERRADA','CERRADO','COMPLETADA'].includes(String(x.status).toUpperCase())).length;
-  const overdueCapa = ws.capa.filter(x=>{
-    if(!x.due_date) return false;
-    const open=!['CERRADA','CERRADO','COMPLETADA'].includes(String(x.status).toUpperCase());
-    return open && x.due_date < todayISO();
-  }).length;
-  const followup = ws.incidents.filter(x=>x.requires_quality_followup).length;
-  return {openNc,openCapa,overdueCapa,followup};
-}
-
-export async function mountQuality(root) {
-  if(!root) return;
-
-  root.innerHTML=`<section class="card"><h3>Calidad</h3><div class="status info">Cargando SGC operativo…</div></section>`;
-
-  try {
-    const branches=await getBranches();
-    const branchMap=Object.fromEntries(branches.map(b=>[b.id,b]));
-    const state={workspace:null};
-
-    root.innerHTML=`
-      <div class="sales-toolbar">
-        <div>
-          <h2 class="section-heading">Sistema de Gestión de Calidad</h2>
-          <div class="muted">Indicadores, incidencias, no conformidades, CAPA y alertas.</div>
-        </div>
-        <button id="quality-refresh" class="secondary">Actualizar</button>
-      </div>
-
-      <section class="card filters-card">
-        <div class="filter-grid">
-          <label>Desde
-            <input id="quality-from" type="date" value="${daysAgoISO(30)}">
-          </label>
-          <label>Hasta
-            <input id="quality-to" type="date" value="${todayISO()}">
-          </label>
-          <label>Sucursal
-            <select id="quality-branch">
-              <option value="">Todas las autorizadas</option>
-              ${branches.map(b=>`<option value="${esc(b.id)}">${esc(b.name)}</option>`).join('')}
-            </select>
-          </label>
-          <label>Medición del día
-            <input id="quality-date" type="date" value="${todayISO()}">
-          </label>
-        </div>
-        <button id="quality-search">Aplicar filtros</button>
-      </section>
-
-      <div id="quality-errors"></div>
-      <div id="quality-summary"></div>
-
-      <section class="card">
-        <div class="card-head"><h3>Indicadores de calidad</h3><span class="muted">vw_quality_today</span></div>
-        <div class="table-wrap">
-          <table class="data-table">
-            <thead><tr><th>Fecha</th><th>Sucursal</th><th>Proceso</th><th>Código</th><th>Indicador</th><th>Valor</th><th>Estado</th></tr></thead>
-            <tbody id="quality-measurements"></tbody>
-          </table>
-        </div>
-      </section>
-
-      <section class="card">
-        <div class="card-head"><h3>Incidencias</h3><span class="muted" id="incident-count"></span></div>
-        <div class="table-wrap">
-          <table class="data-table">
-            <thead><tr><th>Fecha</th><th>Código</th><th>Sucursal</th><th>Clasificación</th><th>Severidad</th><th>Proceso</th><th>Descripción</th><th>Calidad</th></tr></thead>
-            <tbody id="incident-body"></tbody>
-          </table>
-        </div>
-      </section>
-
-      <section class="card">
-        <div class="card-head">
-          <h3>No conformidades</h3>
-          <button id="new-nc" class="secondary compact">Nueva NC</button>
-        </div>
-        <div class="table-wrap">
-          <table class="data-table">
-            <thead><tr><th>Código</th><th>Detectada</th><th>Sucursal</th><th>Descripción</th><th>Causa raíz</th><th>Estado</th><th>Vence</th></tr></thead>
-            <tbody id="nc-body"></tbody>
-          </table>
-        </div>
-      </section>
-
-      <section class="card">
-        <div class="card-head">
-          <h3>CAPA</h3>
-          <button id="new-capa" class="secondary compact">Nueva CAPA</button>
-        </div>
-        <div class="table-wrap">
-          <table class="data-table">
-            <thead><tr><th>Código</th><th>Problema</th><th>Causa raíz</th><th>Plan</th><th>Vence</th><th>Estado</th><th>Efectividad</th><th>Notas</th></tr></thead>
-            <tbody id="capa-body"></tbody>
-          </table>
-        </div>
-      </section>
-
-      <section class="card">
-        <div class="card-head"><h3>Alertas abiertas</h3><span class="muted">Gestión</span></div>
-        <div id="quality-alerts" class="alerts-list"></div>
-      </section>
-
-      <section class="card">
-        <h3>Riesgos</h3>
-        <div class="status warn">
-          El esquema v7.2 no contiene todavía una tabla específica de registro de riesgos.
-          Este módulo queda reservado para una migración posterior; no se inventa estructura desde el frontend.
-        </div>
-      </section>
-
-      <dialog id="nc-dialog" class="sales-dialog">
-        <form id="nc-form" method="dialog">
-          <h3>Nueva no conformidad</h3>
-          <label>Código<input id="nc-code" required placeholder="NC-2026-001"></label>
-          <label>Sucursal
-            <select id="nc-branch">
-              <option value="">Corporativo</option>
-              ${branches.map(b=>`<option value="${esc(b.id)}">${esc(b.name)}</option>`).join('')}
-            </select>
-          </label>
-          <label>Descripción<textarea id="nc-description" required></textarea></label>
-          <label>Causa raíz<textarea id="nc-root"></textarea></label>
-          <label>Fecha límite<input id="nc-due" type="date"></label>
-          <div id="nc-status"></div>
-          <div class="dialog-actions">
-            <button type="button" id="nc-cancel" class="secondary">Cancelar</button>
-            <button type="submit">Guardar</button>
-          </div>
-        </form>
-      </dialog>
-
-      <dialog id="capa-dialog" class="sales-dialog">
-        <form id="capa-form" method="dialog">
-          <h3>Nueva CAPA</h3>
-          <label>Código<input id="capa-code" required placeholder="CAPA-2026-001"></label>
-          <label>Problema<textarea id="capa-problem" required></textarea></label>
-          <label>Causa raíz<textarea id="capa-root"></textarea></label>
-          <label>Plan de acción<textarea id="capa-plan" required></textarea></label>
-          <label>Fecha límite<input id="capa-due" type="date"></label>
-          <div id="capa-status"></div>
-          <div class="dialog-actions">
-            <button type="button" id="capa-cancel" class="secondary">Cancelar</button>
-            <button type="submit">Guardar</button>
-          </div>
-        </form>
-      </dialog>
-
-      <div id="qms-open-actions"></div>
-      <div class="debug-strip">[HEMOCURA_QUALITY] listo</div>`;
-
-    async function load() {
-      const filters={
-        from:document.getElementById('quality-from').value,
-        to:document.getElementById('quality-to').value,
-        branchId:document.getElementById('quality-branch').value,
-        date:document.getElementById('quality-date').value
-      };
-
-      const ws=await loadQualityWorkspace(filters);
-      state.workspace=ws;
-
-      document.getElementById('quality-measurements').innerHTML=measurementRows(ws.measurements,branchMap);
-      document.getElementById('incident-body').innerHTML=incidentRows(ws.incidents,branchMap);
-      document.getElementById('nc-body').innerHTML=ncRows(ws.nonconformities,branchMap);
-      document.getElementById('capa-body').innerHTML=capaRows(ws.capa);
-      document.getElementById('quality-alerts').innerHTML=alertRows(ws.alerts);
-      document.getElementById('incident-count').textContent=`${ws.incidents.length} incidencia(s)`;
-
-      const s=summarize(ws);
-      document.getElementById('quality-summary').innerHTML=`
-        <div class="grid sales-kpis">
-          <section class="card"><div class="muted">Incidencias con seguimiento</div><div class="kpi">${num.format(s.followup)}</div></section>
-          <section class="card"><div class="muted">NC abiertas</div><div class="kpi">${num.format(s.openNc)}</div></section>
-          <section class="card"><div class="muted">CAPA abiertas</div><div class="kpi">${num.format(s.openCapa)}</div></section>
-          <section class="card"><div class="muted">CAPA vencidas</div><div class="kpi">${num.format(s.overdueCapa)}</div></section>
-        </div>`;
-
-      document.getElementById('quality-errors').innerHTML=ws.errors.length
-        ? `<div class="status warn">Carga parcial: ${esc(ws.errors.join(' · '))}</div>`
-        : '';
-
-      console.info('[HEMOCURA_QUALITY] módulo OK');
-    }
-
-    document.getElementById('quality-search').addEventListener('click',()=>load().catch(showError));
-    document.getElementById('quality-refresh').addEventListener('click',()=>load().catch(showError));
-
-    document.getElementById('new-nc').addEventListener('click',()=>{
-      document.getElementById('nc-status').innerHTML='';
-      document.getElementById('nc-form').reset();
-      document.getElementById('nc-dialog').showModal();
-    });
-
-    document.getElementById('new-capa').addEventListener('click',()=>{
-      document.getElementById('capa-status').innerHTML='';
-      document.getElementById('capa-form').reset();
-      document.getElementById('capa-dialog').showModal();
-    });
-
-    document.getElementById('nc-cancel').addEventListener('click',()=>document.getElementById('nc-dialog').close());
-    document.getElementById('capa-cancel').addEventListener('click',()=>document.getElementById('capa-dialog').close());
-
-    document.getElementById('nc-form').addEventListener('submit',async e=>{
-      e.preventDefault();
-      const box=document.getElementById('nc-status');
-      box.innerHTML=`<div class="status info">Guardando…</div>`;
-      try {
-        await createNonconformity({
-          code:document.getElementById('nc-code').value.trim(),
-          branchId:document.getElementById('nc-branch').value,
-          description:document.getElementById('nc-description').value.trim(),
-          rootCause:document.getElementById('nc-root').value.trim(),
-          dueDate:document.getElementById('nc-due').value
-        });
-        box.innerHTML=`<div class="status ok">No conformidad creada.</div>`;
-        await load();
-        setTimeout(()=>document.getElementById('nc-dialog').close(),400);
-      } catch(error) {
-        box.innerHTML=`<div class="status bad">${esc(error.message)}</div>`;
-      }
-    });
-
-    document.getElementById('capa-form').addEventListener('submit',async e=>{
-      e.preventDefault();
-      const box=document.getElementById('capa-status');
-      box.innerHTML=`<div class="status info">Guardando…</div>`;
-      try {
-        await createCapa({
-          code:document.getElementById('capa-code').value.trim(),
-          problem:document.getElementById('capa-problem').value.trim(),
-          rootCause:document.getElementById('capa-root').value.trim(),
-          actionPlan:document.getElementById('capa-plan').value.trim(),
-          dueDate:document.getElementById('capa-due').value
-        });
-        box.innerHTML=`<div class="status ok">CAPA creada.</div>`;
-        await load();
-        setTimeout(()=>document.getElementById('capa-dialog').close(),400);
-      } catch(error) {
-        box.innerHTML=`<div class="status bad">${esc(error.message)}</div>`;
-      }
-    });
-
-    function showError(error) {
-      console.error('[HEMOCURA_QUALITY_ERROR]',error);
-      document.getElementById('quality-errors').innerHTML=`<div class="status bad">${esc(error.message)}</div>`;
-    }
-
-    await load();
-    await mountQmsActionBoard(document.getElementById('qms-open-actions'));
-
-  } catch(error) {
-    console.error('[HEMOCURA_QUALITY_ERROR]',error);
-    root.innerHTML=`
-      <section class="card">
-        <h3>Calidad no disponible</h3>
-        <div class="status bad">${esc(error.message)}</div>
-        <p>Abra F12 → Console y busque <code>HEMOCURA_QUALITY_ERROR</code>.</p>
-      </section>`;
-  }
+import {loadQualityWorkspace,createNonconformity,createCapa,createQualityRisk,qualityPeople,qualityCapaAction,qualityHistory,qualityRecordAction} from './quality-data.js';
+import {qualitySupport} from './quality-support-data.js';
+import {qualitySummary,shiftDay,closed,overdue,inPeriod,monthlySeries,traceFor,qualityCsv} from './quality-domain.js';
+import {loadAccess,filterRoutes} from './access-control.js';
+import {routeList} from './router.js';
+import {getBranches} from './sales-data.js';
+import {esc as e,field,table,downloadText} from './workflow-ui.js';
+import {localDay,localDateTime} from './workflow-domain.js';
+export function qualityStyles(){if(!document.querySelector('[data-qms-style]')){const l=document.createElement('link');l.rel='stylesheet';l.href=new URL('../css/quality-workspace.css',import.meta.url).href;l.dataset.qmsStyle='';document.head.append(l)}}
+const unavailable=reason=>`<p class="status warn">Información incompleta: ${e(reason||'fuente no disponible')}.</p>`;
+const value=n=>n==null?'No disponible':n;
+const ratio=m=>m?.value==null?'Sin base de cálculo':`${m.value}% · ${m.numerator}/${m.denominator}`;
+export async function mountQuality(root){qualityStyles();root.classList.add('qms-workspace');root.innerHTML='<section class="card">Cargando espacio de Calidad…</section>';let branches,access;
+ try{[branches,access]=await Promise.all([getBranches(),loadAccess()])}catch(err){root.innerHTML=unavailable(err.message);return}
+ const write=access.permissions.has('QUALITY_WRITE'),today=localDay(),branchName=id=>branches.find(b=>b.id===id)?.name||(id?'Sucursal autorizada':'Corporativo / sin sucursal'),branchItems=[['','Todas las autorizadas y corporativo'],...branches.map(b=>[b.id,b.name])];let ws=null,support={},tab='priorities',generation=0,busy=false,shown=25,applied=null,allowed=new Set();const q=s=>root.querySelector(s);
+ root.innerHTML=`<div class="sales-toolbar"><div><h2>Sistema de Gestión de Calidad</h2><p class="muted">Prioridades, expedientes y decisiones con evidencia.</p></div><div><button data-qms-refresh class="secondary">Actualizar</button> <button data-qms-export class="secondary" disabled>Exportar seguimiento</button></div></div><form data-qms-filters class="card filter-grid">${field('from','Actividad desde','date',shiftDay(today,-30))}${field('to','Actividad hasta','date',today)}${field('branchId','Sucursal','select','',{items:branchItems,required:false})}<button type="submit">Aplicar filtros</button></form><p class="qms-info">El período filtra actividad y tendencias. La cartera pendiente incluye obligaciones anteriores para mantener visibles los atrasos. Documentos y cambios tienen alcance corporativo, separado de la sucursal.</p><div data-qms-message role="status" aria-live="polite"></div><p data-qms-updated class="qms-meta"></p><nav class="qms-tabs" aria-label="Vistas de Calidad">${[['priorities','Prioridades'],['cases','Expedientes NC / CAPA'],['risks','Riesgos'],['documents','Documentos y cambios'],['audits','Auditorías y competencias'],['suppliers','Proveedores'],['management','Decisiones y agenda']].map(([k,t])=>`<button type="button" data-qms-tab="${k}">${t}</button>`).join('')}</nav><div data-qms-body></div><dialog class="sales-dialog qms-dialog" data-qms-dialog></dialog>`;
+ function message(t,bad=false){q('[data-qms-message]').innerHTML=`<p class="status ${bad?'warn':'ok'}">${e(t)}</p>`}
+ function source(key,render){return ws.availability[key]?render(ws[key]):unavailable(key)}
+ function extra(key,render){const s=support[key];return s?.available?`${s.corporate?'<p class="qms-meta">Alcance corporativo. No se atribuye a la sucursal seleccionada.</p>':''}${render(s.rows)}`:unavailable(s?.reason)}
+ const link=(route,text)=>allowed.has(route)?`<a href="#${e(route)}">${e(text)} →</a>`:'';
+ const smallRows=(head,rows)=>table(head,rows.slice(0,100))+(rows.length>100?`<p>Se muestran 100 de ${rows.length}; gestione el detalle en el módulo de origen.</p>`:'');
+ function draw(){if(!ws)return;q('[data-qms-export]').disabled=!ws.availability.capa||!ws.availability.nonconformities;root.querySelectorAll('[data-qms-tab]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.qmsTab===tab)));let html='';
+ if(tab==='priorities'){const s=qualitySummary(ws,applied),series=monthlySeries(ws.incidents,'incident_date',applied),max=Math.max(1,...series.map(r=>r.total));html=`<section class="card"><h3>Qué requiere atención</h3><p class="qms-meta">Cartera actual · ${e(applied.branchId?branchName(applied.branchId):'Todas las sucursales autorizadas y corporativo')} · corte ${e(localDateTime(ws.loadedAt).replace('T',' '))} (Santo Domingo).</p><div class="qms-panels">${[['NC abiertas',s.nc],['CAPA abiertas',s.capa],['CAPA vencidas',s.overdue],['Sin responsable · NC/CAPA',s.missingOwners]].map(([k,n])=>`<article class="qms-panel"><h4>${k}</h4><div class="qms-number">${value(n)}</div><button type="button" class="secondary" data-qms-go="cases">Revisar expedientes</button></article>`).join('')}</div></section><section class="card"><h3>Resultados del período</h3><div class="qms-panels"><article><h4>Cierre CAPA dentro del plazo original</h4><strong>${s.metrics?ratio(s.metrics.onTime):'No disponible'}</strong><p class="qms-meta">CAPA que vencían en el período; canceladas excluidas. ${s.metrics?e(s.metrics.unknownDue):'—'} registros sin plazo original verificable se excluyen del porcentaje.</p></article><article><h4>Eficacia de CAPA verificadas</h4><strong>${s.metrics?ratio(s.metrics.effective):'No disponible'}</strong><p class="qms-meta">Verificaciones fechadas en el período. Pendientes de verificación en la cartera: ${s.metrics?e(s.metrics.pendingVerification):'No disponible'}.</p></article><article><h4>Incidencias con seguimiento</h4><strong>${value(s.followup)}</strong><p class="qms-meta">Detectadas entre ${e(applied.from)} y ${e(applied.to)}. No equivale a expedientes aún abiertos.</p></article></div></section><section class="card"><h3>Mediciones e indicadores del período</h3>${source('measurements',rows=>smallRows(['Fecha','Sucursal','Proceso','Indicador','Valor','Meta actual registrada','Estado'],rows.map(r=>{const indicator=ws.indicators.find(i=>i.code===r.indicator_code);return[e(r.measurement_date),e(branchName(r.branch_id)),e(r.process_name),e(r.indicator_name),e(r.value??'Sin valor'),e(!ws.availability.indicators?'No disponible':indicator?.target_value==null?'Sin meta':(indicator.direction==='LOWER_IS_BETTER'?'≤ ':indicator.direction==='HIGHER_IS_BETTER'?'≥ ':'Referencia: ')+indicator.target_value),e(r.status)]})))}<p class="qms-meta">Fuente: mediciones de calidad. Las metas actuales son las configuradas por la organización y pueden diferir de las históricas; no se asignan umbrales nuevos.</p></section><section class="card"><h3>Evolución de incidencias registradas</h3>${ws.availability.incidents?`<div class="qms-trend" role="img" aria-label="Incidencias por mes">${series.map(r=>`<div><strong>${r.total}</strong><span style="height:${Math.max(2,r.total/max*85)}px"></span><small>${e(r.month)}</small></div>`).join('')}</div><p class="muted">Cantidades registradas, sin ajustar por volumen de actividad. Los meses inicial y final pueden ser parciales.</p>`:unavailable('Incidencias')}</section><section class="card"><h3>Alertas vigentes</h3>${source('alerts',rows=>smallRows(['Prioridad','Alerta','Sucursal','Vence'],rows.map(r=>[e(r.severity),e(r.title),e(r.branch),e(r.due_at?localDateTime(r.due_at):'Sin fecha')])) )}</section>`}
+ if(tab==='cases'){const rows=ws.nonconformities.filter(r=>!closed(r)||inPeriod(r.detected_at,applied)),capas=ws.capa.filter(r=>!closed(r)||inPeriod(r.created_at,applied)||inPeriod(r.closed_at,applied));html=`<section class="card"><div class="sales-toolbar"><h3>Expedientes y trazabilidad</h3>${write?'<button data-qms-create="nc">Nueva no conformidad</button>':''}</div><p>Se incluyen abiertos de cualquier fecha y cerrados con actividad en el período. Un expediente puede contener varias CAPA.</p>${source('nonconformities',()=>table(['Código / origen','Sucursal','Descripción','Responsable','Vence / estado',''],rows.slice(0,shown).map(r=>[`${e(r.code)}<br>${e(r.incident_id?'Incidencia vinculada':r.source_table||'Registro directo')}`,e(branchName(r.branch_id)),e(r.description),e(r.owner_user_id?(ws.owners.find(p=>p.id===r.owner_user_id)?.full_name||r.owner_user_id):'Sin responsable'),`${e(r.due_date||'Sin plazo')}<br>${e(r.status)}${overdue(r)?' · VENCIDA':''}`,`<button class="secondary" data-qms-case="${e(r.id)}">Abrir expediente</button>`]))+`<p>${Math.min(shown,rows.length)} de ${rows.length} expedientes.</p>`+(shown<rows.length?'<button data-qms-more class="secondary">Cargar más</button>':''))}</section><section class="card"><h3>Cartera CAPA</h3>${source('capa',()=>smallRows(['Código','Origen NC','Responsable','Plazo actual','Plazo original','Estado / eficacia'],capas.map(c=>[e(c.code),e(ws.nonconformities.find(n=>n.id===c.nonconformity_id)?.code||'Sin vínculo visible'),e(c.owner_user_id?(ws.owners.find(p=>p.id===c.owner_user_id)?.full_name||c.owner_user_id):'Sin responsable'),e(c.due_date||'Sin plazo'),e(c.original_due_known?c.original_due_date||'No definido':'Histórico no verificable'),`${e(c.status)} / ${e(c.effectiveness_status)}`])))}${link('qmsgov','Gestionar aprobaciones y cierre de CAPA')}</section><section class="card"><h3>Incidencias del período</h3>${source('incidents',rows=>smallRows(['Código','Fecha','Proceso','Severidad','Contención inmediata'],rows.map(r=>[e(r.incident_code),e(r.incident_date),e(r.process_name),e(r.severity),e(r.immediate_action||'Sin contención registrada')])) )}</section>`}
+ if(tab==='risks')html=`<section class="card"><div class="sales-toolbar"><h3>Riesgos y controles</h3>${write?'<button data-qms-create="risk">Registrar riesgo</button>':''}</div><p>Los valores residual e inherente son los registrados; un control descrito no demuestra por sí solo su eficacia.</p>${source('risks',rows=>smallRows(['Código / proceso','Riesgo','Inherente','Residual','Controles / tratamiento','Revisión / estado',''],rows.map(r=>[`${e(r.risk_code)}<br>${e(r.process_name)}`,e(r.risk_description),e(r.inherent_score),e(r.residual_probability&&r.residual_impact?r.residual_probability*r.residual_impact:'No evaluado'),`${e(r.existing_controls||'Sin controles registrados')}<br>${e(r.treatment_action||'Sin tratamiento registrado')}`,`${e(r.review_date||'Sin fecha')} / ${e(r.status)}`,write?`<button class="secondary" data-qms-risk="${e(r.id)}">Evaluar</button>`:''])) )}</section>`;
+ if(tab==='documents')html=`<section class="card"><h3>Documentos vigentes y revisiones</h3>${extra('documents',rows=>smallRows(['Código','Documento / versión','Área','Estado','Revisión','Aprobación'],rows.map(r=>[e(r.document_code),`${e(r.title)} / ${e(r.version)}`,e(r.area),e(r.status),`${e(r.review_date||'Sin fecha')}${r.review_overdue?' · VENCIDA':''}`,e(r.approval_status||'No solicitada')])))}${link('qmsgov','Gestionar aprobación documental')}</section><section class="card"><h3>Impacto de cambios documentales</h3>${extra('changes',rows=>smallRows(['Documento','Motivo','Impacto evaluado','Versiones','Estado',''],rows.map(r=>[e(support.documents?.rows.find(d=>d.id===r.document_id)?.document_code||'Documento vinculado'),e(r.change_reason),e(r.impact_assessment||'Pendiente de evaluación'),`${e(r.previous_version)} → ${e(r.new_version)}`,e(r.status),access.permissions.has('DOCUMENTS_WRITE')&&r.status==='PENDIENTE'?`<button class="secondary" data-qms-impact="${e(r.id)}">Evaluar impacto</button>`:''])))}<p class="qms-meta">La aprobación documental y la capacitación se gestionan en sus módulos. Antes de implementar un cambio, Calidad debe comprobar su impacto en tareas, equipos y competencias.</p>${link('documents','Abrir control documental')} ${link('competencies','Revisar competencias')}</section>`;
+ if(tab==='audits')html=`<section class="card"><h3>Hallazgos y reincidencias por investigar</h3>${extra('audits',rows=>smallRows(['Hallazgo / auditoría','Prioridad','Título','Vence','Trazabilidad'],rows.map(r=>[`${e(r.finding_code)} / ${e(r.audit_code)}`,e(r.severity),e(r.title),`${e(r.due_date||'Sin fecha')}${r.overdue?' · VENCIDO':''}`,e([r.nonconformity_id?'NC vinculada':'Sin NC',r.capa_id?'CAPA vinculada':'Sin CAPA'].join(' · '))])))}${link('internalaudits','Gestionar auditorías')}</section><section class="card"><h3>Brechas de competencia</h3>${extra('competencies',rows=>smallRows(['Competencia','Requisito','Estado','Vigencia'],rows.map(r=>[`${e(r.competency_code)} · ${e(r.competency_title)}`,r.mandatory?'Obligatoria':'Complementaria',e(r.competency_status),e(r.valid_until||'Sin vigencia')])))}<p>Las filas representan requisitos persona–competencia, no cantidad de personas. No se infiere una tasa de competencia desde capacitaciones completadas.</p>${link('competencies','Gestionar competencias')}</section>`;
+ if(tab==='suppliers')html=`<section class="card"><h3>Incumplimientos de proveedores</h3>${extra('suppliers',rows=>smallRows(['Código','Fecha','Severidad','Incumplimiento','NC / CAPA','Estado'],rows.map(r=>[e(r.incident_code),e(r.incident_date),e(r.severity),e(r.description),e([r.nonconformity_id?'NC vinculada':'Sin NC',r.capa_id?'CAPA vinculada':'Sin CAPA'].join(' · ')),e(r.status)])))}<p>Contraste estos eventos con los lotes, vencimientos, cantidades y condiciones registradas en la recepción antes de reevaluar al proveedor.</p>${link('suppliers','Revisar pedidos, recepciones y proveedores')}</section>`;
+ if(tab==='management')html=`<section class="card"><h3>De la información a la decisión</h3><div class="qms-panels"><article><h4>Atención diaria</h4><p>Asignar responsables a expedientes sin dueño, resolver atrasos y registrar bloqueos.</p>${link('areaagenda','Planificar en la agenda por área')}</article><article><h4>Revisión de Calidad</h4><p>Contrastar evidencia, verificar eficacia y revisar riesgos. La revisión de una tarea no aprueba el expediente de origen.</p>${link('qmsgov','Revisar aprobaciones pendientes')}</article><article><h4>Decisión gerencial</h4><p>Registrar el motivo, recursos, responsable y plazo de cada compromiso; revisar su resultado en la próxima reunión.</p>${link('management','Registrar revisión y compromisos')}</article></div><p class="qms-meta">Use referencias del expediente en la agenda. Evite crear tareas duplicadas para el mismo compromiso.</p></section>`;
+ q('[data-qms-body]').innerHTML=html;bind()}
+ function bind(){root.querySelectorAll('[data-qms-risk]').forEach(b=>b.onclick=()=>editRisk(ws.risks.find(r=>r.id===b.dataset.qmsRisk)));root.querySelectorAll('[data-qms-impact]').forEach(b=>b.onclick=()=>{const c=support.changes.rows.find(r=>r.id===b.dataset.qmsImpact);dialog('Evaluar impacto del cambio',field('impact_assessment','Documentos, capacitación, equipos y procesos afectados','textarea',c.impact_assessment||''),p=>qualityRecordAction('CHANGE_IMPACT',{...p,id:c.id,revision:c.revision}))});q('[data-qms-more]')?.addEventListener('click',()=>{shown+=25;draw()});root.querySelectorAll('[data-qms-go]').forEach(b=>b.onclick=()=>{tab=b.dataset.qmsGo;draw()});root.querySelectorAll('[data-qms-create]').forEach(b=>b.onclick=()=>create(b.dataset.qmsCreate));root.querySelectorAll('[data-qms-case]').forEach(b=>b.onclick=()=>openCase(b.dataset.qmsCase))}
+ function dialog(title,content,save){const d=q('[data-qms-dialog]');d.innerHTML=`<form><h3>${e(title)}</h3>${content}<p data-dialog-error role="alert"></p><div class="dialog-actions"><button type="button" data-close class="secondary">Cerrar</button>${save?'<button type="submit">Guardar</button>':''}</div></form>`;d.querySelector('[data-close]').onclick=()=>d.close();d.querySelector('form').onsubmit=async ev=>{ev.preventDefault();if(!save||busy)return;const b=ev.submitter;busy=true;b.disabled=true;try{await save(Object.fromEntries(new FormData(ev.target)));d.close();message('Registro guardado.');await load()}catch(err){d.querySelector('[data-dialog-error]').textContent=err.message}finally{busy=false;b.disabled=false}};d.showModal();return d}
+ async function openCase(id){const n=ws.nonconformities.find(r=>r.id===id);if(!n)return;const t=traceFor(n,ws);const d=dialog('Expediente '+n.code,`<p>${e(n.description)}</p><p><strong>Sucursal:</strong> ${e(branchName(n.branch_id))} · <strong>Vence:</strong> ${e(n.due_date||'Sin plazo')}</p><p><strong>Causa:</strong> ${e(n.root_cause||'Pendiente de investigación')}</p><p><strong>Origen:</strong> ${e(t.incident?.incident_code||(n.incident_id?'Incidencia fuera del período o no visible':n.source_table||'Registro directo'))}</p><p><strong>Contención:</strong> ${e(t.incident?.immediate_action||'Consultar el registro de origen')}</p><h4>Acciones vinculadas</h4>${ws.availability.capa?table(['CAPA','Plan','Evidencia','Eficacia'],t.capas.map(c=>[e(c.code),e(c.action_plan),e(c.evidence_url||'Pendiente'),`${e(c.effectiveness_status)} · ${e(c.effectiveness_notes||'Sin notas')}${write&&!closed(c)?`<br><button type="button" class="secondary" data-capa-evidence="${e(c.id)}">Registrar evidencia</button> <button type="button" class="secondary" data-capa-verify="${e(c.id)}">Verificar eficacia</button>`:''}`])):unavailable('CAPA')}${write&&!closed(n)?'<button type="button" data-new-capa>Crear CAPA vinculada</button>':''}${write&&!closed(n)&&n.owner_user_id!==(access.context?.user_id||access.context?.id)?'<button type="button" data-close-nc>Cerrar no conformidad</button>':''}${link('areaagenda','Planificar seguimiento en agenda')}<div data-case-history>Cargando historial del expediente…</div>`,null);d.querySelector('[data-close-nc]')?.addEventListener('click',()=>{d.close();dialog('Cerrar no conformidad '+n.code,field('root_cause','Causa raíz validada','textarea',n.root_cause||'')+field('closure_evidence','Evidencia y conclusión de cierre','textarea'),p=>qualityRecordAction('CLOSE_NC',{...p,id:n.id,revision:n.revision}))});d.querySelectorAll('[data-capa-evidence],[data-capa-verify]').forEach(b=>b.onclick=()=>{const c=ws.capa.find(x=>x.id===(b.dataset.capaEvidence||b.dataset.capaVerify));d.close();const verify=!!b.dataset.capaVerify;dialog(verify?'Verificar eficacia '+c.code:'Registrar evidencia '+c.code,verify?field('effectiveness_status','Resultado','select','EFECTIVA',{items:['EFECTIVA','NO_EFECTIVA']})+field('effectiveness_notes','Método, observación y resultado','textarea'):field('root_cause','Causa raíz','textarea',c.root_cause||'')+field('evidence_url','Referencia de evidencia','textarea',c.evidence_url||''),p=>qualityCapaAction(verify?'VERIFY':'SAVE_EVIDENCE',{...p,id:c.id,revision:c.revision}))});d.querySelector('[data-new-capa]')?.addEventListener('click',()=>{d.close();create('capa',n)});const historyBox=d.querySelector('[data-case-history]');try{const history=await qualityHistory(n.id);if(historyBox.isConnected)historyBox.innerHTML='<h4>Historial de la no conformidad</h4>'+table(['Fecha','Actor ID','Estado registrado'],history.map(h=>[e(localDateTime(h.changed_at)),e(h.actor_id),e(h.after_data?.status||'Registro')]))}catch(err){if(historyBox.isConnected)historyBox.innerHTML=unavailable(err.message)}}
+ function editRisk(r){const d=dialog('Evaluar riesgo '+r.risk_code,field('existing_controls','Controles existentes','textarea',r.existing_controls||'')+field('treatment_action','Tratamiento / motivo de aceptación','textarea',r.treatment_action||'')+field('residual_probability','Probabilidad residual (1–5)','number',r.residual_probability||1)+field('residual_impact','Impacto residual (1–5)','number',r.residual_impact||1)+field('review_date','Próxima revisión','date',r.review_date||shiftDay(localDay(),30))+field('status','Estado','select',r.status,{items:['ABIERTO','EN_TRATAMIENTO',...(access.permissions.has('MANAGEMENT_REVIEW_WRITE')?['ACEPTADO','CERRADO']:[])]})+field('evidence_url','Evidencia / referencia de evaluación','textarea',r.evidence_url||''),p=>qualityRecordAction('RISK_UPDATE',{...p,id:r.id,revision:r.revision}));d.querySelectorAll('[type=number]').forEach(el=>{el.min=1;el.max=5})}
+ async function create(kind,nc){if(!write)return;const branch=nc?.branch_id||applied.branchId;if(!branch){message('Seleccione una sucursal antes de registrar una no conformidad, CAPA o riesgo.',true);return}let people;try{people=await qualityPeople(branch)}catch(err){message('No se pudo consultar responsables elegibles: '+err.message,true);return}const common=field('code','Código')+field('owner','Responsable','select','',{items:[['','Seleccionar…'],...people.map(p=>[p.id,p.full_name])]})+field('due','Fecha de compromiso','date',shiftDay(localDay(),7));let fields=common;
+ if(kind==='nc')fields+=field('incident','Incidencia de origen','select','',{required:false,items:[['','Registro directo'],...ws.incidents.filter(r=>r.branch_id===branch).map(r=>[r.id,r.incident_code])]})+field('description','Descripción','textarea')+field('root','Causa raíz (si se conoce)','textarea','',{required:false});
+ if(kind==='capa')fields+=`<p>Origen: ${e(nc.code)}. Sucursal: ${e(branchName(branch))}.</p>`+field('problem','Problema','textarea',nc.description)+field('root','Causa raíz','textarea',nc.root_cause||'')+field('plan','Plan de acción y resultado esperado','textarea');
+ if(kind==='risk')fields+=field('process','Proceso')+field('description','Riesgo','textarea')+field('probability','Probabilidad (1–5)','number',1)+field('impact','Impacto (1–5)','number',1)+field('controls','Controles existentes','textarea')+field('treatment','Tratamiento previsto','textarea');
+ const d=dialog(kind==='nc'?'Nueva no conformidad':kind==='capa'?'Nueva CAPA vinculada':'Registrar riesgo',`<div class="filter-grid">${fields}</div>`,async p=>{if(kind==='nc')await createNonconformity({code:p.code.trim(),ownerId:p.owner,branchId:branch,incidentId:p.incident,description:p.description.trim(),rootCause:p.root,dueDate:p.due});if(kind==='capa')await createCapa({code:p.code.trim(),ownerId:p.owner,nonconformityId:nc.id,problem:p.problem.trim(),rootCause:p.root.trim(),actionPlan:p.plan.trim(),dueDate:p.due});if(kind==='risk')await createQualityRisk({risk_code:p.code.trim(),branch_id:branch,process_name:p.process.trim(),risk_description:p.description.trim(),probability:Number(p.probability),impact:Number(p.impact),existing_controls:p.controls.trim(),treatment_action:p.treatment.trim(),owner_user_id:p.owner,review_date:p.due,status:'ABIERTO',risk_domain:'SGC'})});d.querySelectorAll('[name=probability],[name=impact]').forEach(el=>{el.min=1;el.max=5})}
+ async function load(){const gen=++generation;const filters=Object.fromEntries(new FormData(q('[data-qms-filters]')));q('[data-qms-export]').disabled=true;q('[data-qms-body]').innerHTML='<section class="card">Actualizando información…</section>';try{const routes=await filterRoutes(routeList()),keys=new Set(routes.map(([k])=>k));const result=await Promise.all([loadQualityWorkspace(filters),qualitySupport(filters,keys)]);if(gen!==generation||!root.isConnected)return;allowed=keys;[ws,support]=result;applied=filters;shown=25;q('[data-qms-updated]').textContent='Consulta completada: '+localDateTime(ws.loadedAt).replace('T',' ')+' · America/Santo_Domingo';q('[data-qms-message]').innerHTML=ws.errors.length?unavailable(ws.errors.join(' · ')):'';draw()}catch(err){if(gen===generation){ws=null;q('[data-qms-body]').innerHTML=unavailable(err.message);message(err.message,true)}}}
+ q('[data-qms-filters]').onsubmit=ev=>{ev.preventDefault();load()};q('[data-qms-refresh]').onclick=load;root.querySelectorAll('[data-qms-tab]').forEach(b=>b.onclick=()=>{tab=b.dataset.qmsTab;shown=25;draw()});q('[data-qms-export]').onclick=()=>{if(ws&&applied)downloadText('seguimiento-calidad-'+applied.to+'.csv',qualityCsv(ws,applied))};await load();
 }

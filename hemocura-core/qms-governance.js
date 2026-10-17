@@ -1,8 +1,10 @@
 import { qmsGovernanceData } from './qms-governance-data.js';
 
+import {loadAccess} from './access-control.js';
 function esc(v=''){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
 
 export async function mountQmsGovernance(root){
+  const access=await loadAccess();const docWrite=access.permissions.has('DOCUMENTS_WRITE'),qualityWrite=access.permissions.has('QUALITY_WRITE');
   root.innerHTML=`
   <div class="sales-toolbar">
     <div><h2 class="section-heading">Gobierno QMS</h2>
@@ -52,7 +54,7 @@ export async function mountQmsGovernance(root){
         <td>${esc(d.review_status||'—')}</td>
         <td>${esc(d.review_date||'—')}${d.review_overdue?' · VENCIDA':''}</td>
         <td>${esc(d.approval_status||'—')}</td>
-        <td>${['BORRADOR','EN_REVISION','APROBADO'].includes(d.status) && !['PENDIENTE','EN_REVISION','APROBADA'].includes(d.approval_status)
+        <td>${docWrite && ['BORRADOR','EN_REVISION','APROBADO'].includes(d.status) && !['PENDIENTE','EN_REVISION','APROBADA'].includes(d.approval_status)
           ? `<button class="secondary compact" data-doc="${d.id}">Solicitar aprobación</button>`:''}</td>
       </tr>`).join(''):'<tr><td colspan="8">Sin documentos.</td></tr>';
 
@@ -64,7 +66,7 @@ export async function mountQmsGovernance(root){
         <td>${esc(c.due_date||'—')}</td>
         <td>${c.overdue?'Sí':'No'}</td>
         <td>${esc(c.approval_status||'—')}</td>
-        <td>${!['CERRADA','CANCELADA'].includes(c.status) && ['EFECTIVA','VERIFICADA'].includes(c.effectiveness_status) && !['PENDIENTE','EN_REVISION','APROBADA'].includes(c.approval_status)
+        <td>${qualityWrite && !['CERRADA','CANCELADA'].includes(c.status) && ['EFECTIVA','VERIFICADA'].includes(c.effectiveness_status) && !['PENDIENTE','EN_REVISION','APROBADA'].includes(c.approval_status)
           ? `<button class="secondary compact" data-capa="${c.id}">Solicitar cierre</button>`:''}</td>
       </tr>`).join(''):'<tr><td colspan="8">Sin CAPA.</td></tr>';
 
@@ -90,7 +92,7 @@ export async function mountQmsGovernance(root){
 
       document.getElementById('qmsg-msg').innerHTML='';
     }catch(e){
-      document.getElementById('qmsg-msg').innerHTML=`<div class="status warn">${esc(e.message)} · Ejecute sql/32_QMS_APPROVAL_INTEGRATION_v0_32.sql.</div>`;
+      document.getElementById('qmsg-kpis').innerHTML='';document.getElementById('qmsg-docs').innerHTML='<tr><td colspan="8">Información no disponible.</td></tr>';document.getElementById('qmsg-capa').innerHTML='<tr><td colspan="8">Información no disponible.</td></tr>';document.getElementById('qmsg-msg').innerHTML=`<div class="status warn">Información incompleta: ${esc(e.message)}. Reintente actualizar.</div>`;
     }
   }
 

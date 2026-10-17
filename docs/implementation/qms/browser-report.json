@@ -1,0 +1,33 @@
+{
+  "status": "PASS",
+  "production_data_used": false,
+  "checks": [
+    "full source pagination counts 512 NC rather than first 100",
+    "empty denominator has explicit label",
+    "legacy deadlines are not presented as verified",
+    "list has progressive display without truncating totals",
+    "more cases can be reached",
+    "untrusted case text is escaped",
+    "case links incident containment and CAPA by id",
+    "CAPA evidence uses revision controlled RPC",
+    "actual risk register replaces obsolete unavailable message",
+    "residual risk uses server revision checks",
+    "documents are explicitly corporate",
+    "missing change impact is visible",
+    "change impact is recorded without approving document",
+    "failed source shows unavailable instead of zero",
+    "incomplete sources cannot export misleading report",
+    "complete report is exportable",
+    "smaller server page limit still loads all 512 records",
+    "manager can reach existing task agenda",
+    "quality workspace fits mobile viewport",
+    "reader cannot create NC or risk",
+    "disabled module data is not queried",
+    "disabled modules show access reason",
+    "management displays decision and linked commitment",
+    "author cannot approve own review",
+    "management updates use atomic revision controlled RPC",
+    "no browser runtime errors"
+  ],
+  "errors": []
+}

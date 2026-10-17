@@ -1,4 +1,5 @@
 import { getSupabase } from './supabase.js';
+import {qualityRows} from './quality-data.js';
 const sb=()=>getSupabase();
 
 async function many(label,p){
@@ -13,8 +14,8 @@ async function one(label,p){
 }
 
 export const qmsGovernanceData={
-  documents:()=>many('Documentos',sb().from('vw_document_control_status').select('*').order('document_code')),
-  capas:()=>many('CAPA',sb().from('vw_capa_control_status').select('*').order('due_date',{ascending:true,nullsFirst:false}).limit(300)),
+  documents:()=>qualityRows('Documentos',()=>sb().from('vw_document_control_status').select('*').order('id')),
+  capas:()=>qualityRows('CAPA',()=>sb().from('vw_capa_control_status').select('*').order('id')),
   summary:()=>one('Resumen QMS',sb().from('vw_qms_governance_summary').select('*').single()),
 
   requestDocumentApproval:async(documentId,reason)=>{

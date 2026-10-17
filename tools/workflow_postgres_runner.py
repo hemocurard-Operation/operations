@@ -46,7 +46,9 @@ def main():
   purchase_migrations=[]
   module_migrations=[]
   agenda_migrations=[]
+  qms_migrations=[]
   for f in sorted((ROOT/'supabase/migrations').glob('*.sql')):
+   if f.name.endswith('_quality_information_decisions.sql'):qms_migrations.append(f);continue
    if f.name.endswith('_area_task_agenda.sql'):agenda_migrations.append(f);continue
    if f.name.endswith('_role_module_views.sql'):module_migrations.append(f);continue
    if f.name.endswith('_purchase_receiving.sql'):purchase_migrations.append(f);continue
@@ -98,6 +100,10 @@ def main():
   if module_migrations:
    sql("begin;set local role authenticated;select set_config('request.jwt.claim.sub','f9200000-0000-0000-0000-000000000001',true);select set_config('request.jwt.claim.role','authenticated',true);do $$begin if exists(select 1 from vw_my_module_access where not enabled) or (select count(*) from vw_my_module_access)<>(select count(*) from app_module_catalog) then raise exception 'Super modules missing';end if;end$$;rollback;",'integrated-super-modules')
    report['checks'].append({'name':'role windows preserve complete super access on integrated schema','pass':True})
+  for f in qms_migrations:apply(f)
+  if qms_migrations:
+   result=sql((ROOT/'tests/qms/business-rules.sql').read_text(),'qms-business-rules')
+   report['checks'].extend({'name':c.strip(),'pass':True} for c in re.findall(r'PASS ([^\n]+)',result.stderr+result.stdout))
   print(f'PASS: {len(report["checks"])} PostgreSQL checks; {len(report["migrations"])} baseline/candidate files. Production not verified.')
   return 0
  except Exception as e:

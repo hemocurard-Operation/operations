@@ -1,168 +1,23 @@
-import { getSupabase } from './supabase.js';
+import {getSupabase} from './supabase.js';
+import {validatePeriod} from './quality-domain.js';
+// Complete, deterministically ordered pages. A failed page invalidates the source.
+export async function qualityRows(label,make){const rows=[];for(let start=0;;){const{data,error}=await make().range(start,start+499);if(error)throw Error(label+': '+error.message);if(!(data||[]).length)return rows;rows.push(...data);start+=data.length}}
+const sb=()=>getSupabase();
+export function getQualityToday(f={}){return qualityRows('Indicadores',()=>{let q=sb().from('vw_quality_today').select('measurement_date,branch_id,indicator_code,indicator_name,value,status,process_code,process_name,id').order('id');if(f.branchId)q=q.eq('branch_id',f.branchId);if(f.from)q=q.gte('measurement_date',f.from);if(f.to)q=q.lte('measurement_date',f.to);return q})}
+export function getIncidents(f={}){return qualityRows('Incidencias',()=>{let q=sb().from('incidents').select('id,incident_code,incident_date,branch_id,classification,process_name,severity,description,immediate_action,requires_quality_followup,evidence_url').order('incident_date').order('id');if(f.branchId)q=q.eq('branch_id',f.branchId);if(f.from)q=q.gte('incident_date',f.from);if(f.to)q=q.lte('incident_date',f.to);return q})}
+// Backlog intentionally includes old open records: period filters describe activity, not outstanding obligations.
+export function getNonconformities(f={}){return qualityRows('No conformidades',()=>{let q=sb().from('nonconformities').select('id,code,incident_id,branch_id,process_id,detected_at,description,root_cause,status,owner_user_id,due_date,created_at,source_table,source_id,revision,closure_evidence,closed_at,closed_by').order('id');if(f.branchId)q=q.eq('branch_id',f.branchId);return q})}
+export function getCapa(f={}){return qualityRows('CAPA',()=>{let q=sb().from('capa').select('id,code,nonconformity_id,problem,root_cause,action_plan,owner_user_id,due_date,status,effectiveness_status,effectiveness_notes,closed_at,created_at,evidence_url,effectiveness_verified_at,original_due_date,original_due_known,revision,executed_by,verified_by'+(f.branchId?',nonconformities!inner(branch_id)':'')).order('id');if(f.branchId)q=q.eq('nonconformities.branch_id',f.branchId);return q})}
+export function getOpenQualityAlerts(f={}){return qualityRows('Alertas',()=>{let q=sb().from('vw_open_management_alerts').select('id,alert_date,branch_id,branch,category,severity,title,description,status,due_at').order('id');if(f.branchId)q=q.eq('branch_id',f.branchId);return q})}
+export async function loadQualityWorkspace(f={}){validatePeriod(f);const calls={owners:()=>qualityRows('Nombres de responsables',()=>sb().from('profiles').select('id,full_name').eq('active',true).order('id')),indicators:()=>qualityRows('Metas de indicadores',()=>sb().from('quality_indicators').select('id,code,target_value,warning_value,direction').order('id')),measurements:()=>getQualityToday(f),incidents:()=>getIncidents(f),nonconformities:()=>getNonconformities(f),capa:()=>getCapa(f),alerts:()=>getOpenQualityAlerts(f),risks:()=>qualityRows('Riesgos',()=>{let q=sb().from('risk_register').select('*').order('id');return f.branchId?q.eq('branch_id',f.branchId):q})};const entries=Object.entries(calls),results=await Promise.allSettled(entries.map(([,fn])=>fn()));const ws={availability:{},errors:[],loadedAt:new Date().toISOString()};entries.forEach(([key],i)=>{const r=results[i];ws.availability[key]=r.status==='fulfilled';ws[key]=r.status==='fulfilled'?r.value:[];if(r.status==='rejected')ws.errors.push(r.reason.message)});return ws}
+async function insert(table,data){const{data:row,error}=await sb().from(table).insert(data).select().single();if(error)throw Error(error.message);return row}
+export const createNonconformity=p=>insert('nonconformities',{code:p.code,incident_id:p.incidentId||null,branch_id:p.branchId||null,description:p.description,root_cause:p.rootCause||null,owner_user_id:p.ownerId||null,due_date:p.dueDate||null,status:'ABIERTA'});
+export const createCapa=p=>insert('capa',{code:p.code,nonconformity_id:p.nonconformityId||null,problem:p.problem,root_cause:p.rootCause||null,action_plan:p.actionPlan,owner_user_id:p.ownerId||null,due_date:p.dueDate||null,status:'ABIERTA',effectiveness_status:'PENDIENTE'});
+export const createQualityRisk=p=>insert('risk_register',p);
+export function qualityPeople(branch){return sb().rpc('work_agenda_people',{p_branch:branch,p_area:'CALIDAD'}).then(({data,error})=>{if(error)throw Error(error.message);return data||[]})}
 
-export async function getQualityToday(filters = {}) {
-  console.info('[HEMOCURA_QUALITY_KPI] vw_quality_today', filters);
+export async function qualityCapaAction(action,data){const{data:result,error}=await sb().rpc('qms_capa_action',{p_action:action,p_data:data});if(error)throw Error(error.message);return result}
 
-  let q = getSupabase()
-    .from('vw_quality_today')
-    .select('measurement_date,branch_id,indicator_code,indicator_name,value,status,process_code,process_name')
-    .order('measurement_date', { ascending: false })
-    .order('process_name', { ascending: true });
+export const qualityHistory=id=>qualityRows('Historial del expediente',()=>sb().from('qms_change_history').select('id,source_table,record_id,actor_id,changed_at,before_data,after_data').eq('record_id',id).order('changed_at',{ascending:false}).order('id'));
 
-  if (filters.branchId) q = q.eq('branch_id', filters.branchId);
-  if (filters.date) q = q.eq('measurement_date', filters.date);
-
-  const { data, error } = await q;
-  if (error) {
-    console.error('[HEMOCURA_QUALITY_ERROR] quality today', error);
-    throw new Error(`Indicadores de calidad: ${error.message}`);
-  }
-  return data || [];
-}
-
-export async function getIncidents(filters = {}) {
-  console.info('[HEMOCURA_INCIDENT] incidents', filters);
-
-  let q = getSupabase()
-    .from('incidents')
-    .select('id,incident_code,incident_date,incident_time,branch_id,classification,process_name,severity,description,patient_or_donor_affected,impact_detail,immediate_action,evidence_url,requires_quality_followup,created_at')
-    .order('incident_date', { ascending: false })
-    .order('created_at', { ascending: false })
-    .limit(100);
-
-  if (filters.branchId) q = q.eq('branch_id', filters.branchId);
-  if (filters.from) q = q.gte('incident_date', filters.from);
-  if (filters.to) q = q.lte('incident_date', filters.to);
-
-  const { data, error } = await q;
-  if (error) {
-    console.error('[HEMOCURA_QUALITY_ERROR] incidents', error);
-    throw new Error(`Incidencias: ${error.message}`);
-  }
-  return data || [];
-}
-
-export async function getNonconformities(filters = {}) {
-  console.info('[HEMOCURA_NC] nonconformities');
-
-  let q = getSupabase()
-    .from('nonconformities')
-    .select('id,code,incident_id,branch_id,process_id,detected_at,description,root_cause,status,owner_user_id,due_date,created_at')
-    .order('detected_at', { ascending: false })
-    .limit(100);
-
-  if (filters.branchId) q = q.eq('branch_id', filters.branchId);
-
-  const { data, error } = await q;
-  if (error) {
-    console.error('[HEMOCURA_QUALITY_ERROR] nonconformities', error);
-    throw new Error(`No conformidades: ${error.message}`);
-  }
-  return data || [];
-}
-
-export async function getCapa() {
-  console.info('[HEMOCURA_CAPA] capa');
-
-  const { data, error } = await getSupabase()
-    .from('capa')
-    .select('id,code,nonconformity_id,problem,root_cause,action_plan,owner_user_id,due_date,status,effectiveness_status,effectiveness_notes,closed_at,created_at')
-    .order('created_at', { ascending: false })
-    .limit(100);
-
-  if (error) {
-    console.error('[HEMOCURA_QUALITY_ERROR] capa', error);
-    throw new Error(`CAPA: ${error.message}`);
-  }
-  return data || [];
-}
-
-export async function getOpenQualityAlerts(filters = {}) {
-  let query = getSupabase()
-    .from('vw_open_management_alerts')
-    .select('id,alert_date,branch_id,branch,category,severity,title,description,status,due_at')
-    .order('alert_date', { ascending: false })
-    .limit(50);
-  if (filters.branchId) query = query.eq('branch_id', filters.branchId);
-  const { data, error } = await query;
-
-  if (error) {
-    console.error('[HEMOCURA_QUALITY_ERROR] alerts', error);
-    throw new Error(`Alertas: ${error.message}`);
-  }
-  return data || [];
-}
-
-export async function createNonconformity(payload) {
-  console.info('[HEMOCURA_NC] create');
-
-  const { data, error } = await getSupabase()
-    .from('nonconformities')
-    .insert({
-      code: payload.code,
-      incident_id: payload.incidentId || null,
-      branch_id: payload.branchId || null,
-      process_id: payload.processId || null,
-      description: payload.description,
-      root_cause: payload.rootCause || null,
-      status: payload.status || 'ABIERTA',
-      due_date: payload.dueDate || null
-    })
-    .select()
-    .single();
-
-  if (error) {
-    console.error('[HEMOCURA_QUALITY_ERROR] create NC', error);
-    throw new Error(`Crear no conformidad: ${error.message}`);
-  }
-  return data;
-}
-
-export async function createCapa(payload) {
-  console.info('[HEMOCURA_CAPA] create');
-
-  const { data, error } = await getSupabase()
-    .from('capa')
-    .insert({
-      code: payload.code,
-      nonconformity_id: payload.nonconformityId || null,
-      problem: payload.problem,
-      root_cause: payload.rootCause || null,
-      action_plan: payload.actionPlan,
-      due_date: payload.dueDate || null,
-      status: payload.status || 'ABIERTA',
-      effectiveness_status: 'PENDIENTE'
-    })
-    .select()
-    .single();
-
-  if (error) {
-    console.error('[HEMOCURA_QUALITY_ERROR] create CAPA', error);
-    throw new Error(`Crear CAPA: ${error.message}`);
-  }
-  return data;
-}
-
-export async function loadQualityWorkspace(filters = {}) {
-  const results = await Promise.allSettled([
-    getQualityToday(filters),
-    getIncidents(filters),
-    getNonconformities(filters),
-    getCapa(),
-    getOpenQualityAlerts()
-  ]);
-
-  const values = results.map(r => r.status === 'fulfilled' ? r.value : []);
-  const errors = results
-    .filter(r => r.status === 'rejected')
-    .map(r => r.reason?.message || 'Error');
-
-  return {
-    measurements: values[0],
-    incidents: values[1],
-    nonconformities: values[2],
-    capa: values[3],
-    alerts: values[4],
-    errors
-  };
-}
+export async function qualityRecordAction(action,data){const{data:result,error}=await sb().rpc('qms_record_action',{p_action:action,p_data:data});if(error)throw Error(error.message);return result}

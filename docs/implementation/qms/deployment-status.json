@@ -1,0 +1,29 @@
+{
+  "state": "prepared_not_deployed",
+  "production_migration": "cancelled_by_tool_without_reason",
+  "production_migration_applied": false,
+  "production_interface_published": false,
+  "reason": "Native apply_migration returned Migration was cancelled; read-only verification found no new migration, history table or RPC. No retry after cancellation.",
+  "migration_file": "supabase/migrations/20261017002204_quality_information_decisions.sql",
+  "migration_sha256": "90036e555cdfa5347c68e27e2c351bfb72969608a0e4c2461edae3ffbf38efb2",
+  "local_checks": {
+    "postgres": 154,
+    "browser": 26,
+    "domain": 11,
+    "agenda_regression": 20,
+    "workflow_browser_regression": 39,
+    "javascript_modules": 175,
+    "migration_security_linter": "PASS",
+    "frontend_source_truth": "PASS",
+    "runtime_contract": "PASS"
+  },
+  "production_preserved": {
+    "donors": 2742,
+    "role_links": 11,
+    "nonconformities": 0,
+    "capa": 0,
+    "reviews": 0,
+    "permission_hash": "344438d9a86764e40479ae31ed990499"
+  },
+  "test_data_written_to_production": false
+}

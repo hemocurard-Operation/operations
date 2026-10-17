@@ -1,1 +1,9 @@
-import {getSupabase} from './supabase.js';const sb=()=>getSupabase();async function many(l,p){const {data,error}=await p;if(error)throw new Error(`${l}: ${error.message}`);return data||[]}async function one(l,p){const {data,error}=await p;if(error)throw new Error(`${l}: ${error.message}`);return data}export const managementData={objectives:()=>many('Objetivos',sb().from('quality_objectives').select('*').order('due_date',{ascending:true,nullsFirst:false})),reviews:()=>many('Revisiones',sb().from('management_reviews').select('*').order('review_date',{ascending:false})),inputs:()=>one('Entradas',sb().from('vw_management_review_inputs').select('*').single())};
+import {getSupabase} from './supabase.js';
+import {qualityRows} from './quality-data.js';
+export const managementData={
+ objectives:()=>qualityRows('Objetivos',()=>getSupabase().from('quality_objectives').select('*').order('id')),
+ reviews:()=>qualityRows('Revisiones',()=>getSupabase().from('management_reviews').select('*').order('review_date',{ascending:false}).order('id')),
+ commitments:()=>qualityRows('Compromisos',()=>getSupabase().from('management_review_actions').select('*').order('id')),
+ inputs:async()=>{const{data,error}=await getSupabase().from('vw_management_review_inputs').select('*').single();if(error)throw Error(error.message);return data},
+ action:async(action,data)=>{const{data:result,error}=await getSupabase().rpc('qms_management_action',{p_action:action,p_data:data});if(error)throw Error(error.message);return result}
+};
