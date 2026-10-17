@@ -1,10 +1,10 @@
 {
-  "state": "prepared_not_deployed",
-  "production_migration": "cancelled_by_tool_without_reason",
-  "production_migration_applied": false,
+  "state": "migration_applied_audited_publication_pending",
+  "production_migration": "20261017005235_quality_information_decisions",
+  "production_migration_applied": true,
   "production_interface_published": false,
-  "reason": "Native apply_migration returned Migration was cancelled; read-only verification found no new migration, history table or RPC. No retry after cancellation.",
-  "migration_file": "supabase/migrations/20261017002204_quality_information_decisions.sql",
+  "reason": "Explicit retry authorized. MCP migration calls failed twice with invalid_request_state; the official Management API migration endpoint returned HTTP 200. Migration history and access controls were independently verified before publication.",
+  "migration_file": "supabase/migrations/20261017005235_quality_information_decisions.sql",
   "migration_sha256": "90036e555cdfa5347c68e27e2c351bfb72969608a0e4c2461edae3ffbf38efb2",
   "local_checks": {
     "postgres": 154,
@@ -25,5 +25,20 @@
     "reviews": 0,
     "permission_hash": "344438d9a86764e40479ae31ed990499"
   },
-  "test_data_written_to_production": false
+  "test_data_written_to_production": false,
+  "production_audit": {
+    "all_seven_tables_rls": true,
+    "all_three_writers_security_invoker": true,
+    "all_eight_views_security_invoker": true,
+    "anonymous_writer_execute": false,
+    "history_client_mutation": false,
+    "private_schema_client_usage": false,
+    "private_audit_client_execute": false,
+    "super_all_63_modules": true,
+    "unauthorized_existing_users_rejected": true,
+    "synthetic_production_records": 0,
+    "no_new_advisor_findings": true,
+    "security_definer_view_findings_before": 66,
+    "security_definer_view_findings_after": 60
+  }
 }

@@ -4,7 +4,9 @@ Implementación solicitada tras comparar HemoCura con MasterControl, Reliance y 
 
 ## Estado
 
-Código preparado y probado. La herramienta de migración canceló la operación sin explicar el motivo. La verificación posterior confirmó que no existe la nueva migración, tabla de historial ni RPC en producción. La interfaz dependiente no se publicó. Requiere completar la migración y desplegar tras verificar este alcance.
+Migración `20261017005235_quality_information_decisions` aplicada tras autorización expresa de reintento. La auditoría de producción comprobó RLS, funciones con seguridad del llamante, prohibición de acceso anónimo, historial protegido y conservación de los 2742 donantes y 11 vínculos de roles. Publicación de interfaz pendiente de completar los controles de GitHub.
+
+El asesor de seguridad no registró hallazgos nuevos. Las vistas con seguridad del definidor señaladas bajaron de 66 a 60; permanecen hallazgos preexistentes en otros objetos del sistema y configuración Auth. Esta auditoría verifica el alcance de la mejora y no certifica la seguridad de toda la aplicación. Referencia: https://supabase.com/docs/guides/database/database-linter?lint=0010_security_definer_view
 
 ## Ventanas
 

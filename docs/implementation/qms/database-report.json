@@ -252,7 +252,7 @@
       "sha256": "d7e3a497f2d7546097909c52cac0ff64fead686f1d4cd7a7a3d536de0f5e6eb1"
     },
     {
-      "file": "supabase/migrations/20261017002204_quality_information_decisions.sql",
+      "file": "supabase/migrations/20261017005235_quality_information_decisions.sql",
       "sha256": "90036e555cdfa5347c68e27e2c351bfb72969608a0e4c2461edae3ffbf38efb2"
     }
   ],

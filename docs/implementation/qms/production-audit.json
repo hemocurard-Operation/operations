@@ -1,0 +1,57 @@
+{
+  "migration": "20261017005235_quality_information_decisions",
+  "migration_sha256": "90036e555cdfa5347c68e27e2c351bfb72969608a0e4c2461edae3ffbf38efb2",
+  "verification_mode": "read-only catalog and authenticated query checks; unauthorized writer calls rejected before mutation; transactions rolled back",
+  "scope": "quality workspace, NC/CAPA, risks, documentary changes and management review",
+  "all_seven_tables_rls": true,
+  "all_three_writers_security_invoker": true,
+  "all_eight_views_security_invoker": true,
+  "anonymous_writer_execute": false,
+  "client_history_mutation": false,
+  "client_private_schema_usage": false,
+  "private_audit_client_execute": false,
+  "super_access_modules": 63,
+  "existing_users_without_writer_permission_rejected": true,
+  "donors": 2742,
+  "role_assignments": 11,
+  "permission_function_hash": "344438d9a86764e40479ae31ed990499",
+  "synthetic_production_records": 0,
+  "advisors": {
+    "added": [],
+    "removed": [
+      "security_definer_view|{\"detail\":\"View \\\\`public.vw_document_control_status\\\\` is defined with the SECURITY DEFINER property\",\"metadata\":{\"name\":\"vw_document_control_status\",\"type\":\"view\",\"schema\":\"public\"}}",
+      "security_definer_view|{\"detail\":\"View \\\\`public.vw_capa_control_status\\\\` is defined with the SECURITY DEFINER property\",\"metadata\":{\"name\":\"vw_capa_control_status\",\"type\":\"view\",\"schema\":\"public\"}}",
+      "security_definer_view|{\"detail\":\"View \\\\`public.vw_qms_governance_summary\\\\` is defined with the SECURITY DEFINER property\",\"metadata\":{\"name\":\"vw_qms_governance_summary\",\"type\":\"view\",\"schema\":\"public\"}}",
+      "security_definer_view|{\"detail\":\"View \\\\`public.vw_audit_findings_open\\\\` is defined with the SECURITY DEFINER property\",\"metadata\":{\"name\":\"vw_audit_findings_open\",\"type\":\"view\",\"schema\":\"public\"}}",
+      "security_definer_view|{\"detail\":\"View \\\\`public.vw_staff_competency_gaps\\\\` is defined with the SECURITY DEFINER property\",\"metadata\":{\"name\":\"vw_staff_competency_gaps\",\"type\":\"view\",\"schema\":\"public\"}}",
+      "security_definer_view|{\"detail\":\"View \\\\`public.vw_management_review_inputs\\\\` is defined with the SECURITY DEFINER property\",\"metadata\":{\"name\":\"vw_management_review_inputs\",\"type\":\"view\",\"schema\":\"public\"}}"
+    ],
+    "groups": [
+      {
+        "name": "security_definer_view",
+        "count": 60,
+        "baseline": 66,
+        "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0010_security_definer_view"
+      },
+      {
+        "name": "function_search_path_mutable",
+        "count": 19,
+        "baseline": 19,
+        "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0011_function_search_path_mutable"
+      },
+      {
+        "name": "authenticated_security_definer_function_executable",
+        "count": 60,
+        "baseline": 60,
+        "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable"
+      },
+      {
+        "name": "auth_leaked_password_protection",
+        "count": 1,
+        "baseline": 1,
+        "remediation": "https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection"
+      }
+    ]
+  },
+  "limitations": "No new security-advisor findings in this change. Preexisting project-wide findings remain; not a certification of the full application."
+}
