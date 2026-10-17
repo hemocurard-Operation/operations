@@ -1,5 +1,6 @@
 const GROUP_ORDER=['INICIO','TRABAJO DIARIO','CADENA DE VALOR','LABORATORIO Y SANGRE','CALIDAD Y SEGURIDAD','GESTIÓN','ADMINISTRACIÓN'];
 const ROUTES={
+  sgcimplementation:{title:'Implementar el SGC',subtitle:'Proyecto guiado por etapas, documentos, evidencia y puertas de decisión',group:'CALIDAD Y SEGURIDAD',order:1},
   mywork:{title:'Mi trabajo',subtitle:'Tus tareas y siguientes acciones según permisos',group:'INICIO',order:5},
   workflow:{title:'Ruta operativa',subtitle:'Ocho etapas por sucursal y módulos enlazados',group:'INICIO',order:12},
   dashboard:{title:'Inicio',subtitle:'Resumen priorizado según tu rol',group:'INICIO',order:10},

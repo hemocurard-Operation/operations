@@ -47,7 +47,9 @@ def main():
   module_migrations=[]
   agenda_migrations=[]
   qms_migrations=[]
+  sgc_migrations=[]
   for f in sorted((ROOT/'supabase/migrations').glob('*.sql')):
+   if f.name.endswith('_sgc_implementation_project.sql'):sgc_migrations.append(f);continue
    if f.name.endswith('_quality_information_decisions.sql'):qms_migrations.append(f);continue
    if f.name.endswith('_area_task_agenda.sql'):agenda_migrations.append(f);continue
    if f.name.endswith('_role_module_views.sql'):module_migrations.append(f);continue
@@ -103,6 +105,10 @@ def main():
   for f in qms_migrations:apply(f)
   if qms_migrations:
    result=sql((ROOT/'tests/qms/business-rules.sql').read_text(),'qms-business-rules')
+   report['checks'].extend({'name':c.strip(),'pass':True} for c in re.findall(r'PASS ([^\n]+)',result.stderr+result.stdout))
+  for f in sgc_migrations:apply(f)
+  if sgc_migrations:
+   result=sql((ROOT/'tests/sgc-implementation/business-rules.sql').read_text(),'sgc-project-business-rules')
    report['checks'].extend({'name':c.strip(),'pass':True} for c in re.findall(r'PASS ([^\n]+)',result.stderr+result.stdout))
   print(f'PASS: {len(report["checks"])} PostgreSQL checks; {len(report["migrations"])} baseline/candidate files. Production not verified.')
   return 0

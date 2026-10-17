@@ -1,3 +1,5 @@
+> **Anexo de implementación:** este archivo conserva su condición de borrador/antecedente. Sus referencias requieren validación jurídica actual; no demuestra cumplimiento ni vigencia legal. Registrar la validación en GOV4 y DIR3 del [proyecto SGC](../../index.html#sgcimplementation), siguiendo la [guía operativa](HC-SGC-IMP-001_Guia_Implementacion_SGC.html).
+
 HEMOCURA · BANCO DE SANGRE
 
 Santiago · Puerto Plata · Tenares · San Francisco de Macorís

@@ -1,0 +1,1003 @@
+{
+  "production_verified": false,
+  "external_prerequisite_fixture": true,
+  "environment": "disposable isolated PostgreSQL",
+  "migrations": [
+    {
+      "file": "tests/wave50/auth-bootstrap.sql",
+      "sha256": "e69724e0b02af12f72865ab6ed1b4d67afdb14a44b07a07ba3bfe4834d18f2ee"
+    },
+    {
+      "file": "sql/00_IMPLEMENT_SUPABASE_ALL_FIXED_v7_2.sql",
+      "sha256": "974c2aee26d6910547bd741bf663c52e8788eb12f2c26a95b5519ad1194d2610"
+    },
+    {
+      "file": "sql/22_OPERATIONS_QMS_COMPLIANCE_v0_22.sql",
+      "sha256": "a1dc37fe3bf29d457a3d8ceff51e3fe62fcd419f978c49b298bad78a4673060b"
+    },
+    {
+      "file": "sql/23_BLOOD_OPERATIONS_BI_PM_v0_23.sql",
+      "sha256": "a95a3f6749004275dcdae8f47ab77216fd56cda1c395e27cece8208c1efffca4"
+    },
+    {
+      "file": "sql/24_CONTROLLED_BLOOD_FLOW_v0_24.sql",
+      "sha256": "cf002729bbb909d07c50bc57b47bbca09bab538d686c9164bb29675b196858e9"
+    },
+    {
+      "file": "sql/25_PRODUCTION_DEMAND_SUPPLY_v0_25.sql",
+      "sha256": "6ae93510e288cafd2c5ef8b37183df96ae9b6d0084eadd6ef69984c58169d341"
+    },
+    {
+      "file": "sql/26_COMMAND_CENTER_DAILY_CLOSE_v0_26.sql",
+      "sha256": "f487581c6e230a02a8ece3ed8b69f7e4ce0fa130949a7c08bbd70a8ac55e4fae"
+    },
+    {
+      "file": "sql/27_AUDIT_TRACE_EXCEPTIONS_v0_27.sql",
+      "sha256": "4ec1c12a90fe36a86dd38d7a7bdb8dd263b7e5126d34adb822c48c241b7d8d9e"
+    },
+    {
+      "file": "sql/28_DEPLOYMENT_GOVERNANCE_v0_28.sql",
+      "sha256": "59cbfacd02eb44e2b566ab0892111ddd4756354d7c8855afd10b2a329bcb80b3"
+    },
+    {
+      "file": "sql/29_ACCESS_GOVERNANCE_v0_29.sql",
+      "sha256": "98b824df34b3a24d6552b385ca37cd35bc50910b830bd58a8e27f822164d8fdb"
+    },
+    {
+      "file": "sql/30_UNIFIED_DIAGNOSTICS_v0_30.sql",
+      "sha256": "283f411d8f83d642d75912a49cf12f8d45428837748e5975a2506f71d8c90bb1"
+    },
+    {
+      "file": "sql/31_APPROVALS_SOD_v0_31.sql",
+      "sha256": "573d69cc2ddb689593878202ea940ee7a989b56932fcfd6af1106989a643ba79"
+    },
+    {
+      "file": "sql/32_QMS_APPROVAL_INTEGRATION_v0_32.sql",
+      "sha256": "16a23ee3d1c0d6d1c9e3564f263c9f5c5d7a030a38a33d1c12043793d83475d3"
+    },
+    {
+      "file": "sql/33_INTERNAL_AUDITS_v0_33.sql",
+      "sha256": "9de80f4c0bf4e1508fe293029500ef2a8e718c87a84b409343e6c525093125c4"
+    },
+    {
+      "file": "sql/34_COMPETENCY_TRAINING_v0_34.sql",
+      "sha256": "32196258ff1af2f3933638b873169a90af8a5e70886f3e8befdcc39940a5da0c"
+    },
+    {
+      "file": "sql/35_RESOURCES_CONTROL_v0_35.sql",
+      "sha256": "5fec07e1400e3740bfad8c7bd55679c2d9d08156528f082b7cd3605575cdfefa"
+    },
+    {
+      "file": "sql/36_ANALYTICAL_QC_v0_36.sql",
+      "sha256": "bb4127606ac474c07e138b9d69b6ecd52f41f49b05a8c4a46b61b038d5bd0442"
+    },
+    {
+      "file": "sql/37_SUPPLIERS_PROCUREMENT_v0_37.sql",
+      "sha256": "5f5ba15bbfb2a1c09bf1205284d280f7c6e4fc49f1dc6ba760fa3471c3902a49"
+    },
+    {
+      "file": "sql/38_HEMOVIGILANCE_v0_38.sql",
+      "sha256": "f1cc4e0d600fdf87675d3dd68c3de3aec87cd39e4920ad1c3fa5d637a14857dd"
+    },
+    {
+      "file": "sql/39_COLD_CHAIN_v0_39.sql",
+      "sha256": "7f524a5b76cfca42366601be76443288836910bcd5ac76e565e9b3a7bd18cb4e"
+    },
+    {
+      "file": "sql/40_MANAGEMENT_REVIEW_v0_40.sql",
+      "sha256": "04f9f38ffab4e5af70dd17b042b51ce29b526150f69af70057074ac896d949d1"
+    },
+    {
+      "file": "sql/41_CONTINUITY_DATA_INTEGRITY_v0_41.sql",
+      "sha256": "5fd2910ca74c216f33639b71f22df3620ade2079519ddc8bc5bce768ae24afea"
+    },
+    {
+      "file": "sql/42_FEATURE_COMPLETE_v0_42.sql",
+      "sha256": "c0d0c5d3fe37260101864a06af7caff13b5c68024421c9661282be0cbb72431b"
+    },
+    {
+      "file": "sql/43_UAT_VALIDATION_v0_43.sql",
+      "sha256": "e40a42465936719e0edf3758f39a14e9da8db9d110cd9bd0b1d1b9504f7f2a2d"
+    },
+    {
+      "file": "sql/44_RELEASE_1_0_RC_v0_44.sql",
+      "sha256": "62298fda90dbbb4629c95020a6e2956676a2eb1762652568248b2e6d94947546"
+    },
+    {
+      "file": "sql/reconciled/45_DAILY_OPERATIONAL_REPORT_RECONCILED_BASELINE.sql",
+      "sha256": "5ac5dd4d95529d89eb49f0643c72b4940f4b15bbafece547fd58523485586052"
+    },
+    {
+      "file": "sql/migrations/20261010203726_training_release_1_0_foundation.sql",
+      "sha256": "f7fb803c13be49cab4b425e6d4eea925200c268f1656ee79c77a76e22ef6caf5"
+    },
+    {
+      "file": "sql/migrations/20261010203854_training_recertification_and_management_inputs.sql",
+      "sha256": "1dc8a623a587d7985f732b4e1988c1981abf97069dad0667f3bfbd1b2aa555af"
+    },
+    {
+      "file": "sql/migrations/20261010205123_training_assignment_document_and_bi_controls.sql",
+      "sha256": "5995663079e90ef67d484cc518538d70e8a8f697c6bbe2c8800e5784fb663094"
+    },
+    {
+      "file": "sql/migrations/20261010205336_training_duration_and_module_performance.sql",
+      "sha256": "19bcf56eb59e21c692885c2ab2944ac92ae04023ec9afc670ec9362567b46817"
+    },
+    {
+      "file": "sql/migrations/20261010_fix_audit_management_change_daily_report.sql",
+      "sha256": "f0efbd41137d5d9fc199e34fd4bebc4a3a0199105b3b0a6e2759f9feda1f9c08"
+    },
+    {
+      "file": "sql/migrations/20261010_fix_daily_report_audit_permission_v2.sql",
+      "sha256": "388e8f0dddcbaeb2bc3b6dca48ea1a34e02bdb839eaddf76dcca245d424f678f"
+    },
+    {
+      "file": "sql/migrations/20261011005400_training_native_1_1_schema.sql",
+      "sha256": "20cdf021c504e8e986d0ac640897f3fa9668df41c8d313277721bfd16969d30d"
+    },
+    {
+      "file": "sql/migrations/20261011005401_training_native_1_1_content.sql",
+      "sha256": "7ebc69f8bc69a5978b1256909c273309b79aa16d5b062ced6e15c75d22a149ad"
+    },
+    {
+      "file": "sql/migrations/20261011010919_training_native_1_1_job_assignment_rpc.sql",
+      "sha256": "afb1e9b75dfb84c456b888a73b954f817ee0fea26539fc6f3c5eb0eb93f6bd1e"
+    },
+    {
+      "file": "supabase/migrations/202610120345_compliance_penal_program.sql",
+      "sha256": "b6874de6711fd8da2552aba64404c793d584e017cca9932eadad68fc5c9ffb00"
+    },
+    {
+      "file": "supabase/migrations/20261012105042_value_chain_50_permissions_v2.sql",
+      "sha256": "88573354a2d87d0242adcefe3874f8aae61b655fa449f4e19fec92a86d92b2c9"
+    },
+    {
+      "file": "tests/wave50/external-prerequisites.sql",
+      "sha256": "4f4298ba7535c97548fa56dd5b709146a785af1eaa73d872e6bde9e6e3ef8345"
+    },
+    {
+      "file": "supabase/migrations/20261012105117_value_chain_50_foundation_v2.sql",
+      "sha256": "163f5175d09236943d39dbfaacd8e5332aa3716380896b2dbbf8ac7eeb01e615"
+    },
+    {
+      "file": "supabase/migrations/20261012110036_value_chain_50_hardening.sql",
+      "sha256": "55c0d31a1549d5aa26dd2f9cb976f405c334090f18e7f6510e31344a06bf7126"
+    },
+    {
+      "file": "supabase/migrations/20261012112438_decision_chain_50_foundation.sql",
+      "sha256": "5752c58d89af70db19b860a49dd95dafbecb329afb7379241841c0f07a048570"
+    },
+    {
+      "file": "supabase/migrations/20261012112931_decision_chain_50_access_hardening.sql",
+      "sha256": "224195a71c0397153bc52165419b4d938ae2d93999b30e1e6930cef2be1cf3d2"
+    },
+    {
+      "file": "supabase/migrations/20261012120555_predictive_chain_50_foundation.sql",
+      "sha256": "5166e695c75916343839e047fa29a74876d21b356a9253ee10eb05a7bc0519f5"
+    },
+    {
+      "file": "supabase/migrations/20261012121002_predictive_chain_50_hardening.sql",
+      "sha256": "ba9bcfbd7ad287cc0832d7f7d1fd4fe7423bc04afdff5c2574904f2dcde0a9a6"
+    },
+    {
+      "file": "supabase/migrations/20261012121216_predictive_chain_50_network_effectiveness.sql",
+      "sha256": "9736ada56d839039c3f087f517121bd74ecf0d1396f389874f04cd480276a711"
+    },
+    {
+      "file": "supabase/migrations/20261012123236_orchestration_chain_50_foundation.sql",
+      "sha256": "68f02e5893669307cb57237b1712abb2d350475057b936ee5ccde186cd78899d"
+    },
+    {
+      "file": "supabase/migrations/20261013190249_donor_import_provenance.sql",
+      "sha256": "ece23b3d11f8743c5c2978b6fefbdad34db125d760ce04984a31b56b45b735e3"
+    },
+    {
+      "file": "sql/migrations/20261013120000_workflow_commercial_quality.sql",
+      "sha256": "2eadd2490c09fb909f97909f97fb7c1c2b3df754e8b3e59480b965f2cf03fe1c"
+    },
+    {
+      "file": "sql/migrations/20261013133000_workflow_refinements.sql",
+      "sha256": "e4b29ed70625c0ae723f8b53d4af4c02ea1cd2d73693e4afe66a906e0312632f"
+    },
+    {
+      "file": "tests/workflow/donor-agenda-prerequisite.sql",
+      "sha256": "af73868825ac08e7a2a5892bf4da55c36951ca9d348a660da79eefa3fab0f8e1"
+    },
+    {
+      "file": "supabase/migrations/20261013183215_donor_management.sql",
+      "sha256": "d5206ef26994a963849b5aec3578aa0da92cf18948ae9602484cec908d59634d"
+    },
+    {
+      "file": "supabase/migrations/20261013194849_donor_twelve_week_agenda.sql",
+      "sha256": "c62ca553cf384036fa2e231274bda49d3086ccf33e12c806ea5ba9a000d74b36"
+    },
+    {
+      "file": "supabase/migrations/20261013200735_donor_identity_capture.sql",
+      "sha256": "911cc7527571cebaceb94dc33fc457b1b95a2a2a81d7824b12a37af27356c30f"
+    },
+    {
+      "file": "supabase/migrations/20261016190414_operations_coordination.sql",
+      "sha256": "9b6a2f78c2b923220e2898d6819c8640413a5f968893a166f5a6d6289acadd99"
+    },
+    {
+      "file": "supabase/migrations/20261016201356_purchase_receiving.sql",
+      "sha256": "e2ae84300bb67cdba28817b5497c7715aeaa3cf57ec6725765cd0f7441a52c7b"
+    },
+    {
+      "file": "sql/migrations/20261013120000_workflow_commercial_quality.sql",
+      "sha256": "2eadd2490c09fb909f97909f97fb7c1c2b3df754e8b3e59480b965f2cf03fe1c"
+    },
+    {
+      "file": "sql/migrations/20261013133000_workflow_refinements.sql",
+      "sha256": "e4b29ed70625c0ae723f8b53d4af4c02ea1cd2d73693e4afe66a906e0312632f"
+    },
+    {
+      "file": "supabase/migrations/20261013230050_super_user_total_access.sql",
+      "sha256": "9c123abd05f952cbebcb57e4b6895e401fa75a779156ad22be7897a396b1762f"
+    },
+    {
+      "file": "supabase/migrations/20261014135910_assigned_role_branch_access.sql",
+      "sha256": "6cd4d656d6c52452aa6be9f30369afa8bd4c4805c54906d4ab84967cc946b743"
+    },
+    {
+      "file": "tests/area-agenda/catalog-prerequisite.sql",
+      "sha256": "bd5d6b7ca95a4a3a94a4488efdbd4608cb0d3cd65dd36d844f321ddc575c3f4a"
+    },
+    {
+      "file": "supabase/migrations/20261016223120_role_module_views.sql",
+      "sha256": "9dc15285dc767031a60ac13a89c950fcabb5df4ede6135794a8d80a60f59855c"
+    },
+    {
+      "file": "supabase/migrations/20261016234508_area_task_agenda.sql",
+      "sha256": "d7e3a497f2d7546097909c52cac0ff64fead686f1d4cd7a7a3d536de0f5e6eb1"
+    },
+    {
+      "file": "supabase/migrations/20261017005235_quality_information_decisions.sql",
+      "sha256": "90036e555cdfa5347c68e27e2c351bfb72969608a0e4c2461edae3ffbf38efb2"
+    },
+    {
+      "file": "supabase/migrations/20261017023416_sgc_implementation_project.sql",
+      "sha256": "45b00df94dcb8e75673f24afd0cc09ca6822952f7130b431043a4e196f3f9bb1"
+    }
+  ],
+  "checks": [
+    {
+      "name": "direct appointment writes denied",
+      "pass": true
+    },
+    {
+      "name": "RPC rejects other branch",
+      "pass": true
+    },
+    {
+      "name": "appointment does not create revenue",
+      "pass": true
+    },
+    {
+      "name": "double booking rejected",
+      "pass": true
+    },
+    {
+      "name": "administration does not imply clinical execution",
+      "pass": true
+    },
+    {
+      "name": "session leaves blood inventory intact",
+      "pass": true
+    },
+    {
+      "name": "invoice retry reuses unique service origin",
+      "pass": true
+    },
+    {
+      "name": "payment retry does not duplicate balance",
+      "pass": true
+    },
+    {
+      "name": "overpayment rejected",
+      "pass": true
+    },
+    {
+      "name": "payment currency mismatch rejected",
+      "pass": true
+    },
+    {
+      "name": "sales report has service shift and omits patient identity",
+      "pass": true
+    },
+    {
+      "name": "quality evidence required",
+      "pass": true
+    },
+    {
+      "name": "self review rejected even with reviewer permission",
+      "pass": true
+    },
+    {
+      "name": "independent quality review stored",
+      "pass": true
+    },
+    {
+      "name": "RLS hides other branch patients",
+      "pass": true
+    },
+    {
+      "name": "RLS hides other branch quality records",
+      "pass": true
+    },
+    {
+      "name": "pending blood cannot transfer as released",
+      "pass": true
+    },
+    {
+      "name": "transit removed from available inventory",
+      "pass": true
+    },
+    {
+      "name": "partial receipt preserves remaining transit",
+      "pass": true
+    },
+    {
+      "name": "unreceived unit remains reserved at origin",
+      "pass": true
+    },
+    {
+      "name": "receipt cannot change unrelated unit or branch",
+      "pass": true
+    },
+    {
+      "name": "receipt is not automatic release",
+      "pass": true
+    },
+    {
+      "name": "authorized receipt review makes unit available only at destination",
+      "pass": true
+    },
+    {
+      "name": "receipt review cannot be repeated to alter disposition",
+      "pass": true
+    },
+    {
+      "name": "verified location requires actual coordinates",
+      "pass": true
+    },
+    {
+      "name": "completed visit requires evidence",
+      "pass": true
+    },
+    {
+      "name": "visit and previous commitment have separate evidence",
+      "pass": true
+    },
+    {
+      "name": "won opportunity requires real sale",
+      "pass": true
+    },
+    {
+      "name": "lost opportunity preserves reason",
+      "pass": true
+    },
+    {
+      "name": "lost opportunity requires reason",
+      "pass": true
+    },
+    {
+      "name": "unreviewed routine is not generated",
+      "pass": true
+    },
+    {
+      "name": "template also requires independent review",
+      "pass": true
+    },
+    {
+      "name": "approved routine generates daily task",
+      "pass": true
+    },
+    {
+      "name": "repeat routine generation is idempotent",
+      "pass": true
+    },
+    {
+      "name": "daily report cannot submit without donor and marker section",
+      "pass": true
+    },
+    {
+      "name": "daily extension is captured in immutable report version",
+      "pass": true
+    },
+    {
+      "name": "closed donor section cannot be changed",
+      "pass": true
+    },
+    {
+      "name": "reopen preserves previous section versions",
+      "pass": true
+    },
+    {
+      "name": "reviewed supply maps to a real product",
+      "pass": true
+    },
+    {
+      "name": "catalog approval does not invent inventory",
+      "pass": true
+    },
+    {
+      "name": "incoherent supply thresholds rejected",
+      "pass": true
+    },
+    {
+      "name": "blood sale rejects pending unit",
+      "pass": true
+    },
+    {
+      "name": "failed blood line leaves no orphan sale",
+      "pass": true
+    },
+    {
+      "name": "blood sale uses actual client, source quantity and explicit shift",
+      "pass": true
+    },
+    {
+      "name": "atomic blood sale marks released source as dispatched",
+      "pass": true
+    },
+    {
+      "name": "initial blood receipt recorded once in existing ledger",
+      "pass": true
+    },
+    {
+      "name": "cash report retains USD and DOP as separate currencies",
+      "pass": true
+    },
+    {
+      "name": "new tables revoke anonymous read and authenticated trigger privileges",
+      "pass": true
+    },
+    {
+      "name": "workflow mutations leave actor and event audit trail",
+      "pass": true
+    },
+    {
+      "name": "inactive profile cannot read nominative agenda",
+      "pass": true
+    },
+    {
+      "name": "inactive profile cannot invoke workflow writer",
+      "pass": true
+    },
+    {
+      "name": "multiple platforms persist with separate evidence",
+      "pass": true
+    },
+    {
+      "name": "platform totals must reconcile",
+      "pass": true
+    },
+    {
+      "name": "duplicate platform rejected",
+      "pass": true
+    },
+    {
+      "name": "missing evidence on second platform rejected",
+      "pass": true
+    },
+    {
+      "name": "unapproved line rolls back entire catalogue requisition",
+      "pass": true
+    },
+    {
+      "name": "invalid catalogue line leaves no orphan header",
+      "pass": true
+    },
+    {
+      "name": "nonfinite requisition quantity rejected",
+      "pass": true
+    },
+    {
+      "name": "duplicate catalogue lines rejected",
+      "pass": true
+    },
+    {
+      "name": "catalog requisition snapshots authoritative product name and unit",
+      "pass": true
+    },
+    {
+      "name": "catalog requisition keeps actual requesting actor",
+      "pass": true
+    },
+    {
+      "name": "requisition does not create stock",
+      "pass": true
+    },
+    {
+      "name": "multiple approved catalogue lines commit in one requisition",
+      "pass": true
+    },
+    {
+      "name": "catalog requisition rejects other branch",
+      "pass": true
+    },
+    {
+      "name": "quality reviewer cannot create requisition without permission",
+      "pass": true
+    },
+    {
+      "name": "catalog requisition RPC denies anonymous execution",
+      "pass": true
+    },
+    {
+      "name": "concurrent chamber reservations serialize capacity and accept one booking",
+      "pass": true
+    },
+    {
+      "name": "concurrent receipts cannot overpay a hyperbaric invoice",
+      "pass": true
+    },
+    {
+      "name": "concurrent transfers reserve the same blood unit only once",
+      "pass": true
+    },
+    {
+      "name": "migration reapplies without removing records or permissions",
+      "pass": true
+    },
+    {
+      "name": "complete role access on integrated operational schema",
+      "pass": true
+    },
+    {
+      "name": "operations sees its four responsibility areas",
+      "pass": true
+    },
+    {
+      "name": "agenda denies other branches",
+      "pass": true
+    },
+    {
+      "name": "agenda denies unrelated areas",
+      "pass": true
+    },
+    {
+      "name": "new task has immutable original deadline and unchecked steps",
+      "pass": true
+    },
+    {
+      "name": "routine retry does not duplicate tasks",
+      "pass": true
+    },
+    {
+      "name": "retry cannot silently change a saved request",
+      "pass": true
+    },
+    {
+      "name": "cross branch task cannot be created",
+      "pass": true
+    },
+    {
+      "name": "submission requires evidence and checklist",
+      "pass": true
+    },
+    {
+      "name": "direct updates cannot bypass evidence",
+      "pass": true
+    },
+    {
+      "name": "review identity cannot be forged",
+      "pass": true
+    },
+    {
+      "name": "original deadline cannot be changed",
+      "pass": true
+    },
+    {
+      "name": "blocking requires cause and help request",
+      "pass": true
+    },
+    {
+      "name": "blocked task remains open and traceable",
+      "pass": true
+    },
+    {
+      "name": "execution submits evidence for independent review",
+      "pass": true
+    },
+    {
+      "name": "executor cannot approve own evidence",
+      "pass": true
+    },
+    {
+      "name": "laboratory cannot read operations tasks",
+      "pass": true
+    },
+    {
+      "name": "foreign area action is denied",
+      "pass": true
+    },
+    {
+      "name": "quality can see cross area evidence in its branch",
+      "pass": true
+    },
+    {
+      "name": "review requires an observation",
+      "pass": true
+    },
+    {
+      "name": "quality may return work for correction",
+      "pass": true
+    },
+    {
+      "name": "new submission clears prior review markers",
+      "pass": true
+    },
+    {
+      "name": "independent quality reviewer closes the task",
+      "pass": true
+    },
+    {
+      "name": "closed evidence cannot be overwritten",
+      "pass": true
+    },
+    {
+      "name": "task audit history cannot be deleted",
+      "pass": true
+    },
+    {
+      "name": "task audit history cannot be edited",
+      "pass": true
+    },
+    {
+      "name": "reopening resets evidence while preserving historical records",
+      "pass": true
+    },
+    {
+      "name": "replanning preserves original due date and reason",
+      "pass": true
+    },
+    {
+      "name": "stale task revisions are rejected",
+      "pass": true
+    },
+    {
+      "name": "every successful task mutation has audit evidence",
+      "pass": true
+    },
+    {
+      "name": "weekly routine creates three concrete occurrences",
+      "pass": true
+    },
+    {
+      "name": "weekly deadlines have independent seven day spacing",
+      "pass": true
+    },
+    {
+      "name": "routine creation is bounded",
+      "pass": true
+    },
+    {
+      "name": "quality work always requires independent review",
+      "pass": true
+    },
+    {
+      "name": "finite routines keep independent audit records",
+      "pass": true
+    },
+    {
+      "name": "owner must belong to the assigned area",
+      "pass": true
+    },
+    {
+      "name": "employee can complete an administrative task exempted by management",
+      "pass": true
+    },
+    {
+      "name": "employee cannot exempt their own new tasks from review",
+      "pass": true
+    },
+    {
+      "name": "inactive employee cannot read the agenda",
+      "pass": true
+    },
+    {
+      "name": "inactive employee cannot enumerate team members",
+      "pass": true
+    },
+    {
+      "name": "anonymous cannot read tasks",
+      "pass": true
+    },
+    {
+      "name": "anonymous cannot invoke task actions",
+      "pass": true
+    },
+    {
+      "name": "concurrent task edits preserve one revision and reject stale execution",
+      "pass": true
+    },
+    {
+      "name": "role windows preserve complete super access on integrated schema",
+      "pass": true
+    },
+    {
+      "name": "scoped quality writer cannot read an unauthorized branch",
+      "pass": true
+    },
+    {
+      "name": "quality cannot insert another branch",
+      "pass": true
+    },
+    {
+      "name": "new CAPA captures verifiable original deadline",
+      "pass": true
+    },
+    {
+      "name": "original CAPA deadline is immutable",
+      "pass": true
+    },
+    {
+      "name": "CAPA cannot link foreign branch finding",
+      "pass": true
+    },
+    {
+      "name": "CAPA evidence cannot be blank",
+      "pass": true
+    },
+    {
+      "name": "stale CAPA revisions rejected",
+      "pass": true
+    },
+    {
+      "name": "CAPA executor cannot verify own evidence",
+      "pass": true
+    },
+    {
+      "name": "independent CAPA verification stores actor and timestamp",
+      "pass": true
+    },
+    {
+      "name": "CAPA closure cannot bypass approval",
+      "pass": true
+    },
+    {
+      "name": "NC cannot close with outstanding CAPA",
+      "pass": true
+    },
+    {
+      "name": "changed evidence invalidates verification and prior approval",
+      "pass": true
+    },
+    {
+      "name": "risk acceptance requires residual evaluation and evidence",
+      "pass": true
+    },
+    {
+      "name": "risk assessment stores residual score and revision",
+      "pass": true
+    },
+    {
+      "name": "stale risk assessments rejected",
+      "pass": true
+    },
+    {
+      "name": "document change impact links affected work before approval",
+      "pass": true
+    },
+    {
+      "name": "stale document impact assessment rejected",
+      "pass": true
+    },
+    {
+      "name": "review and real-owner commitment save atomically",
+      "pass": true
+    },
+    {
+      "name": "noneligible commitment owner rolls back whole review",
+      "pass": true
+    },
+    {
+      "name": "failed creation leaves no orphan review",
+      "pass": true
+    },
+    {
+      "name": "review author cannot self approve",
+      "pass": true
+    },
+    {
+      "name": "commitment replanning requires reason",
+      "pass": true
+    },
+    {
+      "name": "replanning preserves original commitment deadline",
+      "pass": true
+    },
+    {
+      "name": "review cannot close with pending commitments",
+      "pass": true
+    },
+    {
+      "name": "commitment closure requires evidence",
+      "pass": true
+    },
+    {
+      "name": "review closes after approved decisions and evidenced commitments",
+      "pass": true
+    },
+    {
+      "name": "closed management decisions immutable",
+      "pass": true
+    },
+    {
+      "name": "quality audit cannot be deleted",
+      "pass": true
+    },
+    {
+      "name": "quality audit cannot be rewritten",
+      "pass": true
+    },
+    {
+      "name": "quality changes preserve audit snapshots",
+      "pass": true
+    },
+    {
+      "name": "CAPA pending approval cannot execute",
+      "pass": true
+    },
+    {
+      "name": "existing CAPA approval and execution flow remains functional",
+      "pass": true
+    },
+    {
+      "name": "NC closes with independent conclusion after CAPA closure",
+      "pass": true
+    },
+    {
+      "name": "read-only quality role can consult authorized branch",
+      "pass": true
+    },
+    {
+      "name": "read-only quality role cannot create findings",
+      "pass": true
+    },
+    {
+      "name": "reader cannot invoke management writer",
+      "pass": true
+    },
+    {
+      "name": "inactive user cannot read quality findings",
+      "pass": true
+    },
+    {
+      "name": "inactive user cannot read CAPA",
+      "pass": true
+    },
+    {
+      "name": "anonymous cannot invoke quality writers",
+      "pass": true
+    },
+    {
+      "name": "quality summary views enforce invoker security",
+      "pass": true
+    },
+    {
+      "name": "SGC creator cannot use an unauthorized branch",
+      "pass": true
+    },
+    {
+      "name": "project requires independent reviewer",
+      "pass": true
+    },
+    {
+      "name": "project creates exactly 44 steps from frozen blueprint",
+      "pass": true
+    },
+    {
+      "name": "project creates twelve ordered gates",
+      "pass": true
+    },
+    {
+      "name": "direct client writes cannot bypass verification",
+      "pass": true
+    },
+    {
+      "name": "client cannot change frozen project requirements",
+      "pass": true
+    },
+    {
+      "name": "client cannot erase project audit",
+      "pass": true
+    },
+    {
+      "name": "document intake never auto approves",
+      "pass": true
+    },
+    {
+      "name": "required approved document cannot be omitted",
+      "pass": true
+    },
+    {
+      "name": "mandatory implementation steps cannot be excluded",
+      "pass": true
+    },
+    {
+      "name": "gate cannot skip earlier gates",
+      "pass": true
+    },
+    {
+      "name": "executor cannot verify own step",
+      "pass": true
+    },
+    {
+      "name": "magic text cannot forge no-aplica on a mandatory step",
+      "pass": true
+    },
+    {
+      "name": "stale step revisions rejected",
+      "pass": true
+    },
+    {
+      "name": "changed document version invalidates current evidence health",
+      "pass": true
+    },
+    {
+      "name": "outdated document blocks gate submission",
+      "pass": true
+    },
+    {
+      "name": "optional exclusion requires independent review",
+      "pass": true
+    },
+    {
+      "name": "six calendar months cannot be replaced by a short period",
+      "pass": true
+    },
+    {
+      "name": "all twelve gates can complete through governed sequence",
+      "pass": true
+    },
+    {
+      "name": "project can close after independently approved gates",
+      "pass": true
+    },
+    {
+      "name": "reopening early step invalidates all affected downstream gates",
+      "pass": true
+    },
+    {
+      "name": "full project decisions preserve immutable history",
+      "pass": true
+    },
+    {
+      "name": "project can add scope-specific requirements without deleting baseline",
+      "pass": true
+    },
+    {
+      "name": "scope-specific step is required by the phase exit gate",
+      "pass": true
+    },
+    {
+      "name": "custom steps cannot override baseline identifiers",
+      "pass": true
+    },
+    {
+      "name": "authorized reader can consult project",
+      "pass": true
+    },
+    {
+      "name": "read-only user cannot mutate project",
+      "pass": true
+    },
+    {
+      "name": "inactive reader cannot read implementation data",
+      "pass": true
+    },
+    {
+      "name": "anonymous cannot invoke privileged project API",
+      "pass": true
+    },
+    {
+      "name": "adapted source documents are not automatically approved",
+      "pass": true
+    }
+  ],
+  "container": "hemocura-workflow-test-74569",
+  "status": "PASS"
+}
