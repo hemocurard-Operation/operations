@@ -1,7 +1,8 @@
 import { filterRoutes,loadAccess } from './access-control.js';
 import { routeList,navigate } from './router.js';
-const AREA_TASKS={ASISTENTE_OPERACIONES:['donors','suppliers','commercial','dailyinventory','requisitions','customers'],LABORATORIO:['dailyinventory','donors','screening','bloodinventory','bloodquality'],ENCARGADA_LABORATORIO:['dailyinventory','donors','screening','bloodinventory','bloodquality','suppliers'],INVENTARIO:['inventory','supplycatalog','suppliers','requisitions','bloodinventory'],FINANZAS:['collections','sales','economics','suppliers','customers'],CALIDAD:['bloodquality','quality','actions','approvals','internalaudits'],TI:['releasegate','training']};
+const AREA_TASKS={ASISTENTE_OPERACIONES:['donors','suppliers','commercial','dailyinventory','requisitions','customers'],LABORATORIO:['laboratory','dailyinventory','donors','screening','bloodinventory','bloodquality'],ENCARGADA_LABORATORIO:['laboratory','dailyinventory','donors','screening','bloodinventory','bloodquality','suppliers'],INVENTARIO:['inventory','supplycatalog','suppliers','requisitions','bloodinventory'],FINANZAS:['collections','sales','economics','suppliers','customers'],CALIDAD:['bloodquality','quality','actions','approvals','internalaudits'],TI:['releasegate','training']};
 const PRIORITY={
+  laboratory:{label:'Gestionar el turno del laboratorio',hint:'Unidades, controles, equipos, lotes y tareas pendientes.',priority:-2},
   areaagenda:{label:'Abrir mi jornada y agenda por área',hint:'Responsables, vencimientos, bloqueos y revisión de evidencias.',priority:-1},
   donors:{label:'Gestionar donantes y citas',hint:'Buscar fichas, contactar y coordinar próximas visitas.',priority:1.1},
   screening:{label:'Registrar tamizaje',hint:'Pruebas y resultados del laboratorio.',priority:1.2},

@@ -1,0 +1,25 @@
+{
+  "status": "PASS",
+  "production_data_used": false,
+  "checks": [
+    "all 512 screenings contribute to pending count",
+    "untrusted source text is escaped",
+    "eight task-oriented sections are available",
+    "priorities can be expanded beyond the first 25",
+    "failed capture retains draft evidence",
+    "IQC capture sends explicit branch and measured value",
+    "temperature form permits negative and fractional values",
+    "transport reception records actual condition and temperature",
+    "handover reuses governed area agenda with independent review",
+    "self validation is not offered",
+    "release requires explicit protocol confirmation",
+    "failed source disables complete management export",
+    "failed source is visible rather than silently zero",
+    "complete report can be downloaded",
+    "laboratory fits mobile viewport",
+    "read-only user cannot capture controls",
+    "disabled modules are not queried",
+    "no browser runtime errors"
+  ],
+  "errors": []
+}

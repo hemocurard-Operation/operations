@@ -1,0 +1,64 @@
+name: Laboratory management and technical controls
+on:
+  pull_request:
+    paths:
+      - 'hemocura-core/lab*.js'
+      - 'hemocura-core/data-pages.js'
+      - 'hemocura-core/*-data.js'
+      - 'hemocura-core/my-work.js'
+      - 'hemocura-core/documents.js'
+      - 'hemocura-core/router.js'
+      - 'hemocura-core/views.js'
+      - 'hemocura-core/access-control.js'
+      - 'hemocura-core/workflow-mounts.js'
+      - 'css/laboratory.css'
+      - 'supabase/migrations/*lab_management_workspace.sql'
+      - 'supabase/migrations/*lab_release_permissions.sql'
+      - 'supabase/migrations/*lab_validated_result_integrity.sql'
+      - 'tests/lab-management/**'
+      - 'tools/lab_browser*'
+      - '.github/workflows/lab-management.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'hemocura-core/lab*.js'
+      - 'hemocura-core/data-pages.js'
+      - 'hemocura-core/*-data.js'
+      - 'hemocura-core/my-work.js'
+      - 'hemocura-core/documents.js'
+      - 'hemocura-core/router.js'
+      - 'hemocura-core/views.js'
+      - 'hemocura-core/access-control.js'
+      - 'hemocura-core/workflow-mounts.js'
+      - 'css/laboratory.css'
+      - 'supabase/migrations/*lab_management_workspace.sql'
+      - 'supabase/migrations/*lab_release_permissions.sql'
+      - 'supabase/migrations/*lab_validated_result_integrity.sql'
+      - 'tests/lab-management/**'
+      - 'tools/lab_browser*'
+      - '.github/workflows/lab-management.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  implementation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: node tests/lab-management/domain.test.mjs
+      - run: python tools/migration_security_linter.py supabase/migrations/*lab_management_workspace.sql
+      - run: python tools/workflow_postgres_runner.py --allow-external-prerequisite-fixture --report-dir /tmp/hemocura-lab-postgres
+      - run: npm ci --prefix tests/wave50 --ignore-scripts --no-audit --no-fund
+      - run: node tests/wave50/node_modules/playwright/cli.js install --with-deps chromium
+      - run: node tools/lab_browser_runner.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lab-management-evidence
+          path: |
+            /tmp/hemocura-lab-postgres
+            /tmp/hemocura-lab-browser

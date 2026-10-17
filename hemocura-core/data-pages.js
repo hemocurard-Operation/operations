@@ -1,0 +1,2 @@
+// Exhaust the backend pages, including deployments with a smaller maximum page size.
+export async function allPages(label,query){const all=[];let offset=0;for(;;){const {data,error}=await query.range(offset,offset+499);if(error)throw Error(label+': '+error.message);if(!Array.isArray(data))throw Error(label+': respuesta incompleta');if(!data.length)return all;all.push(...data);offset+=data.length;}}
