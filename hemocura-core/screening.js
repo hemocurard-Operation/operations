@@ -6,7 +6,7 @@ const TESTS=['VIH 1/2','HBsAg','Anti-HCV','Sífilis','Chagas','HTLV I/II','Hemog
 
 export async function mountScreening(root){
  const branches=await bloodData.branches(); const bm=Object.fromEntries(branches.map(b=>[b.id,b.name]));
- root.innerHTML=`<div class="sales-toolbar"><div><h2 class="section-heading">Tamizaje</h2><div class="muted">Captura guiada por unidad, prueba, reactivo y lote.</div></div><button id="scr-new">Nuevo tamizaje</button></div>
+ root.innerHTML=`<div class="sales-toolbar"><div><h2 class="section-heading">Tamizaje</h2><div class="muted">Captura guiada por unidad, prueba, reactivo y lote. La validación requiere otra persona autorizada en Gestión del Laboratorio.</div></div><button id="scr-new">Nuevo tamizaje</button></div>
  <div id="scr-msg"></div><section class="card"><div class="table-wrap"><table class="data-table"><thead><tr><th>Fecha</th><th>Unidad</th><th>Sucursal</th><th>Prueba</th><th>Resultado</th><th>Reactivo</th><th>Lote</th><th>Responsable</th><th>Estado</th></tr></thead><tbody id="scr-body"></tbody></table></div></section>
  <section class="card"><h3>Reporte de tamizaje</h3><div class="table-wrap"><table class="data-table"><thead><tr><th>Fecha</th><th>Sucursal</th><th>Prueba</th><th>Total</th><th>No reactivo</th><th>Reactivo</th><th>Indeterminado</th><th>% reactivo</th></tr></thead><tbody id="scr-report"></tbody></table></div></section>
  <dialog id="scr-dialog" class="sales-dialog"><form id="scr-form"><h3>Formulario de tamizaje</h3><div class="quick-form-grid">
@@ -19,7 +19,7 @@ export async function mountScreening(root){
  <label>Lote<input id="scr-lot" list="scr-lots" autocomplete="off"><datalist id="scr-lots"></datalist></label>
  <label>Vencimiento reactivo<input id="scr-expiry" type="date"></label>
  <label>Responsable<input id="scr-resp" list="scr-responsibles" autocomplete="off"><datalist id="scr-responsibles"></datalist></label>
- <label>Estado<select id="scr-status"><option>PENDIENTE</option><option>VALIDADO</option><option>REPETIR</option><option>CERRADO</option></select></label>
+ <label>Estado inicial<select id="scr-status"><option>PENDIENTE</option><option>REPETIR</option></select></label>
  <label class="full">Observaciones<textarea id="scr-notes"></textarea></label></div><div class="dialog-actions"><button type="button" id="scr-cancel" class="secondary">Cancelar</button><button>Guardar</button></div></form></dialog>`;
  async function load(){try{const [rows,rep]=await Promise.all([bloodData.screenings(),bloodData.screeningSummary()]);document.getElementById('scr-body').innerHTML=rows.length?rows.map(r=>`<tr><td>${esc(r.screening_date)}</td><td><code>${esc(r.source_unit_code)}</code></td><td>${esc(bm[r.branch_id]||r.branch_id)}</td><td>${esc(r.test_type)}</td><td>${esc(r.result)}</td><td>${esc(r.reagent||'—')}</td><td>${esc(r.reagent_lot||'—')}</td><td>${esc(r.responsible||'—')}</td><td>${esc(r.status)}</td></tr>`).join(''):'<tr><td colspan="9">Sin registros.</td></tr>';
  document.getElementById('scr-report').innerHTML=rep.length?rep.map(r=>`<tr><td>${esc(r.screening_date)}</td><td>${esc(bm[r.branch_id]||r.branch_id)}</td><td>${esc(r.test_type)}</td><td>${esc(r.total_tests)}</td><td>${esc(r.non_reactive)}</td><td>${esc(r.reactive)}</td><td>${esc(r.indeterminate)}</td><td>${esc(r.reactive_pct||0)}%</td></tr>`).join(''):'<tr><td colspan="8">Sin datos.</td></tr>';
