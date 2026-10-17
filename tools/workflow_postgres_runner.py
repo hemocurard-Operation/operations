@@ -51,7 +51,7 @@ def main():
   lab_migrations=[]
   lab_followups=[]
   for f in sorted((ROOT/'supabase/migrations').glob('*.sql')):
-   if f.name.endswith('_lab_release_permissions.sql'):lab_followups.append(f);continue
+   if f.name.endswith(('_lab_release_permissions.sql','_lab_validated_result_integrity.sql')):lab_followups.append(f);continue
    if f.name.endswith('_lab_management_workspace.sql'):lab_migrations.append(f);continue
    if f.name.endswith('_sgc_implementation_project.sql'):sgc_migrations.append(f);continue
    if f.name.endswith('_quality_information_decisions.sql'):qms_migrations.append(f);continue

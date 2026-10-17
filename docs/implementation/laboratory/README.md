@@ -18,7 +18,7 @@ Ruta: `index.html#laboratory`, dentro de Laboratorio y Sangre. La ventana reúne
 
 La liberación requiere usuario activo, sede autorizada y UNIT_RELEASE, justificación y evidencia. APTO exige pruebas registradas validadas/no reactivas, independencia respecto del ejecutor identificado y componentes con vencimiento informado y vigente. El sistema no define ni certifica una batería clínica completa: el revisor debe comprobarla contra el procedimiento vigente antes de confirmar. No hay liberación automática. Una nueva prueba pendiente o reactiva devuelve unidades disponibles o reservadas a cuarentena. La escritura directa de APTO en inventario exige una decisión técnica vigente.
 
-Los registros históricos no reciben autores inventados. La validación de pruebas o aprobación de lotes antiguos sin autor identificado no se ofrece como revisión independiente; deben regularizarse con evidencia y el procedimiento aplicable. Los resultados indeterminados permanecen fuera de una decisión APTO. El permiso técnico UNIT_RELEASE sigue siendo suficiente para el revisor autorizado, sin exigirle administración de inventario.
+Los registros históricos no reciben autores inventados. La validación de pruebas o aprobación de lotes antiguos sin autor identificado no se ofrece como revisión independiente; deben regularizarse con evidencia y el procedimiento aplicable. Los resultados validados no se sobrescriben; la repetición se registra conservando el original. Los resultados indeterminados permanecen fuera de una decisión APTO. El permiso técnico UNIT_RELEASE sigue siendo suficiente para el revisor autorizado, sin exigirle administración de inventario.
 
 ## Permisos y seguridad
 

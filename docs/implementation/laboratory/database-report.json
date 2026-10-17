@@ -270,6 +270,10 @@
     {
       "file": "supabase/migrations/20261017085156_lab_release_permissions.sql",
       "sha256": "5db074c806f9a6ab3db555cd023b34fdd35c46a77d837a9dd7ed40b8f40daa23"
+    },
+    {
+      "file": "supabase/migrations/20261017085411_lab_validated_result_integrity.sql",
+      "sha256": "02b0945dd66bcee9d15de329c4ebea8feeba829b8e832e159f517a45e65e469e"
     }
   ],
   "checks": [
@@ -1086,6 +1090,10 @@
       "pass": true
     },
     {
+      "name": "validated results cannot be silently overwritten",
+      "pass": true
+    },
+    {
       "name": "supervisor role alone can execute authorized independent release",
       "pass": true
     },
@@ -1122,6 +1130,6 @@
       "pass": true
     }
   ],
-  "container": "hemocura-workflow-test-99232",
+  "container": "hemocura-workflow-test-102240",
   "status": "PASS"
 }

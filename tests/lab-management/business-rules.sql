@@ -55,6 +55,7 @@ select set_config('request.jwt.claim.sub','ac200000-0000-0000-0000-000000000002'
 select lab_operation('ac100000-0000-0000-0000-000000000001','REAGENT_REVIEW',(select jsonb_build_object('id',id,'before',to_jsonb(r),'decision','APROBADO','evidence','CERT-REVIEW') from reagent_lots r where reagent_code='LAB-R'));
 select pg_temp.ok((select verification_status='APROBADO' and verified_by=auth.uid() from reagent_lots where reagent_code='LAB-R'),'independent supervisor can approve documented lot');
 select lab_operation('ac100000-0000-0000-0000-000000000001','SCREENING_REVIEW',(select jsonb_build_object('id',id,'before',to_jsonb(r),'decision','VALIDADO','evidence','REVISION') from screening_tests r where screening_code='LAB-S'));
+select pg_temp.denied($q$update screening_tests set result='REACTIVO' where screening_code='LAB-S'$q$,'validated results cannot be silently overwritten');
 select review_and_release_unit('LAB-U','APTO','Batería revisada según procedimiento ficticio','REF-LIBERACION');
 select pg_temp.ok((select screening_status='APTO' and inventory_status='DISPONIBLE' from blood_inventory_units where unit_code='LAB-COMP'),'supervisor role alone can execute authorized independent release');
 select set_config('request.jwt.claim.sub','ac200000-0000-0000-0000-000000000003',true);
