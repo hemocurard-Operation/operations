@@ -13,6 +13,10 @@ on:
       - 'css/extra-trips.css'
       - 'supabase/migrations/*logistics_extra_trips.sql'
       - 'tests/logistics-trips/**'
+      - 'tests/logistics-roles/**'
+      - 'supabase/migrations/*logistics_team_roles.sql'
+      - 'hemocura-core/role-labels.js'
+      - 'tools/logistics_roles_browser_runner.cjs'
       - 'tools/trips_browser*'
       - '.github/workflows/logistics-trips.yml'
   push:
@@ -29,6 +33,10 @@ on:
       - 'css/extra-trips.css'
       - 'supabase/migrations/*logistics_extra_trips.sql'
       - 'tests/logistics-trips/**'
+      - 'tests/logistics-roles/**'
+      - 'supabase/migrations/*logistics_team_roles.sql'
+      - 'hemocura-core/role-labels.js'
+      - 'tools/logistics_roles_browser_runner.cjs'
       - 'tools/trips_browser*'
       - '.github/workflows/logistics-trips.yml'
   workflow_dispatch:
@@ -49,6 +57,7 @@ jobs:
       - run: npm ci --prefix tests/wave50 --ignore-scripts --no-audit --no-fund
       - run: node tests/wave50/node_modules/playwright/cli.js install --with-deps chromium
       - run: node tools/trips_browser_runner.cjs
+      - run: node tools/logistics_roles_browser_runner.cjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:

@@ -34,6 +34,7 @@ def main():
    if subprocess.run(['docker','exec',name,'pg_isready','-h','127.0.0.1','-U','postgres'],capture_output=True).returncode==0:break
    time.sleep(.2)
   else:raise RuntimeError('PostgreSQL startup failed')
+  sql("alter database postgres set timezone to 'America/Santo_Domingo';",'local-business-timezone')
   apply(ROOT/'tests/wave50/auth-bootstrap.sql');apply(ROOT/'sql/00_IMPLEMENT_SUPABASE_ALL_FIXED_v7_2.sql')
   for f in sorted((ROOT/'sql').glob('*.sql')):
    if f.name[:2].isdigit() and 22<=int(f.name[:2])<=44:apply(f)
@@ -51,7 +52,9 @@ def main():
   lab_migrations=[]
   lab_followups=[]
   trip_migrations=[]
+  team_role_migrations=[]
   for f in sorted((ROOT/'supabase/migrations').glob('*.sql')):
+   if f.name.endswith('_logistics_team_roles.sql'):team_role_migrations.append(f);continue
    if f.name.endswith('_logistics_extra_trips.sql'):trip_migrations.append(f);continue
    if f.name.endswith(('_lab_release_permissions.sql','_lab_validated_result_integrity.sql')):lab_followups.append(f);continue
    if f.name.endswith('_lab_management_workspace.sql'):lab_migrations.append(f);continue
@@ -128,6 +131,10 @@ def main():
    report['checks'].extend({'name':c.strip(),'pass':True} for c in re.findall(r'PASS ([^\n]+)',result.stderr+result.stdout))
    spec=importlib.util.spec_from_file_location('trip_concurrency',ROOT/'tests/logistics-trips/concurrency.py');module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
    report['checks'].extend(module.verify(name,out,ROOT))
+  for f in team_role_migrations:apply(f)
+  if team_role_migrations:
+   result=sql((ROOT/'tests/logistics-roles/business-rules.sql').read_text(),'logistics-team-role-rules')
+   report['checks'].extend({'name':c.strip(),'pass':True} for c in re.findall(r'PASS ([^\n]+)',result.stderr+result.stdout))
   print(f'PASS: {len(report["checks"])} PostgreSQL checks; {len(report["migrations"])} baseline/candidate files. Production not verified.')
   return 0
  except Exception as e:
