@@ -327,7 +327,9 @@
   "optional_rpcs": [
     "hc_adjust_sale_line",
     "hc_calculate_monthly_product_costs",
-    "hc_production_healthcheck"
+    "hc_production_healthcheck",
+    "inspection_finding_to_nonconformity",
+    "inspection_finding_create_capa"
   ],
   "ignored_relations": [],
   "ignored_rpcs": [],

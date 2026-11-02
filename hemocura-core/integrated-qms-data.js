@@ -1,5 +1,11 @@
 import { getSupabase } from './supabase.js';
 
+export async function listActiveProfiles(){
+  const {data,error}=await getSupabase().from('profiles').select('id,full_name').order('full_name');
+  if(error) throw new Error(`Usuarios: ${error.message}`);
+  return data||[];
+}
+
 export async function listInspections(filters={}){
   let q=getSupabase().from('vw_inspection_summary').select('*').order('inspection_date',{ascending:false}).limit(100);
   if(filters.branchId) q=q.eq('branch_id',filters.branchId);
@@ -18,6 +24,24 @@ export async function createInspection(payload, findings=[]){
     if(fe) throw new Error(`Hallazgos: ${fe.message}`);
   }
   return inspection;
+}
+
+export async function listInspectionFindings(inspectionId){
+  const {data,error}=await getSupabase().from('inspection_findings').select('*').eq('inspection_id',inspectionId).order('created_at');
+  if(error) throw new Error(`Hallazgos de inspección: ${error.message}`);
+  return data||[];
+}
+
+export async function inspectionFindingToNonconformity(findingId,ownerUserId,dueDate){
+  const {data,error}=await getSupabase().rpc('inspection_finding_to_nonconformity',{p_finding_id:findingId,p_owner_user_id:ownerUserId,p_due_date:dueDate||null});
+  if(error) throw new Error(`Crear NC: ${error.message}`);
+  return data;
+}
+
+export async function inspectionFindingCreateCapa(findingId,actionPlan,ownerUserId,dueDate){
+  const {data,error}=await getSupabase().rpc('inspection_finding_create_capa',{p_finding_id:findingId,p_action_plan:actionPlan,p_owner_user_id:ownerUserId,p_due_date:dueDate||null});
+  if(error) throw new Error(`Crear CAPA: ${error.message}`);
+  return data;
 }
 
 export async function listRequisitions(filters={}){
