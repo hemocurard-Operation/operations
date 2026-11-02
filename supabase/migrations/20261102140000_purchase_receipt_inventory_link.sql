@@ -13,6 +13,37 @@ create unique index if not exists ux_inventory_purchase_receipt_line
 on public.inventory_movements(source_table, source_id, movement_type)
 where source_table='purchase_receipt_lines' and movement_type='PURCHASE';
 
+-- app_feature_flags already exists in production (settings.js reads/writes it,
+-- C13A_01/C14_01 already grant on it and gate clinical_fefo/cold_chain_auto_block
+-- through it) but no migration in this repository creates it, so a from-scratch
+-- rebuild (this CI harness, a fresh environment) would otherwise fail here.
+-- Idempotent and a no-op wherever the table already exists.
+create table if not exists public.app_feature_flags(
+ key text primary key,
+ enabled boolean not null default false,
+ mode text not null default 'SHADOW' check(mode in ('LIVE','LIVE_LIMITED','SHADOW','OFF')),
+ description text,
+ updated_at timestamptz not null default now(),
+ updated_by uuid references public.profiles(id)
+);
+alter table public.app_feature_flags enable row level security;
+revoke all on public.app_feature_flags from public,anon;
+grant select,insert,update on public.app_feature_flags to authenticated;
+do $$begin
+ if not exists(select 1 from pg_policies where schemaname='public' and tablename='app_feature_flags' and policyname='c13a_app_feature_flags_select') then
+  create policy c13a_app_feature_flags_select on public.app_feature_flags for select to authenticated
+   using(public.has_permission('RELEASE_GATE_VIEW') or public.has_permission('BLOOD_INVENTORY_VIEW') or public.has_permission('BLOOD_INVENTORY_WRITE'));
+ end if;
+ if not exists(select 1 from pg_policies where schemaname='public' and tablename='app_feature_flags' and policyname='c13a_app_feature_flags_insert') then
+  create policy c13a_app_feature_flags_insert on public.app_feature_flags for insert to authenticated
+   with check(public.has_permission('ACCESS_ADMIN'));
+ end if;
+ if not exists(select 1 from pg_policies where schemaname='public' and tablename='app_feature_flags' and policyname='c13a_app_feature_flags_update') then
+  create policy c13a_app_feature_flags_update on public.app_feature_flags for update to authenticated
+   using(public.has_permission('ACCESS_ADMIN')) with check(public.has_permission('ACCESS_ADMIN'));
+ end if;
+end$$;
+
 insert into public.app_feature_flags(key, enabled, mode, description)
 values('purchase_receipt_auto_inventory', false, 'SHADOW',
  'Genera automáticamente el movimiento de inventario (PURCHASE) al aceptar líneas de una recepción de compra vinculadas a un producto del catálogo.')
