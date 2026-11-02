@@ -55,5 +55,10 @@ export const workflowData={
  availableUnits:branch=>rows('Unidades disponibles',sb().from('blood_inventory_units').select('id,unit_code,branch_id,component_name,abo,rh,expiry_date,quantity').eq('branch_id',branch).eq('screening_status','APTO').eq('inventory_status','DISPONIBLE').gte('expiry_date',localDay()).order('expiry_date')),
  sendTransfer:(branch,destination,batch,units,evidence)=>call('wf_send_transfer',{p_branch:branch,p_destination:destination,p_batch:batch,p_units:units,p_evidence:evidence}),
  receiveTransfer:(id,units,evidence,condition)=>call('wf_receive_transfer',{p_transfer:id,p_units:units,p_evidence:evidence,p_condition:condition}),
- reviewReceipt:(id,unit,accept,evidence)=>call('wf_review_transfer_receipt',{p_transfer:id,p_unit:unit,p_accept:accept,p_evidence:evidence})
+ reviewReceipt:(id,unit,accept,evidence)=>call('wf_review_transfer_receipt',{p_transfer:id,p_unit:unit,p_accept:accept,p_evidence:evidence}),
+ supplyTransfers:branch=>rows('Traslados de insumos',sb().from('supply_transfers').select('*').or(`branch_id.eq.${branch},destination_branch_id.eq.${branch}`).order('sent_at',{ascending:false}).order('id')),
+ supplyTransferLines:branch=>rows('Líneas de traslado',sb().from('vw_supply_transfer_lines').select('*').or(`branch_id.eq.${branch},destination_branch_id.eq.${branch}`).order('id')),
+ stockBalance:branch=>rows('Existencias por producto',sb().from('vw_inventory_status').select('product_id,product_code,product_name,theoretical_qty').eq('branch_id',branch)),
+ sendSupplyTransfer:(branch,destination,batch,lines,evidence,requestId)=>call('wf_send_supply_transfer',{p_branch:branch,p_destination:destination,p_batch:batch,p_lines:lines,p_evidence:evidence,p_request_id:requestId}),
+ receiveSupplyTransfer:(id,lines,evidence,condition)=>call('wf_receive_supply_transfer',{p_transfer:id,p_lines:lines,p_evidence:evidence,p_condition:condition})
 };
