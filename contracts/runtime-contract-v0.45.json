@@ -320,7 +320,9 @@
     "vw_data_quality_readiness",
     "vw_scenario_impact",
     "vw_orchestration_priority_queue",
-    "vw_management_review_pack_v2"
+    "vw_management_review_pack_v2",
+    "supply_transfers",
+    "vw_supply_transfer_lines"
   ],
   "optional_rpcs": [
     "hc_adjust_sale_line",

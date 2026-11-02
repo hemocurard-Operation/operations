@@ -62,7 +62,8 @@ def main():
    if f.name.endswith('_quality_information_decisions.sql'):qms_migrations.append(f);continue
    if f.name.endswith('_area_task_agenda.sql'):agenda_migrations.append(f);continue
    if f.name.endswith('_role_module_views.sql'):module_migrations.append(f);continue
-   if f.name.endswith('_purchase_receiving.sql'):purchase_migrations.append(f);continue
+   if f.name.endswith(('_purchase_receiving.sql','_purchase_receipt_inventory_link.sql')):purchase_migrations.append(f);continue
+   if f.name.endswith('_supply_transfers.sql'):deferred.append(f);continue
    if f.name.endswith('_operations_coordination.sql'):coordination_migrations.append(f);continue
    if f.name.endswith(('_super_user_total_access.sql','_assigned_role_branch_access.sql')):access_migrations.append(f);continue
    # The donor agenda depends on wf_active_actor and wf_audit_change from CANDIDATE.
