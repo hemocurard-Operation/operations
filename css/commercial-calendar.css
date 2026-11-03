@@ -12,6 +12,11 @@
 .cc-day.cc-today{outline:2px solid var(--accent,#8a4b2e)}
 .cc-num{font-size:11px;color:var(--muted,#666);font-variant-numeric:tabular-nums}
 .cc-ev{display:block;width:100%;text-align:left;border:none;font-size:10.5px;font-weight:600;padding:3px 6px;border-radius:5px;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
+.cc-ev-wrap{position:relative}
+.cc-ev-quick{position:absolute;right:2px;top:2px;display:flex;gap:2px}
+.cc-ev-qbtn{border:none;border-radius:3px;width:14px;height:14px;line-height:14px;font-size:9px;font-weight:700;cursor:pointer;padding:0}
+.cc-ev-qok{background:#2f6b3e;color:#fff}
+.cc-ev-qno{background:#8a2d2d;color:#fff}
 
 .cc-type-picker{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
 .cc-type-opt{flex:1;min-width:140px;border:1px solid var(--border,#ddd);border-radius:8px;padding:8px 10px;font-size:12px;background:var(--surface,#fff);cursor:pointer}

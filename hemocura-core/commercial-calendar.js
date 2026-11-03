@@ -1,4 +1,4 @@
-import {loadCommercialCalendar,createLaunchProject,createSpecialistActivity,createVisit} from './commercial-calendar-data.js';
+import {loadCommercialCalendar,createLaunchProject,createSpecialistActivity,createVisit,updateVisitStatus} from './commercial-calendar-data.js';
 import {loadVisitRoute,logReferrerVisit} from './medical-network-data.js';
 import {getBranches} from './sales-data.js';
 import {esc,field,downloadText} from './workflow-ui.js';
@@ -51,6 +51,18 @@ export async function mountCommercialCalendar(root){
     return byDay;
   }
 
+  function eventCellHtml(e){
+    const quick=e.kind==='visit'&&e.ref.status==='PROPUESTA'
+      ?`<span class="cc-ev-quick">
+          <button type="button" class="cc-ev-qbtn cc-ev-qok" title="Confirmar visita" data-quick="confirm:${esc(e.ref.id)}">✓</button>
+          <button type="button" class="cc-ev-qbtn cc-ev-qno" title="Cancelar visita" data-quick="cancel:${esc(e.ref.id)}">✕</button>
+        </span>`:'';
+    return `<div class="cc-ev-wrap">
+      <button type="button" class="cc-ev ${KIND_CLASS[e.kind]}" data-kind="${e.kind}" data-id="${esc(e.ref.id)}">${esc(e.title)}</button>
+      ${quick}
+    </div>`;
+  }
+
   function calendarHtml(){
     const total=daysInMonth(state.year,state.month);
     const firstWeekday=new Date(state.year,state.month-1,1).getDay();
@@ -61,7 +73,7 @@ export async function mountCommercialCalendar(root){
     for(let d=1;d<=total;d++){
       const evs=byDay[d]||[];
       const isToday=state.year===now.getFullYear()&&state.month===now.getMonth()+1&&d===now.getDate();
-      cells+=`<div class="cc-day${isToday?' cc-today':''}"><div class="cc-num">${d}</div>${evs.map(e=>`<button type="button" class="cc-ev ${KIND_CLASS[e.kind]}" data-kind="${e.kind}" data-id="${esc(e.ref.id)}">${esc(e.title)}</button>`).join('')}</div>`;
+      cells+=`<div class="cc-day${isToday?' cc-today':''}"><div class="cc-num">${d}</div>${evs.map(eventCellHtml).join('')}</div>`;
     }
     return `<div class="cc-cal">${weekdayHead}${cells}</div>`;
   }
@@ -88,13 +100,15 @@ export async function mountCommercialCalendar(root){
     const totalToday=timed.length+dueReferrersToday.length+untimedOther.length;
 
     function timedRow(e){
+      const quick=e.kind==='visit'&&e.status==='PROPUESTA'
+        ?`<button class="minibtn primary" data-quick="confirm:${esc(e.ref.id)}">Confirmar</button><button class="minibtn" data-quick="cancel:${esc(e.ref.id)}">Cancelar</button>`:'';
       return `<div class="cc-route-card">
         <div class="cc-route-body">
           <strong>${esc(e.time?e.time.toLocaleTimeString('es-DO',{hour:'2-digit',minute:'2-digit'}):'')} · ${esc(e.title)}</strong>
           <div class="muted">${esc(e.sub||'')}</div>
           <div class="cc-route-tags"><span class="cc-tag cc-tag-info">${esc(KIND_LABEL[e.kind])}</span><span class="cc-tag cc-tag-ok">${esc(e.status)}</span></div>
         </div>
-        <div class="cc-route-actions"><button class="minibtn" data-open="${e.kind}:${esc(e.ref.id)}">Ver</button></div>
+        <div class="cc-route-actions">${quick}<button class="minibtn" data-open="${e.kind}:${esc(e.ref.id)}">Ver</button></div>
       </div>`;
     }
     function dueRow(r){
@@ -254,6 +268,15 @@ export async function mountCommercialCalendar(root){
     document.getElementById('cc-export')?.addEventListener('click',()=>downloadText(`agenda-comercial-${state.year}-${String(state.month).padStart(2,'0')}.csv`,listCsv()));
     document.getElementById('cc-new')?.addEventListener('click',openNewDialog);
     root.querySelectorAll('.cc-ev').forEach(btn=>btn.onclick=()=>openDetail(btn.dataset.kind,btn.dataset.id));
+    root.querySelectorAll('[data-quick]').forEach(btn=>btn.onclick=async ev=>{
+      ev.stopPropagation();
+      const [action,id]=btn.dataset.quick.split(':');
+      const v=data.visits.find(x=>x.id===id);
+      try{
+        await updateVisitStatus(state.branchId,v,action==='confirm'?'CONFIRMADA':'CANCELADA');
+        await load();
+      }catch(err){document.getElementById('cc-msg').innerHTML=`<div class="status bad">${esc(err.message)}</div>`}
+    });
     root.querySelectorAll('[data-open]').forEach(btn=>{const [kind,id]=btn.dataset.open.split(':');btn.onclick=()=>openDetail(kind,id)});
     root.querySelectorAll('[data-visit]').forEach(btn=>btn.onclick=async()=>{
       const r=route.find(x=>x.id===btn.dataset.visit);
