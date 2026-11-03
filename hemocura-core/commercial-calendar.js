@@ -21,28 +21,32 @@ export async function mountCommercialCalendar(root){
   try{branches=await getBranches()}catch(e){root.innerHTML=`<section class="card"><div class="status bad">${esc(e.message)}</div></section>`;return}
   const now=today();
   const todayISO=now.toISOString().slice(0,10);
-  let state={branchId:branches[0]?.id||'',year:now.getFullYear(),month:now.getMonth()+1,tab:'hoy'};
+  let state={branchId:branches[0]?.id||'',year:now.getFullYear(),month:now.getMonth()+1,tab:'hoy',search:''};
   let data={visits:[],customers:[],launches:[],referrers:[],activities:[]};
   let route=[];
 
   function customerName(id){return data.customers.find(c=>c.id===id)?.name||'Cliente'}
   function referrerName(id){return data.referrers.find(r=>r.referrer_id===id)?.full_name||'Especialista'}
+  function matchesSearch(text){return !state.search||(text||'').toLowerCase().includes(state.search.trim().toLowerCase())}
 
   function eventsByDay(){
     const total=daysInMonth(state.year,state.month);
     const byDay=Object.fromEntries(Array.from({length:total},(_,i)=>[i+1,[]]));
     data.visits.forEach(v=>{
       const d=new Date(v.scheduled_at);
-      if(d.getFullYear()===state.year&&d.getMonth()+1===state.month)byDay[d.getDate()]?.push({kind:'visit',title:customerName(v.customer_id),time:d,ref:v});
+      const title=customerName(v.customer_id);
+      if(d.getFullYear()===state.year&&d.getMonth()+1===state.month&&matchesSearch(title))byDay[d.getDate()]?.push({kind:'visit',title,time:d,ref:v});
     });
     data.launches.forEach(p=>{
-      if(!p.target_date)return;
+      if(!p.target_date||!matchesSearch(p.title))return;
       const d=new Date(p.target_date+'T00:00:00');
       if(d.getFullYear()===state.year&&d.getMonth()+1===state.month)byDay[d.getDate()]?.push({kind:'launch',title:p.title,time:d,ref:p});
     });
     data.activities.forEach(a=>{
+      const title=referrerName(a.referrer_id);
+      if(!matchesSearch(title))return;
       const d=new Date(a.referral_date+'T00:00:00');
-      if(d.getFullYear()===state.year&&d.getMonth()+1===state.month)byDay[d.getDate()]?.push({kind:'specialist',title:referrerName(a.referrer_id),time:d,ref:a});
+      if(d.getFullYear()===state.year&&d.getMonth()+1===state.month)byDay[d.getDate()]?.push({kind:'specialist',title,time:d,ref:a});
     });
     return byDay;
   }
@@ -64,13 +68,16 @@ export async function mountCommercialCalendar(root){
 
   function todayHtml(){
     const visitsToday=data.visits.filter(v=>new Date(v.scheduled_at).toISOString().slice(0,10)===todayISO)
-      .map(v=>({kind:'visit',time:new Date(v.scheduled_at),title:customerName(v.customer_id),sub:v.purpose,ref:v,status:v.status}));
+      .map(v=>({kind:'visit',time:new Date(v.scheduled_at),title:customerName(v.customer_id),sub:v.purpose,ref:v,status:v.status}))
+      .filter(e=>matchesSearch(e.title));
     const activitiesToday=data.activities.filter(a=>a.referral_date===todayISO)
-      .map(a=>({kind:'specialist',time:null,title:referrerName(a.referrer_id),sub:a.notes||'Actividad con especialista',ref:a,status:a.status}));
+      .map(a=>({kind:'specialist',time:null,title:referrerName(a.referrer_id),sub:a.notes||'Actividad con especialista',ref:a,status:a.status}))
+      .filter(e=>matchesSearch(e.title));
     const launchesToday=data.launches.filter(p=>p.target_date===todayISO)
-      .map(p=>({kind:'launch',time:null,title:p.title,sub:'Lanzamiento de producto',ref:p,status:p.status}));
+      .map(p=>({kind:'launch',time:null,title:p.title,sub:'Lanzamiento de producto',ref:p,status:p.status}))
+      .filter(e=>matchesSearch(e.title));
     const visitedReferrerIdsToday=new Set(data.activities.filter(a=>a.referral_date===todayISO).map(a=>a.referrer_id));
-    const dueReferrersToday=route.filter(r=>r.is_due&&r.receives_today&&!visitedReferrerIdsToday.has(r.id));
+    const dueReferrersToday=route.filter(r=>r.is_due&&r.receives_today&&!visitedReferrerIdsToday.has(r.id)&&matchesSearch(r.full_name));
 
     const timed=[...visitsToday].sort((a,b)=>a.time-b.time);
     const matutina=dueReferrersToday.filter(r=>r.reception_shift!=='VESPERTINA');
@@ -124,15 +131,16 @@ export async function mountCommercialCalendar(root){
       ${matutina.length?`<div class="cc-route-section"><h3>Tanda matutina (médicos vencidos)</h3>${matutina.map(dueRow).join('')}</div>`:''}
       ${vespertina.length?`<div class="cc-route-section"><h3>Tanda vespertina (médicos vencidos)</h3>${vespertina.map(dueRow).join('')}</div>`:''}
       ${untimedOther.length?`<div class="cc-route-section"><h3>Otras actividades de hoy</h3>${untimedOther.map(infoRow).join('')}</div>`:''}
-      ${totalToday===0?'<p class="muted">No hay nada agendado ni vencido para hoy. Revisa la Ruta del día para planificar.</p>':''}
+      ${totalToday===0?`<p class="muted">${state.search?'Ningún resultado para "'+esc(state.search)+'" en el día de hoy.':'No hay nada agendado ni vencido para hoy. Revisa la Ruta del día para planificar.'}</p>`:''}
     `;
   }
 
   function routeHtml(){
-    const dueToday=route.filter(r=>r.is_due&&r.receives_today).sort((a,b)=>(b.days_overdue||0)-(a.days_overdue||0));
-    const dueOtherDays=route.filter(r=>r.is_due&&!r.receives_today).sort((a,b)=>(b.days_overdue||0)-(a.days_overdue||0));
-    const notYetDue=route.filter(r=>!r.is_due).sort((a,b)=>(a.next_due_date||'').localeCompare(b.next_due_date||''));
-    const noSchedule=route.filter(r=>!r.visit_frequency_days||!r.last_visit_at);
+    const pool=route.filter(r=>matchesSearch(r.full_name));
+    const dueToday=pool.filter(r=>r.is_due&&r.receives_today).sort((a,b)=>(b.days_overdue||0)-(a.days_overdue||0));
+    const dueOtherDays=pool.filter(r=>r.is_due&&!r.receives_today).sort((a,b)=>(b.days_overdue||0)-(a.days_overdue||0));
+    const notYetDue=pool.filter(r=>!r.is_due).sort((a,b)=>(a.next_due_date||'').localeCompare(b.next_due_date||''));
+    const noSchedule=pool.filter(r=>!r.visit_frequency_days||!r.last_visit_at);
 
     function row(r,projected){
       const overdue=r.days_overdue>0;
@@ -190,6 +198,7 @@ export async function mountCommercialCalendar(root){
       </nav>
       <form id="cc-filters" class="card filter-grid">
         <label>Sucursal<select id="cc-f-branch">${branches.map(b=>`<option value="${esc(b.id)}" ${state.branchId===b.id?'selected':''}>${esc(b.name)}</option>`).join('')}</select></label>
+        <label>Buscar médico o cliente<input id="cc-f-search" type="search" placeholder="Nombre…" value="${esc(state.search)}"></label>
         ${state.tab==='calendario'?`<label>Mes<select id="cc-f-month">${MONTHS.map((m,i)=>`<option value="${i+1}" ${state.month===i+1?'selected':''}>${esc(m)}</option>`).join('')}</select></label>
         <label>Año<input id="cc-f-year" type="number" value="${state.year}" min="2024" max="2100"></label>`:''}
         <button type="submit">Actualizar</button>
@@ -213,6 +222,14 @@ export async function mountCommercialCalendar(root){
         month:state.tab==='calendario'?Number(document.getElementById('cc-f-month').value):state.month,
         year:state.tab==='calendario'?Number(document.getElementById('cc-f-year').value):state.year};
       load();
+    };
+    document.getElementById('cc-f-search').oninput=e=>{
+      const pos=e.target.selectionStart;
+      state={...state,search:e.target.value};
+      render();
+      const input=document.getElementById('cc-f-search');
+      input.focus();
+      input.setSelectionRange(pos,pos);
     };
     root.querySelectorAll('.cc-tab').forEach(btn=>btn.onclick=()=>{state={...state,tab:btn.dataset.tab};load()});
     document.getElementById('cc-export')?.addEventListener('click',()=>downloadText(`agenda-comercial-${state.year}-${String(state.month).padStart(2,'0')}.csv`,listCsv()));
