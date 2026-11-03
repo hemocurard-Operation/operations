@@ -22,6 +22,7 @@ const ROUTES={
   transfers:{title:'Entre sucursales',subtitle:'Envío, recepción y revisión de unidades',group:'TRABAJO DIARIO',order:12},
   supplycatalog:{title:'Catálogo de suministros',subtitle:'Insumos, unidades aprobadas y umbrales por sucursal',group:'TRABAJO DIARIO',order:42},
   inventory:{title:'Insumos',subtitle:'Inventario de reactivos y materiales',group:'TRABAJO DIARIO',order:40},
+  supplytransfers:{title:'Traslado de Insumos',subtitle:'Envío, recepción y existencias entre sucursales',group:'TRABAJO DIARIO',order:41},
   supply:{title:'Abastecimiento',subtitle:'Demanda, cobertura y donantes requeridos',group:'TRABAJO DIARIO',order:50},
   planning:{title:'Planificación',subtitle:'Plan operativo y forecast SHADOW',group:'TRABAJO DIARIO',order:60},
 
