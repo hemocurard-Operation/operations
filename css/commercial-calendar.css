@@ -32,6 +32,10 @@
 .cc-tag-info{background:#e1ecf2;color:#2b5876}
 .cc-route-actions{display:flex;gap:6px;flex-shrink:0}
 
+.cc-zone-group{margin-top:10px}
+.cc-zone-head{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;color:var(--muted,#666);margin:14px 0 4px;padding-bottom:4px;border-bottom:1px solid var(--border,#ddd)}
+.cc-zone-group:first-child .cc-zone-head{margin-top:0}
+
 .cc-kpis{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap}
 .cc-kpi{flex:1;min-width:100px;background:var(--surface-2,#f4f2ec);border:1px solid var(--border,#ddd);border-radius:10px;padding:10px;text-align:center}
 .cc-kpi-v{font-size:20px;font-weight:700;font-variant-numeric:tabular-nums}

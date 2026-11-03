@@ -162,15 +162,34 @@ export async function mountCommercialCalendar(root){
       </div>`;
     }
 
+    function byZone(rows){
+      const groups=new Map();
+      rows.forEach(r=>{
+        const zone=r.city||'Sin zona asignada';
+        if(!groups.has(zone))groups.set(zone,[]);
+        groups.get(zone).push(r);
+      });
+      return [...groups.entries()].sort((a,b)=>a[0].localeCompare(b[0]));
+    }
+
+    function zoneGroupHtml(rows,projected,emptyMessage){
+      if(!rows.length)return `<p class="muted">${emptyMessage}</p>`;
+      return byZone(rows).map(([zone,zr])=>`
+        <div class="cc-zone-group">
+          <h4 class="cc-zone-head">${esc(zone)} <span class="muted">(${zr.length})</span></h4>
+          ${zr.map(r=>row(r,projected)).join('')}
+        </div>`).join('');
+    }
+
     return `
       <div class="cc-route-section">
         <h3>Ruta proyectada de hoy (${dueToday.length})</h3>
-        <p class="muted">Médicos que reciben hoy y ya cumplieron su frecuencia de visita.</p>
-        ${dueToday.map(r=>row(r,true)).join('')||'<p class="muted">Nadie vencido recibe hoy. Revisa "Vencidos otros días" si quieres adelantar alguna visita.</p>'}
+        <p class="muted">Médicos que reciben hoy y ya cumplieron su frecuencia de visita, agrupados por zona.</p>
+        ${zoneGroupHtml(dueToday,true,'Nadie vencido recibe hoy. Revisa "Vencidos otros días" si quieres adelantar alguna visita.')}
       </div>
       <div class="cc-route-section">
         <h3>Vencidos, otro día de recepción (${dueOtherDays.length})</h3>
-        ${dueOtherDays.map(r=>row(r,false)).join('')||'<p class="muted">Ninguno.</p>'}
+        ${zoneGroupHtml(dueOtherDays,false,'Ninguno.')}
       </div>
       <div class="cc-route-section">
         <h3>Próximos a vencer (${notYetDue.length})</h3>
