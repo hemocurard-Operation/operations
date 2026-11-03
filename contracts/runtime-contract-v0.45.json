@@ -197,6 +197,7 @@
     "vw_qms_open_actions",
     "vw_quality_today",
     "vw_reagent_alerts",
+    "vw_referrer_visit_route",
     "vw_release_1_0_readiness",
     "vw_resource_control_summary",
     "vw_sale_lines_editable",
