@@ -42,6 +42,7 @@ const ROUTES={
   bloodflow:{title:'Flujo Sanguíneo',subtitle:'Donación, tamizaje, liberación, inventario y salida',group:'LABORATORIO Y SANGRE',order:50},
   analyticalqc:{title:'Calidad Analítica',subtitle:'Métodos, IQC, desviaciones y EQA/PT',group:'LABORATORIO Y SANGRE',order:60},
   coldchain:{title:'Cadena de Frío',subtitle:'Almacenamiento, transporte y excursiones',group:'LABORATORIO Y SANGRE',order:70},
+  transport:{title:'Transporte',subtitle:'Reporte de traslados entre sucursales y cadena de frío en ruta',group:'TRABAJO DIARIO',order:15},
   hemovigilance:{title:'Hemovigilancia',subtitle:'Eventos adversos, casi eventos y retiros',group:'LABORATORIO Y SANGRE',order:80},
   resources:{title:'Recursos Críticos',subtitle:'Equipos, reactivos y ambiente',group:'LABORATORIO Y SANGRE',order:90},
 
