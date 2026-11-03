@@ -13,17 +13,11 @@ export const transportData={
     return allPages('Traslados',q);
   },
   get:async id=>{const {data,error}=await sb().from('transport_events').select('*').eq('id',id).single();if(error)throw new Error(error.message);return data},
-  readings:transportId=>allPages('Lecturas de temperatura',sb().from('transport_temperature_readings').select('*').eq('transport_id',transportId).order('reading_time',{ascending:false})),
   create:async payload=>{const {data,error}=await sb().from('transport_events').insert(payload).select('*').single();if(error)throw new Error(error.message);return data},
   updateStatus:async(id,status,extra={})=>{
     if(!STATUSES.includes(status))throw new Error('Estado de traslado no válido');
     const patch={status,...extra};
     const {data,error}=await sb().from('transport_events').update(patch).eq('id',id).select('*').single();
-    if(error)throw new Error(error.message);
-    return data;
-  },
-  addTemperatureReading:async(transportId,payload)=>{
-    const {data,error}=await sb().from('transport_temperature_readings').insert({...payload,transport_id:transportId}).select('*').single();
     if(error)throw new Error(error.message);
     return data;
   }

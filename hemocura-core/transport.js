@@ -1,4 +1,6 @@
 import {transportData,transportStatuses} from './transport-data.js';
+// Nota: el registro de temperatura en ruta (transport_temperature_readings) se omite
+// hasta confirmar que la tabla existe en producción; ver sql/39_COLD_CHAIN_v0_39.sql.
 import {getBranches} from './sales-data.js';
 function esc(v=''){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
 function today(){return new Date().toISOString().slice(0,10)}
@@ -160,7 +162,7 @@ export async function mountTransport(root){
     body.innerHTML='<p class="status info">Cargando detalle…</p>';
     dialog.showModal();
     try{
-      const [transport,readings]=await Promise.all([transportData.get(id),transportData.readings(id)]);
+      const transport=await transportData.get(id);
       body.innerHTML=`
         <h3>Traslado ${esc(transport.transport_code)}</h3>
         <p><strong>Sucursal:</strong> ${esc(bm[transport.branch_id]||'—')} · <strong>Estado:</strong> ${esc(transport.status)}</p>
@@ -169,22 +171,9 @@ export async function mountTransport(root){
         <p><strong>Responsable:</strong> ${esc(transport.responsible||'—')} · <strong>Contenedor:</strong> ${esc(transport.container_reference||'—')}</p>
         <p><strong>Rango de temperatura:</strong> ${esc(transport.min_temp??'—')} a ${esc(transport.max_temp??'—')}</p>
         <p><strong>Notas:</strong> ${esc(transport.notes||'—')}</p>
-        <h4>Lecturas de temperatura en ruta</h4>
-        <div class="table-wrap"><table class="data-table"><thead><tr><th>Fecha</th><th>Temp.</th><th>Fuente</th></tr></thead><tbody>${readings.length?readings.map(r=>`<tr><td>${fmt(r.reading_time)}</td><td>${esc(r.temperature)}</td><td>${esc(r.source)}</td></tr>`).join(''):'<tr><td colspan="3">Sin lecturas registradas.</td></tr>'}</tbody></table></div>
-        <form id="tr-reading-form">
-          <div class="filter-grid"><label>Temperatura<input id="tr-reading-temp" type="number" step="0.1" required></label></div>
-          <div class="dialog-actions"><button type="button" id="tr-detail-close" class="secondary">Cerrar</button><button type="submit">Registrar lectura</button></div>
-        </form>
+        <div class="dialog-actions"><button type="button" id="tr-detail-close" class="secondary">Cerrar</button></div>
       `;
       body.querySelector('#tr-detail-close').onclick=()=>dialog.close();
-      body.querySelector('#tr-reading-form').onsubmit=async e=>{
-        e.preventDefault();
-        try{
-          await transportData.addTemperatureReading(id,{temperature:Number(body.querySelector('#tr-reading-temp').value),source:'MANUAL'});
-          dialog.close();
-          await load();
-        }catch(err){document.getElementById('tr-msg').innerHTML=`<div class="status bad">${esc(err.message)}</div>`}
-      };
     }catch(err){body.innerHTML=`<div class="status bad">${esc(err.message)}</div><div class="dialog-actions"><button type="button" id="tr-detail-close-err" class="secondary">Cerrar</button></div>`;body.querySelector('#tr-detail-close-err').onclick=()=>dialog.close()}
   }
 

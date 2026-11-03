@@ -132,7 +132,6 @@
     "training_question_bank",
     "training_quiz_attempts",
     "transport_events",
-    "transport_temperature_readings",
     "uat_test_cases",
     "user_roles",
     "vw_analytical_quality_summary",
