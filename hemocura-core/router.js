@@ -49,6 +49,7 @@ const ROUTES={
   actions:{title:'Acciones Integradas',subtitle:'Cartera única de acciones, evidencia y eficacia',group:'CALIDAD Y SEGURIDAD',order:5},
   bloodquality:{title:'Calidad del banco de sangre',subtitle:'Tareas diarias, evidencia y revisión independiente',group:'CALIDAD Y SEGURIDAD',order:12},
   quality:{title:'SGC',subtitle:'Incidencias, NC, CAPA y alertas',group:'CALIDAD Y SEGURIDAD',order:10},
+  isocompliance:{title:'Cumplimiento ISO 9001/15189',subtitle:'Autoevaluación por cláusula, evidencia y vínculo a NC',group:'CALIDAD Y SEGURIDAD',order:11},
   approvals:{title:'Aprobaciones',subtitle:'Segregación de funciones y decisiones',group:'CALIDAD Y SEGURIDAD',order:20},
   qmsgov:{title:'Gobierno QMS',subtitle:'Documentos, CAPA y aprobaciones',group:'CALIDAD Y SEGURIDAD',order:30},
   internalaudits:{title:'Auditorías Internas',subtitle:'Programa, hallazgos y evidencia',group:'CALIDAD Y SEGURIDAD',order:40},
