@@ -17,6 +17,21 @@
 .cc-type-opt{flex:1;min-width:140px;border:1px solid var(--border,#ddd);border-radius:8px;padding:8px 10px;font-size:12px;background:var(--surface,#fff);cursor:pointer}
 .cc-type-opt.cc-type-active{border-color:var(--accent,#8a4b2e);background:var(--surface-2,#f4f2ec);font-weight:600}
 
+.cc-tabs{display:flex;gap:8px;margin-bottom:14px}
+.cc-tab{font-size:13px;font-weight:600;padding:8px 14px;border-radius:999px;border:1px solid var(--border,#ddd);background:var(--surface,#fff);color:var(--muted,#666);cursor:pointer}
+.cc-tab.cc-tab-active{background:var(--accent,#8a4b2e);color:#fff;border-color:var(--accent,#8a4b2e)}
+
+.cc-route-section{margin-bottom:22px}
+.cc-route-section h3{font-size:15px;margin-bottom:2px}
+.cc-route-card{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;border:1px solid var(--border,#ddd);border-radius:10px;padding:10px 12px;margin-top:8px;background:var(--surface-2,#f4f2ec)}
+.cc-route-body strong{font-size:13.5px}
+.cc-route-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.cc-tag{font-size:10.5px;font-weight:700;padding:3px 8px;border-radius:999px}
+.cc-tag-due{background:#f6e0dd;color:#8a2d2d}
+.cc-tag-ok{background:#e3efe2;color:#2f6b3e}
+.cc-tag-info{background:#e1ecf2;color:#2b5876}
+.cc-route-actions{display:flex;gap:6px;flex-shrink:0}
+
 @media (max-width:720px){
   .cc-cal{grid-template-columns:repeat(7,minmax(36px,1fr))}
   .cc-day{min-height:70px;padding:4px}

@@ -1,9 +1,11 @@
 import {loadCommercialCalendar,createLaunchProject,createSpecialistActivity,createVisit} from './commercial-calendar-data.js';
+import {loadVisitRoute,logReferrerVisit} from './medical-network-data.js';
 import {getBranches} from './sales-data.js';
 import {esc,field,downloadText} from './workflow-ui.js';
 import {rdTimestamp,localDay} from './workflow-domain.js';
 
 const MONTHS=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+const WEEKDAY_NAMES=['','Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
 const KIND_LABEL={visit:'Visita a cliente',launch:'Lanzamiento de producto',specialist:'Actividad con especialista'};
 const KIND_CLASS={visit:'cc-visit',launch:'cc-launch',specialist:'cc-specialist'};
 
@@ -18,8 +20,9 @@ export async function mountCommercialCalendar(root){
   let branches;
   try{branches=await getBranches()}catch(e){root.innerHTML=`<section class="card"><div class="status bad">${esc(e.message)}</div></section>`;return}
   const now=today();
-  let state={branchId:branches[0]?.id||'',year:now.getFullYear(),month:now.getMonth()+1};
+  let state={branchId:branches[0]?.id||'',year:now.getFullYear(),month:now.getMonth()+1,tab:'calendario'};
   let data={visits:[],customers:[],launches:[],referrers:[],activities:[]};
+  let route=[];
 
   function customerName(id){return data.customers.find(c=>c.id===id)?.name||'Cliente'}
   function referrerName(id){return data.referrers.find(r=>r.referrer_id===id)?.full_name||'Especialista'}
@@ -58,6 +61,50 @@ export async function mountCommercialCalendar(root){
     return `<div class="cc-cal">${weekdayHead}${cells}</div>`;
   }
 
+  function routeHtml(){
+    const dueToday=route.filter(r=>r.is_due&&r.receives_today).sort((a,b)=>(b.days_overdue||0)-(a.days_overdue||0));
+    const dueOtherDays=route.filter(r=>r.is_due&&!r.receives_today).sort((a,b)=>(b.days_overdue||0)-(a.days_overdue||0));
+    const notYetDue=route.filter(r=>!r.is_due).sort((a,b)=>(a.next_due_date||'').localeCompare(b.next_due_date||''));
+    const noSchedule=route.filter(r=>!r.visit_frequency_days||!r.last_visit_at);
+
+    function row(r,projected){
+      const overdue=r.days_overdue>0;
+      return `<div class="cc-route-card">
+        <div class="cc-route-body">
+          <strong>${esc(r.full_name)}</strong>
+          <div class="muted">${esc(r.specialty||'')}${r.organization?' · '+esc(r.organization):''}</div>
+          <div class="cc-route-tags">
+            ${overdue?`<span class="cc-tag cc-tag-due">Vencido ${esc(r.days_overdue)} día(s)</span>`:r.is_due?'<span class="cc-tag cc-tag-due">Vence hoy</span>':`<span class="cc-tag cc-tag-ok">Próxima: ${esc(r.next_due_date||'—')}</span>`}
+            ${r.reception_shift?`<span class="cc-tag cc-tag-info">${esc(r.reception_shift)}</span>`:''}
+            ${r.priority==='ALTA'?'<span class="cc-tag cc-tag-due">Prioridad alta</span>':''}
+            ${(r.reception_days||[]).length?`<span class="cc-tag cc-tag-info">${r.reception_days.map(d=>WEEKDAY_NAMES[d]).join(', ')}</span>`:''}
+          </div>
+        </div>
+        ${projected?`<div class="cc-route-actions">
+          <button class="minibtn primary" data-visit="${esc(r.id)}" data-outcome="VISITADO">Visitado</button>
+          <button class="minibtn" data-visit="${esc(r.id)}" data-outcome="NO_DISPONIBLE">No disponible</button>
+        </div>`:''}
+      </div>`;
+    }
+
+    return `
+      <div class="cc-route-section">
+        <h3>Ruta proyectada de hoy (${dueToday.length})</h3>
+        <p class="muted">Médicos que reciben hoy y ya cumplieron su frecuencia de visita.</p>
+        ${dueToday.map(r=>row(r,true)).join('')||'<p class="muted">Nadie vencido recibe hoy. Revisa "Vencidos otros días" si quieres adelantar alguna visita.</p>'}
+      </div>
+      <div class="cc-route-section">
+        <h3>Vencidos, otro día de recepción (${dueOtherDays.length})</h3>
+        ${dueOtherDays.map(r=>row(r,false)).join('')||'<p class="muted">Ninguno.</p>'}
+      </div>
+      <div class="cc-route-section">
+        <h3>Próximos a vencer (${notYetDue.length})</h3>
+        ${notYetDue.slice(0,10).map(r=>row(r,false)).join('')||'<p class="muted">Ninguno.</p>'}
+      </div>
+      ${noSchedule.length?`<div class="cc-route-section"><h3>Sin condiciones de recepción configuradas (${noSchedule.length})</h3><p class="muted">Agrega días, tanda y frecuencia desde Red Médica para que entren en la ruta predictiva.</p>${noSchedule.map(r=>`<div class="cc-route-card"><div class="cc-route-body"><strong>${esc(r.full_name)}</strong></div></div>`).join('')}</div>`:''}
+    `;
+  }
+
   function listCsv(){
     const byDay=eventsByDay();
     const rows=['fecha,tipo,titulo'];
@@ -67,31 +114,47 @@ export async function mountCommercialCalendar(root){
 
   function render(){
     root.innerHTML=`
-      <div class="sales-toolbar"><div><h2 class="section-heading">Agenda Comercial</h2><div class="muted">Visitas a clientes, lanzamientos de producto y actividades con especialistas en un solo calendario.</div></div><div class="quick-links"><button id="cc-export" class="secondary">Exportar</button><button id="cc-new">+ Nueva actividad</button></div></div>
+      <div class="sales-toolbar"><div><h2 class="section-heading">Agenda Comercial</h2><div class="muted">Visitas a clientes, lanzamientos de producto y actividades con especialistas en un solo calendario.</div></div><div class="quick-links">${state.tab==='calendario'?'<button id="cc-export" class="secondary">Exportar</button><button id="cc-new">+ Nueva actividad</button>':''}</div></div>
       <div id="cc-msg"></div>
+      <nav class="cc-tabs">
+        <button type="button" class="cc-tab${state.tab==='calendario'?' cc-tab-active':''}" data-tab="calendario">Calendario</button>
+        <button type="button" class="cc-tab${state.tab==='ruta'?' cc-tab-active':''}" data-tab="ruta">Ruta del día (predictiva)</button>
+      </nav>
       <form id="cc-filters" class="card filter-grid">
         <label>Sucursal<select id="cc-f-branch">${branches.map(b=>`<option value="${esc(b.id)}" ${state.branchId===b.id?'selected':''}>${esc(b.name)}</option>`).join('')}</select></label>
-        <label>Mes<select id="cc-f-month">${MONTHS.map((m,i)=>`<option value="${i+1}" ${state.month===i+1?'selected':''}>${esc(m)}</option>`).join('')}</select></label>
-        <label>Año<input id="cc-f-year" type="number" value="${state.year}" min="2024" max="2100"></label>
+        ${state.tab==='calendario'?`<label>Mes<select id="cc-f-month">${MONTHS.map((m,i)=>`<option value="${i+1}" ${state.month===i+1?'selected':''}>${esc(m)}</option>`).join('')}</select></label>
+        <label>Año<input id="cc-f-year" type="number" value="${state.year}" min="2024" max="2100"></label>`:''}
         <button type="submit">Actualizar</button>
       </form>
-      <div class="cc-legend">
-        <span><i class="cc-swatch cc-visit"></i>Visita a cliente</span>
-        <span><i class="cc-swatch cc-launch"></i>Lanzamiento de producto</span>
-        <span><i class="cc-swatch cc-specialist"></i>Actividad con especialista</span>
-      </div>
-      <section class="card">${calendarHtml()}</section>
+      ${state.tab==='calendario'?`
+        <div class="cc-legend">
+          <span><i class="cc-swatch cc-visit"></i>Visita a cliente</span>
+          <span><i class="cc-swatch cc-launch"></i>Lanzamiento de producto</span>
+          <span><i class="cc-swatch cc-specialist"></i>Actividad con especialista</span>
+        </div>
+        <section class="card">${calendarHtml()}</section>
+      `:`<section class="card">${routeHtml()}</section>`}
       <dialog id="cc-new-dialog" class="sales-dialog"></dialog>
       <dialog id="cc-detail-dialog" class="sales-dialog"></dialog>
     `;
     document.getElementById('cc-filters').onsubmit=e=>{
       e.preventDefault();
-      state={branchId:document.getElementById('cc-f-branch').value,month:Number(document.getElementById('cc-f-month').value),year:Number(document.getElementById('cc-f-year').value)};
+      state={...state,branchId:document.getElementById('cc-f-branch').value,
+        month:state.tab==='calendario'?Number(document.getElementById('cc-f-month').value):state.month,
+        year:state.tab==='calendario'?Number(document.getElementById('cc-f-year').value):state.year};
       load();
     };
-    document.getElementById('cc-export').onclick=()=>downloadText(`agenda-comercial-${state.year}-${String(state.month).padStart(2,'0')}.csv`,listCsv());
-    document.getElementById('cc-new').onclick=openNewDialog;
+    root.querySelectorAll('.cc-tab').forEach(btn=>btn.onclick=()=>{state={...state,tab:btn.dataset.tab};load()});
+    document.getElementById('cc-export')?.addEventListener('click',()=>downloadText(`agenda-comercial-${state.year}-${String(state.month).padStart(2,'0')}.csv`,listCsv()));
+    document.getElementById('cc-new')?.addEventListener('click',openNewDialog);
     root.querySelectorAll('.cc-ev').forEach(btn=>btn.onclick=()=>openDetail(btn.dataset.kind,btn.dataset.id));
+    root.querySelectorAll('[data-visit]').forEach(btn=>btn.onclick=async()=>{
+      const r=route.find(x=>x.id===btn.dataset.visit);
+      try{
+        await logReferrerVisit(r.id,{branchId:r.branch_id,outcome:btn.dataset.outcome,notes:btn.dataset.outcome==='VISITADO'?'Visita registrada desde Ruta del día':'Marcado no disponible desde Ruta del día'});
+        await load();
+      }catch(err){document.getElementById('cc-msg').innerHTML=`<div class="status bad">${esc(err.message)}</div>`}
+    });
   }
 
   function openDetail(kind,id){
@@ -163,7 +226,11 @@ export async function mountCommercialCalendar(root){
 
   async function load(){
     try{
-      data=await loadCommercialCalendar(state.branchId);
+      if(state.tab==='ruta'){
+        [data,route]=await Promise.all([loadCommercialCalendar(state.branchId),loadVisitRoute(state.branchId)]);
+      }else{
+        data=await loadCommercialCalendar(state.branchId);
+      }
       render();
     }catch(e){
       root.innerHTML=`<section class="card"><div class="status bad">${esc(e.message)}</div></section>`;
