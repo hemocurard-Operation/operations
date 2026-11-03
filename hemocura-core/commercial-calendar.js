@@ -20,7 +20,8 @@ export async function mountCommercialCalendar(root){
   let branches;
   try{branches=await getBranches()}catch(e){root.innerHTML=`<section class="card"><div class="status bad">${esc(e.message)}</div></section>`;return}
   const now=today();
-  let state={branchId:branches[0]?.id||'',year:now.getFullYear(),month:now.getMonth()+1,tab:'calendario'};
+  const todayISO=now.toISOString().slice(0,10);
+  let state={branchId:branches[0]?.id||'',year:now.getFullYear(),month:now.getMonth()+1,tab:'hoy'};
   let data={visits:[],customers:[],launches:[],referrers:[],activities:[]};
   let route=[];
 
@@ -59,6 +60,72 @@ export async function mountCommercialCalendar(root){
       cells+=`<div class="cc-day${isToday?' cc-today':''}"><div class="cc-num">${d}</div>${evs.map(e=>`<button type="button" class="cc-ev ${KIND_CLASS[e.kind]}" data-kind="${e.kind}" data-id="${esc(e.ref.id)}">${esc(e.title)}</button>`).join('')}</div>`;
     }
     return `<div class="cc-cal">${weekdayHead}${cells}</div>`;
+  }
+
+  function todayHtml(){
+    const visitsToday=data.visits.filter(v=>new Date(v.scheduled_at).toISOString().slice(0,10)===todayISO)
+      .map(v=>({kind:'visit',time:new Date(v.scheduled_at),title:customerName(v.customer_id),sub:v.purpose,ref:v,status:v.status}));
+    const activitiesToday=data.activities.filter(a=>a.referral_date===todayISO)
+      .map(a=>({kind:'specialist',time:null,title:referrerName(a.referrer_id),sub:a.notes||'Actividad con especialista',ref:a,status:a.status}));
+    const launchesToday=data.launches.filter(p=>p.target_date===todayISO)
+      .map(p=>({kind:'launch',time:null,title:p.title,sub:'Lanzamiento de producto',ref:p,status:p.status}));
+    const visitedReferrerIdsToday=new Set(data.activities.filter(a=>a.referral_date===todayISO).map(a=>a.referrer_id));
+    const dueReferrersToday=route.filter(r=>r.is_due&&r.receives_today&&!visitedReferrerIdsToday.has(r.id));
+
+    const timed=[...visitsToday].sort((a,b)=>a.time-b.time);
+    const matutina=dueReferrersToday.filter(r=>r.reception_shift!=='VESPERTINA');
+    const vespertina=dueReferrersToday.filter(r=>r.reception_shift==='VESPERTINA');
+    const untimedOther=[...activitiesToday,...launchesToday];
+
+    const overdueCount=dueReferrersToday.filter(r=>r.days_overdue>0).length;
+    const totalToday=timed.length+dueReferrersToday.length+untimedOther.length;
+
+    function timedRow(e){
+      return `<div class="cc-route-card">
+        <div class="cc-route-body">
+          <strong>${esc(e.time?e.time.toLocaleTimeString('es-DO',{hour:'2-digit',minute:'2-digit'}):'')} · ${esc(e.title)}</strong>
+          <div class="muted">${esc(e.sub||'')}</div>
+          <div class="cc-route-tags"><span class="cc-tag cc-tag-info">${esc(KIND_LABEL[e.kind])}</span><span class="cc-tag cc-tag-ok">${esc(e.status)}</span></div>
+        </div>
+        <div class="cc-route-actions"><button class="minibtn" data-open="${e.kind}:${esc(e.ref.id)}">Ver</button></div>
+      </div>`;
+    }
+    function dueRow(r){
+      return `<div class="cc-route-card">
+        <div class="cc-route-body">
+          <strong>${esc(r.full_name)}</strong>
+          <div class="muted">${esc(r.specialty||'')}${r.organization?' · '+esc(r.organization):''}</div>
+          <div class="cc-route-tags">${r.days_overdue>0?`<span class="cc-tag cc-tag-due">Vencido ${esc(r.days_overdue)} día(s)</span>`:'<span class="cc-tag cc-tag-due">Vence hoy</span>'}${r.priority==='ALTA'?'<span class="cc-tag cc-tag-due">Prioridad alta</span>':''}</div>
+        </div>
+        <div class="cc-route-actions">
+          <button class="minibtn primary" data-visit="${esc(r.id)}" data-outcome="VISITADO">Visitado</button>
+          <button class="minibtn" data-visit="${esc(r.id)}" data-outcome="NO_DISPONIBLE">No disponible</button>
+        </div>
+      </div>`;
+    }
+    function infoRow(e){
+      return `<div class="cc-route-card">
+        <div class="cc-route-body">
+          <strong>${esc(e.title)}</strong>
+          <div class="muted">${esc(e.sub||'')}</div>
+          <div class="cc-route-tags"><span class="cc-tag cc-tag-info">${esc(KIND_LABEL[e.kind])}</span></div>
+        </div>
+        <div class="cc-route-actions"><button class="minibtn" data-open="${e.kind}:${esc(e.ref.id)}">Ver</button></div>
+      </div>`;
+    }
+
+    return `
+      <div class="cc-kpis">
+        <div class="cc-kpi"><div class="cc-kpi-v">${totalToday}</div><div class="cc-kpi-l">Total hoy</div></div>
+        <div class="cc-kpi"><div class="cc-kpi-v">${overdueCount}</div><div class="cc-kpi-l">Vencidos</div></div>
+        <div class="cc-kpi"><div class="cc-kpi-v">${timed.length}</div><div class="cc-kpi-l">Con hora fija</div></div>
+      </div>
+      ${timed.length?`<div class="cc-route-section"><h3>Con hora fija</h3>${timed.map(timedRow).join('')}</div>`:''}
+      ${matutina.length?`<div class="cc-route-section"><h3>Tanda matutina (médicos vencidos)</h3>${matutina.map(dueRow).join('')}</div>`:''}
+      ${vespertina.length?`<div class="cc-route-section"><h3>Tanda vespertina (médicos vencidos)</h3>${vespertina.map(dueRow).join('')}</div>`:''}
+      ${untimedOther.length?`<div class="cc-route-section"><h3>Otras actividades de hoy</h3>${untimedOther.map(infoRow).join('')}</div>`:''}
+      ${totalToday===0?'<p class="muted">No hay nada agendado ni vencido para hoy. Revisa la Ruta del día para planificar.</p>':''}
+    `;
   }
 
   function routeHtml(){
@@ -117,6 +184,7 @@ export async function mountCommercialCalendar(root){
       <div class="sales-toolbar"><div><h2 class="section-heading">Agenda Comercial</h2><div class="muted">Visitas a clientes, lanzamientos de producto y actividades con especialistas en un solo calendario.</div></div><div class="quick-links">${state.tab==='calendario'?'<button id="cc-export" class="secondary">Exportar</button><button id="cc-new">+ Nueva actividad</button>':''}</div></div>
       <div id="cc-msg"></div>
       <nav class="cc-tabs">
+        <button type="button" class="cc-tab${state.tab==='hoy'?' cc-tab-active':''}" data-tab="hoy">Mi Día</button>
         <button type="button" class="cc-tab${state.tab==='calendario'?' cc-tab-active':''}" data-tab="calendario">Calendario</button>
         <button type="button" class="cc-tab${state.tab==='ruta'?' cc-tab-active':''}" data-tab="ruta">Ruta del día (predictiva)</button>
       </nav>
@@ -126,6 +194,7 @@ export async function mountCommercialCalendar(root){
         <label>Año<input id="cc-f-year" type="number" value="${state.year}" min="2024" max="2100"></label>`:''}
         <button type="submit">Actualizar</button>
       </form>
+      ${state.tab==='hoy'?`<section class="card">${todayHtml()}</section>`:''}
       ${state.tab==='calendario'?`
         <div class="cc-legend">
           <span><i class="cc-swatch cc-visit"></i>Visita a cliente</span>
@@ -133,7 +202,8 @@ export async function mountCommercialCalendar(root){
           <span><i class="cc-swatch cc-specialist"></i>Actividad con especialista</span>
         </div>
         <section class="card">${calendarHtml()}</section>
-      `:`<section class="card">${routeHtml()}</section>`}
+      `:''}
+      ${state.tab==='ruta'?`<section class="card">${routeHtml()}</section>`:''}
       <dialog id="cc-new-dialog" class="sales-dialog"></dialog>
       <dialog id="cc-detail-dialog" class="sales-dialog"></dialog>
     `;
@@ -148,6 +218,7 @@ export async function mountCommercialCalendar(root){
     document.getElementById('cc-export')?.addEventListener('click',()=>downloadText(`agenda-comercial-${state.year}-${String(state.month).padStart(2,'0')}.csv`,listCsv()));
     document.getElementById('cc-new')?.addEventListener('click',openNewDialog);
     root.querySelectorAll('.cc-ev').forEach(btn=>btn.onclick=()=>openDetail(btn.dataset.kind,btn.dataset.id));
+    root.querySelectorAll('[data-open]').forEach(btn=>{const [kind,id]=btn.dataset.open.split(':');btn.onclick=()=>openDetail(kind,id)});
     root.querySelectorAll('[data-visit]').forEach(btn=>btn.onclick=async()=>{
       const r=route.find(x=>x.id===btn.dataset.visit);
       try{
@@ -226,11 +297,7 @@ export async function mountCommercialCalendar(root){
 
   async function load(){
     try{
-      if(state.tab==='ruta'){
-        [data,route]=await Promise.all([loadCommercialCalendar(state.branchId),loadVisitRoute(state.branchId)]);
-      }else{
-        data=await loadCommercialCalendar(state.branchId);
-      }
+      [data,route]=await Promise.all([loadCommercialCalendar(state.branchId),loadVisitRoute(state.branchId)]);
       render();
     }catch(e){
       root.innerHTML=`<section class="card"><div class="status bad">${esc(e.message)}</div></section>`;
