@@ -18,6 +18,7 @@ export const resourcesData={
   reagentAlerts:()=>many('Alertas reactivos',sb().from('vw_reagent_alerts').select('*').order('expiry_date')),
   environmental:()=>many('Ambiente',sb().from('vw_environmental_alerts').select('*').order('reading_time',{ascending:false})),
   points:()=>many('Puntos',sb().from('environmental_points').select('*').eq('active',true).order('point_code').order('id')),
+  readingsInRange:(pointIds,fromISO,toISO)=>pointIds.length?many('Lecturas del período',sb().from('environmental_readings').select('*').in('point_id',pointIds).gte('reading_time',fromISO).lt('reading_time',toISO).order('reading_time')):Promise.resolve([]),
   summary:()=>one('Resumen recursos',sb().from('vw_resource_control_summary').select('*').single()),
 
   createEquipment:async p=>{const {data,error}=await sb().from('lab_equipment').insert(p).select('*').single();if(error)throw new Error(`Equipo: ${error.message}`);return data},
