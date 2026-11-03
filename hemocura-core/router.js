@@ -32,6 +32,7 @@ const ROUTES={
   medicalnetwork:{title:'Red Médica',subtitle:'Referidores, especialidades, referencias y conversión',group:'CADENA DE VALOR',order:25},
   customers:{title:'Clientes y SLA',subtitle:'Clientes, acuerdos de servicio, valor y retroalimentación',group:'CADENA DE VALOR',order:30},
   commercial:{title:'Gestión comercial',subtitle:'Clientes, visitas, compromisos, mapa y 12 semanas',group:'CADENA DE VALOR',order:35},
+  commercialcalendar:{title:'Agenda Comercial',subtitle:'Visitas, lanzamientos de producto y actividades con especialistas en un calendario',group:'CADENA DE VALOR',order:36},
   collections:{title:'Cobranza y Aging',subtitle:'Cuentas por cobrar, vencimiento, cobros y saldo',group:'CADENA DE VALOR',order:40},
   economics:{title:'Economía y Merma',subtitle:'Rentabilidad, pérdidas, campañas y contribución por sucursal',group:'CADENA DE VALOR',order:50},
 
