@@ -243,13 +243,7 @@ select r.id,p.permission_code from public.roles r join public.app_permissions p
 on p.permission_code='ISO_COMPLIANCE_VIEW'
 where r.code in ('GERENCIA_OPERATIVA','GERENCIA_GENERAL','SOCIO','SUPER_USUARIO') on conflict do nothing;
 
--- 8) CATÁLOGO DE MÓDULOS (ruta visible en gestión de accesos por rol)
-insert into public.app_module_catalog(route_key,title,group_name,permission_code)
-values('isocompliance','Cumplimiento ISO 9001/15189','CALIDAD Y SEGURIDAD','ISO_COMPLIANCE_VIEW')
-on conflict(route_key) do update set
-  title=excluded.title,group_name=excluded.group_name,permission_code=excluded.permission_code;
-
--- 9) MIGRACIÓN
+-- 8) MIGRACIÓN
 insert into public.app_migrations(migration_code,version,description,applied_by)
 values(
   '20261103130000_iso_compliance_checklist','0.49.2',
