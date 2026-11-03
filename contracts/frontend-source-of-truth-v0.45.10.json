@@ -115,67 +115,89 @@
       "path": "blood-operations-data.js",
       "canonical": "hemocura-core/blood-operations-data.js",
       "root_sha": "bc17f4d19062d4b84e4ff258aae42bb78302cac5",
-      "core_sha": "e58711876ab76c35155389186a5635d1d39a2f5f"
+      "core_sha": "e58711876ab76c35155389186a5635d1d39a2f5f",
+      "classification": "SUPERSEDED_NO_UNIQUE_BEHAVIOR",
+      "classified_in": "docs/I012_LEGACY_DIVERGENT_MODULE_CLASSIFICATION_2026-11-03.md"
     },
     {
       "path": "command-data.js",
       "canonical": "hemocura-core/command-data.js",
       "root_sha": "9685c5fc1afd06a01641ae02a95de2a75201bdf8",
-      "core_sha": "be7e9e9bd2f7619efdec71cbbf1e13b923d9acc2"
+      "core_sha": "be7e9e9bd2f7619efdec71cbbf1e13b923d9acc2",
+      "classification": "SUPERSEDED_NO_UNIQUE_BEHAVIOR",
+      "classified_in": "docs/I012_LEGACY_DIVERGENT_MODULE_CLASSIFICATION_2026-11-03.md"
     },
     {
       "path": "donors.js",
       "canonical": "hemocura-core/donors.js",
       "root_sha": "fb52a7a7e5bccbd5c16997bbf6ffd667a96a47ee",
-      "core_sha": "d3181583c1abca453252d145c06eb4033bb4ff60"
+      "core_sha": "d3181583c1abca453252d145c06eb4033bb4ff60",
+      "classification": "SUPERSEDED_NO_UNIQUE_BEHAVIOR",
+      "classified_in": "docs/I012_LEGACY_DIVERGENT_MODULE_CLASSIFICATION_2026-11-03.md"
     },
     {
       "path": "layout.js",
       "canonical": "hemocura-core/layout.js",
       "root_sha": "06f067ae0943c3ed202facdd385e5a55416890db",
-      "core_sha": "aa98b55440cdc528008d7616ced925ae72793ff1"
+      "core_sha": "aa98b55440cdc528008d7616ced925ae72793ff1",
+      "classification": "SUPERSEDED_NO_UNIQUE_BEHAVIOR",
+      "classified_in": "docs/I012_LEGACY_DIVERGENT_MODULE_CLASSIFICATION_2026-11-03.md"
     },
     {
       "path": "ops-dashboard.js",
       "canonical": "hemocura-core/ops-dashboard.js",
       "root_sha": "7a4345cb4d97c56a3cdc9b3dcc666e197ec29365",
-      "core_sha": "61c980ce4afcab4a5c52f14dc6754804257ab7fa"
+      "core_sha": "61c980ce4afcab4a5c52f14dc6754804257ab7fa",
+      "classification": "SUPERSEDED_NO_UNIQUE_BEHAVIOR",
+      "classified_in": "docs/I012_LEGACY_DIVERGENT_MODULE_CLASSIFICATION_2026-11-03.md"
     },
     {
       "path": "production.js",
       "canonical": "hemocura-core/production.js",
       "root_sha": "13c11be162cdc10d5ba50dd5bd831f2dc8c550f0",
-      "core_sha": "07e180f174089ca23f5e057ae61b01b70eb57acb"
+      "core_sha": "07e180f174089ca23f5e057ae61b01b70eb57acb",
+      "classification": "SUPERSEDED_NO_UNIQUE_BEHAVIOR",
+      "classified_in": "docs/I012_LEGACY_DIVERGENT_MODULE_CLASSIFICATION_2026-11-03.md"
     },
     {
       "path": "release-data.js",
       "canonical": "hemocura-core/release-data.js",
       "root_sha": "9a304f20ae5b18701abea99e9160178c523ccc1b",
-      "core_sha": "db811f55a8cd62335a6b5c142747ff9cbee0f76a"
+      "core_sha": "db811f55a8cd62335a6b5c142747ff9cbee0f76a",
+      "classification": "SUPERSEDED_NO_UNIQUE_BEHAVIOR",
+      "classified_in": "docs/I012_LEGACY_DIVERGENT_MODULE_CLASSIFICATION_2026-11-03.md"
     },
     {
       "path": "release-gate.js",
       "canonical": "hemocura-core/release-gate.js",
       "root_sha": "deb8ab74aa5bac56757dd69c14df3629ba3e985a",
-      "core_sha": "42ad06a916d2f416f9fb1666e47e9258a9e5ad1d"
+      "core_sha": "42ad06a916d2f416f9fb1666e47e9258a9e5ad1d",
+      "classification": "SUPERSEDED_NO_UNIQUE_BEHAVIOR",
+      "classified_in": "docs/I012_LEGACY_DIVERGENT_MODULE_CLASSIFICATION_2026-11-03.md"
     },
     {
       "path": "router.js",
       "canonical": "hemocura-core/router.js",
       "root_sha": "bf58d3828bb0dd67a4a60406842d504a87b35386",
-      "core_sha": "0e2fba999e5937dd6ab96d82402b54f36797ed4a"
+      "core_sha": "0e2fba999e5937dd6ab96d82402b54f36797ed4a",
+      "classification": "SUPERSEDED_NO_UNIQUE_BEHAVIOR",
+      "classified_in": "docs/I012_LEGACY_DIVERGENT_MODULE_CLASSIFICATION_2026-11-03.md"
     },
     {
       "path": "screening.js",
       "canonical": "hemocura-core/screening.js",
       "root_sha": "d1c3a9cbebd39e0d864621c63686fbd0e1d37bf4",
-      "core_sha": "5c2727a5418835e179e24e6269b2aadeb22dcad1"
+      "core_sha": "5c2727a5418835e179e24e6269b2aadeb22dcad1",
+      "classification": "SUPERSEDED_NO_UNIQUE_BEHAVIOR",
+      "classified_in": "docs/I012_LEGACY_DIVERGENT_MODULE_CLASSIFICATION_2026-11-03.md"
     },
     {
       "path": "views.js",
       "canonical": "hemocura-core/views.js",
       "root_sha": "f9081a19770487cf32c3c7e5745382214fc8e0ed",
-      "core_sha": "0f77c43e147fcb3e7350de72b777172052f62a8f"
+      "core_sha": "0f77c43e147fcb3e7350de72b777172052f62a8f",
+      "classification": "SUPERSEDED_NO_UNIQUE_BEHAVIOR",
+      "classified_in": "docs/I012_LEGACY_DIVERGENT_MODULE_CLASSIFICATION_2026-11-03.md"
     }
   ],
   "rules": [
