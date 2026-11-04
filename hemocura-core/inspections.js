@@ -20,8 +20,11 @@ const STANDARD_CHECKLIST=[
 ];
 
 function findingRow(n,f={}){
+  // f.section_name is only pre-filled for the standard checklist rows built
+  // from STANDARD_CHECKLIST below; an ad-hoc row added via "Añadir criterio"
+  // must start blank instead of silently inheriting a misleading section.
   return `<div class="card" data-finding-row data-n="${n}"><div class="filter-grid">
-    <label>Sección<input name="section_name" value="${esc(f.section_name||'Infraestructura e Instalaciones')}" required></label>
+    <label>Sección<input name="section_name" value="${esc(f.section_name||'')}" required></label>
     <label>Criterio<input name="criterion" value="${esc(f.criterion||'')}" required></label>
     <label>Resultado<select name="result" data-result>
       <option value="" ${!f.result?'selected':''}>Pendiente de evaluar</option>
