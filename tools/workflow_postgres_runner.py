@@ -42,6 +42,8 @@ def main():
   for f in sorted((ROOT/'sql/migrations').glob('*.sql')):
    if f.name.startswith(('20261010','20261011')):apply(f)
   deferred=[]
+  security_followups=[]
+  quality_security_followups=[]
   access_migrations=[]
   coordination_migrations=[]
   purchase_migrations=[]
@@ -54,6 +56,8 @@ def main():
   trip_migrations=[]
   team_role_migrations=[]
   for f in sorted((ROOT/'supabase/migrations').glob('*.sql')):
+   if f.name.endswith('_audit_criteria_and_competency_authorization.sql'):quality_security_followups.append(f);continue
+   if f.name.endswith('_hemovigilance_access_and_anonymous_view_containment.sql'):security_followups.append(f);continue
    if f.name.endswith('_logistics_team_roles.sql'):team_role_migrations.append(f);continue
    if f.name.endswith('_logistics_extra_trips.sql'):trip_migrations.append(f);continue
    if f.name.endswith(('_lab_release_permissions.sql','_lab_validated_result_integrity.sql')):lab_followups.append(f);continue
@@ -137,6 +141,16 @@ def main():
   for f in team_role_migrations:apply(f)
   if team_role_migrations:
    result=sql((ROOT/'tests/logistics-roles/business-rules.sql').read_text(),'logistics-team-role-rules')
+   report['checks'].extend({'name':c.strip(),'pass':True} for c in re.findall(r'PASS ([^\n]+)',result.stderr+result.stdout))
+  for f in security_followups:apply(f)
+  if security_followups:
+   result=sql((ROOT/'tests/security/hemovigilance-access.sql').read_text(),'hemovigilance-access-rules')
+   report['checks'].extend({'name':c.strip(),'pass':True} for c in re.findall(r'PASS ([^\n]+)',result.stderr+result.stdout))
+   spec=importlib.util.spec_from_file_location('hemovigilance_concurrency',ROOT/'tests/security/hemovigilance-concurrency.py');module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
+   report['checks'].extend(module.verify(name,out,ROOT))
+  for f in quality_security_followups:apply(f)
+  if quality_security_followups:
+   result=sql((ROOT/'tests/security/quality-configuration-access.sql').read_text(),'quality-configuration-access')
    report['checks'].extend({'name':c.strip(),'pass':True} for c in re.findall(r'PASS ([^\n]+)',result.stderr+result.stdout))
   print(f'PASS: {len(report["checks"])} PostgreSQL checks; {len(report["migrations"])} baseline/candidate files. Production not verified.')
   return 0
