@@ -31,7 +31,10 @@ export const workflowData={
  saveOpportunity:(branch,id,data)=>call('wf_save_opportunity',{p_branch:branch,p_id:id,p_data:data}),
  resources:branch=>rows('Cámaras',sb().from('hyperbaric_resources').select('*').eq('branch_id',branch).eq('active',true).order('name')),
  createResource:(branch,data)=>call('wf_create_resource',{p_branch:branch,p_data:data}),
- appointments:branch=>rows('Agenda hiperbárica',sb().from('hyperbaric_appointments').select('*').eq('branch_id',branch).order('starts_at',{ascending:false}).order('id')),
+ // vw_hyperbaric_appointments_display masks patient_name/patient_phone down to
+ // patient_code for anyone without HYPERBARIC_PATIENT_PII (see migration
+ // 20261104110000); writes still go through wf_save_appointment on the base table.
+ appointments:branch=>rows('Agenda hiperbárica',sb().from('vw_hyperbaric_appointments_display').select('*').eq('branch_id',branch).order('starts_at',{ascending:false}).order('id')),
  sessions:branch=>rows('Sesiones',sb().from('hyperbaric_sessions').select('*').eq('branch_id',branch).order('performed_at',{ascending:false}).order('id')),
  finances:branch=>rows('Facturas hiperbáricas',sb().from('vw_hyperbaric_finance').select('*').eq('branch_id',branch).order('invoice_date',{ascending:false})),
  saveAppointment:(branch,id,data)=>call('wf_save_appointment',{p_branch:branch,p_id:id,p_data:data}),
