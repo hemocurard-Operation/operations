@@ -1,2 +1,6 @@
 import {allPages} from './data-pages.js';
-import {getSupabase} from './supabase.js';const sb=()=>getSupabase();async function many(l,p){return allPages(l,p)}export const hemovigData={events:()=>many('Eventos',sb().from('hemovigilance_events').select('*').order('event_date',{ascending:false})),recalls:()=>many('Retiros',sb().from('product_recalls').select('*').order('initiated_at',{ascending:false})),create:async p=>{const {data,error}=await sb().from('hemovigilance_events').insert(p).select('*').single();if(error)throw new Error(error.message);return data}};
+import {getSupabase} from './supabase.js';const sb=()=>getSupabase();async function many(l,p){return allPages(l,p)}export const hemovigData={events:()=>many('Eventos',sb().from('hemovigilance_events').select('*').order('event_date',{ascending:false})),recalls:()=>many('Retiros',sb().from('product_recalls').select('*').order('initiated_at',{ascending:false})),create:async p=>{const {data,error}=await sb().from('hemovigilance_events').insert(p).select('*').single();if(error)throw new Error(error.message);return data},
+// Delivery-specific nonconformities: joined client-side onto events by event_id,
+// same pattern used elsewhere in the app for small satellite tables.
+deliveryDetails:()=>many('Detalle de NC de entrega',sb().from('hemovigilance_delivery_details').select('*')),
+createDeliveryNC:async(branchId,payload)=>{const {data,error}=await sb().rpc('hemovig_delivery_nc_create',{p_branch:branchId,p_data:payload});if(error)throw new Error(error.message);return data}};

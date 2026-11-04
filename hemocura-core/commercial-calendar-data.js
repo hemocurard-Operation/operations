@@ -42,3 +42,13 @@ export async function createSpecialistActivity(payload){
 export async function createVisit(branchId,payload){
   return workflowData.saveVisit(branchId,null,payload);
 }
+
+// Quick inline status change from the calendar cell (Confirmar/Cancelar).
+// Carries over the visit's existing commitment/evidence/followup_at so the
+// update doesn't null them out — wf_save_visit replaces all three on every
+// call, it doesn't merge.
+export async function updateVisitStatus(branchId,visit,status){
+  return workflowData.saveVisit(branchId,visit.id,{
+    status,evidence:visit.evidence||'',commitment:visit.commitment||'',followup_at:visit.followup_at||''
+  });
+}
