@@ -1,6 +1,7 @@
 import { getSession } from './auth.js';
 import { mountLayout } from './layout.js';
 import { classifyError } from './diagnostic-engine.js';
+import { installProgressProtection } from './progress-protection.js';
 
 async function currentVersion(){
   try{
@@ -69,6 +70,7 @@ export async function initApp(){
 
     // CRÍTICO: mountLayout es async. Debe esperarse para que
     // cualquier error de perfil/roles/RLS/schema llegue a este catch.
+    installProgressProtection();
     await mountLayout(session);
 
     console.info(`[HEMOCURA_BOOT] OK v${version}`);

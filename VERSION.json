@@ -1,7 +1,7 @@
 {
   "project": "HemoCura Operations Intelligence + QMS + Compliance",
-  "version": "0.49.1",
-  "stage": "Ruta operativa por sucursal · Comercial · Cámara hiperbárica · Calidad del banco de sangre",
+  "version": "0.49.2",
+  "stage": "Seguridad reforzada · piloto Santiago con usuarios de prueba · liberación humana pendiente",
   "release_channel": "RC",
   "protected_files": [
     "js/config.js"
