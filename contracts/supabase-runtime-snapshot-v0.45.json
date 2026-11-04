@@ -1,7 +1,7 @@
 {
   "project_id": "tiothqiljipdamgudvcb",
   "verified_at": "2026-11-04",
-  "scope": "Frontend runtime objects, Daily Operational Report production contract and Training Native 1.1 RC; added coordination, purchases, role windows and area agenda objects verified 2026-10-16 against production catalogs; quality-information objects verified against production after migration 20261017005235; audit in implementation report; ISO clause assessment/evidence tables, vw_iso_compliance_summary and iso_clause_assessment RPCs verified live 2026-11-03 after migration 20261103130000; vw_referrer_visit_route verified live 2026-11-03 after migration 20261103190000; hemovigilance_delivery_details and hemovig_delivery_nc_create verified live 2026-11-04 after migration 20261104100000",
+  "scope": "Frontend runtime objects, Daily Operational Report production contract and Training Native 1.1 RC; added coordination, purchases, role windows and area agenda objects verified 2026-10-16 against production catalogs; quality-information objects verified against production after migration 20261017005235; audit in implementation report; ISO clause assessment/evidence tables, vw_iso_compliance_summary and iso_clause_assessment RPCs verified live 2026-11-03 after migration 20261103130000; vw_referrer_visit_route verified live 2026-11-03 after migration 20261103190000; hemovigilance_delivery_details and hemovig_delivery_nc_create verified live 2026-11-04 after migration 20261104100000; vw_hyperbaric_appointments_display verified live 2026-11-04 after migration 20261104110000",
   "relations": [
     "access_events",
     "app_feature_flags",
@@ -175,6 +175,7 @@
     "vw_exception_candidates",
     "vw_exception_portfolio",
     "vw_feature_complete_scorecard",
+    "vw_hyperbaric_appointments_display",
     "vw_hyperbaric_finance",
     "vw_inspection_summary",
     "vw_internal_audit_portfolio",

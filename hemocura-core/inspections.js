@@ -4,13 +4,43 @@ import { listInspections, createInspection, listInspectionFindings, listActivePr
 function esc(v=''){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
 const today=()=>new Date().toISOString().slice(0,10);
 
+// Checklist estándar de criterios recurrentes de inspección, para no empezar
+// cada inspección desde cero (concepto adaptado de un prototipo externo).
+// Son un punto de partida editable, no una lista normativa cerrada: cada fila
+// sigue siendo texto libre y se pueden añadir o quitar criterios.
+const STANDARD_CHECKLIST=[
+  ['Infraestructura e Instalaciones','Señalización de áreas restringidas'],
+  ['Infraestructura e Instalaciones','Condiciones de limpieza y orden'],
+  ['Bioseguridad','Uso correcto de equipo de protección personal'],
+  ['Bioseguridad','Manejo y disposición de desechos biológicos'],
+  ['Cadena de frío','Registro diario de temperatura actualizado'],
+  ['Cadena de frío','Dispositivos de alarma funcionando'],
+  ['Documentación','Procedimientos vigentes disponibles en el área'],
+  ['Documentación','Registros de capacitación del personal actualizados']
+];
+
 function findingRow(n,f={}){
   return `<div class="card" data-finding-row data-n="${n}"><div class="filter-grid">
     <label>Sección<input name="section_name" value="${esc(f.section_name||'Infraestructura e Instalaciones')}" required></label>
     <label>Criterio<input name="criterion" value="${esc(f.criterion||'')}" required></label>
-    <label>Resultado<select name="result"><option value="C" ${f.result==='C'?'selected':''}>Cumple</option><option value="NC" ${f.result==='NC'?'selected':''}>No cumple</option><option value="NA" ${f.result==='NA'?'selected':''}>No aplica</option></select></label>
+    <label>Resultado<select name="result" data-result>
+      <option value="" ${!f.result?'selected':''}>Pendiente de evaluar</option>
+      <option value="C" ${f.result==='C'?'selected':''}>Cumple</option>
+      <option value="NC" ${f.result==='NC'?'selected':''}>No cumple</option>
+      <option value="NA" ${f.result==='NA'?'selected':''}>No aplica</option>
+    </select></label>
     <label>Observación<textarea name="observation">${esc(f.observation||'')}</textarea></label>
   </div><button type="button" data-remove-finding>Quitar criterio</button></div>`;
+}
+
+function checklistProgressHtml(done,total){
+  const pct=total?Math.round(100*done/total):0;
+  return `<div data-checklist-progress style="margin-bottom:10px">
+    <p class="muted" style="margin-bottom:4px">${done} de ${total} criterios evaluados (${pct}%)</p>
+    <div style="height:6px;border-radius:999px;background:var(--surface-2,#eee);overflow:hidden">
+      <div style="height:100%;width:${pct}%;background:var(--accent,#2b5fa8);transition:width .2s"></div>
+    </div>
+  </div>`;
 }
 
 export async function mountInspections(root){
@@ -34,7 +64,8 @@ export async function mountInspections(root){
       <label>Responsable en sitio<input id="insp-responsible"></label>
       </div>
       <h4>Criterios / hallazgos</h4>
-      <div id="insp-findings">${findingRow(1)}</div>
+      <div id="insp-checklist-progress"></div>
+      <div id="insp-findings">${STANDARD_CHECKLIST.map((c,i)=>findingRow(i+1,{section_name:c[0],criterion:c[1]})).join('')}</div>
       <button type="button" id="insp-add-finding">Añadir criterio</button>
       <div class="dialog-actions"><button type="button" id="insp-cancel" class="secondary">Cancelar</button><button type="submit">Guardar</button></div>
     </form></dialog>
@@ -44,18 +75,26 @@ export async function mountInspections(root){
       <div class="dialog-actions"><button type="button" id="insp-nc-cancel" class="secondary">Cancelar</button><button type="submit">Guardar</button></div>
     </form></dialog>`;
 
-  let findingCount=1;
+  let findingCount=STANDARD_CHECKLIST.length;
   const findingsHolder=document.getElementById('insp-findings');
+  function updateProgress(){
+    const rows=[...findingsHolder.querySelectorAll('[data-finding-row]')];
+    const done=rows.filter(r=>r.querySelector('[data-result]').value).length;
+    document.getElementById('insp-checklist-progress').innerHTML=checklistProgressHtml(done,rows.length);
+  }
   function bindRemovals(){
     findingsHolder.querySelectorAll('[data-remove-finding]').forEach(b=>b.onclick=()=>{
-      if(findingsHolder.querySelectorAll('[data-finding-row]').length>1) b.closest('[data-finding-row]').remove();
+      if(findingsHolder.querySelectorAll('[data-finding-row]').length>1){b.closest('[data-finding-row]').remove();updateProgress()}
     });
   }
   bindRemovals();
+  findingsHolder.addEventListener('change',e=>{if(e.target.matches('[data-result]'))updateProgress()});
+  updateProgress();
   document.getElementById('insp-add-finding').onclick=()=>{
     findingCount++;
     findingsHolder.insertAdjacentHTML('beforeend',findingRow(findingCount));
     bindRemovals();
+    updateProgress();
   };
 
   async function load(){
@@ -136,6 +175,8 @@ export async function mountInspections(root){
   document.getElementById('insp-nc-cancel').onclick=()=>document.getElementById('insp-nc-dialog').close();
   document.getElementById('insp-form').onsubmit=async(ev)=>{
     ev.preventDefault();
+    const pending=[...findingsHolder.querySelectorAll('[data-finding-row]')].filter(r=>!r.querySelector('[data-result]').value);
+    if(pending.length){document.getElementById('insp-status').innerHTML=`<div class="status warn">Faltan ${pending.length} criterio(s) por evaluar.</div>`;pending[0].scrollIntoView({block:'center'});return}
     const rows=[...findingsHolder.querySelectorAll('[data-finding-row]')].map(row=>({
       section_name:row.querySelector('[name=section_name]').value.trim(),
       criterion_no:row.dataset.n,
@@ -164,9 +205,10 @@ export async function mountInspections(root){
       },rows);
       document.getElementById('insp-dialog').close();
       ev.target.reset();
-      findingsHolder.innerHTML=findingRow(1);
-      findingCount=1;
+      findingsHolder.innerHTML=STANDARD_CHECKLIST.map((c,i)=>findingRow(i+1,{section_name:c[0],criterion:c[1]})).join('');
+      findingCount=STANDARD_CHECKLIST.length;
       bindRemovals();
+      updateProgress();
       await load();
     }catch(e){document.getElementById('insp-status').innerHTML=`<div class="status bad">${esc(e.message)}</div>`}
   };
