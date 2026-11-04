@@ -7,6 +7,7 @@ window.fixture=fixture;const day=localDay();fixture.day=day;
 const A='e2000000-0000-0000-0000-000000000001',B='e2000000-0000-0000-0000-000000000002',USER='e1000000-0000-0000-0000-000000000001',OTHER='e1000000-0000-0000-0000-000000000003',CLIENT='e4000000-0000-0000-0000-000000000001';
 fixture.permissions=['DONORS_VIEW','DASHBOARD_VIEW','WORKFLOW_VIEW','COMMERCIAL_VIEW','COMMERCIAL_WRITE','HYPERBARIC_VIEW','HYPERBARIC_WRITE','HYPERBARIC_SESSION_WRITE','HYPERBARIC_BILLING','SALES_VIEW','SALES_WRITE','COLLECTIONS_VIEW','QUALITY_VIEW','QUALITY_WRITE','QUALITY_DAILY_REVIEW','BLOOD_INVENTORY_VIEW','BLOOD_INVENTORY_WRITE','UNIT_RELEASE','SUPPLY_VIEW','DISPATCH_VIEW','REQUISITION_WRITE','ACCESS_ADMIN','DAILY_REPORT_VIEW','DAILY_REPORT_WRITE'];
 fixture.context={user_id:USER,roles:['SUPER_USUARIO'],email:'fixture@example.invalid',profile_branch_id:A,full_name:'Local test operator'};
+const hyperbaricAppointments=[{id:'appt1',branch_id:A,resource_id:'resource1',patient_name:'Carmen Abreu',patient_phone:'829-727-8852',patient_code:'CA-0001',starts_at:day+'T13:00:00-04:00',ends_at:day+'T14:00:00-04:00',operational_date:day,shift:'DIURNO',price:100,currency:'USD',session_label:'1 por el momento',referrer_name:'Dr. Báez',note:'no requiere transporte',status:'SOLICITADA'}];
 fixture.tables={
  branches:[{id:A,code:'A',name:'Sucursal A',active:true},{id:B,code:'B',name:'Sucursal B',active:true}],customers:[{id:CLIENT,name:'Centro de ejemplo',active:true}],
  products:[{id:'p1',code:'P1',name:'Guantes M',unit_of_measure:'caja',active:true}],
@@ -15,7 +16,15 @@ fixture.tables={
  commercial_plans:[{id:'plan1',branch_id:A,agent_id:USER,cycle_start:day,goal:'Visitas con seguimiento',target_visits:12,tactics:'Revisar compromisos'}],
  commercial_opportunities:[],medical_referrers:[{id:'md1',branch_id:A,full_name:'Dr. Báez'}],
  hyperbaric_resources:[{id:'resource1',branch_id:A,name:'Cámara de prueba',capacity:1,active:true,procedure_reference:'TEST'}],
- hyperbaric_appointments:[{id:'appt1',branch_id:A,resource_id:'resource1',patient_name:'Carmen Abreu',patient_phone:'829-727-8852',starts_at:day+'T13:00:00-04:00',ends_at:day+'T14:00:00-04:00',operational_date:day,shift:'DIURNO',price:100,currency:'USD',session_label:'1 por el momento',referrer_name:'Dr. Báez',note:'no requiere transporte',status:'SOLICITADA'}],
+ hyperbaric_appointments:hyperbaricAppointments,
+ // vw_hyperbaric_appointments_display masks patient_name/patient_phone down to
+ // patient_code for viewers lacking HYPERBARIC_PATIENT_PII (see migration
+ // 20261104110000). The fixture has no server-side permission evaluation, so
+ // it shares the same array as hyperbaric_appointments (real name/phone,
+ // as if the viewer always holds the PII permission) — enough for the UI
+ // tests here, which exercise rendering/reporting, not the masking rule
+ // itself (that's verified against Postgres directly).
+ vw_hyperbaric_appointments_display:hyperbaricAppointments,
  hyperbaric_sessions:[],vw_hyperbaric_finance:[{id:'charge1',branch_id:A,session_id:'session1',invoice_number:'TEST-INVOICE',invoice_date:day,currency:'USD',amount:100,paid:60,outstanding:40,status:'FACTURADA'}],
  workflow_service_events:[{id:'service1',branch_id:A,session_id:'session1',service_date:day,shift:'DIURNO',status:'REALIZADA',currency:'USD',price:100}],
  vw_workflow_shift_sales:[{source_id:'sale1',source_type:'SANGRE',branch_id:A,operational_date:day,shift:'DIURNO',currency:'DOP',client_name:'Centro de ejemplo',treating_doctor:'Médico tratante',invoiced:6500,paid:6500,status:'COBRADA'},{source_id:'charge1',source_type:'CAMARA_HIPERBARICA',branch_id:A,operational_date:day,shift:'DIURNO',currency:'USD',client_name:'Servicio hiperbárico',invoiced:100,paid:60,status:'FACTURADA'}],
