@@ -28,7 +28,8 @@ def main():
   sql(path.read_text(),path.stem);report['migrations'].append({'file':str(path.relative_to(ROOT)),'sha256':hashlib.sha256(path.read_bytes()).hexdigest()})
  try:
   if subprocess.run(['docker','image','inspect',IMAGE],capture_output=True).returncode:subprocess.run(['docker','pull',IMAGE],check=True)
-  subprocess.run(['docker','run','-d','--name',name,'--network','none','-e','POSTGRES_HOST_AUTH_METHOD=trust',IMAGE],check=True,capture_output=True)
+  launch=subprocess.run(['docker','run','-d','--name',name,'--network','none','--tmpfs','/var/lib/postgresql/data:rw,size=256m','-e','POSTGRES_HOST_AUTH_METHOD=trust',IMAGE],capture_output=True,text=True)
+  if launch.returncode:raise RuntimeError('Isolated PostgreSQL could not start: '+launch.stderr.strip())
   started=True
   for _ in range(80):
    if subprocess.run(['docker','exec',name,'pg_isready','-h','127.0.0.1','-U','postgres'],capture_output=True).returncode==0:break
@@ -44,6 +45,7 @@ def main():
   deferred=[]
   security_followups=[]
   quality_security_followups=[]
+  production_followups=[]
   access_migrations=[]
   coordination_migrations=[]
   purchase_migrations=[]
@@ -56,6 +58,7 @@ def main():
   trip_migrations=[]
   team_role_migrations=[]
   for f in sorted((ROOT/'supabase/migrations').glob('*.sql')):
+   if f.name.endswith('_production_security_privacy_readiness.sql'):production_followups.append(f);continue
    if f.name.endswith('_audit_criteria_and_competency_authorization.sql'):quality_security_followups.append(f);continue
    if f.name.endswith('_hemovigilance_access_and_anonymous_view_containment.sql'):security_followups.append(f);continue
    if f.name.endswith('_logistics_team_roles.sql'):team_role_migrations.append(f);continue
@@ -152,6 +155,28 @@ def main():
   if quality_security_followups:
    result=sql((ROOT/'tests/security/quality-configuration-access.sql').read_text(),'quality-configuration-access')
    report['checks'].extend({'name':c.strip(),'pass':True} for c in re.findall(r'PASS ([^\n]+)',result.stderr+result.stdout))
+  if production_followups:
+   # Read-only production catalog parity: no records/users or operating approvals copied.
+   apply(ROOT/'sql/C12_01_SECURITY_HARDENING_CANDIDATE.sql')
+   apply(ROOT/'sql/C13C_02_CONTROLLED_RPC_WRAPPERS_CANDIDATE.sql')
+   for prerequisite in ('production-readiness-prerequisites.sql','serialized-production-prerequisites.sql','release-config-prerequisites.sql','legacy-policy-prerequisites.sql'):
+    apply(ROOT/'tests/security'/prerequisite)
+   for f in production_followups:apply(f)
+   result=sql((ROOT/'tests/security/production-readiness.sql').read_text(),'santiago-isolated-pilot')
+   report['checks'].extend({'name':c.strip(),'pass':True} for c in re.findall(r'PASS ([^\n]+)',result.stderr+result.stdout))
+   # Recheck operational writes AFTER security changes, not only the old baseline.
+   # New PostgreSQL defaults require explicit grants for temporary test helpers too.
+   for suite in ('qms','lab-management','procurement'):
+    text=(ROOT/'tests'/suite/'business-rules.sql').read_text()
+    if suite=='procurement':
+     text=(ROOT/'tests/security/procurement-integrated-prerequisites.sql').read_text()+text.replace('test.actor','request.jwt.claim.sub').replace('workflow_audit','audit_events').replace('sesión no está activa','Usuario activo requerido')+'\nrollback;\n'
+     audit_assert="select pg_temp.ok((select count(*)>=7 from audit_events),'mutations produce audit events');"
+     text=text.replace(audit_assert,'reset role;'+audit_assert+'set role authenticated;')
+    boundary=re.search(r'set\s+(?:local\s+)?role\s+authenticated\s*;',text,re.I)
+    if not boundary:raise RuntimeError('Missing role boundary in '+suite)
+    text=text[:boundary.start()]+'grant execute on all functions in schema pg_temp to authenticated,anon;\n'+text[boundary.start():]
+    result=sql(text,'post-hardening-'+suite)
+    report['checks'].extend({'name':c.strip(),'pass':True} for c in re.findall(r'PASS ([^\n]+)',result.stderr+result.stdout))
   print(f'PASS: {len(report["checks"])} PostgreSQL checks; {len(report["migrations"])} baseline/candidate files. Production not verified.')
   return 0
  except Exception as e:
@@ -159,6 +184,6 @@ def main():
  finally:
   report['status']='FAIL' if report.get('error') else 'PASS'
   (out/'report.json').write_text(json.dumps(report,indent=2))
-  if started and not args.keep:subprocess.run(['docker','rm','-f',name],capture_output=True)
+  if started and not args.keep:subprocess.run(['docker','rm','-f','-v',name],capture_output=True)
   if started and args.keep:print('Local diagnostic container: '+name)
 if __name__=='__main__':raise SystemExit(main())
