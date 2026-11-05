@@ -123,6 +123,8 @@
     "supplier_incidents",
     "suppliers",
     "system_operating_mode",
+    "team_deliveries",
+    "team_delivery_history",
     "training_assignments",
     "training_authorizations",
     "training_certificates",
