@@ -22,5 +22,6 @@ export const bloodData={
   salesSummary:()=>query('Reporte ventas',sb().from('vw_sales_operational_summary').select('*').order('sale_date',{ascending:false})),
   biToday:()=>query('BI Operaciones',sb().from('vw_bi_operations_today').select('*')),
   projects:()=>query('Portafolio',sb().from('vw_project_portfolio').select('*').order('priority')),
-  createProject:async p=>{const {data,error}=await sb().from('projects').insert(p).select('*').single();if(error)throw new Error(`Proyecto: ${error.message}`);return data}
+  createProject:async p=>{const {data,error}=await sb().from('projects').insert(p).select('*').single();if(error)throw new Error(`Proyecto: ${error.message}`);return data},
+  updateProject:async(id,p)=>{const {data,error}=await sb().from('projects').update(p).eq('id',id).select('*').single();if(error)throw new Error(`Proyecto: ${error.message}`);return data}
 };
