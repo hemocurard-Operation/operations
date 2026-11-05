@@ -2,6 +2,10 @@ name: Logistics mobile trips and incentives
 on:
   pull_request:
     paths:
+      - 'hemocura-core/team-deliveries.js'
+      - 'supabase/migrations/*team_delivery_coordination.sql'
+      - 'tests/team-deliveries/**'
+      - 'tools/team_delivery*'
       - 'hemocura-core/extra-trips*.js'
       - 'hemocura-core/data-pages.js'
       - 'hemocura-core/my-work.js'
@@ -22,6 +26,10 @@ on:
   push:
     branches: [main]
     paths:
+      - 'hemocura-core/team-deliveries.js'
+      - 'supabase/migrations/*team_delivery_coordination.sql'
+      - 'tests/team-deliveries/**'
+      - 'tools/team_delivery*'
       - 'hemocura-core/extra-trips*.js'
       - 'hemocura-core/data-pages.js'
       - 'hemocura-core/my-work.js'
@@ -58,6 +66,8 @@ jobs:
       - run: node tests/wave50/node_modules/playwright/cli.js install --with-deps chromium
       - run: node tools/trips_browser_runner.cjs
       - run: node tools/logistics_roles_browser_runner.cjs
+      - run: python tools/team_delivery_postgres_runner.py
+      - run: node tools/team_delivery_browser_runner.cjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -65,3 +75,5 @@ jobs:
           path: |
             /tmp/hemocura-trips-postgres
             /tmp/hemocura-trips-browser
+            /tmp/hemocura-team-delivery-postgres
+            /tmp/hemocura-team-delivery-browser
