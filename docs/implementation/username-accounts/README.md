@@ -13,7 +13,7 @@ Crear usuario: nombre completo, usuario de acceso de 3–40 caracteres (letras A
 Una vez creado, el username no se cambia desde el navegador. Este cambio no migra ni renombra automáticamente cuentas existentes.
 
 ## Activación
-personal_username_accounts se instala apagado. Primero desplegar la tabla, luego admin-users con ambos archivos index.ts y login-identity.js, después frontend y habilitar la bandera LIVE_LIMITED. Las cuentas existentes no cambian. Para detener nuevas altas por username, apagar la bandera; mantener habilitada la conversión de ingreso para no bloquear cuentas ya creadas. No borrar contactos ni cambiar correos de Auth para revertir.
+personal_username_accounts se instala apagado. Primero desplegar la tabla, luego admin-users con la entrada supabase/functions/admin-users/index.ts y el módulo canónico hemocura-core/login-identity.js, después frontend y habilitar la bandera LIVE_LIMITED. Las cuentas existentes no cambian. Para detener nuevas altas por username, apagar la bandera; mantener habilitada la conversión de ingreso para no bloquear cuentas ya creadas. No borrar contactos ni cambiar correos de Auth para revertir.
 
 ## Validación
 Suite PostgreSQL integrada: 494 comprobaciones sobre 94 archivos, diez nuevas sobre contacto compartido y RLS. Prueba del handler real admin-users con SDK simulado: cuentas distintas, correo repetido, roles distintos, rechazo de duplicados, sesión/permisos, rollback, legado y no registro de contraseñas. Nueve verificaciones de navegador con datos ficticios. Estas pruebas no utilizan contraseñas ni cuentas reales.

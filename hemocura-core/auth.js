@@ -1,4 +1,4 @@
-import {loginEmail} from '../supabase/functions/admin-users/login-identity.js';
+import {loginEmail} from './login-identity.js';
 import { getSupabase } from './supabase.js';
 import { classifyError, diagnosticFromCode } from './diagnostic-engine.js';
 
