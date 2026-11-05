@@ -55,6 +55,12 @@ export async function updateTask(id,payload){
   return data;
 }
 
+export async function listAllTasks(){
+  const {data,error}=await sb().from('work_tasks').select('*').order('due_date');
+  if(error)throw new Error(`Todas las tareas: ${error.message}`);
+  return data||[];
+}
+
 export async function listProfiles(){
   const {data,error}=await sb().from('profiles').select('id,full_name').order('full_name');
   if(error)throw new Error(`Perfiles: ${error.message}`);
