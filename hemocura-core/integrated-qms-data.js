@@ -69,6 +69,36 @@ export async function listDocumentRegister(){
   return data||[];
 }
 
+export async function createDocument(payload){
+  const {data,error}=await getSupabase().from('document_register').insert(payload).select('*').single();
+  if(error) throw new Error(`Crear documento: ${error.message}`);
+  return data;
+}
+
+export async function updateDocument(id,payload){
+  const {data,error}=await getSupabase().from('document_register').update(payload).eq('id',id).select('*').single();
+  if(error) throw new Error(`Actualizar documento: ${error.message}`);
+  return data;
+}
+
+export async function listDocumentChanges(documentId){
+  const {data,error}=await getSupabase().from('document_changes').select('*').eq('document_id',documentId).order('change_date',{ascending:false});
+  if(error) throw new Error(`Cambios documentales: ${error.message}`);
+  return data||[];
+}
+
+export async function createDocumentChange(payload){
+  const {data,error}=await getSupabase().from('document_changes').insert(payload).select('*').single();
+  if(error) throw new Error(`Crear cambio documental: ${error.message}`);
+  return data;
+}
+
+export async function updateDocumentChange(id,payload){
+  const {data,error}=await getSupabase().from('document_changes').update(payload).eq('id',id).select('*').single();
+  if(error) throw new Error(`Actualizar cambio: ${error.message}`);
+  return data;
+}
+
 export async function listRisks(){
   const {data,error}=await getSupabase().from('risk_register').select('*').order('inherent_score',{ascending:false}).limit(200);
   if(error) throw new Error(`Riesgos: ${error.message}`);

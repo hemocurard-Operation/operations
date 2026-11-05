@@ -25,5 +25,7 @@ export const resourcesData={
   createReagent:async p=>{const {data,error}=await sb().from('reagent_lots').insert(p).select('*').single();if(error)throw new Error(`Reactivo: ${error.message}`);return data},
   createPoint:async p=>{const {data,error}=await sb().from('environmental_points').insert(p).select('*').single();if(error)throw new Error(`Punto ambiental: ${error.message}`);return data},
   addReading:async p=>{const {data,error}=await sb().from('environmental_readings').insert(p).select('*').single();if(error)throw new Error(`Lectura: ${error.message}`);return data},
-  createService:async p=>{const {data,error}=await sb().from('equipment_service_events').insert(p).select('*').single();if(error)throw new Error(`Servicio equipo: ${error.message}`);return data}
+  createService:async p=>{const {data,error}=await sb().from('equipment_service_events').insert(p).select('*').single();if(error)throw new Error(`Servicio equipo: ${error.message}`);return data},
+  serviceEvents:()=>many('Eventos servicio',sb().from('equipment_service_events').select('*,lab_equipment(equipment_code,equipment_type,branch_id)').order('scheduled_date',{ascending:false}).order('id')),
+  updateService:async(id,p)=>{const {data,error}=await sb().from('equipment_service_events').update(p).eq('id',id).select('*').single();if(error)throw new Error(`Actualizar servicio: ${error.message}`);return data}
 };

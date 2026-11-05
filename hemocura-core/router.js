@@ -47,6 +47,7 @@ const ROUTES={
   transport:{title:'Transporte',subtitle:'Reporte de traslados entre sucursales y cadena de frío en ruta',group:'TRABAJO DIARIO',order:15},
   hemovigilance:{title:'Hemovigilancia',subtitle:'Eventos adversos, casi eventos y retiros',group:'LABORATORIO Y SANGRE',order:80},
   resources:{title:'Recursos Críticos',subtitle:'Equipos, reactivos y ambiente',group:'LABORATORIO Y SANGRE',order:90},
+  maintenance:{title:'Mantenimiento',subtitle:'Órdenes de trabajo, calendario preventivo y calibraciones',group:'LABORATORIO Y SANGRE',order:92},
   environmental:{title:'Control Ambiental y Temperaturas',subtitle:'Registro diario por equipo, con hoja imprimible del mes',group:'LABORATORIO Y SANGRE',order:95},
 
   actions:{title:'Acciones Integradas',subtitle:'Cartera única de acciones, evidencia y eficacia',group:'CALIDAD Y SEGURIDAD',order:5},
