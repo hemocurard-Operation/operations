@@ -34,6 +34,7 @@ const ROUTES={
   customers:{title:'Clientes y SLA',subtitle:'Clientes, acuerdos de servicio, valor y retroalimentación',group:'CADENA DE VALOR',order:30},
   commercial:{title:'Gestión comercial',subtitle:'Clientes, visitas, compromisos, mapa y 12 semanas',group:'CADENA DE VALOR',order:35},
   commercialcalendar:{title:'Agenda Comercial',subtitle:'Visitas, lanzamientos de producto y actividades con especialistas en un calendario',group:'CADENA DE VALOR',order:36},
+  congresses:{title:'Congresos y Noticias',subtitle:'Congresos médicos, noticias del sector y tracking de asistencia por referidor',group:'CADENA DE VALOR',order:37},
   collections:{title:'Cobranza y Aging',subtitle:'Cuentas por cobrar, vencimiento, cobros y saldo',group:'CADENA DE VALOR',order:40},
   economics:{title:'Economía y Merma',subtitle:'Rentabilidad, pérdidas, campañas y contribución por sucursal',group:'CADENA DE VALOR',order:50},
 
@@ -64,6 +65,7 @@ const ROUTES={
   compliance:{title:'Compliance Penal',subtitle:'Programa penal, riesgos, evidencia y seguimiento',group:'CALIDAD Y SEGURIDAD',order:80},
 
   bi:{title:'Inteligencia de Negocios',subtitle:'Indicadores y análisis operativo',group:'GESTIÓN',order:10},
+  twelveweek:{title:'Plan de 12 Semanas',subtitle:'Ejecución estratégica: metas semanales, tareas, responsables y seguimiento',group:'GESTIÓN',order:15},
   management:{title:'Revisión Dirección',subtitle:'Objetivos, riesgos y seguimiento',group:'GESTIÓN',order:20},
   projects:{title:'Proyectos',subtitle:'Portafolio, avance y dependencias',group:'GESTIÓN',order:30},
   continuity:{title:'Continuidad',subtitle:'Continuidad operativa e integridad de datos',group:'GESTIÓN',order:40},
