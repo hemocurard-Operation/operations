@@ -39,6 +39,7 @@
     "diagnostic_events",
     "dispatch_lines",
     "dispatches",
+    "document_changes",
     "document_register",
     "donations",
     "donor_agenda_capacity",
