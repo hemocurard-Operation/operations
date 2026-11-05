@@ -59,7 +59,7 @@ def main():
   team_role_migrations=[]
   delivery_migrations=[]
   for f in sorted((ROOT/'supabase/migrations').glob('*.sql')):
-   if f.name.endswith(('_team_delivery_coordination.sql','_clinical_commercial_job_roles.sql')):delivery_migrations.append(f);continue
+   if f.name.endswith(('_team_delivery_coordination.sql','_clinical_commercial_job_roles.sql','_personal_username_accounts.sql')):delivery_migrations.append(f);continue
    if f.name.endswith('_production_security_privacy_readiness.sql'):production_followups.append(f);continue
    if f.name.endswith('_audit_criteria_and_competency_authorization.sql'):quality_security_followups.append(f);continue
    if f.name.endswith('_hemovigilance_access_and_anonymous_view_containment.sql'):security_followups.append(f);continue
@@ -182,6 +182,9 @@ def main():
   for f in delivery_migrations:apply(f)
   if any(f.name.endswith('_clinical_commercial_job_roles.sql') for f in delivery_migrations):
    result=sql((ROOT/'tests/job-roles/business.sql').read_text(),'clinical-commercial-job-roles')
+   report['checks'].extend({'name':c.strip(),'pass':True} for c in re.findall(r'PASS ([^\n]+)',result.stderr+result.stdout))
+  if any(f.name.endswith('_personal_username_accounts.sql') for f in delivery_migrations):
+   result=sql((ROOT/'tests/username-accounts/database.sql').read_text(),'personal-username-accounts')
    report['checks'].extend({'name':c.strip(),'pass':True} for c in re.findall(r'PASS ([^\n]+)',result.stderr+result.stdout))
   print(f'PASS: {len(report["checks"])} PostgreSQL checks; {len(report["migrations"])} baseline/candidate files. Production not verified.')
   return 0

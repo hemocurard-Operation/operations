@@ -1,6 +1,8 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "npm:@supabase/supabase-js@2.49.4";
 
+import {accountLogin} from './login-identity.js';
+
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
@@ -162,6 +164,10 @@ Deno.serve(async (req: Request) => {
       return json({ ok: true, audit_complete: !completedError, message: completedError ? "Clave cambiada; el registro de finalización de auditoría requiere revisión." : "Clave cambiada correctamente." });
     }
 
+    const { data: usernameFlag, error: usernameFlagError } = await admin.from("app_feature_flags").select("enabled").eq("key", "personal_username_accounts").maybeSingle();
+    if (usernameFlagError) throw usernameFlagError;
+    const usernameEnabled = usernameFlag?.enabled === true;
+
     if (action === "catalogs") {
       const [{ data: roles, error: rolesError }, { data: branches, error: branchesError }] = await Promise.all([
         admin.from("roles").select("id,code,name").order("name"),
@@ -169,7 +175,7 @@ Deno.serve(async (req: Request) => {
       ]);
       if (rolesError) throw rolesError;
       if (branchesError) throw branchesError;
-      return json({ roles: roles || [], branches: branches || [], rules: { super_role: SUPER_ROLE, branch_scoped_roles: [...BRANCH_SCOPED_ROLES] } });
+      return json({ roles: roles || [], branches: branches || [], rules: { super_role: SUPER_ROLE, branch_scoped_roles: [...BRANCH_SCOPED_ROLES], username_accounts_enabled: usernameEnabled } });
     }
 
     if (action === "list") {
@@ -196,11 +202,17 @@ Deno.serve(async (req: Request) => {
         arr.push({ role_id: ur.role_id, role_code: role.code || "", role_name: role.name || "", branch_id: ur.branch_id, branch_name: branch.name || "" });
         rolesByUser.set(ur.user_id, arr);
       }
+      const { data: identities, error: identitiesError } = await admin.from("user_account_contacts").select("user_id,username,contact_email");
+      if (identitiesError) throw identitiesError;
+      const identityMap = new Map((identities || []).map((x: any) => [x.user_id, x]));
       const users = (authData.users || []).map((u: any) => {
         const p: any = pm.get(u.id) || {};
+        const identity: any = identityMap.get(u.id);
         return {
           id: u.id,
-          email: u.email || "",
+          email: identity ? (identity.contact_email || "") : (u.email || ""),
+          username: identity?.username || null,
+          login_mode: identity ? "username" : "email",
           full_name: p.full_name || u.user_metadata?.full_name || "",
           branch_id: p.branch_id || null,
           branch_name: (bm.get(p.branch_id) as any)?.name || "",
@@ -211,11 +223,15 @@ Deno.serve(async (req: Request) => {
           email_confirmed_at: u.email_confirmed_at || null,
         };
       });
-      return json({ caller_user_id: callerData.user.id, users, roles: roles || [], branches: branches || [], rules: { super_role: SUPER_ROLE, branch_scoped_roles: [...BRANCH_SCOPED_ROLES] } });
+      return json({ caller_user_id: callerData.user.id, users, roles: roles || [], branches: branches || [], rules: { super_role: SUPER_ROLE, branch_scoped_roles: [...BRANCH_SCOPED_ROLES], username_accounts_enabled: usernameEnabled } });
     }
 
     if (action === "invite" || action === "create") {
-      const email = requireText(body.email, "Correo").toLowerCase();
+      let identity: ReturnType<typeof accountLogin>;
+      try { identity = accountLogin(body.username, body.email, action); }
+      catch (e) { throw new HttpError(e instanceof Error ? e.message : "Identidad inválida", 400); }
+      if (identity.username && !usernameEnabled) throw new HttpError("El acceso por usuario todavía no está habilitado", 409);
+      const email = identity.email;
       const fullName = requireText(body.full_name, "Nombre");
       const roleId = requireText(body.role_id, "Rol");
       const resolved = await resolveRoleScope(admin, roleId, body);
@@ -230,7 +246,10 @@ Deno.serve(async (req: Request) => {
         if (password.length < 12 || password.length > 128) return json({ error: "La contraseña temporal debe tener entre 12 y 128 caracteres" }, 400);
         // This is an administrative creation with a provided temporary key, not an email invitation.
         const { data, error } = await admin.auth.admin.createUser({ email, password, email_confirm: true, user_metadata: { full_name: fullName } });
-        if (error) throw error;
+        if (error) {
+          if (identity.username && (error.code === "email_exists" || /already.*registered/i.test(error.message))) throw new HttpError("Este nombre de usuario ya existe. Elija otro; el correo de contacto sí puede repetirse.", 409);
+          throw error;
+        }
         created = data.user;
       }
       if (!created?.id) throw new Error("Supabase Auth no devolvió el usuario creado");
@@ -239,6 +258,10 @@ Deno.serve(async (req: Request) => {
         const primaryBranch = resolved.branches[0]?.id || null;
         const { error: profileError } = await admin.from("profiles").upsert({ id: created.id, full_name: fullName, branch_id: primaryBranch, active: true, updated_at: new Date().toISOString() }, { onConflict: "id" });
         if (profileError) throw profileError;
+        if (identity.username) {
+          const { error: identityError } = await admin.from("user_account_contacts").insert({ user_id: created.id, username: identity.username, contact_email: identity.contact_email, created_by: callerData.user.id });
+          if (identityError) throw identityError;
+        }
         const rows = resolved.branches.map((b: any) => ({ user_id: created.id, role_id: resolved.role.id, branch_id: b.id }));
         const { error: userRoleError } = await admin.from("user_roles").upsert(rows, { onConflict: "user_id,role_id,branch_id", ignoreDuplicates: true });
         if (userRoleError) throw userRoleError;
@@ -248,7 +271,7 @@ Deno.serve(async (req: Request) => {
         throw e;
       }
 
-      return json({ ok: true, user: { id: created.id, email, full_name: fullName }, role: resolved.role.code, branches: resolved.branches.map((b: any) => b.code), email_requested: action === "invite", message: action === "invite" ? "Invitación solicitada al proveedor de correo. El usuario debe abrir el enlace y definir su clave." : "Usuario habilitado para ingresar con la clave temporal indicada. Este modo no envía correo." }, 201);
+      return json({ ok: true, user: { id: created.id, email: identity.contact_email || "", username: identity.username, full_name: fullName }, role: resolved.role.code, branches: resolved.branches.map((b: any) => b.code), email_requested: action === "invite", message: action === "invite" ? "Invitación solicitada al proveedor de correo. El usuario debe abrir el enlace y definir su clave." : identity.username ? `Usuario ${identity.username} habilitado con su clave temporal. El correo es solo de contacto y puede compartirse.` : "Usuario habilitado para ingresar con la clave temporal indicada. Este modo no envía correo." }, 201);
     }
 
     if (action === "remove_role") {

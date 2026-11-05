@@ -35,7 +35,7 @@ function removeRoleButtons(state,user){
 function filterUsers(state,filters){
   const query=filters.query.trim().toLocaleLowerCase('es');
   return (state.users||[]).filter(user=>{
-    const text=[user.full_name,user.email,user.branch_name,...(user.roles||[]).map(role=>role.role_name||role.role_code)].filter(Boolean).join(' ').toLocaleLowerCase('es');
+    const text=[user.full_name,user.username,user.email,user.branch_name,...(user.roles||[]).map(role=>role.role_name||role.role_code)].filter(Boolean).join(' ').toLocaleLowerCase('es');
     return (!query||text.includes(query))&&
       (!filters.branch||user.branch_id===filters.branch||(user.roles||[]).some(role=>role.branch_id===filters.branch))&&
       (!filters.role||(user.roles||[]).some(role=>role.role_id===filters.role))&&
@@ -46,11 +46,11 @@ function filterUsers(state,filters){
 function userRows(state,users=[]){
   if(!users.length)return '<tr><td colspan="7" class="muted">No hay usuarios visibles.</td></tr>';
   return users.map(u=>`<tr>
-    <td><strong>${esc(u.full_name||'Sin nombre')}</strong><br><span class="muted">${esc(u.email||'')}</span></td>
+    <td><strong>${esc(u.full_name||'Sin nombre')}</strong>${u.username?`<br>Usuario: <strong>${esc(u.username)}</strong>`:''}<br><span class="muted">${u.username?'Contacto: ':''}${esc(u.email||'Sin correo de contacto')}</span></td>
     <td>${esc(u.branch_name||'—')}</td>
     <td>${roleBadges(u.roles)}</td>
     <td>${u.active?'<span class="stock-pill stock-ok">Activo</span>':'<span class="stock-pill stock-none">Inactivo</span>'}</td>
-    <td>${u.email_confirmed_at?'<span class="stock-pill stock-ok">Confirmado</span>':'<span class="stock-pill stock-warning">Pendiente</span>'}</td>
+    <td>${u.login_mode==='username'?'<span class="stock-pill stock-ok">Acceso por usuario</span>':u.email_confirmed_at?'<span class="stock-pill stock-ok">Confirmado</span>':'<span class="stock-pill stock-warning">Pendiente</span>'}</td>
     <td>${fmtDate(u.last_sign_in_at)}</td>
     <td><button class="secondary compact" data-add-role="${esc(u.id)}" data-user-name="${esc(u.full_name||u.email)}" ${u.active?'':'disabled'}>+ Rol</button> <button class="secondary compact" data-password-user="${esc(u.id)}" data-user-name="${esc(u.full_name||u.email)}" ${u.active?'':'disabled'}>Cambiar clave</button> ${removeRoleButtons(state,u)}</td>
   </tr>`).join('');
@@ -99,13 +99,14 @@ export async function mountUsers(root){
           ${superUser?`<div class="status ok"><strong>${esc(superUser.full_name||superUser.email)}</strong> · ${esc(superUser.email)} · Todas las sucursales activas</div>`:'<div class="status warn">No existe Superusuario asignado.</div>'}
         </section>
         <section class="card">
-          <div class="card-head"><div><h3>Crear usuario</h3><div class="muted">La invitación permite definir una clave mediante correo. El acceso inmediato no envía correo; requiere comunicar la clave temporal al usuario.</div></div></div>
+          <div class="card-head"><div><h3>Crear usuario</h3><div class="muted">Cada persona tiene su cuenta y clave. El usuario de acceso es único; el correo de contacto puede compartirse. Las claves de cuentas por usuario las gestiona el Super Usuario. Los accesos existentes por correo se conservan.</div></div></div>
           <form id="user-create-form" class="form-grid">
             <label>Nombre completo<input name="full_name" required autocomplete="name"></label>
-            <label>Correo<input name="email" type="email" required autocomplete="email"></label>
+            ${state.rules?.username_accounts_enabled?'<label>Usuario de acceso (único)<input name="username" minlength="3" maxlength="40" pattern="[a-zA-Z][a-zA-Z0-9._-]{2,39}" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="Ej.: ana.santiago"><small>3–40 caracteres, sin espacios ni acentos. No determina el rol.</small></label>':''}
+            <label>Correo de contacto<input name="email" type="email" required autocomplete="email"><small>Puede repetirse entre personas si cada una tiene un usuario de acceso distinto.</small></label>
             <label>Rol<select name="role_id" required><option value="">Seleccionar…</option>${options(state.roles)}</select></label>
             <div id="user-create-branches"></div>
-            <label>Modo<select name="mode"><option value="invite">Enviar invitación por correo</option><option value="create">Acceso inmediato con clave temporal (sin correo)</option></select></label>
+            <label>Modo<select name="mode"><option value="invite">Enviar invitación por correo (cuenta sin usuario)</option><option value="create" ${state.rules?.username_accounts_enabled?'selected':''}>Acceso inmediato con clave temporal (sin correo)</option></select></label>
             <label id="temp-password-wrap" hidden>Contraseña temporal<input name="password" type="password" minlength="12" maxlength="128" autocomplete="new-password"></label>
             <div class="form-actions"><button type="submit">Crear usuario</button></div>
           </form>
@@ -114,7 +115,7 @@ export async function mountUsers(root){
         <section class="card">
           <div class="card-head"><h3>Usuarios existentes</h3><span class="muted">${state.users?.length||0} usuario(s)</span></div>
           <div class="form-grid">
-            <label>Buscar usuario<input id="users-search" type="search" autocomplete="off" value="${esc(filters.query)}" placeholder="Nombre, correo o rol"></label>
+            <label>Buscar usuario<input id="users-search" type="search" autocomplete="off" value="${esc(filters.query)}" placeholder="Nombre, usuario, correo o rol"></label>
             <label>Sucursal<select id="users-branch"><option value="">Todas</option>${options(state.branches)}</select></label>
             <label>Rol<select id="users-role"><option value="">Todos</option>${options(state.roles)}</select></label>
             <label>Estado<select id="users-active"><option value="ALL">Todos</option><option value="ACTIVE">Activos</option><option value="INACTIVE">Inactivos</option></select></label>
@@ -150,6 +151,10 @@ export async function mountUsers(root){
       const pwWrap=root.querySelector('#temp-password-wrap');
       const pw=root.querySelector('[name="password"]');
       mode.addEventListener('change',()=>{const show=mode.value==='create';pwWrap.hidden=!show;pw.required=show;if(!show)pw.value=''});
+      const username=root.querySelector('[name="username"]');
+      const contact=root.querySelector('#user-create-form [name="email"]');
+      const syncUsername=()=>{const personal=!!username?.value.trim();contact.required=!personal;mode.querySelector('[value="invite"]').disabled=personal;if(personal&&mode.value==='invite'){mode.value='create'}mode.dispatchEvent(new Event('change'))};
+      username?.addEventListener('input',syncUsername);syncUsername();
       root.querySelector('#users-refresh').onclick=async()=>{state=await loadUsersAdmin();render()};
 
       root.querySelector('#user-create-form').addEventListener('submit',async e=>{

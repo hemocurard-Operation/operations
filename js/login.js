@@ -16,7 +16,7 @@ function setSignedIn(session){
   const signed=!!session;
   form.classList.toggle('hidden',signed);
   logoutButton.classList.toggle('hidden',!signed);
-  if(signed)setStatus(`Sesión activa: ${session.user?.email || session.user?.id}`,'ok');
+  if(signed)setStatus(`Sesión activa: ${session.user?.user_metadata?.full_name || session.user?.email || session.user?.id}`,'ok');
 }
 
 async function boot(){

@@ -1,7 +1,7 @@
 {
   "project": "HemoCura Operations Intelligence + QMS + Compliance",
-  "version": "0.50.0",
-  "stage": "Coordinación operativa de entregas · piloto Santiago · liberación clínica humana pendiente",
+  "version": "0.51.0",
+  "stage": "Usuarios personales y correo compartido · piloto operativo Santiago · liberación clínica humana pendiente",
   "release_channel": "RC",
   "protected_files": [
     "js/config.js"

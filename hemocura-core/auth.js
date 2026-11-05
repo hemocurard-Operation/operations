@@ -1,3 +1,4 @@
+import {loginEmail} from '../supabase/functions/admin-users/login-identity.js';
 import { getSupabase } from './supabase.js';
 import { classifyError, diagnosticFromCode } from './diagnostic-engine.js';
 
@@ -19,7 +20,7 @@ export async function getSession(){
 export async function signIn(email,password){
   console.info('[HEMOCURA_AUTH] signIn');
   try{
-    const {data,error}=await getSupabase().auth.signInWithPassword({email,password});
+    const {data,error}=await getSupabase().auth.signInWithPassword({email:loginEmail(email),password});
     if(error) throw error;
     console.info('[HEMOCURA_AUTH] login OK',data.user?.id);
     return data;
