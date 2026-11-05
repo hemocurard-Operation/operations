@@ -57,7 +57,9 @@ def main():
   lab_followups=[]
   trip_migrations=[]
   team_role_migrations=[]
+  delivery_migrations=[]
   for f in sorted((ROOT/'supabase/migrations').glob('*.sql')):
+   if f.name.endswith(('_team_delivery_coordination.sql','_clinical_commercial_job_roles.sql')):delivery_migrations.append(f);continue
    if f.name.endswith('_production_security_privacy_readiness.sql'):production_followups.append(f);continue
    if f.name.endswith('_audit_criteria_and_competency_authorization.sql'):quality_security_followups.append(f);continue
    if f.name.endswith('_hemovigilance_access_and_anonymous_view_containment.sql'):security_followups.append(f);continue
@@ -177,6 +179,10 @@ def main():
     text=text[:boundary.start()]+'grant execute on all functions in schema pg_temp to authenticated,anon;\n'+text[boundary.start():]
     result=sql(text,'post-hardening-'+suite)
     report['checks'].extend({'name':c.strip(),'pass':True} for c in re.findall(r'PASS ([^\n]+)',result.stderr+result.stdout))
+  for f in delivery_migrations:apply(f)
+  if any(f.name.endswith('_clinical_commercial_job_roles.sql') for f in delivery_migrations):
+   result=sql((ROOT/'tests/job-roles/business.sql').read_text(),'clinical-commercial-job-roles')
+   report['checks'].extend({'name':c.strip(),'pass':True} for c in re.findall(r'PASS ([^\n]+)',result.stderr+result.stdout))
   print(f'PASS: {len(report["checks"])} PostgreSQL checks; {len(report["migrations"])} baseline/candidate files. Production not verified.')
   return 0
  except Exception as e:
