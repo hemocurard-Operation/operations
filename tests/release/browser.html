@@ -1,0 +1,21 @@
+<!doctype html><html lang="es"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="/css/app.css"><body><main id="view" class="content"></main><script type="module">
+import {fixture} from '/hemocura-core/supabase.js';
+import {resetAccessCache} from '/hemocura-core/access-control.js';
+import {mountUat} from '/hemocura-core/uat.js';
+import {mountFinalRelease} from '/hemocura-core/final-release.js';
+import {installProgressProtection} from '/hemocura-core/progress-protection.js';
+window.fixture=fixture;fixture.context={user_id:'tester',roles:['CALIDAD']};fixture.permissions=['RELEASE_GATE_VIEW','UAT_MANAGE','RELEASE_SIGNOFF_CALIDAD'];
+fixture.tables={uat_test_cases:[{id:'c1',test_code:'PRUEBA-STI-001',title:'Prueba ficticia',steps:'Pasos ficticios',expected_result:'Resultado ficticio',critical:true,active:true},{id:'c2',test_code:'PRUEBA-STI-002',title:'<img src=x onerror=alert(1)>',steps:'Pasos ficticios',expected_result:'Resultado ficticio',critical:true,active:true}],uat_test_runs:[{id:'r1',run_code:'PRUEBA-STI',release_version:'PRUEBA:1.0.0',tester_user_id:'tester',status:'EN_CURSO'}],uat_test_results:[],release_signoffs:[]};
+fixture.rpcHandler=async(name,args)=>{
+ if(window.hold&&name==='hc_uat_record_result')await new Promise(r=>window.resume=r);
+ if(window.fail&&name!=='hc_release_readiness_v1')return {data:null,error:{message:'Fallo simulado: cambios conservados'}};
+ if(name==='hc_release_readiness_v1')return {data:{version:args.p_version,technical_ready:true,uat_ready:false,approved_areas:0,missing_or_unproven:2,technical_checks:{owner_views:0,raw_patient_access:false},operating_mode:'LIVE_LIMITED',production_eligible:!args.p_version.startsWith('PRUEBA:'),go_live_ready:false},error:null};
+ if(name==='hc_uat_start_run'){const r={id:'r2',run_code:args.p_run_code,release_version:args.p_release_version,tester_user_id:'tester',status:'EN_CURSO'};fixture.tables.uat_test_runs.unshift(r);return {data:r.id,error:null}}
+ if(name==='hc_uat_record_result'){fixture.tables.uat_test_results.push({run_id:args.p_run_id,test_case_id:args.p_test_case_id,result:args.p_result,actual_result:args.p_actual_result,evidence_reference:args.p_evidence_reference});return {data:null,error:null}}
+ if(name==='hc_uat_complete_run'){fixture.tables.uat_test_runs.find(r=>r.id===args.p_run_id).status='BLOQUEADO';return {data:'BLOQUEADO',error:null}}
+ if(name==='hc_v044_release_signoff'){fixture.tables.release_signoffs.push({release_version:args.p_release_version,signoff_type:args.p_type,decision:args.p_decision,comment:args.p_comment,signed_at:new Date().toISOString()});return {data:'s1',error:null}}
+ return {data:null,error:null};
+};
+window.mount=async(type='uat')=>{resetAccessCache();await (type==='uat'?mountUat:mountFinalRelease)(document.querySelector('#view'))};
+location.hash='uat';installProgressProtection();window.visits=0;window.addEventListener('hashchange',()=>visits++);await mount();window.ready=true;
+</script></body></html>

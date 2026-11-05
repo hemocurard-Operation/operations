@@ -1,6 +1,6 @@
-# HemoCura v0.44.0
+# HemoCura v0.49.2
 
-Release Candidate final para HemoCura 1.0
+Release Candidate con seguridad reforzada y piloto aislado de Santiago. La liberación clínica requiere evidencia UAT y firmas independientes.
 
 Ruta nueva: `#release1`
 

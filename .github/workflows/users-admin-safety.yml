@@ -10,6 +10,16 @@ on:
       - 'hemocura-core/access-control.js'
       - 'supabase/functions/admin-users/**'
       - '.github/workflows/users-admin-safety.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'hemocura-core/users*.js'
+      - 'hemocura-core/auth.js'
+      - 'login.html'
+      - 'supabase/functions/admin-users/**'
+      - 'supabase/migrations/*personal_username_accounts.sql'
+      - 'tests/username-accounts/**'
+      - '.github/workflows/users-admin-safety.yml'
   workflow_dispatch:
 
 jobs:
@@ -19,7 +29,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '24'
       - name: JavaScript syntax
         run: |
           node --check hemocura-core/users.js
@@ -59,3 +69,6 @@ jobs:
           grep -q 'audit_events' supabase/functions/admin-users/index.ts
           grep -q 'USER_INVITED' supabase/functions/admin-users/index.ts
           grep -q 'ROLE_ASSIGNED' supabase/functions/admin-users/index.ts
+
+      - name: Personal usernames and shared contact email
+        run: node tests/username-accounts/edge.test.mjs

@@ -1,5 +1,6 @@
 const GROUP_ORDER=['INICIO','TRABAJO DIARIO','CADENA DE VALOR','LABORATORIO Y SANGRE','CALIDAD Y SEGURIDAD','GESTIÓN','ADMINISTRACIÓN'];
 const ROUTES={
+  teamdeliveries:{title:'Entregas del equipo',subtitle:'Asignación por supervisor, relevo y recepción logística',group:'TRABAJO DIARIO',order:14},
   extratrips:{title:'Viajes fuera de horario',subtitle:'Registro sencillo, revisión e incentivos de Logística',group:'TRABAJO DIARIO',order:1},
   laboratory:{title:'Gestión del Laboratorio',subtitle:'Turnos, unidades, controles, recursos y seguimiento',group:'LABORATORIO Y SANGRE',order:1},
   sgcimplementation:{title:'Implementar el SGC',subtitle:'Proyecto guiado por etapas, documentos, evidencia y puertas de decisión',group:'CALIDAD Y SEGURIDAD',order:1},

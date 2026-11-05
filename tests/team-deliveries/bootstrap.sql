@@ -1,0 +1,16 @@
+create role anon;create role authenticated;create schema auth;create schema private;
+create function auth.uid() returns uuid language sql stable as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;
+grant usage on schema auth,public,private to authenticated,anon;
+create table public.branches(id uuid primary key default gen_random_uuid(),code text,name text,active boolean default true);
+create table public.profiles(id uuid primary key default gen_random_uuid(),full_name text,active boolean default true);
+create table public.roles(id uuid primary key default gen_random_uuid(),code text unique,name text);
+create table public.user_roles(user_id uuid references profiles(id),role_id uuid references roles(id),branch_id uuid references branches(id),primary key(user_id,role_id,branch_id));
+create table public.app_permissions(permission_code text primary key,module text,description text,risk_level text,active boolean default true);
+create table public.role_permissions(role_id uuid references roles(id),permission_code text references app_permissions(permission_code),primary key(role_id,permission_code));
+create table public.app_module_catalog(route_key text primary key,title text,group_name text,permission_code text,active boolean);
+create table public.role_module_access(role_id uuid,route_key text,enabled boolean,primary key(role_id,route_key));
+create table public.app_feature_flags(key text primary key,enabled boolean not null default false,mode text default 'OFF',description text);
+create table public.transport_events(id uuid primary key default gen_random_uuid(),branch_id uuid references branches(id),transport_code text,status text default 'EN_TRANSITO',min_temp numeric,max_temp numeric);
+create function public.wf_active_actor() returns boolean language sql stable security definer set search_path=public,pg_temp as $$select exists(select 1 from profiles where id=auth.uid() and active)$$;
+create function public.has_permission(p text) returns boolean language sql stable security definer set search_path=public,pg_temp as $$select exists(select 1 from user_roles ur join role_permissions rp on rp.role_id=ur.role_id join app_permissions ap on ap.permission_code=rp.permission_code and ap.active where ur.user_id=auth.uid() and rp.permission_code=p)$$;
+insert into roles(code,name) select x,x from unnest(array['SUPER_USUARIO','LOGISTICA','LOGISTICA_CONDUCTOR','LOGISTICA_SUPERVISOR','LOGISTICA_CONSULTA','LABORATORIO','ENCARGADA_LABORATORIO'])x;

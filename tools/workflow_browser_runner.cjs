@@ -43,4 +43,5 @@ const fs=require('node:fs'),path=require('node:path'),http=require('node:http');
  await page.screenshot({path:path.join(out,'workflow-mobile.png'),fullPage:true});
  check(errors.length===0,'no browser runtime errors');check(network.length===0,'no requests to remote services');
  }catch(e){failure=e.message;throw e}finally{fs.writeFileSync(path.join(out,'report.json'),JSON.stringify({status:failure?'FAIL':'PASS',failure,started_at_utc:startedAt,finished_at_utc:new Date().toISOString(),environment:'actual frontend modules with local SDK fixture',production_verified:false,checks,errors,externalRequests:network},null,2));await browser.close();await new Promise(resolve=>server.close(resolve));}
+const release=require('node:child_process').spawnSync(process.execPath,[path.join(__dirname,'release_browser_runner.mjs')],{stdio:'inherit',env:process.env});if(release.status!==0)throw new Error('Release readiness browser checks failed');
 })().catch(e=>{console.error(e);process.exitCode=1});

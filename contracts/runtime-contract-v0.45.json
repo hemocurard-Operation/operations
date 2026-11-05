@@ -241,7 +241,9 @@
     "work_tasks",
     "workflow_daily_sections",
     "workflow_service_events",
-    "workflow_supply_catalog"
+    "workflow_supply_catalog",
+    "uat_test_runs",
+    "uat_test_results"
   ],
   "rpcs": [
     "adjust_sale_line",
@@ -285,7 +287,12 @@
     "wf_create_blood_sale",
     "work_agenda_access",
     "work_agenda_people",
-    "work_task_action"
+    "work_task_action",
+    "hc_release_readiness_v1",
+    "hc_uat_start_run",
+    "hc_uat_record_result",
+    "hc_uat_complete_run",
+    "hc_v044_release_signoff"
   ],
   "optional_relations": [
     "compliance_penal_actions",
