@@ -1,5 +1,6 @@
 import { accessData } from './access-data.js';
 export const ROUTE_PERMISSION={
+  teamdeliveries:'DELIVERIES_VIEW',
   extratrips:'TRIPS_VIEW',
   laboratory:'SCREENING_VIEW',
   sgcimplementation:'QUALITY_VIEW',
