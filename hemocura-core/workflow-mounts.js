@@ -1,3 +1,4 @@
+import {mountTeamDeliveries} from './team-deliveries.js';
 import {mountAreaAgenda} from './area-agenda.js';
 import { mountWorkflow } from './workflow.js';
 import { mountCommercial } from './commercial.js';
@@ -8,4 +9,4 @@ import { mountShiftReport } from './workflow-sales.js';
 import { mountSupplyCatalog } from './supply-catalog.js';
 export { enhanceWorkflowDaily } from './workflow-daily.js';
 
-export const WORKFLOW_MOUNTS={extratrips:async root=>(await import('./extra-trips.js')).mountExtraTrips(root),laboratory:async root=>(await import('./laboratory.js')).mountLaboratory(root),sgcimplementation:async root=>(await import('./sgc-project.js')).mountSgcProject(root),areaagenda:mountAreaAgenda,workflow:mountWorkflow,commercial:mountCommercial,hyperbaric:mountHyperbaric,bloodquality:mountBloodQuality,transfers:mountBloodTransfers,shiftreport:mountShiftReport,supplycatalog:mountSupplyCatalog};
+export const WORKFLOW_MOUNTS={teamdeliveries:mountTeamDeliveries,extratrips:async root=>(await import('./extra-trips.js')).mountExtraTrips(root),laboratory:async root=>(await import('./laboratory.js')).mountLaboratory(root),sgcimplementation:async root=>(await import('./sgc-project.js')).mountSgcProject(root),areaagenda:mountAreaAgenda,workflow:mountWorkflow,commercial:mountCommercial,hyperbaric:mountHyperbaric,bloodquality:mountBloodQuality,transfers:mountBloodTransfers,shiftreport:mountShiftReport,supplycatalog:mountSupplyCatalog};
