@@ -5,7 +5,7 @@ import { mountLayout } from '/hemocura-core/layout.js';
 import { localDay } from '/hemocura-core/workflow-domain.js';
 window.fixture=fixture;const day=localDay();fixture.day=day;
 const A='e2000000-0000-0000-0000-000000000001',B='e2000000-0000-0000-0000-000000000002',USER='e1000000-0000-0000-0000-000000000001',OTHER='e1000000-0000-0000-0000-000000000003',CLIENT='e4000000-0000-0000-0000-000000000001';
-fixture.permissions=['DONORS_VIEW','DASHBOARD_VIEW','WORKFLOW_VIEW','COMMERCIAL_VIEW','COMMERCIAL_WRITE','HYPERBARIC_VIEW','HYPERBARIC_WRITE','HYPERBARIC_SESSION_WRITE','HYPERBARIC_BILLING','SALES_VIEW','SALES_WRITE','COLLECTIONS_VIEW','QUALITY_VIEW','QUALITY_WRITE','QUALITY_DAILY_REVIEW','BLOOD_INVENTORY_VIEW','BLOOD_INVENTORY_WRITE','UNIT_RELEASE','SUPPLY_VIEW','DISPATCH_VIEW','REQUISITION_WRITE','ACCESS_ADMIN','DAILY_REPORT_VIEW','DAILY_REPORT_WRITE'];
+fixture.permissions=['DONORS_VIEW','DASHBOARD_VIEW','WORKFLOW_VIEW','COMMERCIAL_VIEW','COMMERCIAL_WRITE','HYPERBARIC_VIEW','HYPERBARIC_WRITE','HYPERBARIC_SESSION_WRITE','HYPERBARIC_BILLING','SALES_VIEW','SALES_WRITE','COLLECTIONS_VIEW','QUALITY_VIEW','QUALITY_WRITE','QUALITY_DAILY_REVIEW','BLOOD_INVENTORY_VIEW','BLOOD_INVENTORY_WRITE','UNIT_RELEASE','SUPPLY_VIEW','DISPATCH_VIEW','REQUISITION_WRITE','ACCESS_ADMIN','DAILY_REPORT_VIEW','DAILY_REPORT_WRITE','DOCUMENTS_VIEW','RESOURCES_VIEW','INSPECTIONS_VIEW'];
 fixture.context={user_id:USER,roles:['SUPER_USUARIO'],email:'fixture@example.invalid',profile_branch_id:A,full_name:'Local test operator'};
 const hyperbaricAppointments=[{id:'appt1',branch_id:A,resource_id:'resource1',patient_name:'Carmen Abreu',patient_phone:'829-727-8852',patient_code:'CA-0001',starts_at:day+'T13:00:00-04:00',ends_at:day+'T14:00:00-04:00',operational_date:day,shift:'DIURNO',price:100,currency:'USD',session_label:'1 por el momento',referrer_name:'Dr. Báez',note:'no requiere transporte',status:'SOLICITADA'}];
 fixture.tables={
@@ -36,6 +36,9 @@ fixture.tables={
  blood_transfers:[{id:'transfer1',branch_id:B,destination_branch_id:A,batch_code:'TEST-TRANSFER',sent_at:day+'T08:00:00-04:00',status:'EN_TRANSITO'}],
  vw_workflow_transfer_lines:[{branch_id:B,destination_branch_id:A,unit_code:'TEST-U2',component_name:'PG',id:'line1',transfer_id:'transfer1',unit_id:'unit2',received_at:null}],
  requisitions:[],
+ profiles:[{id:USER,full_name:'Local test operator',branch_id:A},{id:OTHER,full_name:'Second user',branch_id:B}],
+ document_register:[],document_changes:[],
+ vw_inspection_summary:[],inspection_findings:[],branch_inspections:[],
  workflow_supply_catalog:[{id:'item1',code:'HC-SUP-001',source_label:'Bolsa recolección',product_id:null},{id:'item2',code:'HC-SUP-002',source_label:'Guantes M',approved_name:'Guantes M',reviewed_at:day,unit_of_measure:'caja',product_id:'p1'}],
  vw_inventory_status:[{branch_id:A,product_id:'p1',product_name:'Guantes M',theoretical_qty:1}],inventory_policies:[{branch_id:A,product_id:'p1',minimum_stock:3,warning_stock:5,target_stock:10,active:true}],
  daily_operational_closes:[{id:'report1',branch_id:A,close_date:day,status:'BORRADOR',report_version:1,responsible_name:'Test',screening_lots:[],manual_inventory:{},manual_dispatches:[],equipment_snapshot:[]}],workflow_daily_sections:[],
