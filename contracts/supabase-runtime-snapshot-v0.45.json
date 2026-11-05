@@ -143,6 +143,8 @@
     "training_quiz_attempts",
     "transport_events",
     "uat_test_cases",
+    "uat_test_results",
+    "uat_test_runs",
     "user_roles",
     "vw_analytical_quality_summary",
     "vw_app_migration_readiness",
@@ -289,7 +291,12 @@
     "wf_create_blood_sale",
     "work_agenda_access",
     "work_agenda_people",
-    "work_task_action"
+    "work_task_action",
+    "hc_release_readiness_v1",
+    "hc_uat_start_run",
+    "hc_uat_record_result",
+    "hc_uat_complete_run",
+    "hc_v044_release_signoff"
   ],
   "columns": [
     {
