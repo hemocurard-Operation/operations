@@ -26,11 +26,16 @@
     "commercial_opportunities",
     "commercial_plans",
     "commercial_visits",
-    "congress_attendance",
     "competency_assessments",
     "competency_catalog",
+    "congress_attendance",
     "continuity_plans",
     "continuity_tests",
+    "crm_activities",
+    "crm_contacts",
+    "crm_history",
+    "crm_requests",
+    "crm_services",
     "daily_operational_closes",
     "daily_operational_report_versions",
     "daily_sales",
@@ -75,11 +80,11 @@
     "lab_methods",
     "logistics_trip_history",
     "logistics_trips",
-    "medical_congresses",
-    "medical_news",
     "management_actions",
     "management_review_actions",
     "management_reviews",
+    "medical_congresses",
+    "medical_news",
     "monthly_cost_entries",
     "monthly_cost_periods",
     "nonconformities",
@@ -142,6 +147,8 @@
     "training_quiz_attempts",
     "transport_events",
     "uat_test_cases",
+    "uat_test_results",
+    "uat_test_runs",
     "user_roles",
     "vw_analytical_quality_summary",
     "vw_app_migration_readiness",
@@ -244,9 +251,7 @@
     "work_tasks",
     "workflow_daily_sections",
     "workflow_service_events",
-    "workflow_supply_catalog",
-    "uat_test_runs",
-    "uat_test_results"
+    "workflow_supply_catalog"
   ],
   "rpcs": [
     "adjust_sale_line",
@@ -257,8 +262,16 @@
     "close_daily_operational_report",
     "create_approval_request",
     "create_exception_from_candidate",
+    "crm_action",
+    "crm_catalog",
+    "crm_review",
     "decide_approval_request",
     "execute_approved_action",
+    "hc_release_readiness_v1",
+    "hc_uat_complete_run",
+    "hc_uat_record_result",
+    "hc_uat_start_run",
+    "hc_v044_release_signoff",
     "hemovig_delivery_nc_create",
     "iso_clause_assessment_create_nc",
     "iso_clause_assessment_upsert",
@@ -290,12 +303,7 @@
     "wf_create_blood_sale",
     "work_agenda_access",
     "work_agenda_people",
-    "work_task_action",
-    "hc_release_readiness_v1",
-    "hc_uat_start_run",
-    "hc_uat_record_result",
-    "hc_uat_complete_run",
-    "hc_v044_release_signoff"
+    "work_task_action"
   ],
   "optional_relations": [
     "compliance_penal_actions",
@@ -438,6 +446,23 @@
       "issued_by",
       "valid_until",
       "status"
+    ],
+    "crm_contacts": [
+      "id",
+      "branch_id",
+      "revision",
+      "owner_id"
+    ],
+    "crm_activities": [
+      "id",
+      "contact_id",
+      "branch_id",
+      "created_by"
+    ],
+    "crm_history": [
+      "contact_id",
+      "branch_id",
+      "actor_id"
     ]
   },
   "forbidden_columns": {

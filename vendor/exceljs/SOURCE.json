@@ -1,0 +1,7 @@
+{
+  "package": "exceljs",
+  "version": "4.4.0",
+  "registry_archive": "https://registry.npmjs.org/exceljs/-/exceljs-4.4.0.tgz",
+  "integrity": "sha512-XctvKaEMaj1Ii9oDOqbW/6e1gXknSY4g/aLCDicOXqBE4M0nRWkUu0PTp++UPNzoFY12BNHMfs/VadKIS6llvg==",
+  "browser_sha256": "7e49da68588e250dbb8bba190d2caa8ab3787cc0284bda1d8b2f805c4df742c9"
+}

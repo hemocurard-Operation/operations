@@ -1,7 +1,7 @@
 {
   "project_id": "tiothqiljipdamgudvcb",
   "verified_at": "2026-11-04",
-  "scope": "Frontend runtime objects, Daily Operational Report production contract and Training Native 1.1 RC; added coordination, purchases, role windows and area agenda objects verified 2026-10-16 against production catalogs; quality-information objects verified against production after migration 20261017005235; audit in implementation report; ISO clause assessment/evidence tables, vw_iso_compliance_summary and iso_clause_assessment RPCs verified live 2026-11-03 after migration 20261103130000; vw_referrer_visit_route verified live 2026-11-03 after migration 20261103190000; hemovigilance_delivery_details and hemovig_delivery_nc_create verified live 2026-11-04 after migration 20261104100000; vw_hyperbaric_appointments_display verified live 2026-11-04 after migration 20261104110000",
+  "scope": "Frontend runtime objects, Daily Operational Report production contract and Training Native 1.1 RC; added coordination, purchases, role windows and area agenda objects verified 2026-10-16 against production catalogs; quality-information objects verified against production after migration 20261017005235; audit in implementation report; ISO clause assessment/evidence tables, vw_iso_compliance_summary and iso_clause_assessment RPCs verified live 2026-11-03 after migration 20261103130000; vw_referrer_visit_route verified live 2026-11-03 after migration 20261103190000; hemovigilance_delivery_details and hemovig_delivery_nc_create verified live 2026-11-04 after migration 20261104100000; vw_hyperbaric_appointments_display verified live 2026-11-04 after migration 20261104110000; CRM contacts, activities, history, idempotent requests, services and three RPCs verified after commercial_crm_contacts migration; scoped customer catalog and writes tested",
   "relations": [
     "access_events",
     "app_feature_flags",
@@ -27,11 +27,16 @@
     "commercial_opportunities",
     "commercial_plans",
     "commercial_visits",
-    "congress_attendance",
     "competency_assessments",
     "competency_catalog",
+    "congress_attendance",
     "continuity_plans",
     "continuity_tests",
+    "crm_activities",
+    "crm_contacts",
+    "crm_history",
+    "crm_requests",
+    "crm_services",
     "daily_operational_closes",
     "daily_operational_report_versions",
     "daily_sales",
@@ -76,11 +81,11 @@
     "lab_methods",
     "logistics_trip_history",
     "logistics_trips",
-    "medical_congresses",
-    "medical_news",
     "management_actions",
     "management_review_actions",
     "management_reviews",
+    "medical_congresses",
+    "medical_news",
     "monthly_cost_entries",
     "monthly_cost_periods",
     "nonconformities",
@@ -258,8 +263,16 @@
     "close_daily_operational_report",
     "create_approval_request",
     "create_exception_from_candidate",
+    "crm_action",
+    "crm_catalog",
+    "crm_review",
     "decide_approval_request",
     "execute_approved_action",
+    "hc_release_readiness_v1",
+    "hc_uat_complete_run",
+    "hc_uat_record_result",
+    "hc_uat_start_run",
+    "hc_v044_release_signoff",
     "hemovig_delivery_nc_create",
     "iso_clause_assessment_create_nc",
     "iso_clause_assessment_upsert",
@@ -291,12 +304,7 @@
     "wf_create_blood_sale",
     "work_agenda_access",
     "work_agenda_people",
-    "work_task_action",
-    "hc_release_readiness_v1",
-    "hc_uat_start_run",
-    "hc_uat_record_result",
-    "hc_uat_complete_run",
-    "hc_v044_release_signoff"
+    "work_task_action"
   ],
   "columns": [
     {
@@ -542,6 +550,50 @@
     {
       "table_name": "training_certificates",
       "column_name": "status"
+    },
+    {
+      "table_name": "crm_contacts",
+      "column_name": "id"
+    },
+    {
+      "table_name": "crm_contacts",
+      "column_name": "branch_id"
+    },
+    {
+      "table_name": "crm_contacts",
+      "column_name": "revision"
+    },
+    {
+      "table_name": "crm_contacts",
+      "column_name": "owner_id"
+    },
+    {
+      "table_name": "crm_activities",
+      "column_name": "id"
+    },
+    {
+      "table_name": "crm_activities",
+      "column_name": "contact_id"
+    },
+    {
+      "table_name": "crm_activities",
+      "column_name": "branch_id"
+    },
+    {
+      "table_name": "crm_activities",
+      "column_name": "created_by"
+    },
+    {
+      "table_name": "crm_history",
+      "column_name": "contact_id"
+    },
+    {
+      "table_name": "crm_history",
+      "column_name": "branch_id"
+    },
+    {
+      "table_name": "crm_history",
+      "column_name": "actor_id"
     }
   ],
   "migrations": [

@@ -1,0 +1,4 @@
+// Private local drafts, keyed by authenticated person and branch. No public storage or remote upload.
+const DB='hemocura-crm-drafts-v1';
+async function database(){return new Promise((resolve,reject)=>{const r=indexedDB.open(DB,1);r.onupgradeneeded=()=>r.result.createObjectStore('drafts');r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error)})}
+export async function crmDraft(key,value,remove=false){const db=await database();try{return await new Promise((resolve,reject)=>{const tx=db.transaction('drafts',value===undefined&&!remove?'readonly':'readwrite'),s=tx.objectStore('drafts');const request=remove?s.delete(key):value===undefined?s.get(key):s.put(value,key);let result;request.onsuccess=()=>result=request.result;tx.oncomplete=()=>resolve(result);tx.onerror=()=>reject(tx.error)})}finally{db.close()}}
