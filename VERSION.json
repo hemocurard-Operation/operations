@@ -1,7 +1,7 @@
 {
   "project": "HemoCura Operations Intelligence + QMS + Compliance",
-  "version": "0.53.0",
-  "stage": "CRM compartido y mapa de visitas semanales · liberación clínica humana pendiente",
+  "version": "0.54.0",
+  "stage": "Ciclos de 12 semanas con tareas reales y revisión por área · liberación clínica humana pendiente",
   "release_channel": "RC",
   "protected_files": [
     "js/config.js"

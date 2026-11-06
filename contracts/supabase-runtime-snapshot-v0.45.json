@@ -1,7 +1,7 @@
 {
   "project_id": "tiothqiljipdamgudvcb",
   "verified_at": "2026-11-04",
-  "scope": "Frontend runtime objects, Daily Operational Report production contract and Training Native 1.1 RC; added coordination, purchases, role windows and area agenda objects verified 2026-10-16 against production catalogs; quality-information objects verified against production after migration 20261017005235; audit in implementation report; ISO clause assessment/evidence tables, vw_iso_compliance_summary and iso_clause_assessment RPCs verified live 2026-11-03 after migration 20261103130000; vw_referrer_visit_route verified live 2026-11-03 after migration 20261103190000; hemovigilance_delivery_details and hemovig_delivery_nc_create verified live 2026-11-04 after migration 20261104100000; vw_hyperbaric_appointments_display verified live 2026-11-04 after migration 20261104110000; CRM contacts, activities, history, idempotent requests, services and three RPCs verified after commercial_crm_contacts migration; scoped customer catalog and writes tested; CRM shared portfolio and weekly planner verified 2026-11-06",
+  "scope": "Frontend runtime objects, Daily Operational Report production contract and Training Native 1.1 RC; added coordination, purchases, role windows and area agenda objects verified 2026-10-16 against production catalogs; quality-information objects verified against production after migration 20261017005235; audit in implementation report; ISO clause assessment/evidence tables, vw_iso_compliance_summary and iso_clause_assessment RPCs verified live 2026-11-03 after migration 20261103130000; vw_referrer_visit_route verified live 2026-11-03 after migration 20261103190000; hemovigilance_delivery_details and hemovig_delivery_nc_create verified live 2026-11-04 after migration 20261104100000; vw_hyperbaric_appointments_display verified live 2026-11-04 after migration 20261104110000; CRM contacts, activities, history, idempotent requests, services and three RPCs verified after commercial_crm_contacts migration; scoped customer catalog and writes tested; CRM shared portfolio and weekly planner verified 2026-11-06; twelve-week execution objects verified 2026-11-06",
   "relations": [
     "access_events",
     "app_feature_flags",
@@ -152,6 +152,10 @@
     "training_question_bank",
     "training_quiz_attempts",
     "transport_events",
+    "twelve_week_cycles",
+    "twelve_week_goals",
+    "twelve_week_requests",
+    "twelve_week_task_links",
     "uat_test_cases",
     "uat_test_results",
     "uat_test_runs",
@@ -307,6 +311,9 @@
     "training_revoke_authorization",
     "training_revoke_certificate",
     "training_submit_quiz",
+    "twelve_week_action",
+    "twelve_week_catalog",
+    "twelve_week_context",
     "verify_training_certificate",
     "wf_create_blood_sale",
     "work_agenda_access",
@@ -669,6 +676,62 @@
     {
       "table_name": "crm_weekly_visits",
       "column_name": "request_id"
+    },
+    {
+      "table_name": "twelve_week_cycles",
+      "column_name": "id"
+    },
+    {
+      "table_name": "twelve_week_cycles",
+      "column_name": "branch_id"
+    },
+    {
+      "table_name": "twelve_week_cycles",
+      "column_name": "area_code"
+    },
+    {
+      "table_name": "twelve_week_cycles",
+      "column_name": "start_date"
+    },
+    {
+      "table_name": "twelve_week_cycles",
+      "column_name": "end_date"
+    },
+    {
+      "table_name": "twelve_week_cycles",
+      "column_name": "status"
+    },
+    {
+      "table_name": "twelve_week_cycles",
+      "column_name": "revision"
+    },
+    {
+      "table_name": "twelve_week_goals",
+      "column_name": "id"
+    },
+    {
+      "table_name": "twelve_week_goals",
+      "column_name": "cycle_id"
+    },
+    {
+      "table_name": "twelve_week_goals",
+      "column_name": "week_number"
+    },
+    {
+      "table_name": "twelve_week_goals",
+      "column_name": "revision"
+    },
+    {
+      "table_name": "twelve_week_task_links",
+      "column_name": "task_id"
+    },
+    {
+      "table_name": "twelve_week_task_links",
+      "column_name": "cycle_id"
+    },
+    {
+      "table_name": "twelve_week_task_links",
+      "column_name": "week_number"
     }
   ],
   "migrations": [

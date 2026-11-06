@@ -1,0 +1,32 @@
+name: Twelve-week execution integration
+on:
+  push:
+    branches: [main]
+    paths: ['hemocura-core/twelve-week*','supabase/migrations/*twelve_week_execution.sql','tests/twelve-week/**','tools/twelve_week_browser_runner.cjs','.github/workflows/twelve-week.yml']
+  pull_request:
+    paths: ['hemocura-core/twelve-week*','supabase/migrations/*twelve_week_execution.sql','tests/twelve-week/**','tools/twelve_week_browser_runner.cjs','.github/workflows/twelve-week.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  execution:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: python tools/migration_security_linter.py supabase/migrations/*twelve_week_execution.sql
+      - run: python tools/runtime_contract_gate.py check-code contracts/runtime-contract-v0.45.json
+      - run: python tools/workflow_postgres_runner.py --allow-external-prerequisite-fixture --report-dir /tmp/hemocura-twelve-week-postgres
+      - run: npm ci --prefix tests/wave50 --ignore-scripts --no-audit --no-fund
+      - run: node tests/wave50/node_modules/playwright/cli.js install --with-deps chromium
+      - run: node tools/twelve_week_browser_runner.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: twelve-week-evidence
+          path: |
+            /tmp/hemocura-twelve-week-postgres
+            /tmp/hemocura-twelve-week-browser

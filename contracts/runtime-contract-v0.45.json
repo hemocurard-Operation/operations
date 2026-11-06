@@ -151,6 +151,10 @@
     "training_question_bank",
     "training_quiz_attempts",
     "transport_events",
+    "twelve_week_cycles",
+    "twelve_week_goals",
+    "twelve_week_requests",
+    "twelve_week_task_links",
     "uat_test_cases",
     "uat_test_results",
     "uat_test_runs",
@@ -306,6 +310,9 @@
     "training_revoke_authorization",
     "training_revoke_certificate",
     "training_submit_quiz",
+    "twelve_week_action",
+    "twelve_week_catalog",
+    "twelve_week_context",
     "verify_training_certificate",
     "wf_create_blood_sale",
     "work_agenda_access",
@@ -497,6 +504,26 @@
       "agent_id",
       "revision",
       "request_id"
+    ],
+    "twelve_week_cycles": [
+      "id",
+      "branch_id",
+      "area_code",
+      "start_date",
+      "end_date",
+      "status",
+      "revision"
+    ],
+    "twelve_week_goals": [
+      "id",
+      "cycle_id",
+      "week_number",
+      "revision"
+    ],
+    "twelve_week_task_links": [
+      "task_id",
+      "cycle_id",
+      "week_number"
     ]
   },
   "forbidden_columns": {

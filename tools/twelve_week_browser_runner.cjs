@@ -1,0 +1,75 @@
+const fs=require('fs'),path=require('path'),http=require('http'),assert=require('assert/strict');
+const {chromium}=require(require.resolve('playwright',{paths:[path.join(__dirname,'../tests/wave50'),process.cwd(),'/opt/codex/runtimes/codex-primary-runtime/dependencies/node/node_modules']}));
+const root=path.resolve(__dirname,'..'),out='/tmp/hemocura-twelve-week-browser';fs.mkdirSync(out,{recursive:true});
+const html=`<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="/css/app.css"><main id="view"><section id="root" style="padding:18px;max-width:1500px;margin:auto"></section></main><script type="module">
+import {fixture} from '/hemocura-core/supabase.js';import {mountTwelveWeekPlan} from '/hemocura-core/twelve-week-plan.js';import {installProgressProtection} from '/hemocura-core/progress-protection.js';
+window.fixture=fixture;window.enabled=false;window.manager=true;window.scopedAreas=false;window.failSave=false;window.requests=[];window.peopleCalls=[];window.catalogCalls=[];window.store={cycles:[],goals:[],tasks:[]};
+const add=(date,days)=>{const d=new Date(date+'T12:00:00Z');d.setUTCDate(d.getUTCDate()+days);return d.toISOString().slice(0,10)};
+fixture.rpcHandler=async(name,args)=>{
+ if(name==='twelve_week_context')return{data:{enabled:window.enabled,actorId:'actor-ficticio',branches:[{id:'a',name:'Sucursal ficticia A'},{id:'b',name:'Sucursal ficticia B'}],areas:[{code:'OPERACIONES',name:'Operaciones ficticias',can_manage:window.manager,can_review:false,...(window.scopedAreas?{branch_ids:['a']}:{})},{code:'COMERCIAL',name:'Comercial ficticio',can_manage:window.manager,can_review:false,...(window.scopedAreas?{branch_ids:['b']}:{})}]}};
+ if(name==='twelve_week_catalog'){catalogCalls.push(args);return{data:{enabled:window.enabled,can_manage:window.manager,cycles:structuredClone(store.cycles.filter(c=>c.branch_id===args.p_branch&&c.area_code===args.p_area)),goals:structuredClone(store.goals),tasks:structuredClone(store.tasks)}}}
+ if(name==='work_agenda_people'){peopleCalls.push(args);return{data:[{id:'owner-ficticio',full_name:'Responsable ficticio autorizado'}]}}
+ if(name==='twelve_week_action'){
+  requests.push(structuredClone(args));if(window.failSave){window.failSave=false;return{error:{message:'Fallo de red ficticio previo a confirmar'}}}
+  const j=args.p_data;
+  if(args.p_action==='CYCLE_SAVE'){let c=store.cycles.find(c=>c.id===j.id);if(c)Object.assign(c,j,{revision:c.revision+1});else{c={...j,id:'cycle-'+(store.cycles.length+1),branch_id:args.p_branch,area_code:args.p_area,end_date:add(j.start_date,83),revision:1};store.cycles.push(c)}return{data:structuredClone(c)}}
+  if(args.p_action==='GOAL_SAVE'){let g=store.goals.find(g=>g.id===j.id);if(g)Object.assign(g,j,{revision:g.revision+1});else{g={...j,id:'goal-'+(store.goals.length+1),revision:1};store.goals.push(g)}return{data:structuredClone(g)}}
+  if(args.p_action==='TASK_CREATE'){const t={...j,id:'task-'+(store.tasks.length+1),branch_id:args.p_branch,area_code:args.p_area,owner_name:'Responsable ficticio autorizado',status:'PENDIENTE',requires_review:true,original_due_at:j.due_at,revision:1};store.tasks.push(t);return{data:structuredClone(t)}}
+ }
+ return{error:{message:'Unexpected synthetic RPC '+name}};
+};
+installProgressProtection();window.remount=()=>mountTwelveWeekPlan(document.querySelector('#root'));await window.remount();window.ready=true;
+</script>`;
+const server=http.createServer((req,res)=>{const u=new URL(req.url,'http://x').pathname;if(u==='/'){res.setHeader('content-type','text/html');return res.end(html)}const f=path.resolve(root,'.'+u);if(!f.startsWith(root+'/')){res.writeHead(403);return res.end()}fs.readFile(f,(e,b)=>{if(e){res.writeHead(404);return res.end()}res.setHeader('content-type',f.endsWith('.js')?'text/javascript':f.endsWith('.css')?'text/css':'text/html');res.end(b)})});
+(async()=>{
+ await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
+ const browser=await chromium.launch({executablePath:process.env.HEMOCURA_BROWSER||(fs.existsSync('/usr/bin/chromium')?'/usr/bin/chromium':undefined),args:['--no-sandbox']});
+ const checks=[],errors=[],external=[],confirmations=[];const ok=(name,value)=>{assert(value,name);checks.push(name)};
+ try{
+  const context=await browser.newContext({viewport:{width:1440,height:1000},timezoneId:'America/Santo_Domingo',locale:'es-DO'}),origin='http://127.0.0.1:'+server.address().port;
+  await context.route('**/*',route=>{if(new URL(route.request().url()).origin!==origin){external.push(route.request().url());return route.abort()}return route.continue()});
+  await context.route('**/hemocura-core/supabase.js',route=>route.fulfill({contentType:'text/javascript',body:fs.readFileSync(root+'/tests/workflow/supabase-fixture.js','utf8')}));
+  const page=await context.newPage();page.on('pageerror',error=>errors.push(error.stack));page.on('dialog',async dialog=>{confirmations.push(dialog.message());await dialog.dismiss()});
+  await page.goto(origin);await page.waitForFunction(()=>window.ready);
+  ok('feature OFF displays notice without catalog or write calls',await page.evaluate(()=>catalogCalls.length===0&&requests.length===0&&document.querySelector('#root').textContent.includes('todavía no está activado')));
+  await page.evaluate(async()=>{window.enabled=true;await window.remount()});await page.waitForSelector('[data-tw-new-cycle]');
+  ok('enabled manager sees scoped branch and area selectors',await page.locator('[data-tw-branch] option').count()===2&&await page.locator('[data-tw-area] option').count()===2);
+  await page.locator('[data-tw-new-cycle]').click();await page.locator('[data-tw-form] [name=title]').fill('Ciclo operativo ficticio');await page.locator('[data-tw-form] [name=start_date]').fill('2026-11-09');await page.locator('[data-tw-form] [name=objective]').fill('Coordinar tareas y evidencia de un equipo ficticio.');await page.locator('[data-tw-form] [name=status]').selectOption('ACTIVO');
+  ok('cycle end is 83 days after start',await page.locator('[data-tw-end-date]').innerText()==='2027-01-31');await page.locator('[data-tw-submit]').click();await page.waitForSelector('[data-tw-new-task]');
+  ok('cycle saved through canonical scoped RPC',await page.evaluate(()=>requests[0].p_action==='CYCLE_SAVE'&&requests[0].p_branch==='a'&&requests[0].p_area==='OPERACIONES'&&store.cycles.length===1));
+  await page.locator('[data-tw-edit-goal="1"]').click();await page.locator('[data-tw-form] [name=goal]').fill('Documentar el relevo ficticio');await page.locator('[data-tw-form] [name=target_metric]').fill('Pendientes sin responsable');await page.locator('[data-tw-form] [name=target_value]').fill('0');await page.locator('[data-tw-submit]').click();await page.waitForFunction(()=>document.querySelector('.tw-weeks').textContent.includes('Documentar el relevo ficticio'));
+  ok('goal preserves numeric zero rather than null',await page.evaluate(()=>store.goals[0].target_value===0&&store.goals[0].cycle_id==='cycle-1'&&store.goals[0].week_number===1));
+  await page.locator('[data-tw-week="1"]').click();await page.locator('[data-tw-new-task]').click();await page.waitForSelector('[data-tw-form] [name=owner_id] option[value="owner-ficticio"]',{state:'attached'});
+  ok('people lookup constrained to selected branch and area',await page.evaluate(()=>peopleCalls.length===1&&peopleCalls[0].p_branch==='a'&&peopleCalls[0].p_area==='OPERACIONES'));
+  await page.locator('[data-tw-form] [name=title]').fill('Relevo ficticio de la primera semana');await page.locator('[data-tw-form] [name=description]').fill('Adjuntar referencia de ejecución sintética.');await page.locator('[data-tw-form] [name=owner_id]').selectOption('owner-ficticio');await page.locator('[data-tw-form] [name=due_at]').fill('2026-11-16T00:00');
+  ok('due input declares exact local week limits',await page.locator('[data-tw-form] [name=due_at]').getAttribute('min')==='2026-11-09T00:00'&&await page.locator('[data-tw-form] [name=due_at]').getAttribute('max')==='2026-11-15T23:59');
+  const beforeInvalid=await page.evaluate(()=>requests.length);await page.locator('[data-tw-submit]').click();ok('outside local week rejected before write',await page.evaluate(()=>document.querySelector('[name=due_at]').validity.rangeOverflow)&&await page.evaluate(()=>requests.length)===beforeInvalid);
+  await page.locator('[data-tw-form] [name=due_at]').fill('2026-11-15T23:59');await page.locator('[data-tw-form] [name=priority]').selectOption('ALTA');await page.evaluate(()=>window.failSave=true);await page.locator('[data-tw-submit]').click();await page.waitForSelector('[data-tw-dialog-error]:not(:empty)');
+  ok('network failure preserves entered task fields',await page.locator('[data-tw-form] [name=title]').inputValue()==='Relevo ficticio de la primera semana'&&await page.locator('[data-tw-form] [name=due_at]').inputValue()==='2026-11-15T23:59');
+  const beforeCancel=await page.evaluate(()=>catalogCalls.length);await page.evaluate(()=>{const select=document.querySelector('[data-tw-branch]');select.value='b';select.dispatchEvent(new Event('change',{bubbles:true}))});
+  ok('canceling branch change preserves context and edit',await page.locator('[data-tw-branch]').inputValue()==='a'&&await page.locator('[data-tw-form] [name=title]').inputValue()==='Relevo ficticio de la primera semana'&&await page.evaluate(()=>catalogCalls.length)===beforeCancel&&confirmations.length===1);
+  await page.locator('[data-tw-refresh]').dispatchEvent('click');ok('canceling refresh does not discard form',await page.evaluate(()=>catalogCalls.length)===beforeCancel&&await page.locator('[data-tw-dialog]').evaluate(d=>d.open)&&confirmations.length===2);
+  await page.locator('[data-tw-submit]').click();await page.waitForFunction(()=>document.querySelector('tbody').textContent.includes('Relevo ficticio de la primera semana'));
+  ok('retry uses same UUID without duplicate task',await page.evaluate(()=>{const calls=requests.filter(r=>r.p_action==='TASK_CREATE');return calls.length===2&&calls[0].p_request===calls[1].p_request&&store.tasks.length===1}));
+  ok('due_at uses Santo Domingo boundary rather than UTC date',await page.evaluate(()=>store.tasks[0].due_at==='2026-11-16T03:59:00.000Z'));
+  ok('task success remains visible after catalog refresh',await page.locator('[data-tw-message]').innerText().then(text=>text.includes('Tarea creada')));
+  await page.evaluate(()=>{const base=store.tasks[0];store.tasks.push({...base,id:'task-review',title:'Revisión ficticia',status:'EN_REVISION',submitted_at:'2026-11-12T13:00:00Z'},{...base,id:'task-complete',title:'Validada ficticia',status:'COMPLETADA',completed_at:'2026-11-12T15:00:00Z'})});await page.locator('[data-tw-refresh]').click();await page.waitForFunction(()=>document.querySelector('tbody').textContent.includes('Revisión ficticia'));
+  ok('canonical review and completed states displayed',await page.locator('tbody').innerText().then(text=>text.includes('Por revisar')&&text.includes('Completada')));
+  ok('task execution and review link to area agenda without direct complete button',await page.locator('[data-tw-task-agenda]').count()===3&&await page.locator('[data-tw-task-agenda]').first().getAttribute('href')==='#areaagenda'&&await page.getByRole('button',{name:/completar|validar y cerrar/i}).count()===0);
+  ok('no direct browser table writes',await page.evaluate(()=>fixture.writes.length===0));
+  await page.screenshot({path:out+'/ciclo_12_semanas.png',fullPage:true});await page.setViewportSize({width:390,height:844});await page.screenshot({path:out+'/ciclo_movil.png',fullPage:true});ok('mobile fits 390px viewport',await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+2));await page.setViewportSize({width:1440,height:1000});
+  await page.evaluate(()=>window.manager=false);await page.locator('[data-tw-refresh]').click();await page.waitForFunction(()=>!document.querySelector('[data-tw-new-cycle]'));
+  ok('reader sees cycle and tasks without mutation controls',await page.locator('[data-tw-cycle]').inputValue()==='cycle-1'&&await page.locator('tbody tr').count()===3&&await page.locator('[data-tw-new-cycle],[data-tw-edit-cycle],[data-tw-new-goal],[data-tw-new-task],[data-tw-edit-goal]').count()===0);
+  await page.evaluate(()=>window.manager=true);await page.locator('[data-tw-refresh]').click();await page.waitForSelector('[data-tw-edit-cycle]');await page.locator('[data-tw-edit-cycle]').click();ok('active cycle cannot revert to draft',await page.locator('[data-tw-form] [name=status] option[value=BORRADOR]').count()===0);await page.locator('[data-tw-form] [name=status]').selectOption('CERRADO');await page.locator('[data-tw-submit]').click();await page.waitForFunction(()=>document.querySelector('#root').textContent.includes('Ciclo cerrado:'));
+  ok('closed cycle immutable in UI',await page.locator('[data-tw-edit-cycle],[data-tw-new-goal],[data-tw-new-task],[data-tw-edit-goal]').count()===0);
+  await page.locator('[data-tw-new-cycle]').click();await page.locator('[data-tw-form] [name=title]').fill('Borrador ficticio');await page.locator('[data-tw-form] [name=start_date]').fill('2026-11-09');await page.locator('[data-tw-form] [name=objective]').fill('Meta antes de activar');await page.locator('[data-tw-submit]').click();await page.waitForFunction(()=>document.querySelector('[data-tw-cycle]').value==='cycle-2');
+  ok('draft cycle accepts goals but not new tasks',await page.locator('[data-tw-new-goal]').count()===1&&await page.locator('[data-tw-new-task]').count()===0);
+  await page.evaluate(async()=>{window.scopedAreas=true;await window.remount()});await page.waitForSelector('[data-tw-area]');
+  ok('area selector honors context branch_ids',await page.locator('[data-tw-area] option').count()===1&&await page.locator('[data-tw-area]').inputValue()==='OPERACIONES');
+  await page.locator('[data-tw-branch]').selectOption('b');await page.waitForFunction(()=>document.querySelector('[data-tw-area]').value==='COMERCIAL'&&document.querySelector('#root').getAttribute('aria-busy')==='false');
+  ok('branch change chooses authorized area before catalog call',await page.locator('[data-tw-area] option').count()===1&&await page.evaluate(()=>catalogCalls.at(-1).p_branch==='b'&&catalogCalls.at(-1).p_area==='COMERCIAL'&&!catalogCalls.some(c=>c.p_branch==='b'&&c.p_area==='OPERACIONES')));
+  ok('no runtime exceptions',errors.length===0);ok('no external requests or production data',external.length===0);
+  fs.writeFileSync(out+'/report.json',JSON.stringify({status:'PASS',checks,errors,external,confirmation_prompts:confirmations.length,production_data_used:false,rls_proven:false},null,2));console.log('PASS '+checks.length+' twelve-week browser checks');
+ }catch(error){fs.writeFileSync(out+'/report.json',JSON.stringify({status:'FAIL',checks,errors,external,error:error.stack,production_data_used:false},null,2));throw error}
+ finally{await browser.close();server.close()}
+})().catch(error=>{console.error(error);process.exitCode=1});

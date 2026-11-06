@@ -59,7 +59,7 @@ def main():
   team_role_migrations=[]
   delivery_migrations=[]
   for f in sorted((ROOT/'supabase/migrations').glob('*.sql')):
-   if f.name.endswith(('_team_delivery_coordination.sql','_clinical_commercial_job_roles.sql','_personal_username_accounts.sql','_commercial_crm_contacts.sql','_crm_weekly_visit_planner.sql')):delivery_migrations.append(f);continue
+   if f.name.endswith(('_team_delivery_coordination.sql','_clinical_commercial_job_roles.sql','_personal_username_accounts.sql','_commercial_crm_contacts.sql','_crm_weekly_visit_planner.sql','_twelve_week_execution.sql')):delivery_migrations.append(f);continue
    if f.name.endswith('_production_security_privacy_readiness.sql'):production_followups.append(f);continue
    if f.name.endswith('_audit_criteria_and_competency_authorization.sql'):quality_security_followups.append(f);continue
    if f.name.endswith('_hemovigilance_access_and_anonymous_view_containment.sql'):security_followups.append(f);continue
@@ -191,6 +191,9 @@ def main():
    report['checks'].extend({'name':c.strip(),'pass':True} for c in re.findall(r'PASS ([^\n]+)',result.stderr+result.stdout))
   if any(f.name.endswith('_crm_weekly_visit_planner.sql') for f in delivery_migrations):
    result=sql((ROOT/'tests/crm-planner/database.sql').read_text(),'crm-weekly-planner')
+   report['checks'].extend({'name':c.strip(),'pass':True} for c in re.findall(r'PASS ([^\n]+)',result.stderr+result.stdout))
+  if any(f.name.endswith('_twelve_week_execution.sql') for f in delivery_migrations):
+   result=sql((ROOT/'tests/twelve-week/database.sql').read_text(),'twelve-week-execution')
    report['checks'].extend({'name':c.strip(),'pass':True} for c in re.findall(r'PASS ([^\n]+)',result.stderr+result.stdout))
   print(f'PASS: {len(report["checks"])} PostgreSQL checks; {len(report["migrations"])} baseline/candidate files. Production not verified.')
   return 0
