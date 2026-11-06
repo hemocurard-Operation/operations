@@ -1,0 +1,36 @@
+begin;
+create function pg_temp.ok(v boolean,label text) returns void language plpgsql as $$begin if v is distinct from true then raise exception 'FAIL %',label;end if;raise notice 'PASS %',label;end$$;
+create function pg_temp.denied(stmt text,label text) returns void language plpgsql as $$begin begin execute stmt;exception when others then raise notice 'PASS %',label;return;end;raise exception 'FAIL unexpected permission %',label;end$$;
+create function pg_temp.req(n integer) returns uuid language sql as $$select ('cd300000-0000-0000-0000-'||lpad(n::text,12,'0'))::uuid$$;
+grant execute on all functions in schema pg_temp to authenticated,anon;
+insert into branches(id,code,name) values('cd100000-0000-0000-0000-000000000001','PLAN-A','Sucursal ficticia A'),('cd100000-0000-0000-0000-000000000002','PLAN-B','Sucursal ficticia B'),('cd100000-0000-0000-0000-000000000003','PLAN-C','Sucursal ficticia C');
+insert into auth.users(id,email) values('cd200000-0000-0000-0000-000000000001','plan-a@example.invalid');
+insert into profiles(id,full_name,branch_id,active) values('cd200000-0000-0000-0000-000000000001','Comercial ficticio','cd100000-0000-0000-0000-000000000001',true);
+insert into user_roles(user_id,role_id,branch_id) select 'cd200000-0000-0000-0000-000000000001',r.id,b.id from roles r cross join branches b where r.code='ASISTENTE_COMERCIAL' and b.code in ('PLAN-A','PLAN-B');
+insert into crm_contacts(id,branch_id,kind,full_name,center,owner_id) values('cd400000-0000-0000-0000-000000000001','cd100000-0000-0000-0000-000000000001','REFERIDOR','Médico ficticio','Centro ficticio','cd200000-0000-0000-0000-000000000001');
+insert into crm_contact_branch_access values('cd400000-0000-0000-0000-000000000001','cd100000-0000-0000-0000-000000000002');
+select pg_temp.ok((select not enabled from app_feature_flags where key='crm_weekly_planner'),'planner defaults off');
+set local role authenticated;select set_config('request.jwt.claim.sub','cd200000-0000-0000-0000-000000000001',true);
+select pg_temp.ok((select count(*)=1 from crm_branch_contacts('cd100000-0000-0000-0000-000000000002')),'shared portfolio visible once in authorized branch');
+select pg_temp.denied($q$select * from crm_branch_contacts('cd100000-0000-0000-0000-000000000003')$q$,'foreign branch cannot enumerate contacts');
+select pg_temp.denied($q$select crm_plan_action('cd100000-0000-0000-0000-000000000001','RULE','{}',pg_temp.req(1))$q$,'disabled planner blocks writes');
+reset role;update app_feature_flags set enabled=true where key='crm_weekly_planner';set local role authenticated;
+select crm_plan_action('cd100000-0000-0000-0000-000000000002','RULE','{"contact_id":"cd400000-0000-0000-0000-000000000001","slots":[{"day":1,"period":"AM"}],"needs_review":false,"rule_text":"Lunes mañana con cita","appointment_required":true}',pg_temp.req(1));
+select pg_temp.ok((select count(*)=1 from crm_visit_rules),'shared branch can maintain one central rule');
+select pg_temp.denied($q$select crm_plan_action('cd100000-0000-0000-0000-000000000001','RULE','{"contact_id":"cd400000-0000-0000-0000-000000000001","slots":[{"day":9,"period":"AM"}],"revision":1}',pg_temp.req(2))$q$,'invalid day rejected');
+select pg_temp.denied($q$select crm_plan_action('cd100000-0000-0000-0000-000000000001','RULE','{"contact_id":"cd400000-0000-0000-0000-000000000001","slots":[],"revision":0}',pg_temp.req(2))$q$,'stale rule version rejected');
+select pg_temp.denied($q$select crm_plan_action('cd100000-0000-0000-0000-000000000001','SAVE',jsonb_build_object('contact_id','cd400000-0000-0000-0000-000000000001','rule_revision',1,'scheduled_at',now()+interval '5 days','duration_minutes',30,'objective','Visita ficticia'),pg_temp.req(3))$q$,'appointment or unconfirmed time requires reason');
+select jsonb_build_object('contact_id','cd400000-0000-0000-0000-000000000001','rule_revision',1,'scheduled_at',now()+interval '5 days','duration_minutes',30,'objective','Visita ficticia','exception_reason','Cita confirmada para prueba aislada')::text as payload \gset
+select crm_plan_action('cd100000-0000-0000-0000-000000000002','SAVE',:'payload'::jsonb,pg_temp.req(3))->>'id' as visit \gset
+select crm_plan_action('cd100000-0000-0000-0000-000000000002','SAVE',:'payload'::jsonb,pg_temp.req(3));
+select pg_temp.ok((select count(*)=1 from crm_weekly_visits),'repeat request creates one planned visit');
+select pg_temp.denied($q$select crm_plan_action('cd100000-0000-0000-0000-000000000001','SAVE',jsonb_build_object('contact_id','cd400000-0000-0000-0000-000000000001','rule_revision',1,'scheduled_at',now()+interval '5 days 10 minutes','duration_minutes',30,'objective','Otra visita','exception_reason','Confirmación ficticia'),pg_temp.req(4))$q$,'cross-branch agent overlap blocked');
+select crm_plan_action('cd100000-0000-0000-0000-000000000002','LOCATION','{"center":"Centro ficticio","latitude":19.4,"longitude":-70.7,"source":"Fuente ficticia","verified":false}',pg_temp.req(5));
+select pg_temp.denied($q$select crm_plan_action('cd100000-0000-0000-0000-000000000002','LOCATION','{"center":"Centro ficticio","latitude":190,"longitude":-70,"source":"Fuente ficticia","revision":1}',pg_temp.req(6))$q$,'invalid coordinate rejected');
+select pg_temp.denied($q$insert into crm_contact_branch_access values('cd400000-0000-0000-0000-000000000001','cd100000-0000-0000-0000-000000000003')$q$,'browser cannot share contacts to other branches');
+select pg_temp.denied($q$update crm_weekly_visits set status='CANCELADA'$q$,'browser cannot bypass audited plan action');
+select crm_plan_action('cd100000-0000-0000-0000-000000000002','CANCEL',jsonb_build_object('id',:'visit','revision',1,'reason','Prueba de cancelación'),pg_temp.req(7));
+select pg_temp.ok((select status='CANCELADA' and revision=2 from crm_weekly_visits),'cancel preserves visit with revised status');
+reset role;select pg_temp.ok((select count(*)>=4 from audit_events where module='CRM_PLAN'),'planner actions create audit events');
+set local role anon;select pg_temp.denied($q$select * from crm_visit_rules$q$,'anonymous cannot read physician rules');select pg_temp.denied($q$select * from crm_branch_contacts('cd100000-0000-0000-0000-000000000001')$q$,'anonymous cannot access shared portfolio');
+rollback;

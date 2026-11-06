@@ -32,10 +32,15 @@
     "continuity_plans",
     "continuity_tests",
     "crm_activities",
+    "crm_center_locations",
+    "crm_contact_branch_access",
+    "crm_contact_sources",
     "crm_contacts",
     "crm_history",
     "crm_requests",
     "crm_services",
+    "crm_visit_rules",
+    "crm_weekly_visits",
     "daily_operational_closes",
     "daily_operational_report_versions",
     "daily_sales",
@@ -263,7 +268,9 @@
     "create_approval_request",
     "create_exception_from_candidate",
     "crm_action",
+    "crm_branch_contacts",
     "crm_catalog",
+    "crm_plan_action",
     "crm_review",
     "decide_approval_request",
     "execute_approved_action",
@@ -463,6 +470,33 @@
       "contact_id",
       "branch_id",
       "actor_id"
+    ],
+    "crm_contact_branch_access": [
+      "contact_id",
+      "branch_id"
+    ],
+    "crm_contact_sources": [
+      "contact_id",
+      "branch_id",
+      "batch_sha256"
+    ],
+    "crm_visit_rules": [
+      "contact_id",
+      "branch_id",
+      "revision"
+    ],
+    "crm_center_locations": [
+      "id",
+      "branch_id",
+      "revision"
+    ],
+    "crm_weekly_visits": [
+      "id",
+      "branch_id",
+      "contact_id",
+      "agent_id",
+      "revision",
+      "request_id"
     ]
   },
   "forbidden_columns": {

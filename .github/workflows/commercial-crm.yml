@@ -1,10 +1,10 @@
 name: Commercial CRM and reviewed import
 on:
   pull_request:
-    paths: ['hemocura-core/crm*', 'hemocura-core/commercial.js', 'css/crm.css', 'supabase/migrations/*commercial_crm_contacts.sql', 'tests/crm/**', 'tools/crm_browser_runner.cjs', 'vendor/exceljs/**', '.github/workflows/commercial-crm.yml']
+    paths: ['hemocura-core/crm*', 'hemocura-core/commercial.js', 'css/crm.css', 'supabase/migrations/*commercial_crm_contacts.sql', 'tests/crm/**', 'tools/crm_browser_runner.cjs', 'vendor/exceljs/**', 'vendor/leaflet/**', 'tests/crm-planner/**', 'tools/crm_planner_browser_runner.cjs', 'supabase/migrations/*crm_weekly_visit_planner.sql', '.github/workflows/commercial-crm.yml']
   push:
     branches: [main]
-    paths: ['hemocura-core/crm*', 'hemocura-core/commercial.js', 'css/crm.css', 'supabase/migrations/*commercial_crm_contacts.sql', 'tests/crm/**', 'tools/crm_browser_runner.cjs', 'vendor/exceljs/**', '.github/workflows/commercial-crm.yml']
+    paths: ['hemocura-core/crm*', 'hemocura-core/commercial.js', 'css/crm.css', 'supabase/migrations/*commercial_crm_contacts.sql', 'tests/crm/**', 'tools/crm_browser_runner.cjs', 'vendor/exceljs/**', 'vendor/leaflet/**', 'tests/crm-planner/**', 'tools/crm_planner_browser_runner.cjs', 'supabase/migrations/*crm_weekly_visit_planner.sql', '.github/workflows/commercial-crm.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -18,11 +18,13 @@ jobs:
         with:
           node-version: '24'
       - run: node tests/crm/import.test.mjs
-      - run: python tools/migration_security_linter.py supabase/migrations/*commercial_crm_contacts.sql
+      - run: node tests/crm-planner/domain.test.mjs
+      - run: python tools/migration_security_linter.py supabase/migrations/*commercial_crm_contacts.sql supabase/migrations/*crm_weekly_visit_planner.sql
       - run: python tools/workflow_postgres_runner.py --allow-external-prerequisite-fixture --report-dir /tmp/hemocura-crm-postgres
       - run: npm ci --prefix tests/wave50 --ignore-scripts --no-audit --no-fund
       - run: node tests/wave50/node_modules/playwright/cli.js install --with-deps chromium
       - run: node tools/crm_browser_runner.cjs
+      - run: node tools/crm_planner_browser_runner.cjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -30,3 +32,4 @@ jobs:
           path: |
             /tmp/hemocura-crm-postgres
             /tmp/hemocura-crm-browser
+            /tmp/hemocura-crm-planner-browser
