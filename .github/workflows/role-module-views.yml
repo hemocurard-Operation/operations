@@ -1,5 +1,6 @@
 name: Role based module views
 on:
+  pull_request:
   push:
     branches: [main]
     paths:
