@@ -1,0 +1,12 @@
+**/node_modules
+**/__pycache__/
+*.pyc
+supabase/.temp/
+.env
+.env.*
+!.env.example
+/private-backups/
+/backups/
+*.agekey
+*.tar.age
+rclone.conf

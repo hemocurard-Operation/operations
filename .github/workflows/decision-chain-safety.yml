@@ -10,6 +10,7 @@ on:
       - 'hemocura-core/decision-center*.js'
       - 'hemocura-core/router.js'
       - 'hemocura-core/layout.js'
+      - 'hemocura-core/route-mounts.js'
       - 'hemocura-core/views.js'
       - 'hemocura-core/access-control.js'
       - 'contracts/runtime-contract-v0.45.json'

@@ -20,18 +20,18 @@ export async function mountDonors(root){
  if(!document.querySelector('[data-donor-styles]')){const link=document.createElement('link');link.rel='stylesheet';link.href=new URL('../css/donors.css',import.meta.url).href;link.dataset.donorStyles='';document.head.append(link)}
  root.innerHTML='<div class="donor-page"><section class="card" role="status">Cargando donantes…</section></div>';
  let branches,access,rows=[],selected=null,details=null,detailTicket=0,search='',branchFilter='',groupFilter='',visibleCount=25,busy=false,displayedId=null;
- const listSize=25;
- try{[branches,access,rows]=await Promise.all([bloodData.branches(),loadAccess(),donorManagement.list()])}catch(e){root.innerHTML=`<section class="card"><div class="status bad" role="alert">${esc(e.message)}</div><button data-retry>Reintentar</button></section>`;root.querySelector('[data-retry]').onclick=()=>mountDonors(root);return}
+ const listSize=25;let listOffset=0,listTotal=0,listLoading=false,listTicket=0,listController=null,searchTimer=null,agendaTicket=0,agendaReady=false,initial;
+ try{[branches,access,initial]=await Promise.all([bloodData.branches(),loadAccess(),donorManagement.page()]);rows=initial.rows;listTotal=initial.total;listOffset=initial.offset}catch(e){root.innerHTML=`<section class="card"><div class="status bad" role="alert">${esc(e.message)}</div><button data-retry>Reintentar</button></section>`;root.querySelector('[data-retry]').onclick=()=>mountDonors(root);return}
  const canWrite=access.permissions.has('DONORS_WRITE');
  const canLab=access.permissions.has('SCREENING_WRITE');
  const bm=Object.fromEntries(branches.map(b=>[b.id,b.name]));
  const branchItems=[['','Seleccionar…'],...branches.map(b=>[b.id,b.name])];
  root.innerHTML=`<div class="donor-page"><div class="sales-toolbar"><div><h2 class="section-heading">Gestión de donantes</h2><div class="muted">Identifica, contacta y coordina la próxima visita.</div></div><div class="donor-actions"><button id="don-id-reader" class="secondary">Leer / validar cédula</button>${canWrite?'<button id="don-new">+ Nuevo donante</button>':''}</div></div>
  <div id="don-identity-reader"></div><div id="don-msg" role="status" aria-live="polite"></div>
- <section class="card donor-search"><label>Buscar por nombre, cédula o código<input id="don-search" type="search" placeholder="Nombre, cédula o código" autocomplete="off"></label><label>Sucursal<select id="don-branch"><option value="">Todas las sucursales</option>${branches.map(b=>`<option value="${esc(b.id)}">${esc(b.name)}</option>`).join('')}</select></label><label>Grupo sanguíneo<select id="don-group"><option value="">Todos los grupos</option>${['A+','A−','B+','B−','AB+','AB−','O+','O−','Pendiente'].map(g=>`<option>${g}</option>`).join('')}</select></label><button id="don-refresh" class="secondary">Actualizar</button></section>
+ <section class="card donor-search"><label>Buscar por nombre, cédula o código<input id="don-search" type="search" maxlength="120" placeholder="Nombre, cédula o código" autocomplete="off"></label><label>Sucursal<select id="don-branch"><option value="">Todas las sucursales</option>${branches.map(b=>`<option value="${esc(b.id)}">${esc(b.name)}</option>`).join('')}</select></label><label>Grupo sanguíneo<select id="don-group"><option value="">Todos los grupos</option>${['A+','A−','B+','B−','AB+','AB−','O+','O−','Pendiente'].map(g=>`<option>${g}</option>`).join('')}</select></label><button id="don-refresh" class="secondary">Actualizar</button></section>
  <section class="card donor-workspace" aria-labelledby="don-workspace-title"><header class="donor-workspace-head"><h3 id="don-workspace-title">Ficha del donante</h3><nav class="donor-navigation" aria-label="Recorrer donantes"><button type="button" id="don-prev" class="secondary">← Anterior</button><span id="don-position" aria-live="polite"></span><button type="button" id="don-next">Siguiente →</button></nav></header><div id="don-detail"></div></section>
  <section class="card donor-list" aria-labelledby="don-list-title"><div class="donor-card-head"><h3 id="don-list-title">Listado de donantes</h3><span id="don-list-count" class="muted" aria-live="polite"></span></div><p class="muted">Use Anterior y Siguiente en la ficha para recorrer los resultados sin volver a la lista.</p><div id="don-list-table"></div><div class="donor-list-footer"><span id="don-list-range" class="muted"></span><button type="button" id="don-list-more" class="secondary">Cargar más</button></div></section>
- <div id="don-coordination"></div><div id="don-agenda"></div>
+ <details id="don-support-tools" class="card"><summary><strong>Agenda y comunicaciones de donantes</strong></summary><p class="muted">Consulte la agenda completa y los seguimientos de las sucursales autorizadas.</p><div id="don-tools-message" role="status"></div><div id="don-coordination"></div><div id="don-agenda"></div></details>
  <dialog id="don-dialog" class="sales-dialog"><form id="don-form"><h3 id="don-form-title"></h3><div id="don-form-fields" class="filter-grid"></div><div id="don-form-message" role="alert"></div><div class="dialog-actions"><button type="button" id="don-cancel" class="secondary">Cancelar</button><button type="submit">Guardar ficha</button></div></form></dialog>
  <dialog id="don-contact-dialog" class="sales-dialog"><form id="don-contact-form"><h3>Registrar contacto</h3><div class="filter-grid">${field('channel','Canal','select','LLAMADA',{items:CHANNELS})}${field('contacted_at','Fecha y hora','datetime-local',stamp())}${field('outcome','Resultado','select','CONTACTADO',{items:[['CONTACTADO','Contactado'],['SIN_RESPUESTA','Sin respuesta'],['VOLVER_A_LLAMAR','Volver a llamar'],['NO_DESEA','No desea donar']]})}${field('next_contact_at','Próximo contacto','datetime-local','',{required:false})}${field('notes','Notas del contacto','textarea')}</div><div id="don-contact-message" role="alert"></div><div class="dialog-actions"><button type="button" data-close="don-contact-dialog" class="secondary">Cancelar</button><button type="submit">Guardar contacto</button></div></form></dialog></div>`;
  const q=s=>root.querySelector(s);
@@ -41,18 +41,19 @@ export async function mountDonors(root){
    return rows.filter(d=>(!branchFilter||d.branch_id===branchFilter)&&(!groupFilter||group(d)===groupFilter)&&(!text||[d.full_name,d.cedula,d.donor_code].some(v=>String(v||'').toLocaleLowerCase('es').includes(text))||(digits&&String(d.cedula||'').replace(/\D/g,'').includes(digits))));
  }
  function navigation(){
-   const result=matches(),index=result.findIndex(d=>d.id===selected?.id);
-   q('#don-position').textContent=index<0?(result.length?'Seleccione un donante':'Sin coincidencias'):`Donante ${index+1} de ${result.length}`;
-   q('#don-prev').disabled=busy||index<=0;q('#don-next').disabled=busy||index<0||index>=result.length-1;
+   const result=matches(),index=result.findIndex(d=>d.id===selected?.id),disabled=busy||listLoading;
+   q('#don-position').textContent=index<0?(listTotal?'Seleccione un donante':'Sin coincidencias'):`Donante ${listOffset+index+1} de ${listTotal}`;
+   q('#don-prev').disabled=disabled||index<0||(index===0&&listOffset===0);
+   q('#don-next').disabled=disabled||index<0||listOffset+index+1>=listTotal;
  }
  function choices(){
    const result=matches(),index=result.findIndex(d=>d.id===selected?.id);
    if(index>=visibleCount)visibleCount=Math.ceil((index+1)/listSize)*listSize;
-   q('#don-list-count').textContent=`${result.length} donantes`;
-   q('#don-list-table').innerHTML=table(['Código','Nombre','Cédula','Grupo','Última donación',''],result.slice(0,visibleCount).map(d=>[esc(d.donor_code),esc(d.full_name||'Nombre pendiente'),show(d.cedula),esc(group(d)),esc(d.last_donation_date||'Sin registrar'),`<button type="button" class="secondary" data-donor-open="${esc(d.id)}" ${busy?'disabled':''} ${selected?.id===d.id?'aria-current="true"':''}>${selected?.id===d.id?'Ficha actual':'Ver ficha'}</button>`]));
+   q('#don-list-count').textContent=`${listTotal} donantes`;
+   q('#don-list-table').innerHTML=table(['Código','Nombre','Cédula','Grupo','Última donación',''],result.map(d=>[esc(d.donor_code),esc(d.full_name||'Nombre pendiente'),show(d.cedula),esc(group(d)),esc(d.last_donation_date||'Sin registrar'),`<button type="button" class="secondary" data-donor-open="${esc(d.id)}" ${busy?'disabled':''} ${selected?.id===d.id?'aria-current="true"':''}>${selected?.id===d.id?'Ficha actual':'Ver ficha'}</button>`]));
    q('#don-list-table').querySelectorAll('[data-donor-open]').forEach(b=>{if(b.getAttribute('aria-current')==='true')b.closest('tr').classList.add('donor-row-selected');b.onclick=async()=>{if(!canLeave())return;await select(b.dataset.donorOpen);q('.donor-workspace').scrollIntoView({behavior:'smooth',block:'start'})}});
-   q('#don-list-range').textContent=result.length?`Mostrando 1–${Math.min(visibleCount,result.length)} de ${result.length}`:'Sin coincidencias. Revise la búsqueda y los filtros.';
-   q('#don-list-more').hidden=visibleCount>=result.length;q('#don-list-more').disabled=busy;navigation();
+   q('#don-list-range').textContent=result.length?`Mostrando ${listOffset+1}–${listOffset+result.length} de ${listTotal}`:'Sin coincidencias. Revise la búsqueda y los filtros.';
+   q('#don-list-more').hidden=listOffset+rows.length>=listTotal;q('#don-list-more').disabled=busy||listLoading;navigation();
  }
  function canLeave(){
    if(busy)return false;
@@ -60,20 +61,41 @@ export async function mountDonors(root){
    const visitChanged=form&&JSON.stringify([...form.querySelectorAll('input,select,textarea')].map(el=>el.value))!==form.dataset.initialValues;
    return !(q('#don-lab-form [name=comment]')?.value.trim()||visitChanged)||window.confirm('Hay cambios sin guardar en la ficha. ¿Desea descartarlos y cambiar de donante?');
  }
- async function filter(){visibleCount=listSize;const result=matches();const id=result.some(d=>d.id===selected?.id)?selected.id:result[0]?.id;choices();if(id!==selected?.id)await select(id)}
+ async function filter(){await refresh(selected?.id)}
  async function select(id){
    const openPanels=id===displayedId?[...q('#don-detail').querySelectorAll('details[open][id]')].map(el=>el.id):[];
-   const ticket=++detailTicket;selected=rows.find(d=>d.id===id)||null;details=null;
+   const ticket=++detailTicket;selected=rows.find(d=>d.id===id)||(id?{id}:null);details=null;
    choices();q('#don-detail').innerHTML='<section class="card" role="status">'+(selected?'Cargando ficha…':'Seleccione un donante para ver su ficha y gestionar la visita.')+'</section>';
    if(!selected)return;
-   try{const result=await donorManagement.detail(id);if(ticket!==detailTicket||!root.isConnected)return;details=result;renderDetail(openPanels);displayedId=id}catch(e){if(ticket!==detailTicket)return;q('#don-detail').innerHTML='<section class="card">No se pudo cargar el historial y la agenda. Pulse Actualizar para reintentar.</section>';message(e.message,true)}
+   try{const result=await donorManagement.detail(id);if(ticket!==detailTicket||!root.isConnected)return;selected=result.profile;details=result;choices();renderDetail(openPanels);displayedId=id}catch(e){if(ticket!==detailTicket)return;q('#don-detail').innerHTML='<section class="card">No se pudo cargar el historial y la agenda. Pulse Actualizar para reintentar.</section>';message(e.message,true)}
  }
- function agenda(){const open=async id=>{if(!canLeave())return;resetFilters();await select(id);q('.donor-workspace').scrollIntoView({behavior:'smooth',block:'start'})};renderDonorAgenda(q('#don-agenda'),rows,open);mountDonorCoordination(q('#don-coordination'),rows,branches,access,open).catch(e=>message(e.message,true))}
+ async function agenda(){
+  if(!q('#don-support-tools').open||agendaReady)return;
+  const ticket=++agendaTicket,notice=q('#don-tools-message');notice.textContent='Cargando agenda y seguimientos completos…';
+  try{
+   const agendaRows=await donorManagement.agenda();if(ticket!==agendaTicket||!root.isConnected)return;
+   const open=async id=>{if(!canLeave())return;resetFilters();await refresh(id);q('.donor-workspace').scrollIntoView({behavior:'smooth',block:'start'})};
+   renderDonorAgenda(q('#don-agenda'),agendaRows,open);
+   await mountDonorCoordination(q('#don-coordination'),agendaRows,branches,access,open);
+   if(ticket===agendaTicket){agendaReady=true;notice.textContent=''}
+  }catch(e){if(ticket===agendaTicket){notice.textContent='No se pudo cargar la agenda completa. ';const retry=document.createElement('button');retry.type='button';retry.textContent='Reintentar';retry.onclick=agenda;notice.append(retry)}}
+ }
  function resetFilters(){search='';branchFilter='';groupFilter='';visibleCount=listSize;q('#don-search').value='';q('#don-branch').value='';q('#don-group').value=''}
- async function refresh(id=selected?.id){rows=await donorManagement.list();const result=matches();choices();agenda();await select(result.some(d=>d.id===id)?id:result[0]?.id)}
+ async function refresh(id=selected?.id,{append=false,offset=0,edge='',refreshAgenda=false}={}){
+  const ticket=++listTicket;listController?.abort();listController=new AbortController();listLoading=true;navigation();q('#don-list-more').disabled=true;
+  try{
+   const result=await donorManagement.page({branch:branchFilter,search,group:groupFilter,offset,limit:listSize,focus:append?null:id,signal:listController.signal});
+   if(ticket!==listTicket||!root.isConnected)return;
+   if(append){const seen=new Set(rows.map(r=>r.id));rows.push(...result.rows.filter(r=>!seen.has(r.id)))}else{rows=result.rows;listOffset=result.offset}
+   listTotal=result.total;choices();
+   if(!append){const target=edge==='last'?rows.at(-1)?.id:rows.some(d=>d.id===id)?id:rows[0]?.id;await select(target)}
+   if(refreshAgenda){agendaReady=false;await agenda()}
+  }catch(e){if(ticket===listTicket&&root.isConnected)message('No se pudo actualizar el listado. '+e.message,true)}
+  finally{if(ticket===listTicket&&root.isConnected){listLoading=false;q('#don-list-more').disabled=busy;navigation()}}
+ }
  async function mutate(button,action,onSuccess,errorBox){
    if(busy)return;busy=true;button.disabled=true;navigation();root.querySelectorAll('#don-search,#don-branch,#don-group,#don-list-more,#don-new,#don-id-reader,#don-refresh,#don-edit,[data-donor-open]').forEach(el=>el.disabled=true);
-   let saved=false;try{await action();saved=true;onSuccess?.();await refresh();message('Registro guardado.')}catch(e){if(saved)message('El registro se guardó, pero no se pudo actualizar la ficha. Pulse Actualizar. '+e.message,true);else (errorBox||q('#don-msg')).innerHTML=`<div class="status bad">${esc(e.message)}</div>`}finally{busy=false;root.querySelectorAll('#don-search,#don-branch,#don-group,#don-list-more,#don-new,#don-id-reader,#don-refresh,#don-edit,[data-donor-open]').forEach(el=>el.disabled=false);navigation();if(button.isConnected)button.disabled=false}
+   let saved=false;try{await action();saved=true;onSuccess?.();await refresh(undefined,{refreshAgenda:true});message('Registro guardado.')}catch(e){if(saved)message('El registro se guardó, pero no se pudo actualizar la ficha. Pulse Actualizar. '+e.message,true);else (errorBox||q('#don-msg')).innerHTML=`<div class="status bad">${esc(e.message)}</div>`}finally{busy=false;root.querySelectorAll('#don-search,#don-branch,#don-group,#don-list-more,#don-new,#don-id-reader,#don-refresh,#don-edit,[data-donor-open]').forEach(el=>el.disabled=false);navigation();if(button.isConnected)button.disabled=false}
  }
  function renderDetail(openPanels=[]){
    const d=selected,{donations,comments,contacts,visits,imported}=details;
@@ -113,7 +135,7 @@ export async function mountDonors(root){
    q('#don-form-fields').innerHTML=field('full_name','Nombre completo','text',d?.full_name||'')+field('cedula','Número de cédula','text',d?.cedula||'',{required:!d})+field('birth_date','Fecha de nacimiento','date',d?.birth_date||'',{required:false})+field('sex','Sexo','select',d?.sex||'',{items:[['','Seleccionar…'],['FEMENINO','Femenino'],['MASCULINO','Masculino'],['OTRO','Otro'],['NO_INFORMADO','No informado']]})+field('phone','Teléfono','tel',d?.phone||'',{required:false})+field('preferred_channel','Canal preferido','select',d?.preferred_channel||'LLAMADA',{items:CHANNELS})+field('abo','ABO','select',d?.abo||'',{required:false,items:GROUPS})+field('rh','Rh','select',d?.rh||'',{required:false,items:RH})+(d?'':field('donor_code','Código de donante','text')+field('branch_id','Sucursal','select','',{items:branchItems})+field('registration_date','Fecha de registro','date',localDay())+field('donor_type','Tipo','select','VOLUNTARIO',{items:['VOLUNTARIO','REPOSICION','DIRIGIDO']}))+field('observations','Observaciones','textarea',d?.observations||'',{required:false});
    q('#don-form [name=birth_date]').max=localDay();q('#don-form [name=cedula]').inputMode='numeric';q('#don-form [name=cedula]').maxLength=13;q('#don-dialog').showModal();
  }
- const identityReader=mountCedulaReader(q('#don-identity-reader'),{canWrite,lookup:donorManagement.byCedula,onOpen:async record=>{if(!canLeave())return;rows=await donorManagement.list();resetFilters();await select(record.id)},onApply:(record,draft)=>{profile(record);const form=q('#don-form');for(const [key,value] of Object.entries(draft))if(form.elements[key])form.elements[key].value=value||'';if(!record){form.elements['donor_code'].value='DON-'+localDay().replaceAll('-','')+'-'+crypto.randomUUID().slice(0,8).toUpperCase();form.elements['branch_id'].value=branches.find(b=>b.code==='STI')?.id||''}q('#don-form-message').textContent='Datos revisados de la cédula. Pulse Guardar ficha para registrar los cambios.'}});
+ const identityReader=mountCedulaReader(q('#don-identity-reader'),{canWrite,lookup:donorManagement.byCedula,onOpen:async record=>{if(!canLeave())return;resetFilters();await refresh(record.id)},onApply:(record,draft)=>{profile(record);const form=q('#don-form');for(const [key,value] of Object.entries(draft))if(form.elements[key])form.elements[key].value=value||'';if(!record){form.elements['donor_code'].value='DON-'+localDay().replaceAll('-','')+'-'+crypto.randomUUID().slice(0,8).toUpperCase();form.elements['branch_id'].value=branches.find(b=>b.code==='STI')?.id||''}q('#don-form-message').textContent='Datos revisados de la cédula. Pulse Guardar ficha para registrar los cambios.'}});
  q('#don-id-reader').onclick=()=>identityReader.open();
  if(canWrite)q('#don-new').onclick=()=>{if(canLeave())profile()};
  q('#don-cancel').onclick=()=>q('#don-dialog').close();root.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>q('#'+b.dataset.close).close());
@@ -123,11 +145,17 @@ export async function mountDonors(root){
    mutate(e.target.querySelector('[type=submit]'),async()=>{const saved=await donorManagement.saveProfile(editingProfile?.id,payload);selected=saved;if(!matches().some(d=>d.id===saved.id))resetFilters()},()=>q('#don-dialog').close(),q('#don-form-message'))};
  q('#don-contact-form').onsubmit=e=>{e.preventDefault();if(!canWrite||!e.target.reportValidity())return;const p=Object.fromEntries(new FormData(e.target));let contacted_at,next_contact_at;try{contacted_at=rdTimestamp(p.contacted_at);next_contact_at=p.next_contact_at?rdTimestamp(p.next_contact_at):null;if(Date.parse(contacted_at)>Date.now())throw new Error('El contacto realizado no puede estar en el futuro.');if(next_contact_at&&Date.parse(next_contact_at)<=Math.max(Date.now(),Date.parse(contacted_at)))throw new Error('El próximo contacto debe tener una fecha futura.');if(!p.notes.trim())throw new Error('Escriba el resultado del contacto.')}catch(e){q('#don-contact-message').innerHTML=`<div class="status bad">${esc(e.message)}</div>`;return}
    mutate(e.target.querySelector('[type=submit]'),()=>donorManagement.contact({donor_id:selected.id,branch_id:selected.branch_id,channel:p.channel,outcome:p.outcome,notes:p.notes.trim(),contacted_at,next_contact_at}),()=>q('#don-contact-dialog').close(),q('#don-contact-message'))};
- q('#don-search').oninput=e=>{if(!canLeave()){e.target.value=search;return}search=e.target.value;filter()};
- q('#don-branch').onchange=e=>{if(!canLeave()){e.target.value=branchFilter;return}branchFilter=e.target.value;filter()};
- q('#don-group').onchange=e=>{if(!canLeave()){e.target.value=groupFilter;return}groupFilter=e.target.value;filter()};
- q('#don-list-more').onclick=()=>{visibleCount+=listSize;choices()};
- for(const [id,delta] of [['#don-prev',-1],['#don-next',1]])q(id).onclick=async()=>{if(!canLeave())return;const result=matches(),index=result.findIndex(d=>d.id===selected?.id);if(index>=0&&result[index+delta])await select(result[index+delta].id)};
+ q('#don-search').oninput=e=>{if(!canLeave()){e.target.value=search;return}search=e.target.value;clearTimeout(searchTimer);listController?.abort();++listTicket;listLoading=true;navigation();q('#don-list-more').disabled=true;searchTimer=setTimeout(filter,250)};
+ q('#don-branch').onchange=e=>{if(!canLeave()){e.target.value=branchFilter;return}branchFilter=e.target.value;clearTimeout(searchTimer);filter()};
+ q('#don-group').onchange=e=>{if(!canLeave()){e.target.value=groupFilter;return}groupFilter=e.target.value;clearTimeout(searchTimer);filter()};
+ q('#don-list-more').onclick=()=>{if(!listLoading)refresh(null,{append:true,offset:listOffset+rows.length})};
+ for(const [id,delta] of [['#don-prev',-1],['#don-next',1]])q(id).onclick=async()=>{
+  if(!canLeave()||listLoading)return;const result=matches(),index=result.findIndex(d=>d.id===selected?.id);
+  if(index>=0&&result[index+delta])await select(result[index+delta].id);
+  else if(delta>0&&listOffset+rows.length<listTotal){await refresh(null,{append:true,offset:listOffset+rows.length});if(rows[index+1])await select(rows[index+1].id)}
+  else if(delta<0&&listOffset>0)await refresh(null,{offset:Math.max(0,listOffset-listSize),edge:'last'});
+ };
  q('#don-refresh').onclick=()=>{if(canLeave())mutate(q('#don-refresh'),async()=>{})};
- choices();agenda();await select(rows[0]?.id);
+ q('#don-support-tools').ontoggle=()=>{if(q('#don-support-tools').open)agenda()};
+ choices();await select(rows[0]?.id);
 }

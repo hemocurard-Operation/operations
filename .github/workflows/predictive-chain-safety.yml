@@ -7,6 +7,7 @@ on:
       - 'hemocura-core/views.js'
       - 'hemocura-core/access-control.js'
       - 'hemocura-core/layout.js'
+      - 'hemocura-core/route-mounts.js'
       - 'hemocura-core/my-work.js'
       - 'contracts/runtime-contract-v0.45.json'
       - 'supabase/migrations/*predictive_chain_50*.sql'
@@ -24,7 +25,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          grep -q "predictive:mountPredictive" hemocura-core/layout.js
+          grep -q "predictive:mountPredictive" hemocura-core/route-mounts.js
           grep -q "predictive:'PREDICTIVE_VIEW'" hemocura-core/access-control.js
           grep -q "vw_predictive_action_queue" hemocura-core/predictive-data.js
           grep -q "predictive_decision_reviews" hemocura-core/predictive-data.js
