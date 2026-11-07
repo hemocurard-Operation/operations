@@ -9,6 +9,7 @@ on:
       - 'hemocura-core/security.js'
       - 'hemocura-core/my-work.js'
       - 'hemocura-core/layout.js'
+      - 'hemocura-core/route-mounts.js'
       - 'hemocura-core/workflow.js'
       - 'css/module-management.css'
       - 'contracts/role-module-defaults.json'

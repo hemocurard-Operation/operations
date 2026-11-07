@@ -7,6 +7,7 @@ on:
       - 'hemocura-core/router.js'
       - 'hemocura-core/views.js'
       - 'hemocura-core/layout.js'
+      - 'hemocura-core/route-mounts.js'
       - 'hemocura-core/access-control.js'
       - 'supabase/functions/admin-users/**'
       - '.github/workflows/users-admin-safety.yml'
@@ -43,7 +44,7 @@ jobs:
           grep -q "users:{title:'Usuarios y Roles'" hemocura-core/router.js
           grep -q "users:'ACCESS_ADMIN'" hemocura-core/access-control.js
           grep -q "users:'users-root'" hemocura-core/views.js
-          grep -q "users:mountUsers" hemocura-core/layout.js
+          grep -q "users:mountUsers" hemocura-core/route-mounts.js
       - name: Branch access UX contract
         run: |
           grep -q "LABORATORIO','CONSULTA','ENCARGADA_LABORATORIO" hemocura-core/users.js

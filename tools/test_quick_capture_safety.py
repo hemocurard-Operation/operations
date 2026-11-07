@@ -45,7 +45,7 @@ check("single_branch_preselection", "candidates.length!==1" in flow and "branch.
 check("incident_progressive_disclosure", "affected.checked||followup.checked||Number(severity.value)>=4" in flow)
 check("panel_focus_assist", "focusFirstField(target)" in flow)
 check("no_clinical_result_persistence", "qc-test-result" not in flow and "SCREEN_KEY" not in flow and "screening_defaults" not in flow)
-check("flow_integrated_after_mount", "if(route==='quickcapture') enhanceQuickCaptureFlow(root,primaryRole);" in layout)
+check("flow_integrated_after_mount", "if(route==='quickcapture')await enhanceQuickCaptureFlow(root,primaryRole);" in layout)
 check("protected_config_not_referenced", "js/config.js" not in capture and "js/config.js" not in flow)
 
 failed = [name for name, ok in checks if not ok]
