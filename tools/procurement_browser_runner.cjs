@@ -7,7 +7,7 @@ const {chromium}=require(require.resolve('playwright',{paths:[path.join(__dirnam
  await new Promise(r=>server.listen(0,'127.0.0.1',r));const origin='http://127.0.0.1:'+server.address().port;let browser;const checks=[],errors=[];
  const check=(name,ok)=>{assert(ok,name);checks.push(name);console.log('PASS '+name)};
  try{
-  browser=await chromium.launch({channel:'chromium',executablePath:fs.existsSync('/usr/bin/chromium')?'/usr/bin/chromium':undefined,args:['--no-sandbox','--disable-dev-shm-usage']});const page=await browser.newPage({viewport:{width:1440,height:1000}});page.on('pageerror',e=>errors.push(e.message));
+  browser=await chromium.launch({executablePath:fs.existsSync('/usr/bin/chromium')?'/usr/bin/chromium':undefined,args:['--no-sandbox','--disable-dev-shm-usage']});const page=await browser.newPage({viewport:{width:1440,height:1000}});page.on('pageerror',e=>errors.push(e.message));
   await page.route('**/*',route=>route.request().url().startsWith(origin)?route.continue():route.abort());
   await page.route('**/hemocura-core/supabase.js',r=>r.fulfill({contentType:'text/javascript',body:fs.readFileSync(path.join(root,'tests/workflow/supabase-fixture.js'),'utf8')}));
   await page.goto(origin+'/tests/procurement/browser.html');await page.waitForFunction(()=>window.purchaseReady);
