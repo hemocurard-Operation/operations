@@ -1,0 +1,43 @@
+name: Private encrypted database backup
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 6 * * *'
+permissions:
+  contents: read
+concurrency:
+  group: private-database-backup
+  cancel-in-progress: false
+jobs:
+  encrypted-backup:
+    # Explicit activation after a successful manual backup and recovery review.
+    if: vars.HC_BACKUPS_ENABLED == 'true' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install backup utilities
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y age rclone
+          npm install --prefix "$RUNNER_TEMP/hc-backup-cli" supabase@2.79.0 --no-audit --no-fund
+      - name: Export, encrypt and verify the private copy
+        env:
+          HC_BACKUP_DB_URL: ${{ secrets.HC_BACKUP_DB_URL }}
+          HC_BACKUP_AGE_RECIPIENT: ${{ vars.HC_BACKUP_AGE_RECIPIENT }}
+          HC_BACKUP_REMOTE: ${{ vars.HC_BACKUP_REMOTE }}
+          HC_RCLONE_CONFIG_TEXT: ${{ secrets.HC_RCLONE_CONFIG_TEXT }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          : "${HC_RCLONE_CONFIG_TEXT:?Private Google Drive credentials are not configured}"
+          export HC_BACKUP_DIR="$RUNNER_TEMP/hc-encrypted-backups"
+          export HC_RCLONE_CONFIG="$RUNNER_TEMP/hc-rclone.conf"
+          export HC_SUPABASE_BIN="$RUNNER_TEMP/hc-backup-cli/node_modules/.bin/supabase"
+          trap 'rm -f "$HC_RCLONE_CONFIG"; rm -rf "$HC_BACKUP_DIR"' EXIT
+          printf '%s' "$HC_RCLONE_CONFIG_TEXT" > "$HC_RCLONE_CONFIG"
+          bash tools/backup_hemocura.sh

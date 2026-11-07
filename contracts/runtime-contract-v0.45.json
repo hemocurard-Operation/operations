@@ -280,6 +280,7 @@
     "crm_plan_action",
     "crm_review",
     "decide_approval_request",
+    "donor_search_page",
     "execute_approved_action",
     "hc_release_readiness_v1",
     "hc_uat_complete_run",
@@ -565,7 +566,8 @@
     "20261011005547",
     "20261011005602",
     "20261011010317",
-    "20261011010919"
+    "20261011010919",
+    "20261107134036"
   ],
   "required_migration_codes": [
     "44_RELEASE_1_0_RC_v0_44",

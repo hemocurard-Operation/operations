@@ -1,7 +1,7 @@
 {
   "project": "HemoCura Operations Intelligence + QMS + Compliance",
-  "version": "0.55.0",
-  "stage": "Agenda comercial integrada y reservas protegidas entre orígenes · liberación clínica humana pendiente",
+  "version": "0.56.0",
+  "stage": "Carga por pantalla, donantes paginados y CSP; copias cifradas preparadas · liberación clínica humana pendiente",
   "release_channel": "RC",
   "protected_files": [
     "js/config.js"

@@ -1,8 +1,9 @@
+const {protectResponse}=require('./fixture-csp.cjs');
 const fs=require('node:fs'),path=require('node:path'),http=require('node:http'),assert=require('node:assert/strict');
 const {chromium}=require(require.resolve('playwright',{paths:[path.join(__dirname,'../tests/wave50')]}));
 (async()=>{
  const root=path.resolve(__dirname,'..'),out=process.env.HEMOCURA_PURCHASE_BROWSER||'/tmp/hemocura-purchase-browser';fs.mkdirSync(out,{recursive:true});
- const server=http.createServer((req,res)=>{const p=new URL(req.url,'http://fixture.invalid').pathname,file=path.resolve(root,'.'+p);if(!file.startsWith(root+'/')||!['/hemocura-core/','/tests/','/css/','/VERSION.json'].some(x=>p.startsWith(x))){res.writeHead(403);return res.end()}fs.readFile(file,(err,data)=>{if(err){res.writeHead(404);return res.end()}res.setHeader('Content-Type',file.endsWith('.js')?'text/javascript':file.endsWith('.css')?'text/css':'text/html');res.end(data)})});
+ const server=http.createServer((req,res)=>{protectResponse(res);const p=new URL(req.url,'http://fixture.invalid').pathname,file=path.resolve(root,'.'+p);if(!file.startsWith(root+'/')||!['/hemocura-core/','/tests/','/css/','/VERSION.json'].some(x=>p.startsWith(x))){res.writeHead(403);return res.end()}fs.readFile(file,(err,data)=>{if(err){res.writeHead(404);return res.end()}res.setHeader('Content-Type',file.endsWith('.js')?'text/javascript':file.endsWith('.css')?'text/css':'text/html');res.end(data)})});
  await new Promise(r=>server.listen(0,'127.0.0.1',r));const origin='http://127.0.0.1:'+server.address().port;let browser;const checks=[],errors=[];
  const check=(name,ok)=>{assert(ok,name);checks.push(name);console.log('PASS '+name)};
  try{

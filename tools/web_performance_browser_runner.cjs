@@ -1,0 +1,53 @@
+const fs=require('node:fs'),path=require('node:path'),http=require('node:http'),assert=require('node:assert/strict');
+const pw=require(require.resolve('playwright',{paths:[path.join(__dirname,'../tests/wave50')]}));
+const {protectResponse}=require('./fixture-csp.cjs');
+(async()=>{
+ const root=path.resolve(__dirname,'..'),out=process.env.HEMOCURA_WEB_REPORT||'/tmp/hemocura-web-performance';fs.mkdirSync(out,{recursive:true});
+ const server=http.createServer((req,res)=>{protectResponse(res);const file=path.resolve(root,'.'+new URL(req.url,'http://local').pathname);if(!file.startsWith(root+'/')||file.includes('/.git/')){res.writeHead(403);return res.end()}fs.readFile(file,(err,data)=>{if(err){res.writeHead(404);return res.end()}res.setHeader('Content-Type',file.endsWith('.js')?'text/javascript':file.endsWith('.css')?'text/css':'text/html');res.end(data)})});
+ await new Promise(r=>server.listen(0,'127.0.0.1',r));const origin='http://127.0.0.1:'+server.address().port,engine=process.env.HEMOCURA_BROWSER_ENGINE||'chromium';let browser;const checks=[];
+ const ok=(name,value)=>{assert(value,name);checks.push(name);console.log('PASS '+name)};
+ try{
+  browser=await pw[engine].launch({executablePath:process.env.HEMOCURA_BROWSER||(!process.env.HEMOCURA_BROWSER_ENGINE&&fs.existsSync('/usr/bin/chromium')?'/usr/bin/chromium':undefined),args:engine==='chromium'?['--no-sandbox','--disable-dev-shm-usage']:[]});
+  const context=await browser.newContext(),page=await context.newPage(),errors=[],requests=[];
+  page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>requests.push(new URL(r.url()).pathname));
+  await page.route('**/*',r=>r.request().url().startsWith(origin)?r.continue():r.abort());
+  const start=Date.now();await page.goto(origin+'/index.html');await page.waitForURL('**/login.html');await page.waitForSelector('#login-form');await page.waitForLoadState('networkidle');
+  const anonymousScripts=requests.filter(p=>p.endsWith('.js'));
+  ok('anonymous boot never downloads the authorized shell or operational screens',!anonymousScripts.some(p=>/layout\.js|route-mounts\.js|donors\.js|quality\.js|procurement\.js/.test(p)));
+  ok('anonymous boot stays below twenty script requests',anonymousScripts.length<=20);
+  fs.writeFileSync(path.join(out,'anonymous.json'),JSON.stringify({elapsed_ms:Date.now()-start,scripts:anonymousScripts.length,requests:requests.length}));
+  await page.evaluate(()=>{const s=document.createElement('script');s.textContent='window.cspBypass=true';document.body.append(s)});
+  ok('CSP blocks injected inline JavaScript',await page.evaluate(()=>window.cspBypass!==true));
+  await page.route('**/hemocura-core/supabase.js',r=>r.fulfill({contentType:'text/javascript',body:fs.readFileSync(path.join(root,'tests/workflow/supabase-fixture.js'),'utf8')}));
+  requests.length=0;await page.goto(origin+'/tests/web-performance/browser.html');await page.waitForFunction(()=>window.performanceReady);
+  ok('authorized donor route does not download unrelated screens',!requests.some(p=>/suppliers\.js|quality\.js|commercial-calendar\.js|laboratory\.js/.test(p)));
+  ok('directory first page is bounded and displays the complete count',await page.locator('[data-donor-open]').count()===25&&(await page.locator('#don-position').innerText())==='Donante 1 de 62');
+  ok('full agenda is not requested before opening it',await page.evaluate(()=>!fixture.reads.some(q=>q.columns?.includes('last_contact_id')&&q.table==='vw_donor_coordination')));
+  const before=await page.evaluate(()=>fixture.rpcCalls.filter(c=>c.name==='donor_search_page').length);
+  for(const text of ['Don','Donante 06','Donante 062'])await page.locator('#don-search').fill(text);
+  await page.waitForFunction(()=>document.querySelector('.donor-name')?.textContent==='Donante 062');
+  ok('debounce issues one search and finds records outside the first page',await page.evaluate(n=>fixture.rpcCalls.filter(c=>c.name==='donor_search_page').length===n+1,before));
+  await page.evaluate(()=>{fixture.donorPageHook=args=>args.p_search==='lento'?new Promise(resolve=>{window.finishSlow=resolve}):undefined});
+  await page.locator('#don-search').fill('lento');await page.waitForFunction(()=>!!window.finishSlow);await page.locator('#don-search').fill('Donante 061');await page.waitForFunction(()=>document.querySelector('.donor-name')?.textContent==='Donante 061');
+  await page.evaluate(()=>finishSlow({data:{rows:[],total:0,offset:0},error:null}));
+  await page.waitForFunction(()=>document.querySelector('.donor-name')?.textContent==='Donante 061');ok('late search cannot replace the newer selected profile',await page.locator('[data-donor-open]').count()===1);
+  await page.evaluate(()=>fixture.donorPageHook=null);await page.locator('#don-search').fill('');await page.waitForFunction(()=>document.querySelector('#don-list-count')?.textContent==='62 donantes');
+  await page.locator('#don-support-tools > summary').click();await page.waitForSelector('[data-agenda-open]',{state:'attached'});
+  ok('agenda uses all authorized donor summaries rather than the directory page',(await page.locator('#don-agenda').innerText()).includes('62')||await page.evaluate(()=>fixture.reads.some(q=>q.columns?.includes('last_contact_id'))));
+  await page.locator('#don-agenda [name=agenda_search]').fill('Donante 062');await page.locator('[data-agenda-open=d62]').click();await page.waitForFunction(()=>document.querySelector('.donor-name')?.textContent==='Donante 062');
+  ok('agenda opens the containing directory page',await page.locator('#don-position').innerText()==='Donante 62 de 62');
+  const access=await page.evaluate(async()=>{const {loadAccess,resetAccessCache,activeModuleKeys}=await import('/hemocura-core/access-control.js');resetAccessCache();const start=fixture.reads.length;await Promise.all(Array.from({length:15},()=>loadAccess()));await Promise.all(Array.from({length:15},()=>activeModuleKeys()));const reads=fixture.reads.slice(start);return ['vw_my_security_context','vw_my_access','vw_my_module_access'].map(table=>reads.filter(q=>q.table===table).length)});
+  ok('concurrent access reads share one request per security resource',access.every(n=>n===1));
+  const invalidated=await page.evaluate(async()=>{const start=fixture.reads.length;fixture.emitAuth('USER_UPDATED',{user:{id:'demo'}});await (await import('/hemocura-core/access-control.js')).loadAccess();return fixture.reads.slice(start).filter(q=>q.table==='vw_my_security_context').length===1});ok('identity updates invalidate the cached security context',invalidated);
+  const privacy=await page.evaluate(async()=>{
+   const {crmDraft,clearCrmDrafts}=await import('/hemocura-core/crm-drafts.js');await clearCrmDrafts();await crmDraft('demo:b',{note:'Borrador ficticio'});
+   const kept=(await crmDraft('demo:b')).note==='Borrador ficticio';
+   await new Promise((resolve,reject)=>{const r=indexedDB.open('hemocura-crm-drafts-v1',1);r.onsuccess=()=>{const db=r.result,tx=db.transaction('drafts','readwrite');tx.objectStore('drafts').put({draft_version:2,expires_at:Date.now()-1,value:{note:'Expirado'}},'expired');tx.oncomplete=()=>{db.close();resolve()};tx.onerror=()=>reject(tx.error)}});
+   const expired=await crmDraft('expired');const writes=fixture.writes.length;await (await import('/hemocura-core/auth.js')).signOut();return {kept,expired:expired===undefined,cleared:await crmDraft('demo:b')===undefined,noBusinessWrites:writes===fixture.writes.length};
+  });
+  ok('drafts survive within retention and expire when due',privacy.kept&&privacy.expired);
+  ok('sign-out clears drafts without changing application records',privacy.cleared&&privacy.noBusinessWrites);
+  await page.setViewportSize({width:390,height:844});ok('new directory and lazy agenda fit mobile',await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+  ok('no JavaScript runtime errors',errors.length===0);fs.writeFileSync(path.join(out,'report-'+engine+'.json'),JSON.stringify({status:'PASS',checks,errors,engine,production_data_used:false},null,2));await context.close();
+ }finally{await browser?.close();await new Promise(r=>server.close(r))}
+})().catch(e=>{console.error(e);process.exitCode=1});
