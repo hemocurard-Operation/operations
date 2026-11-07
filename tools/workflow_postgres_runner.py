@@ -71,7 +71,7 @@ def main():
    if f.name.endswith('_quality_information_decisions.sql'):qms_migrations.append(f);continue
    if f.name.endswith('_area_task_agenda.sql'):agenda_migrations.append(f);continue
    if f.name.endswith('_role_module_views.sql'):module_migrations.append(f);continue
-   if f.name.endswith(('_purchase_receiving.sql','_purchase_receipt_inventory_link.sql')):purchase_migrations.append(f);continue
+   if f.name.endswith(('_purchase_receiving.sql','_purchase_receipt_inventory_link.sql','_supplier_quotations.sql')):purchase_migrations.append(f);continue
    if f.name.endswith('_supply_transfers.sql'):deferred.append(f);continue
    # Hyperbaric follow-ups alter hyperbaric_appointments, created later by CANDIDATE.
    if f.name.endswith('_hyperbaric_patient_pii_masking.sql'):deferred.append(f);continue
