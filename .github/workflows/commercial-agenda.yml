@@ -1,0 +1,32 @@
+name: Unified commercial agenda and reservation integrity
+on:
+  push:
+    branches: [main]
+    paths: ['hemocura-core/commercial-calendar*','supabase/migrations/*commercial_agenda_union.sql','tests/commercial-agenda/**','tools/commercial_agenda_browser_runner.cjs','.github/workflows/commercial-agenda.yml']
+  pull_request:
+    paths: ['hemocura-core/commercial-calendar*','supabase/migrations/*commercial_agenda_union.sql','tests/commercial-agenda/**','tools/commercial_agenda_browser_runner.cjs','.github/workflows/commercial-agenda.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  agenda:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: python tools/migration_security_linter.py supabase/migrations/*commercial_agenda_union.sql
+      - run: python tools/runtime_contract_gate.py check-code contracts/runtime-contract-v0.45.json
+      - run: python tools/workflow_postgres_runner.py --allow-external-prerequisite-fixture --report-dir /tmp/hemocura-commercial-agenda-postgres
+      - run: npm ci --prefix tests/wave50 --ignore-scripts --no-audit --no-fund
+      - run: node tests/wave50/node_modules/playwright/cli.js install --with-deps chromium
+      - run: node tools/commercial_agenda_browser_runner.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: unified-commercial-agenda-evidence
+          path: |
+            /tmp/hemocura-commercial-agenda-postgres
+            /tmp/hemocura-commercial-agenda-browser

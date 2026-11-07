@@ -115,6 +115,7 @@
     "quality_indicators",
     "quality_objectives",
     "quality_processes",
+    "quotation_decisions",
     "reagent_lots",
     "release_signoffs",
     "requisition_lines",
@@ -133,6 +134,7 @@
     "sgc_steps",
     "staff_job_assignments",
     "supplier_incidents",
+    "supplier_quotations",
     "suppliers",
     "system_operating_mode",
     "team_deliveries",
@@ -269,6 +271,7 @@
     "calculate_monthly_product_costs",
     "capture_daily_operational_close",
     "close_daily_operational_report",
+    "commercial_agenda",
     "create_approval_request",
     "create_exception_from_candidate",
     "crm_action",
@@ -524,6 +527,19 @@
       "task_id",
       "cycle_id",
       "week_number"
+    ],
+    "supplier_quotations": [
+      "id",
+      "branch_id",
+      "supplier_id",
+      "requisition_id",
+      "recorded_at"
+    ],
+    "quotation_decisions": [
+      "id",
+      "branch_id",
+      "quotation_id",
+      "recorded_at"
     ]
   },
   "forbidden_columns": {
