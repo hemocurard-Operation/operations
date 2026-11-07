@@ -26,3 +26,9 @@ Los insertos permiten solo columnas de negocio: identidad y fecha de registro pr
 - `python tools/javascript_syntax_gate.py`
 
 Se cubren costos, monedas/unidades/sucursales separadas, caducidad, precios con base cero, aumentos/reducciones, carga y descarga del PDF, vínculo a requisición, justificación, escape HTML, historial inmutable, columnas de auditoría protegidas, usuarios inactivos, solo lectura y aislamiento entre sucursales.
+
+## Pantalla de demostración
+
+Captura de la interfaz real de Requisiciones con datos sintéticos identificados: tres proveedores, cuatro cotizaciones y una alerta de aumento del 10%. Estos registros no se insertaron en producción.
+
+![Cotizaciones, alerta y comparativa entre proveedores](comparacion-demo.png)
