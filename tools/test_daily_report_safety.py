@@ -17,8 +17,8 @@ def vt(v):
     except:return (0,0,0)
 
 check('version_at_least_0456',vt(version.get('version'))>=(0,45,6))
-check('daily_report_mount_preserved',"dailyinventory:mountDailyInventory" in layout)
-check('ergonomics_after_mount',"if(route==='dailyinventory') enhanceDailyInventoryFlow(root);" in layout)
+check('daily_report_mount_preserved',"dailyinventory:mountDailyInventory" in (ROOT/'hemocura-core'/'route-mounts.js').read_text())
+check('ergonomics_after_mount',"if(route==='dailyinventory')await enhanceDailyInventoryFlow(root);" in layout)
 check('explicit_previous_inventory_click',"addEventListener('click',()=>copyPreviousInventory" in flow)
 check('physical_verification_required','verificar físicamente' in flow.lower() and 'requiere verificación física' in flow.lower())
 check('confirmation_before_copy','confirm(`Se copiará el inventario' in flow)

@@ -3,7 +3,7 @@ const pw=require(require.resolve('playwright',{paths:[path.join(__dirname,'../te
 const {protectResponse}=require('./fixture-csp.cjs');
 (async()=>{
  const root=path.resolve(__dirname,'..'),out=process.env.HEMOCURA_WEB_REPORT||'/tmp/hemocura-web-performance';fs.mkdirSync(out,{recursive:true});
- const server=http.createServer((req,res)=>{protectResponse(res);const file=path.resolve(root,'.'+new URL(req.url,'http://local').pathname);if(!file.startsWith(root+'/')||file.includes('/.git/')){res.writeHead(403);return res.end()}fs.readFile(file,(err,data)=>{if(err){res.writeHead(404);return res.end()}res.setHeader('Content-Type',file.endsWith('.js')?'text/javascript':file.endsWith('.css')?'text/css':'text/html');res.end(data)})});
+ const server=http.createServer((req,res)=>{protectResponse(res);if(new URL(req.url,'http://local').pathname==='/session-test.html'){res.setHeader('Content-Type','text/html');return res.end(fs.readFileSync(path.join(root,'index.html'),'utf8').replace('./js/app.js','./tests/web-performance/session.js'))}const file=path.resolve(root,'.'+new URL(req.url,'http://local').pathname);if(!file.startsWith(root+'/')||file.includes('/.git/')){res.writeHead(403);return res.end()}fs.readFile(file,(err,data)=>{if(err){res.writeHead(404);return res.end()}res.setHeader('Content-Type',file.endsWith('.js')?'text/javascript':file.endsWith('.css')?'text/css':'text/html');res.end(data)})});
  await new Promise(r=>server.listen(0,'127.0.0.1',r));const origin='http://127.0.0.1:'+server.address().port,engine=process.env.HEMOCURA_BROWSER_ENGINE||'chromium';let browser;const checks=[];
  const ok=(name,value)=>{assert(value,name);checks.push(name);console.log('PASS '+name)};
  try{
@@ -48,6 +48,8 @@ const {protectResponse}=require('./fixture-csp.cjs');
   ok('drafts survive within retention and expire when due',privacy.kept&&privacy.expired);
   ok('sign-out clears drafts without changing application records',privacy.cleared&&privacy.noBusinessWrites);
   await page.setViewportSize({width:390,height:844});ok('new directory and lazy agenda fit mobile',await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+  await page.goto(origin+'/session-test.html');await page.waitForFunction(()=>window.sessionReady);await page.evaluate(()=>fixture.emitAuth('SIGNED_OUT',null));await page.waitForURL('**/login.html');ok('sign-out from another session removes the protected shell',await page.locator('.donor-name').count()===0);
+  await page.goto(origin+'/session-test.html');await page.waitForFunction(()=>window.sessionReady);await page.evaluate(()=>fixture.emitAuth('SIGNED_IN',{user:{id:'different-account'}}));await page.waitForURL('**/login.html');ok('account switch never keeps the previous protected screen',await page.locator('.donor-name').count()===0);
   ok('no JavaScript runtime errors',errors.length===0);fs.writeFileSync(path.join(out,'report-'+engine+'.json'),JSON.stringify({status:'PASS',checks,errors,engine,production_data_used:false},null,2));await context.close();
  }finally{await browser?.close();await new Promise(r=>server.close(r))}
 })().catch(e=>{console.error(e);process.exitCode=1});
