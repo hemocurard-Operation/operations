@@ -48,7 +48,9 @@ const assert=require('node:assert/strict');
  const sdk=new vm.SyntheticModule(['createClient'],function(){this.setExport('createClient',(url,key,options)=>options.global?.headers?.Authorization?callerClient:client)},{context});
  const edgeRuntime=new vm.SyntheticModule([],function(){},{context});
  const source=stripTypeScriptTypes(fs.readFileSync(path.join(__dirname,'../supabase/functions/admin-users/index.ts'),'utf8'),{mode:'transform'});
- const module=new vm.SourceTextModule(source,{context});await module.link(specifier=>specifier.startsWith('npm:')?sdk:edgeRuntime);await module.evaluate();
+ const identity=new vm.SourceTextModule(fs.readFileSync(path.join(__dirname,'../hemocura-core/login-identity.js'),'utf8'),{context});
+ await identity.link(()=>{throw Error('Unexpected identity dependency')});
+ const module=new vm.SourceTextModule(source,{context});await module.link(specifier=>{if(specifier==='../../../hemocura-core/login-identity.js')return identity;if(specifier.startsWith('npm:'))return sdk;if(specifier.startsWith('jsr:'))return edgeRuntime;throw Error('Unexpected handler dependency: '+specifier)});await module.evaluate();
  const results=[];
  async function run(name,authorization,body,expected,scenario='admin'){
   mode=scenario;const headers={'Content-Type':'application/json'};if(authorization)headers.Authorization=authorization;
