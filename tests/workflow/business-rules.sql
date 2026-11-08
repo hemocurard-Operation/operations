@@ -148,6 +148,20 @@ select wf_create_blood_sale(jsonb_build_object('branch_id','e2000000-0000-0000-0
 select pg_temp.check_true((select total_amount=100 and customer_name='Workflow test client' and shift='NOCTURNO' from operational_sales where id=:'blood_sale_id'),'blood sale uses actual client, source quantity and explicit shift');
 select pg_temp.check_true((select inventory_status='DESPACHADA' from blood_inventory_units where id='e5000000-0000-0000-0000-000000000004'),'atomic blood sale marks released source as dispatched');
 select pg_temp.check_true((select sum(amount)=40 from customer_payments where sale_id=:'blood_sale_id'),'initial blood receipt recorded once in existing ledger');
+-- Inventory-only delivery: no billing or collections permission, no payment rows.
+savepoint inventory_only_output;
+reset role;
+insert into blood_inventory_units(id,unit_code,source_unit_code,branch_id,component_name,abo,rh,quantity,expiry_date,screening_status,inventory_status)
+values('e5000000-0000-0000-0000-000000000005','WF-OUTPUT','WF-OUTPUT-SOURCE','e2000000-0000-0000-0000-000000000001','PG','O','POSITIVO',1,current_date+30,'APTO','DISPONIBLE');
+delete from role_permissions where role_id='e3000000-0000-0000-0000-000000000001' and permission_code='COLLECTIONS_WRITE';
+set local role authenticated;
+select wf_create_blood_sale(jsonb_build_object('branch_id','e2000000-0000-0000-0000-000000000001','customer_id','e4000000-0000-0000-0000-000000000001','sale_code','WF-OUTPUT-ZERO','sale_date',current_date,'shift','DIURNO','treating_doctor','Fixture MD','status','DESPACHADA','collected_amount',0),
+ '[{"blood_inventory_unit_id":"e5000000-0000-0000-0000-000000000005","quantity":1,"unit_price":0}]') as inventory_output_id \gset
+select pg_temp.check_true((select total_amount=0 and collected_amount=0 and invoice_number is null and invoice_date is null from operational_sales where id=:'inventory_output_id'),'inventory output records no invoice or financial amount');
+select pg_temp.check_true((select count(*)=0 from customer_payments where sale_id=:'inventory_output_id'),'inventory output creates no payment ledger entry');
+select pg_temp.check_true((select inventory_status='DESPACHADA' from blood_inventory_units where id='e5000000-0000-0000-0000-000000000005'),'inventory output removes unit from available stock without collections permission');
+select pg_temp.expect_failure($q$select wf_create_blood_sale(jsonb_build_object('branch_id','e2000000-0000-0000-0000-000000000001','customer_id','e4000000-0000-0000-0000-000000000001','sale_code','WF-OUTPUT-RETRY','sale_date',current_date,'shift','DIURNO','treating_doctor','Fixture MD','status','DESPACHADA','collected_amount',0),'[{"blood_inventory_unit_id":"e5000000-0000-0000-0000-000000000005","quantity":1,"unit_price":0}]')$q$,'inventory output cannot dispatch same unit twice');
+rollback to savepoint inventory_only_output;
 select pg_temp.check_true((select count(distinct currency)=2 from vw_workflow_receipts),'cash report retains USD and DOP as separate currencies');
 select pg_temp.check_true(not has_table_privilege('anon','public.hyperbaric_appointments','SELECT') and not has_table_privilege('authenticated','public.hyperbaric_appointments','TRIGGER'),'new tables revoke anonymous read and authenticated trigger privileges');
 select pg_temp.check_true((select count(*)>=15 from workflow_audit),'workflow mutations leave actor and event audit trail');

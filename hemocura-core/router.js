@@ -17,7 +17,7 @@ const ROUTES={
   dailyinventory:{title:'Reporte Operativo Diario',subtitle:'Lotes, inventario, despachos y novedades en una sola captura',group:'TRABAJO DIARIO',order:8},
   dispatches:{title:'Despachos',subtitle:'Despacho físico y conciliación',group:'TRABAJO DIARIO',order:10},
   requisitions:{title:'Requisiciones',subtitle:'Solicitud y autorización de insumos',group:'TRABAJO DIARIO',order:20},
-  sales:{title:'Ventas / Salidas',subtitle:'Salidas y facturación operativa',group:'TRABAJO DIARIO',order:30},
+  sales:{title:'Salidas de inventario',subtitle:'Entrega de unidades y trazabilidad por centro',group:'TRABAJO DIARIO',order:30},
   hyperbaric:{title:'Cámara hiperbárica',subtitle:'Citas, sesiones documentadas, factura y cobro',group:'TRABAJO DIARIO',order:35},
   shiftreport:{title:'Ventas por turno',subtitle:'Sangre y servicios por sucursal, turno y moneda',group:'TRABAJO DIARIO',order:32},
   transfers:{title:'Entre sucursales',subtitle:'Envío, recepción y revisión de unidades',group:'TRABAJO DIARIO',order:12},

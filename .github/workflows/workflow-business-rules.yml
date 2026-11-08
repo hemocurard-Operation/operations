@@ -8,6 +8,8 @@ on:
       - 'sql/migrations/20261013120000_workflow_commercial_quality.sql'
       - 'sql/migrations/20261013133000_workflow_refinements.sql'
       - 'tests/workflow/**'
+      - 'tests/inventory-output/**'
+      - 'tools/inventory_output_browser_runner.cjs'
       - 'tools/workflow_*'
       - '.github/workflows/workflow-business-rules.yml'
   push:
@@ -18,6 +20,8 @@ on:
       - 'sql/migrations/20261013120000_workflow_commercial_quality.sql'
       - 'sql/migrations/20261013133000_workflow_refinements.sql'
       - 'tests/workflow/**'
+      - 'tests/inventory-output/**'
+      - 'tools/inventory_output_browser_runner.cjs'
       - 'tools/workflow_*'
       - '.github/workflows/workflow-business-rules.yml'
   workflow_dispatch:
@@ -39,7 +43,7 @@ jobs:
           python3 tools/javascript_syntax_gate.py
           python3 tools/migration_security_linter.py sql/migrations/20261013120000_workflow_commercial_quality.sql
           python3 tools/migration_security_linter.py sql/migrations/20261013133000_workflow_refinements.sql
-          node --test tests/workflow/domain.test.mjs
+          node --test tests/workflow/domain.test.mjs tests/inventory-output/domain.test.mjs
       - name: Verify schema, RLS, ledger and concurrent requests locally
         run: python3 tools/workflow_postgres_runner.py --allow-external-prerequisite-fixture --report-dir /tmp/workflow-postgres
       - name: Find browser and verify frontend with isolated fixtures
@@ -49,6 +53,7 @@ jobs:
           HEMOCURA_BROWSER="$(command -v google-chrome || command -v chromium || command -v chromium-browser)"
           export HEMOCURA_BROWSER
           HEMOCURA_WORKFLOW_REPORT_DIR=/tmp/workflow-browser node tools/workflow_browser_runner.cjs
+          node tools/inventory_output_browser_runner.cjs
       - name: Upload local test evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -58,3 +63,5 @@ jobs:
             /tmp/workflow-postgres/report.json
             /tmp/workflow-browser/report.json
             /tmp/workflow-browser/*.png
+            /tmp/hemocura-inventory-output/report.json
+            /tmp/hemocura-inventory-output/*.png
