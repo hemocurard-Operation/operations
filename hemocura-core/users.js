@@ -52,7 +52,7 @@ function userRows(state,users=[]){
     <td>${u.active?'<span class="stock-pill stock-ok">Activo</span>':'<span class="stock-pill stock-none">Inactivo</span>'}</td>
     <td>${u.login_mode==='username'?'<span class="stock-pill stock-ok">Acceso por usuario</span>':u.email_confirmed_at?'<span class="stock-pill stock-ok">Confirmado</span>':'<span class="stock-pill stock-warning">Pendiente</span>'}</td>
     <td>${fmtDate(u.last_sign_in_at)}</td>
-    <td><button class="secondary compact" data-add-role="${esc(u.id)}" data-user-name="${esc(u.full_name||u.email)}" ${u.active?'':'disabled'}>+ Rol</button> <button class="secondary compact" data-password-user="${esc(u.id)}" data-user-name="${esc(u.full_name||u.email)}" ${u.active?'':'disabled'}>Cambiar clave</button> ${removeRoleButtons(state,u)}</td>
+    <td><button type="button" class="secondary compact" data-workspace-preview="${esc(u.id)}">Ver áreas de trabajo</button> <button class="secondary compact" data-add-role="${esc(u.id)}" data-user-name="${esc(u.full_name||u.email)}" ${u.active?'':'disabled'}>+ Rol</button> <button class="secondary compact" data-password-user="${esc(u.id)}" data-user-name="${esc(u.full_name||u.email)}" ${u.active?'':'disabled'}>Cambiar clave</button> ${removeRoleButtons(state,u)}</td>
   </tr>`).join('');
 }
 
@@ -169,6 +169,7 @@ export async function mountUsers(root){
       });
 
       const bindUserActions=()=>{
+      root.querySelectorAll('[data-workspace-preview]').forEach(btn=>btn.onclick=async()=>{btn.disabled=true;try{await (await import('./user-workspace-preview.js')).openWorkspacePreview(root,btn.dataset.workspacePreview)}catch(error){root.querySelector('#user-admin-status').textContent=error.message}finally{btn.disabled=false}});
       root.querySelectorAll('[data-password-user]').forEach(btn=>btn.onclick=()=>{
         const form=root.querySelector('#password-form');form.reset();form.elements.user_id.value=btn.dataset.passwordUser;
         root.querySelector('#password-user-label').textContent=`Usuario: ${btn.dataset.userName}`;
