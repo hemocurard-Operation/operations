@@ -1,0 +1,11 @@
+# Estado del seguimiento por hallazgo · 0.61.0
+
+En cada agente, Consultar seguimiento de este agente obtiene las tareas visibles de los hallazgos y filtros actuales. Se requiere WORK_AGENDA_VIEW y el módulo Agenda habilitado; no requiere permiso de escritura. Cada hallazgo muestra cantidad de tareas, activas, vencidas, por revisar y completadas. El detalle presenta hasta cinco tareas recientes con sucursal, responsable, estado, vencimiento en RD y enlace a la Agenda.
+
+No se consulta al entrar ni se actualiza en segundo plano: la fecha de consulta acompaña el resultado. Sin tareas se informa **sin seguimientos visibles**, sin afirmar que no existan tareas fuera del ámbito RLS. Si la consulta falla, se retiran estados previos. Cambiar de agente/sucursal o actualizar las señales invalida la consulta y descarta respuestas tardías. Guardar un nuevo seguimiento invalida la vista, sin cerrar el diálogo de confirmación ni convertir un error de visualización en un error de guardado.
+
+Las lecturas filtran source_route=orchestration y referencias estables de los hallazgos, en lotes de hasta 25 referencias y con presupuesto de URL codificada. Se pagina en bloques de 500 y se detiene al alcanzar 2000 tareas; se declara información parcial y no se marca una referencia sin tareas como completamente evaluada. Se conserva la coincidencia de sucursal del hallazgo y las RLS existentes. No hay migraciones, permisos nuevos ni escrituras por consultar.
+
+El SDK Supabase local fijado en 2.117.3 encierra los valores IN que contienen comas, pero no escapa sus comillas internas. Las referencias contienen JSON: el lector escapa comillas y barras antes de usar IN. Una prueba con el SDK real y fetch simulado verifica la representación enviada, incluidos caracteres especiales; no usa credenciales ni red. La fixture de navegador decodifica estos literales como PostgREST antes de comparar.
+
+Validación local: 8 pruebas de dominio/SDK y 15 comprobaciones de navegador: filtros por origen/sucursal, vencidos, responsables, lotes, invalidación al guardar, respuesta tardía, fallo, escape HTML, móvil, consulta de solo lectura y límite de muestras. CI Chromium/Firefox/WebKit; se conserva la regresión de creación de tareas y Agenda. Las capturas y tareas de prueba son ficticias.

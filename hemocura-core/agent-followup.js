@@ -7,12 +7,13 @@ import {agentSourceReference,agentFollowupPayload} from './agent-followup-domain
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
 const options=rows=>'<option value="">Seleccionar…</option>'+rows.map(([id,name])=>`<option value="${esc(id)}">${esc(name)}</option>`).join('');
 export async function canPrepareAgentFollowup(){const [a,routes]=await Promise.all([loadAccess(),filterRoutes(routeList())]);return a.permissions.has('WORK_AGENDA_VIEW')&&a.permissions.has('WORK_AGENDA_WRITE')&&routes.some(([key])=>key==='areaagenda')}
-export async function openAgentFollowup(root,finding){
- const reference=agentSourceReference(finding);if(!await canPrepareAgentFollowup())throw Error('Se requiere Agenda por área habilitada y permiso para crear tareas.');if(!root.isConnected)return;
+export async function openAgentFollowup(root,finding,{onSaved}={}){
+ const reference=agentSourceReference(finding);if(!root.isConnected)return;
  root.querySelector('[data-agent-task-dialog]')?.remove();const dialog=document.createElement('dialog');dialog.className='sales-dialog';dialog.dataset.agentTaskDialog='';dialog.setAttribute('aria-labelledby','agent-task-title');dialog.innerHTML='<h3 id="agent-task-title">Preparar seguimiento del hallazgo</h3><div data-task-status role="status" aria-live="polite">Consultando áreas y responsables autorizados…</div><div data-task-content></div><button type="button" class="secondary" data-task-close>Cerrar</button>';root.append(dialog);dialog.showModal();
  const status=dialog.querySelector('[data-task-status]'),content=dialog.querySelector('[data-task-content]'),close=dialog.querySelector('[data-task-close]');let saving=false,frozen=null,peopleGeneration=0,existing=[];
  close.onclick=()=>dialog.close();dialog.oncancel=e=>{if(saving)e.preventDefault()};dialog.addEventListener('close',()=>dialog.remove(),{once:true});
  try{
+  if(!await canPrepareAgentFollowup())throw Error('Se requiere Agenda por área habilitada y permiso para crear tareas.');if(!dialog.isConnected)return;
   const [branches,areas]=await Promise.all([api.branches(),api.areas()]);if(!dialog.isConnected)return;
   const openAgenda=async(branch,id)=>{try{const routes=await filterRoutes(routeList());if(routes.some(([key])=>key==='areaagenda')){dialog.close();location.hash='#areaagenda?branch='+encodeURIComponent(branch)+'&task='+encodeURIComponent(id)}else status.textContent='La Agenda por área ya no está habilitada.'}catch{status.textContent='No se pudo verificar el acceso a la agenda.'}};
   const scoped=branches.filter(b=>!finding.branch_id||b.id===finding.branch_id);if(!scoped.length||!areas.length)throw Error('No hay sucursal o área de agenda habilitada para dar seguimiento a este hallazgo.');
@@ -46,6 +47,7 @@ export async function openAgentFollowup(root,finding){
     const result=await api.action('CREATE',frozen);if(!result?.ids?.length)throw Error('El servidor no confirmó la tarea.');if(!dialog.isConnected)return;
     content.innerHTML='<div class="status ok">Seguimiento registrado con responsable, vencimiento, referencia al hallazgo y revisión independiente.</div><button type="button" class="secondary" data-task-agenda>Revisar en Agenda por área</button>';status.textContent=result.already_created?'La solicitud ya estaba registrada; no se duplicó.':'Tarea guardada.';
     content.querySelector('[data-task-agenda]').onclick=()=>openAgenda(frozen.branch_id,result.ids[0]);
+    try{onSaved?.(result)}catch{/* The task is already saved; a display callback cannot change that result. */}
    }catch(err){if(dialog.isConnected){error.textContent=err.message;status.textContent=frozen?'No se confirmó el resultado. Reintentar conserva los mismos datos y la misma solicitud para evitar duplicados.':'No se pudo preparar el seguimiento.';submit.disabled=false}}
    finally{saving=false;if(dialog.isConnected)close.disabled=false}
   };
