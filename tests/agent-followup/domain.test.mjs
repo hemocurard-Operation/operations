@@ -1,0 +1,10 @@
+import {test} from 'node:test';import assert from 'node:assert/strict';import {agentSourceReference,agentFollowupPayload} from '../../hemocura-core/agent-followup-domain.js';
+const finding={key:'STOCK:b1:p1',source:'vw_orchestration_priority_queue',branch_id:'b1'},form={branch_id:'b1',area_code:'OPERACIONES',owner_id:'u1',title:'Revisar existencias',description:'Verificar cobertura.',priority:'ALTA',due_at:'2026-11-10T09:00'};
+test('preserves branch, source and independent review',()=>{const p=agentFollowupPayload(finding,form,'request');assert.equal(p.branch_id,'b1');assert.equal(p.requires_review,true);assert.equal(p.source_route,'orchestration');assert.equal(p.source_reference,agentSourceReference(finding));assert(p.description.includes(p.source_reference));assert.equal(p.due_at,'2026-11-10T13:00:00.000Z')});
+test('same source produces stable references',()=>assert.equal(agentSourceReference(finding),agentSourceReference({...finding,title:'Changed'})));
+test('different source keys cannot be confused',()=>assert.notEqual(agentSourceReference(finding),agentSourceReference({...finding,key:'STOCK:b1:p2'})));
+test('branch-scoped finding cannot be moved to another branch',()=>assert.throws(()=>agentFollowupPayload(finding,{...form,branch_id:'b2'},'request')));
+test('global signal requires an explicit responsible branch',()=>{assert.equal(agentFollowupPayload({...finding,branch_id:null},form,'request').branch_id,'b1');assert.throws(()=>agentFollowupPayload({...finding,branch_id:null},{...form,branch_id:''},'request'))});
+test('invalid deadlines, owners, areas and priorities are rejected',()=>{for(const patch of [{due_at:'2026-02-30T09:00'},{owner_id:''},{area_code:''},{priority:'MEDIA'},{title:''}])assert.throws(()=>agentFollowupPayload(finding,{...form,...patch},'request'))});
+test('unrecognized evidence source is rejected',()=>assert.throws(()=>agentSourceReference({...finding,source:'arbitrary_table'})));
+test('single occurrence and immutable retry identity are retained',()=>{const p=agentFollowupPayload(finding,form,'request');assert.equal(p.occurrences,1);assert.equal(p.request_id,'request');assert.equal(p.interval_days,1)});
