@@ -18,7 +18,7 @@ export async function loadAgentFollowups(findings){
  for(const refs of referenceBatches(findings)){
   for(let offset=0;;offset+=500){
    const count=Math.min(500,limit-tasks.length);if(count<=0){partial=true;break}
-   let query=getSupabase().from('work_tasks').select('id,branch_id,source_reference,title,owner_name,due_at,status,created_at').eq('source_route','orchestration').in('source_reference',postgrestReferences(refs));
+   let query=getSupabase().from('work_tasks').select('id,branch_id,source_reference,title,owner_id,owner_name,due_at,status,created_at').eq('source_route','orchestration').in('source_reference',postgrestReferences(refs));
    if(branches.length===1&&branches[0])query=query.eq('branch_id',branches[0]);
    const {data,error}=await query.order('created_at',{ascending:false}).order('id').range(offset,offset+count-1);
    if(error)throw Error('No se pudo consultar el seguimiento.');if(!Array.isArray(data))throw Error('Respuesta de seguimiento no disponible.');
@@ -28,4 +28,12 @@ export async function loadAgentFollowups(findings){
   if(partial)break;
  }
  return {tasks,partial,checkedAt:new Date().toLocaleString('es-DO')};
+}
+
+export function filterFollowupTasks(tasks,{mode='ALL',query='',actorId=null}={},now=Date.now()){
+ const needle=String(query).trim().toLocaleLowerCase('es');
+ return tasks.filter(task=>{
+  const selected=mode==='ALL'||mode==='OVERDUE'&&overdue(task,now)||mode==='REVIEW'&&task.status==='EN_REVISION'||mode==='MINE'&&!!actorId&&task.owner_id===actorId&&activeTask(task);
+  return selected&&(!needle||[task.title,task.owner_name].some(value=>String(value??'').toLocaleLowerCase('es').includes(needle)));
+ });
 }
