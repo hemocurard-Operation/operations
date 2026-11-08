@@ -1,7 +1,7 @@
 {
   "project": "HemoCura Operations Intelligence + QMS + Compliance",
-  "version": "0.56.0",
-  "stage": "Carga por pantalla, donantes paginados y CSP; copias cifradas preparadas · liberación clínica humana pendiente",
+  "version": "0.57.0",
+  "stage": "Vista previa de áreas por usuario para Súper Usuario · liberación clínica humana pendiente",
   "release_channel": "RC",
   "protected_files": [
     "js/config.js"
