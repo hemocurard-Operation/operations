@@ -1,10 +1,10 @@
 name: Agent task followup
 on:
   pull_request:
-    paths: ['hemocura-core/agent-followup*.js', 'hemocura-core/improvement-agents.js', 'hemocura-core/area-agenda*.js', 'hemocura-core/access-control.js', 'tests/agent-followup/**', 'tools/agent_followup_browser_runner.cjs', 'tools/area_agenda_browser_runner.cjs', '.github/workflows/agent-followup.yml']
+    paths: ['hemocura-core/agent-followup*.js', 'hemocura-core/improvement-agents.js', 'hemocura-core/area-agenda*.js', 'hemocura-core/access-control.js', 'css/improvement-agents.css', 'tests/agent-followup/**', 'tools/agent_followup_browser_runner.cjs', 'tools/area_agenda_browser_runner.cjs', '.github/workflows/agent-followup.yml']
   push:
     branches: [main]
-    paths: ['hemocura-core/agent-followup*.js', 'hemocura-core/improvement-agents.js', 'hemocura-core/area-agenda*.js', 'hemocura-core/access-control.js', 'tests/agent-followup/**', 'tools/agent_followup_browser_runner.cjs', 'tools/area_agenda_browser_runner.cjs', '.github/workflows/agent-followup.yml']
+    paths: ['hemocura-core/agent-followup*.js', 'hemocura-core/improvement-agents.js', 'hemocura-core/area-agenda*.js', 'hemocura-core/access-control.js', 'css/improvement-agents.css', 'tests/agent-followup/**', 'tools/agent_followup_browser_runner.cjs', 'tools/area_agenda_browser_runner.cjs', '.github/workflows/agent-followup.yml']
   workflow_dispatch:
 permissions:
   contents: read

@@ -8,4 +8,4 @@ Se reutilizan las validaciones, RLS, auditoría, historial y ciclo de ejecución
 
 Los enlaces a Agenda incluyen sucursal e ID. La pantalla acepta la sucursal únicamente si está en sus opciones autorizadas y abre la tarea solo si aparece entre las tareas devueltas para esa sucursal. Parámetros desconocidos no amplían el ámbito ni consultan una tarea ajena por ID.
 
-Validación local con datos ficticios: 8 casos de dominio, 14 comprobaciones de seguimiento y 22 de Agenda, incluidos reintento tras respuesta perdida, confirmación de otra tarea, responsables tardíos, permisos, negativa del servidor, móvil y enlaces de ámbito. CI añade Chromium/Firefox/WebKit y regresión PostgreSQL completa reutilizando fixtures aisladas. No se crean tareas de prueba en producción.
+Validación local con datos ficticios: 8 casos de dominio, 15 comprobaciones de seguimiento y 22 de Agenda, incluidos reintento tras respuesta perdida, confirmación de otra tarea, responsables tardíos, permisos, negativa del servidor, móvil y enlaces de ámbito. CI añade Chromium/Firefox/WebKit y regresión PostgreSQL completa reutilizando fixtures aisladas. No se crean tareas de prueba en producción.
