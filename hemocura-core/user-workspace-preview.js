@@ -28,7 +28,7 @@ export async function openWorkspacePreview(root,userId){
     rows('role_permissions','role_id,permission_code',['role_id','permission_code'])
    ]);
    if(current!==generation||!dialog.isConnected)return;
-   const metadata={catalog,settings,permissions,rolePermissions};
+   const metadata={catalog,settings,permissions,rolePermissions},verifiedAt=new Date().toLocaleTimeString('es-DO');
    controls.innerHTML=`<label>Ver como usuario<select data-preview-user aria-label="Usuario de la vista previa">${state.users.map(u=>`<option value="${esc(u.id)}">${esc(u.full_name||u.username||u.email||'Sin nombre')}${u.active===true?'':' · Perfil inactivo'}</option>`).join('')}</select></label><button type="button" class="secondary" data-preview-refresh>Actualizar accesos</button>`;
    const select=controls.querySelector('[data-preview-user]');
    function draw(){
@@ -39,7 +39,7 @@ export async function openWorkspacePreview(root,userId){
     const branchNames=[...new Set((user.roles||[]).map(r=>r.branch_name).filter(Boolean))];
     const scope=model.superUser?'Todas las sucursales':branchNames.join(' · ')||'Sin sucursales asignadas a sus roles';
     const groups=[...new Set(model.routes.map(([,m])=>m.group))];
-    status.textContent=`${model.routes.length} áreas disponibles · Configuración consultada a las ${new Date().toLocaleTimeString('es-DO')}`;
+    status.textContent=`${model.routes.length} áreas disponibles · Configuración consultada a las ${verifiedAt}`;
     body.innerHTML=`<div class="status info">Está revisando la vista de <strong>${esc(user.full_name||user.username||user.email)}</strong>. Su sesión de Súper Usuario continúa activa. Esta vista muestra accesos y tareas; los registros, formularios y decisiones se consultan con la cuenta propia del usuario.</div><div class="workspace-preview-shell"><aside class="workspace-preview-nav"><strong>HemoCura</strong><p>${esc(roleNames.join(' / ')||'Sin roles')}</p><button type="button" data-preview-home>Mi trabajo · Vista previa</button>${groups.map(group=>`<section><h3>${esc(group)}</h3>${model.routes.filter(([,m])=>m.group===group).map(([key,m])=>`<button type="button" data-preview-route="${esc(key)}">${esc(m.title)}</button>`).join('')}</section>`).join('')}</aside><main class="workspace-preview-main"><div class="workspace-preview-identity"><strong>${esc(user.full_name||user.username||'Usuario')}</strong><span>${esc(scope)}</span><small>Sucursales de sus roles. Los alcances adicionales y las reglas de cada registro se validan al operar.</small></div><div data-preview-content></div></main></div>`;
     const content=body.querySelector('[data-preview-content]');
     function showHome(){
