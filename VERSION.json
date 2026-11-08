@@ -1,7 +1,7 @@
 {
   "project": "HemoCura Operations Intelligence + QMS + Compliance",
-  "version": "0.59.0",
-  "stage": "Agente de proveedores con revisión de precios por sucursal · liberación clínica humana pendiente",
+  "version": "0.60.0",
+  "stage": "Seguimiento humano de hallazgos con responsable y vencimiento · liberación clínica humana pendiente",
   "release_channel": "RC",
   "protected_files": [
     "js/config.js"
