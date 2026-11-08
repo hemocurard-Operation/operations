@@ -1,7 +1,7 @@
 {
   "project": "HemoCura Operations Intelligence + QMS + Compliance",
-  "version": "0.60.0",
-  "stage": "Seguimiento humano de hallazgos con responsable y vencimiento · liberación clínica humana pendiente",
+  "version": "0.61.0",
+  "stage": "Consulta de responsables y estados de seguimiento desde los agentes · liberación clínica humana pendiente",
   "release_channel": "RC",
   "protected_files": [
     "js/config.js"

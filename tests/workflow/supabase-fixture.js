@@ -12,7 +12,11 @@ class Query {
   or(expression){const terms=expression.split(',');this.filters.push(row=>terms.some(term=>{const [key,op,...rest]=term.split('.');const value=rest.join('.');return op==='eq'?row[key]===value:op==='is'&&value==='null'?row[key]==null:false}));return this}
   eq(key,value){this.filters.push(row=>row[key]===value);this.conditions.push([key,value]);return this}
   not(key,operator,values){this.filters.push(row=>!values.slice(1,-1).split(',').includes(row[key]));return this}
-  in(key,values){this.filters.push(row=>values.includes(row[key]));return this}
+  in(key,values){
+    // PostgREST decodes quoted IN literals before comparing the stored reference.
+    if(this.table==='work_tasks'&&key==='source_reference')values=values.map(value=>value.replace(/\\(["\\])/g,'$1'));
+    this.filters.push(row=>values.includes(row[key]));return this
+  }
   single(){this.one=true;return this} maybeSingle(){this.one=true;return this}
   insert(payload){this.kind='insert';this.payload=payload;return this}
   upsert(payload){this.kind='upsert';this.payload=payload;return this}
