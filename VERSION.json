@@ -1,7 +1,7 @@
 {
   "project": "HemoCura Operations Intelligence + QMS + Compliance",
-  "version": "0.64.0",
-  "stage": "Lectura local de fotografías con revisión humana y respaldo privado del reporte diario · liberación clínica humana pendiente",
+  "version": "0.65.0",
+  "stage": "OCR por celdas con selección de inventario, corrección de perspectiva y filtro de tinta · liberación clínica humana pendiente",
   "release_channel": "RC",
   "protected_files": [
     "js/config.js"

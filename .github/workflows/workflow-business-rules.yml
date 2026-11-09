@@ -13,6 +13,7 @@ on:
       - 'css/daily-photo.css'
       - 'supabase/migrations/*daily_report_photos.sql'
       - 'tools/daily_photo_browser_runner.cjs'
+      - 'tools/inventory_grid_ocr_runner.cjs'
       - 'tools/inventory_output_browser_runner.cjs'
       - 'tools/workflow_*'
       - '.github/workflows/workflow-business-rules.yml'
@@ -29,6 +30,7 @@ on:
       - 'css/daily-photo.css'
       - 'supabase/migrations/*daily_report_photos.sql'
       - 'tools/daily_photo_browser_runner.cjs'
+      - 'tools/inventory_grid_ocr_runner.cjs'
       - 'tools/inventory_output_browser_runner.cjs'
       - 'tools/workflow_*'
       - '.github/workflows/workflow-business-rules.yml'
@@ -63,6 +65,7 @@ jobs:
           HEMOCURA_WORKFLOW_REPORT_DIR=/tmp/workflow-browser node tools/workflow_browser_runner.cjs
           node tools/inventory_output_browser_runner.cjs
           node tools/daily_photo_browser_runner.cjs
+          node tools/inventory_grid_ocr_runner.cjs
       - name: Upload local test evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -76,3 +79,5 @@ jobs:
             /tmp/hemocura-inventory-output/*.png
             /tmp/hemocura-daily-photo-browser/report.json
             /tmp/hemocura-daily-photo-browser/*.png
+            /tmp/hemocura-inventory-grid/report.json
+            /tmp/hemocura-inventory-grid/recognized.json
