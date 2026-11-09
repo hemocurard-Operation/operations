@@ -35,7 +35,7 @@ export function mountDailyPhoto(root,{getScope,onApply}){
     const result=await readDocumentImage(blob,{signal:controller.signal,onProgress:t=>{if(my===ticket&&dialog.open)q('[data-photo-progress]').textContent=t}});if(my!==ticket||!dialog.open||!root.isConnected)return;
     const parsed=parseDailyPhotoText(result.text);q('[data-photo-values]').innerHTML=editor(parsed.inventory);q('[data-photo-date]').value=parsed.date||'';q('[data-photo-text]').textContent=result.text;q('[data-photo-confirm]').checked=false;q('[data-photo-review]').hidden=false;q('[data-photo-progress]').textContent='Lectura terminada. Todos los valores requieren revisión; una lectura vacía no acredita ausencia de actividad.';
    }catch(e){if(my===ticket&&dialog.open)q('[data-photo-progress]').textContent=controller.signal.aborted?'Lectura cancelada o tiempo agotado. Puede reintentar.':e.message}
-   finally{clearTimeout(timer);busy=false;if(dialog.open){q('[data-photo-read]').disabled=false;q('[data-photo-rotate]').disabled=false;q('[data-photo-file]').disabled=false}}
+   finally{clearTimeout(timer);busy=false;if(dialog.open&&my===ticket){q('[data-photo-read]').disabled=false;q('[data-photo-rotate]').disabled=false;q('[data-photo-file]').disabled=false}}
   };
   q('[data-photo-apply]').onclick=()=>{
    try{if(!selection||!editable()||!same(selection.scope,getScope()))throw Error('Cambió la fecha, sucursal o permiso. Vuelva a cargar la foto en el contexto correcto.');if(!q('[data-photo-confirm]').checked||q('[data-photo-date]').value!==getScope().date)throw Error('Confirme la revisión y que la fecha de la foto coincide con el reporte.');
