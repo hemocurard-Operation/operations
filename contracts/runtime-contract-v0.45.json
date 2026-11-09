@@ -43,6 +43,7 @@
     "crm_weekly_visits",
     "daily_operational_closes",
     "daily_operational_report_versions",
+    "daily_report_photos",
     "daily_sales",
     "data_integrity_checks",
     "deployment_events",
@@ -541,6 +542,17 @@
       "branch_id",
       "quotation_id",
       "recorded_at"
+    ],
+    "daily_report_photos": [
+      "id",
+      "report_id",
+      "content_sha256",
+      "file_name",
+      "mime_type",
+      "image_base64",
+      "reviewed_inventory",
+      "recorded_at",
+      "created_by"
     ]
   },
   "forbidden_columns": {
@@ -567,7 +579,8 @@
     "20261011005602",
     "20261011010317",
     "20261011010919",
-    "20261107181249"
+    "20261107181249",
+    "20261109002642"
   ],
   "required_migration_codes": [
     "44_RELEASE_1_0_RC_v0_44",

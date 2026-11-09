@@ -133,6 +133,26 @@ select pg_temp.expect_failure(format('select wf_save_daily_sections(%L,%L)',:'re
 select reopen_daily_operational_report(:'report_id','Correct capture source reference');
 select wf_save_daily_sections(:'report_id',(:'daily_json')::jsonb||'{"donor_batch":"CAP-CORRECTED"}');
 select pg_temp.check_true((select count(distinct snapshot->'workflow_sections'->>'donor_batch')=2 from daily_operational_report_versions where report_id=:'report_id'),'reopen preserves previous section versions');
+-- Photographic evidence stays private, immutable and deduplicated per report.
+select encode(decode('89504e470d0a1a0a00000000','hex'),'base64') as photo_bytes, encode(sha256(decode('89504e470d0a1a0a00000000','hex')),'hex') as photo_hash \gset
+insert into daily_report_photos(report_id,content_sha256,file_name,mime_type,image_base64,reviewed_inventory)
+values(:'report_id',:'photo_hash','synthetic.png','image/png',:'photo_bytes','{"A+":{"whole_blood":0,"packed_cells":7}}');
+select pg_temp.check_true((select count(*)=1 from daily_report_photos where report_id=:'report_id'),'photo evidence persists with reviewed zero and counts');
+select pg_temp.expect_failure(format($q$insert into daily_report_photos(report_id,content_sha256,file_name,mime_type,image_base64,reviewed_inventory) values(%L,%L,'duplicate.png','image/png',%L,'{"A+":{"whole_blood":1}}')$q$,:'report_id',:'photo_hash',:'photo_bytes'),'same photo cannot be attached twice to report');
+select pg_temp.expect_failure(format($q$insert into daily_report_photos(report_id,content_sha256,file_name,mime_type,image_base64,reviewed_inventory) values(%L,%L,'forged.png','image/png',%L,'{"A+":{"whole_blood":1}}')$q$,:'report_id',repeat('0',64),:'photo_bytes'),'photo hash must match exact bytes');
+select pg_temp.expect_failure(format('delete from daily_report_photos where report_id=%L',:'report_id'),'photo evidence cannot be deleted directly');
+select pg_temp.expect_failure(format('update daily_report_photos set file_name=%L where report_id=%L','changed.png',:'report_id'),'photo evidence cannot be changed directly');
+select set_config('request.jwt.claim.sub','e1000000-0000-0000-0000-000000000002',true);
+select pg_temp.check_true((select count(*)=0 from daily_report_photos),'other-branch operator cannot read photo evidence');
+select pg_temp.expect_failure(format($q$insert into daily_report_photos(report_id,content_sha256,file_name,mime_type,image_base64,reviewed_inventory) values(%L,%L,'unauthorized.png','image/png',%L,'{"A+":{"whole_blood":1}}')$q$,:'report_id',:'photo_hash',:'photo_bytes'),'other-branch operator cannot attach photo');
+select set_config('request.jwt.claim.sub','e1000000-0000-0000-0000-000000000001',true);
+select pg_temp.check_true(not has_table_privilege('anon','public.daily_report_photos','SELECT'),'anonymous has no photo read grant');
+savepoint photo_locked_report;
+select submit_daily_operational_report(:'report_id');
+select close_daily_operational_report(:'report_id');
+select pg_temp.expect_failure(format($q$insert into daily_report_photos(report_id,content_sha256,file_name,mime_type,image_base64,reviewed_inventory) values(%L,%L,'closed.png','image/png',%L,'{"A+":{"whole_blood":1}}')$q$,:'report_id',:'photo_hash',:'photo_bytes'),'closed report rejects photo attachment');
+rollback to savepoint photo_locked_report;
+
 select id as item_id from workflow_supply_catalog where code='HC-SUP-001' \gset
 select wf_map_supply_item('e2000000-0000-0000-0000-000000000001',:'item_id','{"name":"Reviewed collection bag","unit":"unidad","minimum":5,"warning":10,"target":20}') as supply_product \gset
 select pg_temp.check_true((select reviewed_by is not null and product_id=:'supply_product'::uuid from workflow_supply_catalog where id=:'item_id'),'reviewed supply maps to a real product');

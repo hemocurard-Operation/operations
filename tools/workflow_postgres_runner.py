@@ -59,7 +59,9 @@ def main():
   team_role_migrations=[]
   delivery_migrations=[]
   performance_migrations=[]
+  photo_migrations=[]
   for f in sorted((ROOT/'supabase/migrations').glob('*.sql')):
+   if f.name.endswith('_daily_report_photos.sql'):photo_migrations.append(f);continue
    if f.name.endswith('_web_performance_security.sql'):performance_migrations.append(f);continue
    if f.name.endswith(('_team_delivery_coordination.sql','_clinical_commercial_job_roles.sql','_personal_username_accounts.sql','_commercial_crm_contacts.sql','_crm_weekly_visit_planner.sql','_twelve_week_execution.sql','_commercial_agenda_union.sql')):delivery_migrations.append(f);continue
    if f.name.endswith('_production_security_privacy_readiness.sql'):production_followups.append(f);continue
@@ -91,6 +93,7 @@ def main():
   for f in deferred:apply(f)
   for f in coordination_migrations:apply(f)
   for f in purchase_migrations:apply(f)
+  for f in photo_migrations:apply(f)
   result=sql((ROOT/'tests/workflow/business-rules.sql').read_text(),'workflow-business-rules')
   checks=re.findall(r'PASS ([^\n]+)',result.stderr+result.stdout)
   if not checks:raise RuntimeError('Zero business-rule checks executed')
