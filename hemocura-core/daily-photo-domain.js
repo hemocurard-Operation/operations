@@ -5,7 +5,7 @@ export function parseDailyPhotoText(text){
  const normalized=String(text||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase();
  const date=normalized.match(/\bFECHA\s*[:.-]?\s*(\d{1,2})[ /.-](\d{1,2})[ /.-](\d{2}|\d{4})\b/);
  let day=null;if(date){const y=date[3].length===2?'20'+date[3]:date[3];const d=`${y}-${date[2].padStart(2,'0')}-${date[1].padStart(2,'0')}`;const dt=new Date(d+'T00:00:00Z');if(Number.isFinite(dt.getTime())&&dt.toISOString().slice(0,10)===d)day=d}
- const inventory={};const start=normalized.indexOf('UNIDADES DISPONIBLES');
+ const inventory={};const headings=[...normalized.matchAll(/UNIDADES\s+DISPONIBLES/g)];const start=headings.length===1?headings[0].index:-1;
  // No column guessing: only complete two-number rows inside the named inventory section.
  if(start>=0){const section=normalized.slice(start).split(/FUNCIONAMIENTO|PAQUETES RECIBIDOS|RESULTADOS|COMENTARIOS?/)[0];
   for(const line of section.split(/\r?\n/)){
