@@ -1,7 +1,7 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "npm:@supabase/supabase-js@2.49.4";
 
-import {accountLogin} from '../../../hemocura-core/login-identity.js';
+import {accountLogin} from './login-identity.js';
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
