@@ -30,9 +30,9 @@ button.secondary{background:#eef2f7;color:var(--text)}
 .sidebar{background:var(--navy);color:white;padding:18px 14px;position:sticky;top:0;height:100vh;overflow:auto}
 .sidebar-brand{display:flex;gap:10px;align-items:center;padding:8px 8px 18px;border-bottom:1px solid rgba(255,255,255,.15)}
 .sidebar-brand .brand-mark{background:white;color:var(--navy);width:36px;height:36px}
-.sidebar small{opacity:.75}
+.sidebar small{opacity:.85}
 .nav{display:grid;gap:6px;margin-top:16px}
-.nav button{width:100%;text-align:left;background:transparent;padding:10px 12px;color:white;border:1px solid transparent}
+.nav button{width:100%;text-align:left;background:transparent;padding:12px 14px;color:white;border:1px solid transparent;min-height:44px;border-radius:7px;line-height:1.3}
 .nav button:hover,.nav button.active{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.14)}
 .main-shell{min-width:0}
 .topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;background:var(--paper);border-bottom:1px solid var(--line);padding:14px 18px;position:sticky;top:0;z-index:5}
@@ -51,8 +51,8 @@ button.secondary{background:#eef2f7;color:var(--text)}
 }
 @media(max-width:700px){
   .app-layout{grid-template-columns:1fr}
-  .sidebar{position:fixed;left:-270px;width:250px;z-index:20;transition:.2s}
-  .sidebar.open{left:0}
+  .sidebar{position:fixed;left:0;width:250px;z-index:20;transform:translateX(-100%);transition:transform .2s ease}
+  .sidebar.open{transform:translateX(0)}
   .mobile-toggle{display:inline-block}
   .grid{grid-template-columns:1fr}
 }
@@ -263,3 +263,7 @@ code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
 .quotation-menu .data-table th,.quotation-menu .data-table td{white-space:normal}.quotation-menu [data-comparison] .data-table{min-width:1000px}.quotation-menu .data-table td:last-child{min-width:124px}.quotation-menu .data-table td:last-child button{display:block;width:100%;margin:3px 0;white-space:normal}
 
 .quotation-menu [data-comparison] td:nth-child(5),.quotation-menu [data-comparison] td:nth-child(6),.quotation-menu [data-comparison] td:nth-child(7){white-space:nowrap}.quotation-menu [data-comparison] td:nth-child(4){min-width:150px}
+
+/* v0.45.8 · Reduced motion + focus management */
+@media(prefers-reduced-motion:reduce){.sidebar,.ops-action,.loading-skeleton{transition:none!important;animation:none!important}}
+#page-title:focus{outline:none}
