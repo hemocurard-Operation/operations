@@ -27,6 +27,8 @@
 /* Search — WCAG fix */
 .nav-search-wrap{padding:0 8px 8px}.nav-search{width:100%;padding:9px 10px;border-radius:8px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.09);color:white}.nav-search::placeholder{color:rgba(255,255,255,.72)}
 .role-chip{display:inline-flex;align-items:center;padding:5px 8px;border-radius:999px;background:#e8eef7;color:var(--navy);font-size:11px;font-weight:800}
+/* Area badge for per-role task grouping */
+.work-area-badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:999px;text-transform:capitalize;letter-spacing:.02em;margin-right:4px;white-space:nowrap}
 /* Mobile backdrop */
 .sidebar-backdrop{display:none;position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:19}
 .sidebar-backdrop.open{display:block}
