@@ -1,13 +1,38 @@
 /* HemoCura UX extension · role-aware navigation and dashboard */
 .nav{display:block;margin-top:10px}
+/* Legacy group styles (kept for compat) */
 .nav-group{margin:0 0 8px;border:1px solid rgba(255,255,255,.08);border-radius:10px;overflow:hidden}
 .nav-group[hidden]{display:none}
-.nav-group-label{display:flex;justify-content:space-between;align-items:center;padding:10px;color:rgba(255,255,255,.7);font-size:10px;line-height:1;font-weight:800;letter-spacing:.08em;cursor:pointer;list-style:none;background:rgba(255,255,255,.035)}
-.nav-group-label::-webkit-details-marker{display:none}.nav-group-label span{font-size:9px;opacity:.7}
+.nav-group-label{display:flex;justify-content:space-between;align-items:center;padding:10px;color:rgba(255,255,255,.85);font-size:11px;line-height:1;font-weight:800;letter-spacing:.08em;cursor:pointer;list-style:none;background:rgba(255,255,255,.035)}
+.nav-group-label::-webkit-details-marker{display:none}.nav-group-label span{font-size:9px;opacity:.82}
 .nav-group-items{padding:5px}.nav-group button{margin:2px 0}.nav-group button.active{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.22)}
-.nav-role-card{margin:12px 8px 8px;padding:10px 12px;border-radius:10px;background:rgba(255,255,255,.08);color:white}.nav-role-card small{display:block;opacity:.65;font-size:10px;text-transform:uppercase}.nav-role-card strong{display:block;margin-top:3px;font-size:12px}
-.nav-search-wrap{padding:0 8px 8px}.nav-search{width:100%;padding:9px 10px;border-radius:8px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.09);color:white}.nav-search::placeholder{color:rgba(255,255,255,.55)}
+/* Tab navigation */
+.nav-tabs{display:flex;gap:3px;padding:4px 0;overflow-x:auto;scrollbar-width:none}.nav-tabs::-webkit-scrollbar{display:none}
+.nav-tab{flex-shrink:0;padding:7px 10px;border-radius:7px;background:transparent;border:none;color:rgba(255,255,255,.6);font-size:10px;font-weight:700;font-family:inherit;cursor:pointer;white-space:nowrap;letter-spacing:.02em}
+.nav-tab.active{background:rgba(255,255,255,.16);color:white}
+.nav-tab-count{font-size:8px;opacity:.7;margin-left:3px}
+.nav-panel{display:grid;gap:2px;padding:4px 0}
+.nav-panel.hidden{display:none}
+.nav-subtitle{display:block;font-size:10px;opacity:.62;margin-top:1px;font-weight:400}
+.nav-empty{padding:14px 8px;color:rgba(255,255,255,.5);font-size:12px;text-align:center}
+/* Pinned shortcuts */
+.nav-pinned{padding:8px 0 4px}
+.nav-pinned-label{font-size:9px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.5);padding:0 4px;margin-bottom:6px}
+.nav-pinned-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}
+.pinned-btn{display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 4px;border-radius:8px;background:rgba(255,255,255,.07);border:none;color:white;font-size:9px;font-family:inherit;cursor:pointer;text-align:center;line-height:1.2;min-height:44px}
+.pinned-btn:hover{background:rgba(255,255,255,.14)}
+.pinned-icon{font-size:16px;line-height:1}
+/* Role card — WCAG fix */
+.nav-role-card{margin:12px 8px 8px;padding:10px 12px;border-radius:10px;background:rgba(255,255,255,.08);color:white}.nav-role-card small{display:block;opacity:.82;font-size:10px;text-transform:uppercase}.nav-role-card strong{display:block;margin-top:3px;font-size:12px}
+/* Search — WCAG fix */
+.nav-search-wrap{padding:0 8px 8px}.nav-search{width:100%;padding:9px 10px;border-radius:8px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.09);color:white}.nav-search::placeholder{color:rgba(255,255,255,.72)}
 .role-chip{display:inline-flex;align-items:center;padding:5px 8px;border-radius:999px;background:#e8eef7;color:var(--navy);font-size:11px;font-weight:800}
+/* Mobile backdrop */
+.sidebar-backdrop{display:none;position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:19}
+.sidebar-backdrop.open{display:block}
+/* Loading skeleton */
+.loading-skeleton{height:120px;border-radius:10px;background:linear-gradient(90deg,var(--bg) 25%,#e8ecf2 50%,var(--bg) 75%);background-size:200% 100%;animation:shimmer 1.4s ease-in-out infinite}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
 
 .ops-hero{display:flex;justify-content:space-between;gap:18px;align-items:flex-start;padding:20px;border-radius:14px;background:linear-gradient(135deg,var(--navy),var(--navy2));color:white}.ops-hero .section-heading{color:white;font-size:28px}.ops-hero .muted{color:rgba(255,255,255,.78)}.role-hero{border-left:5px solid rgba(255,255,255,.45)}
 .eyebrow{font-size:11px;text-transform:uppercase;font-weight:800;letter-spacing:.08em;color:var(--muted)}.ops-hero .eyebrow{color:rgba(255,255,255,.62)}
