@@ -1,7 +1,7 @@
 {
   "project_id": "tiothqiljipdamgudvcb",
-  "verified_at": "2026-11-04",
-  "scope": "Frontend runtime objects, Daily Operational Report production contract and Training Native 1.1 RC; added coordination, purchases, role windows and area agenda objects verified 2026-10-16 against production catalogs; quality-information objects verified against production after migration 20261017005235; audit in implementation report; ISO clause assessment/evidence tables, vw_iso_compliance_summary and iso_clause_assessment RPCs verified live 2026-11-03 after migration 20261103130000; vw_referrer_visit_route verified live 2026-11-03 after migration 20261103190000; hemovigilance_delivery_details and hemovig_delivery_nc_create verified live 2026-11-04 after migration 20261104100000; vw_hyperbaric_appointments_display verified live 2026-11-04 after migration 20261104110000",
+  "verified_at": "2026-11-09",
+  "scope": "Frontend runtime objects, Daily Operational Report production contract and Training Native 1.1 RC; added coordination, purchases, role windows and area agenda objects verified 2026-10-16 against production catalogs; quality-information objects verified against production after migration 20261017005235; audit in implementation report; ISO clause assessment/evidence tables, vw_iso_compliance_summary and iso_clause_assessment RPCs verified live 2026-11-03 after migration 20261103130000; vw_referrer_visit_route verified live 2026-11-03 after migration 20261103190000; hemovigilance_delivery_details and hemovig_delivery_nc_create verified live 2026-11-04 after migration 20261104100000; vw_hyperbaric_appointments_display verified live 2026-11-04 after migration 20261104110000; CRM contacts, activities, history, idempotent requests, services and three RPCs verified after commercial_crm_contacts migration; scoped customer catalog and writes tested; CRM shared portfolio and weekly planner verified 2026-11-06; twelve-week execution objects verified 2026-11-06; incoming supplier quotation metadata verified 2026-11-07; commercial agenda RPC and reservation triggers verified 2026-11-07; donor_search_page invoker/permissions, quotation indexes and insert policies verified live after web_performance_security migration 20261107181249; daily_report_photos columns, RLS and private immutable grants verified live 2026-11-09 after migration 20261109002642",
   "relations": [
     "access_events",
     "app_feature_flags",
@@ -27,13 +27,24 @@
     "commercial_opportunities",
     "commercial_plans",
     "commercial_visits",
-    "congress_attendance",
     "competency_assessments",
     "competency_catalog",
+    "congress_attendance",
     "continuity_plans",
     "continuity_tests",
+    "crm_activities",
+    "crm_center_locations",
+    "crm_contact_branch_access",
+    "crm_contact_sources",
+    "crm_contacts",
+    "crm_history",
+    "crm_requests",
+    "crm_services",
+    "crm_visit_rules",
+    "crm_weekly_visits",
     "daily_operational_closes",
     "daily_operational_report_versions",
+    "daily_report_photos",
     "daily_sales",
     "data_integrity_checks",
     "deployment_events",
@@ -76,11 +87,11 @@
     "lab_methods",
     "logistics_trip_history",
     "logistics_trips",
-    "medical_congresses",
-    "medical_news",
     "management_actions",
     "management_review_actions",
     "management_reviews",
+    "medical_congresses",
+    "medical_news",
     "monthly_cost_entries",
     "monthly_cost_periods",
     "nonconformities",
@@ -106,6 +117,7 @@
     "quality_indicators",
     "quality_objectives",
     "quality_processes",
+    "quotation_decisions",
     "reagent_lots",
     "release_signoffs",
     "requisition_lines",
@@ -124,6 +136,7 @@
     "sgc_steps",
     "staff_job_assignments",
     "supplier_incidents",
+    "supplier_quotations",
     "suppliers",
     "system_operating_mode",
     "team_deliveries",
@@ -142,6 +155,10 @@
     "training_question_bank",
     "training_quiz_attempts",
     "transport_events",
+    "twelve_week_cycles",
+    "twelve_week_goals",
+    "twelve_week_requests",
+    "twelve_week_task_links",
     "uat_test_cases",
     "uat_test_results",
     "uat_test_runs",
@@ -256,10 +273,22 @@
     "calculate_monthly_product_costs",
     "capture_daily_operational_close",
     "close_daily_operational_report",
+    "commercial_agenda",
     "create_approval_request",
     "create_exception_from_candidate",
+    "crm_action",
+    "crm_branch_contacts",
+    "crm_catalog",
+    "crm_plan_action",
+    "crm_review",
     "decide_approval_request",
+    "donor_search_page",
     "execute_approved_action",
+    "hc_release_readiness_v1",
+    "hc_uat_complete_run",
+    "hc_uat_record_result",
+    "hc_uat_start_run",
+    "hc_v044_release_signoff",
     "hemovig_delivery_nc_create",
     "iso_clause_assessment_create_nc",
     "iso_clause_assessment_upsert",
@@ -287,16 +316,14 @@
     "training_revoke_authorization",
     "training_revoke_certificate",
     "training_submit_quiz",
+    "twelve_week_action",
+    "twelve_week_catalog",
+    "twelve_week_context",
     "verify_training_certificate",
     "wf_create_blood_sale",
     "work_agenda_access",
     "work_agenda_people",
-    "work_task_action",
-    "hc_release_readiness_v1",
-    "hc_uat_start_run",
-    "hc_uat_record_result",
-    "hc_uat_complete_run",
-    "hc_v044_release_signoff"
+    "work_task_action"
   ],
   "columns": [
     {
@@ -542,6 +569,246 @@
     {
       "table_name": "training_certificates",
       "column_name": "status"
+    },
+    {
+      "table_name": "crm_contacts",
+      "column_name": "id"
+    },
+    {
+      "table_name": "crm_contacts",
+      "column_name": "branch_id"
+    },
+    {
+      "table_name": "crm_contacts",
+      "column_name": "revision"
+    },
+    {
+      "table_name": "crm_contacts",
+      "column_name": "owner_id"
+    },
+    {
+      "table_name": "crm_activities",
+      "column_name": "id"
+    },
+    {
+      "table_name": "crm_activities",
+      "column_name": "contact_id"
+    },
+    {
+      "table_name": "crm_activities",
+      "column_name": "branch_id"
+    },
+    {
+      "table_name": "crm_activities",
+      "column_name": "created_by"
+    },
+    {
+      "table_name": "crm_history",
+      "column_name": "contact_id"
+    },
+    {
+      "table_name": "crm_history",
+      "column_name": "branch_id"
+    },
+    {
+      "table_name": "crm_history",
+      "column_name": "actor_id"
+    },
+    {
+      "table_name": "crm_contact_branch_access",
+      "column_name": "contact_id"
+    },
+    {
+      "table_name": "crm_contact_branch_access",
+      "column_name": "branch_id"
+    },
+    {
+      "table_name": "crm_contact_sources",
+      "column_name": "contact_id"
+    },
+    {
+      "table_name": "crm_contact_sources",
+      "column_name": "branch_id"
+    },
+    {
+      "table_name": "crm_contact_sources",
+      "column_name": "batch_sha256"
+    },
+    {
+      "table_name": "crm_visit_rules",
+      "column_name": "contact_id"
+    },
+    {
+      "table_name": "crm_visit_rules",
+      "column_name": "branch_id"
+    },
+    {
+      "table_name": "crm_visit_rules",
+      "column_name": "revision"
+    },
+    {
+      "table_name": "crm_center_locations",
+      "column_name": "id"
+    },
+    {
+      "table_name": "crm_center_locations",
+      "column_name": "branch_id"
+    },
+    {
+      "table_name": "crm_center_locations",
+      "column_name": "revision"
+    },
+    {
+      "table_name": "crm_weekly_visits",
+      "column_name": "id"
+    },
+    {
+      "table_name": "crm_weekly_visits",
+      "column_name": "branch_id"
+    },
+    {
+      "table_name": "crm_weekly_visits",
+      "column_name": "contact_id"
+    },
+    {
+      "table_name": "crm_weekly_visits",
+      "column_name": "agent_id"
+    },
+    {
+      "table_name": "crm_weekly_visits",
+      "column_name": "revision"
+    },
+    {
+      "table_name": "crm_weekly_visits",
+      "column_name": "request_id"
+    },
+    {
+      "table_name": "twelve_week_cycles",
+      "column_name": "id"
+    },
+    {
+      "table_name": "twelve_week_cycles",
+      "column_name": "branch_id"
+    },
+    {
+      "table_name": "twelve_week_cycles",
+      "column_name": "area_code"
+    },
+    {
+      "table_name": "twelve_week_cycles",
+      "column_name": "start_date"
+    },
+    {
+      "table_name": "twelve_week_cycles",
+      "column_name": "end_date"
+    },
+    {
+      "table_name": "twelve_week_cycles",
+      "column_name": "status"
+    },
+    {
+      "table_name": "twelve_week_cycles",
+      "column_name": "revision"
+    },
+    {
+      "table_name": "twelve_week_goals",
+      "column_name": "id"
+    },
+    {
+      "table_name": "twelve_week_goals",
+      "column_name": "cycle_id"
+    },
+    {
+      "table_name": "twelve_week_goals",
+      "column_name": "week_number"
+    },
+    {
+      "table_name": "twelve_week_goals",
+      "column_name": "revision"
+    },
+    {
+      "table_name": "twelve_week_task_links",
+      "column_name": "task_id"
+    },
+    {
+      "table_name": "twelve_week_task_links",
+      "column_name": "cycle_id"
+    },
+    {
+      "table_name": "twelve_week_task_links",
+      "column_name": "week_number"
+    },
+    {
+      "table_name": "supplier_quotations",
+      "column_name": "id"
+    },
+    {
+      "table_name": "supplier_quotations",
+      "column_name": "branch_id"
+    },
+    {
+      "table_name": "supplier_quotations",
+      "column_name": "supplier_id"
+    },
+    {
+      "table_name": "supplier_quotations",
+      "column_name": "requisition_id"
+    },
+    {
+      "table_name": "supplier_quotations",
+      "column_name": "recorded_at"
+    },
+    {
+      "table_name": "quotation_decisions",
+      "column_name": "id"
+    },
+    {
+      "table_name": "quotation_decisions",
+      "column_name": "branch_id"
+    },
+    {
+      "table_name": "quotation_decisions",
+      "column_name": "quotation_id"
+    },
+    {
+      "table_name": "quotation_decisions",
+      "column_name": "recorded_at"
+    },
+    {
+      "table_name": "daily_report_photos",
+      "column_name": "id"
+    },
+    {
+      "table_name": "daily_report_photos",
+      "column_name": "report_id"
+    },
+    {
+      "table_name": "daily_report_photos",
+      "column_name": "content_sha256"
+    },
+    {
+      "table_name": "daily_report_photos",
+      "column_name": "file_name"
+    },
+    {
+      "table_name": "daily_report_photos",
+      "column_name": "mime_type"
+    },
+    {
+      "table_name": "daily_report_photos",
+      "column_name": "image_base64"
+    },
+    {
+      "table_name": "daily_report_photos",
+      "column_name": "reviewed_inventory"
+    },
+    {
+      "table_name": "daily_report_photos",
+      "column_name": "recorded_at"
+    },
+    {
+      "table_name": "daily_report_photos",
+      "column_name": "created_by"
     }
   ],
   "migrations": [
@@ -633,6 +900,16 @@
     {
       "migration_code": "training_native_1_1_job_assignment_rpc",
       "version": "20261011010919",
+      "source": "supabase_migrations.schema_migrations"
+    },
+    {
+      "migration_code": "web_performance_security",
+      "version": "20261107181249",
+      "source": "supabase_migrations.schema_migrations"
+    },
+    {
+      "migration_code": "daily_report_photos",
+      "version": "20261109002642",
       "source": "supabase_migrations.schema_migrations"
     }
   ]

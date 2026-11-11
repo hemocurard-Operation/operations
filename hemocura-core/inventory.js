@@ -1,3 +1,4 @@
+import {mountQuotationMenu} from './quotations.js';
 import { loadInventoryWorkspace, savePhysicalCount } from './inventory-data.js';
 import { getBranches } from './sales-data.js';
 
@@ -321,6 +322,7 @@ export async function mountInventory(root) {
     }
 
     await load();
+    await mountQuotationMenu(root);
 
   } catch(error) {
     console.error('[HEMOCURA_INVENTORY_ERROR]', error);

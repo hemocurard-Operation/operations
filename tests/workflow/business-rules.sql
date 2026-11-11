@@ -133,6 +133,26 @@ select pg_temp.expect_failure(format('select wf_save_daily_sections(%L,%L)',:'re
 select reopen_daily_operational_report(:'report_id','Correct capture source reference');
 select wf_save_daily_sections(:'report_id',(:'daily_json')::jsonb||'{"donor_batch":"CAP-CORRECTED"}');
 select pg_temp.check_true((select count(distinct snapshot->'workflow_sections'->>'donor_batch')=2 from daily_operational_report_versions where report_id=:'report_id'),'reopen preserves previous section versions');
+-- Photographic evidence stays private, immutable and deduplicated per report.
+select encode(decode('89504e470d0a1a0a00000000','hex'),'base64') as photo_bytes, encode(sha256(decode('89504e470d0a1a0a00000000','hex')),'hex') as photo_hash \gset
+insert into daily_report_photos(report_id,content_sha256,file_name,mime_type,image_base64,reviewed_inventory)
+values(:'report_id',:'photo_hash','synthetic.png','image/png',:'photo_bytes','{"A+":{"whole_blood":0,"packed_cells":7}}');
+select pg_temp.check_true((select count(*)=1 from daily_report_photos where report_id=:'report_id'),'photo evidence persists with reviewed zero and counts');
+select pg_temp.expect_failure(format($q$insert into daily_report_photos(report_id,content_sha256,file_name,mime_type,image_base64,reviewed_inventory) values(%L,%L,'duplicate.png','image/png',%L,'{"A+":{"whole_blood":1}}')$q$,:'report_id',:'photo_hash',:'photo_bytes'),'same photo cannot be attached twice to report');
+select pg_temp.expect_failure(format($q$insert into daily_report_photos(report_id,content_sha256,file_name,mime_type,image_base64,reviewed_inventory) values(%L,%L,'forged.png','image/png',%L,'{"A+":{"whole_blood":1}}')$q$,:'report_id',repeat('0',64),:'photo_bytes'),'photo hash must match exact bytes');
+select pg_temp.expect_failure(format('delete from daily_report_photos where report_id=%L',:'report_id'),'photo evidence cannot be deleted directly');
+select pg_temp.expect_failure(format('update daily_report_photos set file_name=%L where report_id=%L','changed.png',:'report_id'),'photo evidence cannot be changed directly');
+select set_config('request.jwt.claim.sub','e1000000-0000-0000-0000-000000000002',true);
+select pg_temp.check_true((select count(*)=0 from daily_report_photos),'other-branch operator cannot read photo evidence');
+select pg_temp.expect_failure(format($q$insert into daily_report_photos(report_id,content_sha256,file_name,mime_type,image_base64,reviewed_inventory) values(%L,%L,'unauthorized.png','image/png',%L,'{"A+":{"whole_blood":1}}')$q$,:'report_id',:'photo_hash',:'photo_bytes'),'other-branch operator cannot attach photo');
+select set_config('request.jwt.claim.sub','e1000000-0000-0000-0000-000000000001',true);
+select pg_temp.check_true(not has_table_privilege('anon','public.daily_report_photos','SELECT'),'anonymous has no photo read grant');
+savepoint photo_locked_report;
+select submit_daily_operational_report(:'report_id');
+select close_daily_operational_report(:'report_id');
+select pg_temp.expect_failure(format($q$insert into daily_report_photos(report_id,content_sha256,file_name,mime_type,image_base64,reviewed_inventory) values(%L,%L,'closed.png','image/png',%L,'{"A+":{"whole_blood":1}}')$q$,:'report_id',:'photo_hash',:'photo_bytes'),'closed report rejects photo attachment');
+rollback to savepoint photo_locked_report;
+
 select id as item_id from workflow_supply_catalog where code='HC-SUP-001' \gset
 select wf_map_supply_item('e2000000-0000-0000-0000-000000000001',:'item_id','{"name":"Reviewed collection bag","unit":"unidad","minimum":5,"warning":10,"target":20}') as supply_product \gset
 select pg_temp.check_true((select reviewed_by is not null and product_id=:'supply_product'::uuid from workflow_supply_catalog where id=:'item_id'),'reviewed supply maps to a real product');
@@ -148,6 +168,20 @@ select wf_create_blood_sale(jsonb_build_object('branch_id','e2000000-0000-0000-0
 select pg_temp.check_true((select total_amount=100 and customer_name='Workflow test client' and shift='NOCTURNO' from operational_sales where id=:'blood_sale_id'),'blood sale uses actual client, source quantity and explicit shift');
 select pg_temp.check_true((select inventory_status='DESPACHADA' from blood_inventory_units where id='e5000000-0000-0000-0000-000000000004'),'atomic blood sale marks released source as dispatched');
 select pg_temp.check_true((select sum(amount)=40 from customer_payments where sale_id=:'blood_sale_id'),'initial blood receipt recorded once in existing ledger');
+-- Inventory-only delivery: no billing or collections permission, no payment rows.
+savepoint inventory_only_output;
+reset role;
+insert into blood_inventory_units(id,unit_code,source_unit_code,branch_id,component_name,abo,rh,quantity,expiry_date,screening_status,inventory_status)
+values('e5000000-0000-0000-0000-000000000005','WF-OUTPUT','WF-OUTPUT-SOURCE','e2000000-0000-0000-0000-000000000001','PG','O','POSITIVO',1,current_date+30,'APTO','DISPONIBLE');
+delete from role_permissions where role_id='e3000000-0000-0000-0000-000000000001' and permission_code='COLLECTIONS_WRITE';
+set local role authenticated;
+select wf_create_blood_sale(jsonb_build_object('branch_id','e2000000-0000-0000-0000-000000000001','customer_id','e4000000-0000-0000-0000-000000000001','sale_code','WF-OUTPUT-ZERO','sale_date',current_date,'shift','DIURNO','treating_doctor','Fixture MD','status','DESPACHADA','collected_amount',0),
+ '[{"blood_inventory_unit_id":"e5000000-0000-0000-0000-000000000005","quantity":1,"unit_price":0}]') as inventory_output_id \gset
+select pg_temp.check_true((select total_amount=0 and collected_amount=0 and invoice_number is null and invoice_date is null from operational_sales where id=:'inventory_output_id'),'inventory output records no invoice or financial amount');
+select pg_temp.check_true((select count(*)=0 from customer_payments where sale_id=:'inventory_output_id'),'inventory output creates no payment ledger entry');
+select pg_temp.check_true((select inventory_status='DESPACHADA' from blood_inventory_units where id='e5000000-0000-0000-0000-000000000005'),'inventory output removes unit from available stock without collections permission');
+select pg_temp.expect_failure($q$select wf_create_blood_sale(jsonb_build_object('branch_id','e2000000-0000-0000-0000-000000000001','customer_id','e4000000-0000-0000-0000-000000000001','sale_code','WF-OUTPUT-RETRY','sale_date',current_date,'shift','DIURNO','treating_doctor','Fixture MD','status','DESPACHADA','collected_amount',0),'[{"blood_inventory_unit_id":"e5000000-0000-0000-0000-000000000005","quantity":1,"unit_price":0}]')$q$,'inventory output cannot dispatch same unit twice');
+rollback to savepoint inventory_only_output;
 select pg_temp.check_true((select count(distinct currency)=2 from vw_workflow_receipts),'cash report retains USD and DOP as separate currencies');
 select pg_temp.check_true(not has_table_privilege('anon','public.hyperbaric_appointments','SELECT') and not has_table_privilege('authenticated','public.hyperbaric_appointments','TRIGGER'),'new tables revoke anonymous read and authenticated trigger privileges');
 select pg_temp.check_true((select count(*)>=15 from workflow_audit),'workflow mutations leave actor and event audit trail');

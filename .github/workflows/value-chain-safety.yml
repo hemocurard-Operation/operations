@@ -10,6 +10,7 @@ on:
       - 'hemocura-core/integrated-actions*.js'
       - 'hemocura-core/router.js'
       - 'hemocura-core/layout.js'
+      - 'hemocura-core/route-mounts.js'
       - 'hemocura-core/views.js'
       - 'hemocura-core/access-control.js'
       - 'hemocura-core/my-work.js'
@@ -32,10 +33,10 @@ jobs:
           grep -q "donoroutreach" hemocura-core/router.js
           grep -q "customers" hemocura-core/router.js
           grep -q "actions" hemocura-core/router.js
-          grep -q "mountValueChain" hemocura-core/layout.js
-          grep -q "mountDonorOutreach" hemocura-core/layout.js
-          grep -q "mountCustomers" hemocura-core/layout.js
-          grep -q "mountIntegratedActions" hemocura-core/layout.js
+          grep -q "mountValueChain" hemocura-core/route-mounts.js
+          grep -q "mountDonorOutreach" hemocura-core/route-mounts.js
+          grep -q "mountCustomers" hemocura-core/route-mounts.js
+          grep -q "mountIntegratedActions" hemocura-core/route-mounts.js
       - name: Validate permission boundaries
         run: |
           grep -q "VALUE_CHAIN_VIEW" hemocura-core/access-control.js

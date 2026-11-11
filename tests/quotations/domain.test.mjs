@@ -1,0 +1,18 @@
+import {readFile} from 'node:fs/promises';
+import assert from 'node:assert/strict';
+const source=await readFile(new URL('../../hemocura-core/quotation-domain.js',import.meta.url),'utf8');
+const {validateQuotation,compareQuotations,unitCost,quoteTotal}=await import('data:text/javascript;base64,'+Buffer.from(source).toString('base64'));
+const line={reference:'R-1',description:'Reactivo',unit:'caja 100',quantity:10,unit_price:100,tax:18,freight:20};
+const quote=(id,supplier,price,date='2026-11-07',currency='DOP')=>({id,branch_id:'b',supplier_id:supplier,code:id,quote_date:date,valid_until:'2026-12-01',recorded_at:date+'T10:00:00Z',currency,lines:[{...line,unit_price:price}]});
+assert.equal(unitCost(line),120);assert.equal(quoteTotal({lines:[line]}),1200);
+assert.doesNotThrow(()=>validateQuotation(quote('1','s',100)));
+for(const quantity of [0,-1,Infinity,'',NaN])assert.throws(()=>validateQuotation({...quote('1','s',100),lines:[{...line,quantity}]}));
+assert.throws(()=>validateQuotation({...quote('1','s',100),lines:[line,{...line,reference:' r-1 '}]}));
+const quotes=[quote('1','a',100,'2026-11-01'),quote('2','a',120,'2026-11-02'),quote('3','b',90),quote('4','b',20,'2026-11-07','USD')];
+const result=compareQuotations(quotes,'2026-11-07');assert.equal(result.groups.length,2);assert.equal(result.groups[0][0].quote.supplier_id,'b');assert.equal(result.alerts.length,1);assert.equal(result.alerts[0].delta,20);assert.ok(Math.abs(result.alerts[0].percent-20)<1e-9);
+const expired=quote('5','c',1);expired.valid_until='2026-11-06';const mix=compareQuotations([...quotes,expired],'2026-11-07');assert.equal(mix.groups[0].at(-1).expired,true);
+const zero=compareQuotations([quote('a','s',0,'2026-11-01'),quote('b','s',1,'2026-11-02')],'2026-11-07');assert.equal(zero.alerts[0].percent,null);
+const different=quote('7','a',1);different.lines[0].unit='unidad';assert.equal(compareQuotations([...quotes,different],'2026-11-07').alerts.length,1);
+const branch=quote('8','a',1);branch.branch_id='other';assert.equal(compareQuotations([...quotes,branch],'2026-11-07').alerts.length,1);
+const decrease=compareQuotations([quote('1','a',100,'2026-11-01'),quote('2','a',80,'2026-11-02')],'2026-11-07');assert.equal(decrease.alerts[0].delta,-20);
+console.log('PASS: costs, validation, history, increases/decreases, zero baseline, expiry, units, currencies and branches');

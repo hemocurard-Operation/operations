@@ -1,0 +1,47 @@
+name: Agent task followup
+on:
+  pull_request:
+    paths: ['hemocura-core/agent-followup*.js', 'hemocura-core/improvement-agents.js', 'hemocura-core/area-agenda*.js', 'hemocura-core/access-control.js', 'css/improvement-agents.css', 'tests/agent-followup/**', 'tools/agent_followup_browser_runner.cjs', 'tools/area_agenda_browser_runner.cjs', '.github/workflows/agent-followup.yml']
+  push:
+    branches: [main]
+    paths: ['hemocura-core/agent-followup*.js', 'hemocura-core/improvement-agents.js', 'hemocura-core/area-agenda*.js', 'hemocura-core/access-control.js', 'css/improvement-agents.css', 'tests/agent-followup/**', 'tools/agent_followup_browser_runner.cjs', 'tools/area_agenda_browser_runner.cjs', '.github/workflows/agent-followup.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      matrix:
+        engine: [chromium, firefox, webkit]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: node --test tests/agent-followup/domain.test.mjs
+      - run: npm ci --prefix tests/wave50 --ignore-scripts --no-audit --no-fund
+      - run: node tests/wave50/node_modules/playwright/cli.js install --with-deps ${{ matrix.engine }}
+      - run: node tools/agent_followup_browser_runner.cjs
+        env:
+          HEMOCURA_BROWSER_ENGINE: ${{ matrix.engine }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: agent-followup-${{ matrix.engine }}
+          path: /tmp/hemocura-agent-followup
+
+  agenda-regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: python tools/workflow_postgres_runner.py --allow-external-prerequisite-fixture --report-dir /tmp/hemocura-agent-followup-postgres
+      - run: npm ci --prefix tests/wave50 --ignore-scripts --no-audit --no-fund
+      - run: node tests/wave50/node_modules/playwright/cli.js install --with-deps chromium
+      - run: node tools/area_agenda_browser_runner.cjs

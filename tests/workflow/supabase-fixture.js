@@ -1,9 +1,10 @@
 import { ROUTE_PERMISSION } from './access-control.js';
 // Browser unit fixture. No remote requests; this does not emulate or prove RLS.
 export const fixture={tables:{},writes:[],permissions:[],session:null,error:null,context:null,admin:null,adminError:null,adminCalls:[],rpcCalls:[],rpcHandler:null,user:undefined,writeGate:null,readHook:null};
+fixture.authCallbacks=[];fixture.emitAuth=(event,session)=>{fixture.session=session;fixture.authCallbacks.forEach(callback=>callback(event,session))};
 class Query {
   constructor(table){this.table=table;this.filters=[];this.conditions=[];this.payload=null;this.kind='select';this.one=false;}
-  select(){return this} order(){return this} limit(){return this}
+  select(columns){this.columns=columns;return this} order(){return this} limit(){return this}
   range(start,end){this.offset=start;this.end=end;return this}
   gte(key,value){this.filters.push(row=>row[key]>=value);return this}
   lte(key,value){this.filters.push(row=>row[key]<=value);return this}
@@ -11,7 +12,11 @@ class Query {
   or(expression){const terms=expression.split(',');this.filters.push(row=>terms.some(term=>{const [key,op,...rest]=term.split('.');const value=rest.join('.');return op==='eq'?row[key]===value:op==='is'&&value==='null'?row[key]==null:false}));return this}
   eq(key,value){this.filters.push(row=>row[key]===value);this.conditions.push([key,value]);return this}
   not(key,operator,values){this.filters.push(row=>!values.slice(1,-1).split(',').includes(row[key]));return this}
-  in(key,values){this.filters.push(row=>values.includes(row[key]));return this}
+  in(key,values){
+    // PostgREST decodes quoted IN literals before comparing the stored reference.
+    if(this.table==='work_tasks'&&key==='source_reference')values=values.map(value=>value.replace(/\\(["\\])/g,'$1'));
+    this.filters.push(row=>values.includes(row[key]));return this
+  }
   single(){this.one=true;return this} maybeSingle(){this.one=true;return this}
   insert(payload){this.kind='insert';this.payload=payload;return this}
   upsert(payload){this.kind='upsert';this.payload=payload;return this}
@@ -33,6 +38,18 @@ class Query {
     return{data:this.one?rows[0]||null:rows,error:null};
   }).then(resolve,reject)}
 }
+async function donorSearchPage(args){
+ if(fixture.donorPageHook){const reply=await fixture.donorPageHook(args);if(reply!==undefined)return reply}
+ const result=await new Query('vw_donor_coordination');if(result.error)return result;
+ const term=String(args.p_search||'').trim().toLocaleLowerCase('es'),digits=/^[\d\s.-]+$/.test(term)?term.replace(/\D/g,''):'';
+ const group=d=>d.abo&&d.rh?d.abo+(d.rh==='POSITIVO'?'+':'−'):'Pendiente';
+ // Fixtures retain their explicit seed order; SQL ordering/RLS are tested in PostgreSQL.
+ const rows=result.data.filter(d=>(!args.p_branch||d.branch_id===args.p_branch)&&(!args.p_group||group(d)===args.p_group)&&(!term||[d.full_name,d.cedula,d.donor_code].some(v=>String(v||'').toLocaleLowerCase('es').includes(term))||digits&&String(d.cedula||'').replace(/\D/g,'').includes(digits)));
+ const limit=args.p_limit||25,focus=rows.findIndex(d=>d.id===args.p_focus),requested=focus>=0?focus:args.p_offset||0;
+ const start=rows.length?Math.min(Math.floor(requested/limit)*limit,Math.floor((rows.length-1)/limit)*limit):0;
+ const fields=['id','donor_code','branch_id','full_name','cedula','abo','rh','registration_date','last_donation_date'];
+ return {data:{total:rows.length,offset:start,rows:rows.slice(start,start+limit).map(d=>Object.fromEntries(fields.map(k=>[k,d[k]??null])))},error:null};
+}
 const client={functions:{invoke:async(name,{body})=>{
  fixture.adminCalls.push({name,body});
  if(fixture.adminError)return{data:null,error:fixture.adminError};
@@ -44,12 +61,12 @@ const client={functions:{invoke:async(name,{body})=>{
   return{data:{ok:true,removed_assignments:before-user.roles.length},error:null};
  }
  return{data:structuredClone(fixture.admin),error:null};
-}},from:table=>new Query(table),rpc:async(name,args)=>{fixture.rpcCalls.push({name,args});return fixture.rpcHandler?fixture.rpcHandler(name,args):{data:null,error:null}},auth:{
+}},from:table=>new Query(table),rpc:async(name,args)=>{fixture.rpcCalls.push({name,args});if(name==='donor_search_page')return donorSearchPage(args);return fixture.rpcHandler?fixture.rpcHandler(name,args):{data:null,error:null}},auth:{
   getUser:async()=>({data:{user:fixture.user===undefined?{id:'20000000-0000-0000-0000-000000000001'}:fixture.user},error:fixture.error}),
   getSession:async()=>({data:{session:fixture.session},error:fixture.error}),
   signInWithPassword:async()=>({data:{session:fixture.session},error:fixture.error}),
   signOut:async()=>{fixture.session=null;return{error:fixture.error}},
-  onAuthStateChange:()=>({data:{subscription:{unsubscribe(){}}}})
+  onAuthStateChange:callback=>{fixture.authCallbacks.push(callback);return {data:{subscription:{unsubscribe(){fixture.authCallbacks=fixture.authCallbacks.filter(c=>c!==callback)}}}}}
 }};
 export function getSupabase(){return client}
 export async function testSupabaseConnection(){return {ok:true}}

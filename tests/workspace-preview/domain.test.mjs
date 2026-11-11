@@ -1,0 +1,17 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {workspacePreview} from '../../hemocura-core/workspace-preview-model.js';
+const catalog=[['donors','DONORS_VIEW'],['inventory','BLOOD_INVENTORY_VIEW'],['users','ACCESS_ADMIN']].map(([route_key,permission_code])=>({route_key,permission_code,active:true}));
+const permissions=['DONORS_VIEW','BLOOD_INVENTORY_VIEW','ACCESS_ADMIN'].map(permission_code=>({permission_code,active:true}));
+const settings=[{role_id:'a',route_key:'donors',enabled:true},{role_id:'b',route_key:'inventory',enabled:true},{role_id:'b',route_key:'users',enabled:true}];
+const rolePermissions=[{role_id:'a',permission_code:'BLOOD_INVENTORY_VIEW'},{role_id:'b',permission_code:'DONORS_VIEW'},{role_id:'b',permission_code:'ACCESS_ADMIN'}];
+const metadata={catalog,permissions,settings,rolePermissions};
+const user={active:true,roles:[{role_id:'a',role_code:'INVENTARIO'},{role_id:'b',role_code:'LABORATORIO'}]};
+test('combines menu and permission assignments across roles as the SQL view does',()=>assert.deepEqual(workspacePreview(user,metadata).routes.map(([k])=>k).sort(),['donors','inventory']));
+test('administration remains exclusive even if another role is assigned ACCESS_ADMIN',()=>assert.equal(workspacePreview(user,metadata).permissions.has('ACCESS_ADMIN'),false));
+test('inactive and unknown activation profiles have no routes or permissions',()=>{for(const active of [false,null,undefined]){const m=workspacePreview({...user,active},metadata);assert.equal(m.routes.length,0);assert.equal(m.permissions.size,0)}});
+test('no roles cannot inherit admin or selected user access',()=>assert.equal(workspacePreview({...user,roles:[]},metadata).routes.length,0));
+test('inactive catalog permissions and disabled menus fail closed',()=>{const m=workspacePreview(user,{...metadata,permissions:permissions.map(p=>({...p,active:false}))});assert.equal(m.routes.length,0);assert.equal(workspacePreview(user,{...metadata,settings:[]}).routes.length,0)});
+test('superuser sees active known modules with active permissions only',()=>{const m=workspacePreview({active:true,roles:[{role_id:'s',role_code:'SUPER_USUARIO'}]},{...metadata,catalog:[...catalog,{route_key:'invented',permission_code:'DONORS_VIEW',active:true}]});assert.equal(m.routes.length,3);assert(m.permissions.has('ACCESS_ADMIN'))});
+test('target roles control the same task priority used by Mi trabajo',()=>assert.equal(workspacePreview(user,metadata).tasks[0].key,'inventory'));
+test('inactive catalog route is excluded even for superuser',()=>assert.equal(workspacePreview({active:true,roles:[{role_code:'SUPER_USUARIO'}]},{...metadata,catalog:catalog.map(m=>({...m,active:false}))}).routes.length,0));

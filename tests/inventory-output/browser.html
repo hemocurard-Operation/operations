@@ -1,0 +1,7 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="/css/app.css"><title>Inventario · pruebas aisladas</title></head><body><main id="root"></main><script type="module">
+import {mountOperationalSales} from '/hemocura-core/operational-sales.js';
+import {mountSupplyPlanning} from '/hemocura-core/supply-planning.js';
+window.mountOutputs=()=>mountOperationalSales(document.querySelector('#root'));
+window.mountSupply=()=>mountSupplyPlanning(document.querySelector('#root'));
+await window.mountOutputs();window.ready=true;
+</script></body></html>

@@ -2,9 +2,9 @@ name: Donor management regressions
 on:
   push:
     branches: [main]
-    paths: ['hemocura-core/donors.js', 'hemocura-core/donor-management-data.js', 'hemocura-core/donor-agenda.js', 'hemocura-core/cedula-reader*.js', 'js/vendor/ocr/**', 'css/donors.css', 'tests/donors/**', 'tools/donors_*', 'tools/cedula_ocr_runner.cjs', 'supabase/migrations/*donor*.sql', '.github/workflows/donor-management.yml']
+    paths: ['hemocura-core/donors.js', 'hemocura-core/donor-management-data.js', 'hemocura-core/donor-agenda.js', 'hemocura-core/cedula-reader*.js', 'hemocura-core/image-ocr.js', 'js/vendor/ocr/**', 'css/donors.css', 'tests/donors/**', 'tools/donors_*', 'tools/cedula_ocr_runner.cjs', 'supabase/migrations/*donor*.sql', '.github/workflows/donor-management.yml']
   pull_request:
-    paths: ['hemocura-core/donors.js', 'hemocura-core/donor-management-data.js', 'hemocura-core/donor-agenda.js', 'hemocura-core/cedula-reader*.js', 'js/vendor/ocr/**', 'css/donors.css', 'tests/donors/**', 'tools/donors_*', 'tools/cedula_ocr_runner.cjs', 'supabase/migrations/*donor*.sql', '.github/workflows/donor-management.yml']
+    paths: ['hemocura-core/donors.js', 'hemocura-core/donor-management-data.js', 'hemocura-core/donor-agenda.js', 'hemocura-core/cedula-reader*.js', 'hemocura-core/image-ocr.js', 'js/vendor/ocr/**', 'css/donors.css', 'tests/donors/**', 'tools/donors_*', 'tools/cedula_ocr_runner.cjs', 'supabase/migrations/*donor*.sql', '.github/workflows/donor-management.yml']
   workflow_dispatch:
 permissions:
   contents: read

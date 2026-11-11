@@ -34,6 +34,7 @@ export async function signOut(){
   try{
     const {error}=await getSupabase().auth.signOut();
     if(error) throw error;
+    try{await (await import('./crm-drafts.js')).clearCrmDrafts()}catch{console.warn('[LOCAL_DRAFT_CLEANUP_FAILED]')}
     console.info('[HEMOCURA_AUTH] logout OK');
   }catch(error){throwDiagnostic(error,{subsystem:'AUTH',route:'logout'})}
 }

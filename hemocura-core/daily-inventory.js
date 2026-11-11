@@ -64,7 +64,9 @@ export async function mountDailyInventory(root){
   const preferred=access?.context?.branch_id||access?.context?.current_branch_id||access?.context?.profile_branch_id||'';
   const displayName=access?.context?.full_name||access?.context?.name||access?.context?.email||'';
   let current=null;
+  let photo=null;
   let loading=false;
+  let saving=false;
 
   root.innerHTML=`
     <div class="sales-toolbar">
@@ -298,6 +300,7 @@ export async function mountDailyInventory(root){
   }
 
   async function load(){
+    if(!saving&&photo&&!photo.beforeLoad())return;
     const branch=q('dor-branch').value;
     if(!branch){q('dor-msg').innerHTML='<div class="status warn">Seleccione una sucursal.</div>';return;}
     loading=true;
@@ -307,25 +310,32 @@ export async function mountDailyInventory(root){
       await showEquipment();
       await showVersions();
       showHistory();
+      await photo?.refresh();
       q('dor-msg').innerHTML=report?'<div class="status ok">Reporte cargado.</div>':'<div class="status info">Nuevo reporte para esta fecha y sucursal.</div>';
     }catch(e){q('dor-msg').innerHTML=`<div class="status bad">${esc(e.message)}</div>`;}
     finally{loading=false;}
   }
 
   async function save(){
-    if(!canWrite||loading)return;
+    if(!canWrite||loading||saving)return;
     if(!validate()){q('dor-msg').innerHTML='<div class="status warn">Corrija las inconsistencias antes de guardar.</div>';return;}
+    saving=true;
     const btn=q('dor-save'),label=btn.textContent;
+    const draft=payload(),locked=[...root.querySelectorAll('button,input,select,textarea')].map(el=>[el,el.disabled]);
+    locked.forEach(([el])=>el.disabled=true);
     btn.disabled=true;btn.textContent='Guardando…';
     try{
+      photo?.beforeSave();
       const equipment=await equipmentSnapshot();
-      await commandData.saveDailyReport({...payload(),equipment_snapshot:equipment});
+      const savedId=await commandData.saveDailyReport({...draft,equipment_snapshot:equipment});
+      await photo?.afterSave(savedId);
       await load();
     }catch(e){q('dor-msg').innerHTML=`<div class="status bad">${esc(e.message)}</div>`;}
-    finally{btn.textContent=label;setEditable();}
+    finally{saving=false;locked.forEach(([el,disabled])=>{if(el.isConnected)el.disabled=disabled});btn.textContent=label;setEditable();}
   }
 
   async function submit(){
+    if(photo?.hasPending()){q('dor-msg').textContent='Guarde el borrador para adjuntar la foto pendiente antes de enviar.';return;}
     if(!current?.id||!canSubmit||!validate())return;
     if(!confirm('¿Enviar el reporte a revisión? Quedará bloqueado para edición.'))return;
     try{await commandData.submitDailyReport(current.id);await load();}
@@ -362,4 +372,8 @@ export async function mountDailyInventory(root){
   await showEquipment();
   showHistory();
   if(q('dor-branch').value)await load();
+  const {mountDailyPhoto}=await import('./daily-photo.js');
+  if(!root.isConnected)return;
+  photo=mountDailyPhoto(root,{getScope:()=>({id:current?.id,branch:q('dor-branch').value,branchName:q('dor-branch').selectedOptions[0]?.textContent||'',date:q('dor-date').value,editable:canWrite&&!loading&&!!q('dor-branch').value&&(!current||['BORRADOR','REABIERTO'].includes(current.status))}),onApply:values=>{for(const [g,row] of Object.entries(values))for(const [f,value] of Object.entries(row)){const el=q(`inv-${key(g)}-${f==='whole_blood'?'whole':'packed'}`);el.value=String(value);el.dispatchEvent(new Event('input',{bubbles:true}));}validate();}});
+  await photo.refresh();
 }

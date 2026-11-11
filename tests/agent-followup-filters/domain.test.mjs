@@ -1,0 +1,11 @@
+import {test} from 'node:test';import assert from 'node:assert/strict';import {filterFollowupTasks} from '../../hemocura-core/agent-followup-status.js';
+const now=Date.parse('2026-11-08T12:00:00Z'),past='2026-11-07T12:00:00Z',future='2026-11-09T12:00:00Z';
+const tasks=[{id:'a',owner_id:'u1',owner_name:'Ana Demo',title:'Reponer guantes',status:'PENDIENTE',due_at:past},{id:'b',owner_id:'u2',owner_name:'María Calidad',title:'Validar evidencia',status:'EN_REVISION',due_at:future},{id:'c',owner_id:'u1',owner_name:'Ana Demo',title:'Compra concluida',status:'COMPLETADA',due_at:past},{id:'d',owner_id:'u1',owner_name:'Ana Demo',title:'Cancelada',status:'CANCELADA',due_at:past}];
+test('overdue excludes completed and cancelled tasks',()=>assert.deepEqual(filterFollowupTasks(tasks,{mode:'OVERDUE'},now).map(t=>t.id),['a']));
+test('review isolates pending independent review',()=>assert.deepEqual(filterFollowupTasks(tasks,{mode:'REVIEW'},now).map(t=>t.id),['b']));
+test('mine compares actor ID and excludes closed tasks',()=>assert.deepEqual(filterFollowupTasks([...tasks,{id:'same-name',owner_id:'u9',owner_name:'Ana Demo',status:'PENDIENTE',due_at:future}],{mode:'MINE',actorId:'u1'},now).map(t=>t.id),['a']));
+test('missing actor cannot fall back to someone else',()=>assert.equal(filterFollowupTasks(tasks,{mode:'MINE'},now).length,0));
+test('owner search is case insensitive and trims whitespace',()=>assert.deepEqual(filterFollowupTasks(tasks,{query:'  MARÍA  '},now).map(t=>t.id),['b']));
+test('title search combines with state predicates',()=>{assert.equal(filterFollowupTasks(tasks,{mode:'OVERDUE',query:'guantes'},now).length,1);assert.equal(filterFollowupTasks(tasks,{mode:'MINE',actorId:'u1',query:'María'},now).length,0)});
+test('search treats SQL-looking tokens literally',()=>assert.equal(filterFollowupTasks(tasks,{query:'%_ or 1=1'},now).length,0));
+test('all preserves records without mutating the snapshot',()=>{const original=JSON.stringify(tasks);assert.equal(filterFollowupTasks(tasks,{},now).length,4);assert.equal(JSON.stringify(tasks),original)});

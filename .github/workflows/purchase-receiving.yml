@@ -1,5 +1,7 @@
 name: Purchase orders and receiving
 on:
+  pull_request:
+    paths: ['hemocura-core/procurement*.js', 'tests/procurement/**', 'tools/procurement_*', 'tools/fixture-csp.cjs', '.github/workflows/purchase-receiving.yml']
   push:
     branches: [main]
     paths:

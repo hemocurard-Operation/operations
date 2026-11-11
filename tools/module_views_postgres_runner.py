@@ -19,7 +19,7 @@ try:
  sql+='insert into role_permissions select r.id,p.permission_code from roles r cross join app_permissions p;delete from role_permissions where role_id=(select id from roles where code=\'LABORATORIO\') and permission_code=\'SALES_VIEW\';'
  for n,role in [(1,'SUPER_USUARIO'),(2,'ASISTENTE_OPERACIONES'),(3,'ASISTENTE_OPERACIONES'),(4,'LABORATORIO'),(5,'ASISTENTE_OPERACIONES'),(5,'FINANZAS'),(6,'ADMIN')]:sql+="insert into user_roles select 'e2000000-0000-0000-0000-00000000000"+str(n)+"',id from roles where code="+q(role)+';'
  run(sql,'seed')
- run(next((root/'supabase/migrations').glob('*_role_module_views.sql')).read_text(),'migration')
+ run(sorted((root/'supabase/migrations').glob('*_role_module_views.sql'))[0].read_text(),'migration')
  run((root/'tests/module-views/business-rules.sql').read_text(),'business')
  (out/'report.json').write_text(json.dumps({'status':'PASS','checks':checks,'production_verified':False,'schema':'minimal authorization fixture + actual module migration'},indent=2));print('PASS role module PostgreSQL:',len(checks),'checks')
 finally:subprocess.run(base+['rm','-f',name],capture_output=True)

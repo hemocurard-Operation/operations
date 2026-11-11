@@ -1,0 +1,5 @@
+<!doctype html><html lang="es"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="/css/app.css"><body><main id="root"></main><script type="module">
+import {mountQuotationMenu} from '/hemocura-core/quotations.js';
+window.quoteFixture={quotes:[],decisions:[],permissions:['PURCHASE_VIEW','PURCHASE_WRITE','PURCHASE_APPROVE']};
+window.remount=async()=>{document.querySelector('#root').replaceChildren();await mountQuotationMenu(document.querySelector('#root'))};await window.remount();window.ready=true;
+</script></body></html>

@@ -1,5 +1,7 @@
-// Unifies three existing data sources into one calendar instead of creating a
-// parallel scheduling table: commercial_visits (client visits, already in
+// Unifies existing scheduling sources, including the gated CRM map agenda,
+// without copying events or creating a parallel scheduling table. Preserves
+// legacy sources:
+// commercial_visits (client visits, already in
 // workflow-data.js), projects with domain='COMERCIAL' (product launches,
 // already in blood-operations-data.js), and medical_referral_events with a
 // future referral_date (specialist activities, already in
@@ -11,14 +13,32 @@ import {loadMedicalNetwork,createReferral} from './medical-network-data.js';
 import {getSupabase} from './supabase.js';
 
 export async function loadCommercialCalendar(branchId){
-  const [visits,customers,projects,network]=await Promise.all([
-    workflowData.visits(branchId),
-    workflowData.customers(),
-    bloodData.projects(),
-    loadMedicalNetwork()
+  const results=await Promise.allSettled([
+    workflowData.visits(branchId),workflowData.customers(),bloodData.projects(),
+    loadMedicalNetwork(),loadActivities(branchId),loadMapAgenda(branchId)
   ]);
-  const launches=projects.filter(p=>p.domain==='COMERCIAL');
-  return {visits,customers,launches,referrers:network.network,activities:await loadActivities(branchId)};
+  const labels=['visitas a clientes','clientes','lanzamientos','especialistas','actividades con especialistas'];
+  const warnings=[];
+  const value=(index,fallback)=>{
+    const result=results[index];
+    if(result.status==='fulfilled')return result.value;
+    warnings.push(`No se pudieron cargar ${labels[index]}. ${result.reason?.message||'Error de conexión.'}`);
+    return fallback;
+  };
+  const visits=value(0,[]),customers=value(1,[]),projects=value(2,[]),network=value(3,{network:[]}),activities=value(4,[]);
+  let mapAgenda={enabled:null,visits:[],error:''};
+  if(results[5].status==='fulfilled')mapAgenda=results[5].value;
+  else mapAgenda.error='No se pudieron cargar visitas del mapa. '+(results[5].reason?.message||'Error de conexión.');
+  if(mapAgenda.error)warnings.push(mapAgenda.error);
+  return {visits,customers,launches:projects.filter(p=>p.domain==='COMERCIAL'),referrers:network.network||[],activities,
+    crmVisits:mapAgenda.enabled===true?mapAgenda.visits:[],crmAgendaEnabled:mapAgenda.enabled,crmAgendaError:mapAgenda.error||'',warnings};
+}
+
+async function loadMapAgenda(branchId){
+  const {data,error}=await getSupabase().rpc('commercial_agenda',{p_branch:branchId});
+  if(error)throw Error(error.message);
+  if(!data||typeof data.enabled!=='boolean'||!Array.isArray(data.visits))throw Error('Respuesta incompleta del origen CRM.');
+  return {enabled:data.enabled,visits:data.enabled?data.visits:[],error:''};
 }
 
 async function loadActivities(branchId){

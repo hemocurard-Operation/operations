@@ -250,3 +250,16 @@ code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
 
 /* Existing UAT/release screens: constrained forms on phones. */
 .release-workspace,.release-workspace .card,.release-workspace label{min-width:0;max-width:100%}.release-workspace :where(input,select,textarea){min-width:0;max-width:100%}.release-workspace select{width:100%}.release-workspace .filter-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr))}.release-workspace label{overflow-wrap:anywhere}.release-workspace .table-wrap{max-width:100%;overflow:auto}
+
+/* Supplier quotations shared by inventory, requisitions and purchasing. */
+.quotation-menu{min-width:0}.quotation-menu summary{cursor:pointer;padding:8px 0}.quotation-menu td{overflow-wrap:anywhere}.quotation-menu fieldset{min-width:0;margin:16px 0;border:1px solid var(--line);border-radius:8px}.quotation-menu dialog{max-height:90vh;overflow:auto}.quotation-menu [data-alerts]:not(:empty){border-left:3px solid var(--warn);padding-left:12px}
+
+.quotation-summary-note{display:block;color:var(--muted);font-size:13px;margin-top:5px;margin-left:18px;font-weight:400}
+.quotation-toolbar{display:flex;align-items:end;justify-content:space-between;gap:16px;flex-wrap:wrap}.quotation-toolbar label{min-width:180px}.quotation-toolbar select{display:block;width:100%;padding:9px;border:1px solid var(--line);border-radius:8px;background:var(--paper)}
+.quotation-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:16px 0 24px}.quotation-metrics article{border:1px solid var(--line);border-radius:10px;padding:16px;background:var(--bg)}.quotation-metrics span{display:block;color:var(--muted);font-size:13px}.quotation-metrics strong{display:block;color:var(--navy);font-size:28px;margin-top:6px}
+.quotation-increase,.quotation-decrease{display:inline-block;padding:6px 9px;border-radius:6px;font-weight:600}.quotation-increase{color:var(--bad);background:#f9e3e3}.quotation-decrease{color:var(--ok);background:#e5f3e8}.quotation-menu h3{color:var(--navy);margin-top:28px}.quotation-menu td{vertical-align:top}.quotation-menu [data-comparison] .table-wrap{margin-bottom:24px}
+@media(max-width:600px){.quotation-metrics{gap:6px}.quotation-metrics article{padding:10px}.quotation-metrics span{font-size:11px}.quotation-metrics strong{font-size:23px}.quotation-toolbar{align-items:stretch}.quotation-toolbar .dialog-actions{width:100%}.quotation-toolbar button{flex:1}}
+
+.quotation-menu .data-table th,.quotation-menu .data-table td{white-space:normal}.quotation-menu [data-comparison] .data-table{min-width:1000px}.quotation-menu .data-table td:last-child{min-width:124px}.quotation-menu .data-table td:last-child button{display:block;width:100%;margin:3px 0;white-space:normal}
+
+.quotation-menu [data-comparison] td:nth-child(5),.quotation-menu [data-comparison] td:nth-child(6),.quotation-menu [data-comparison] td:nth-child(7){white-space:nowrap}.quotation-menu [data-comparison] td:nth-child(4){min-width:150px}

@@ -56,21 +56,8 @@ export function parseCedulaText(text){
  if(birth&&birth>localDay())warnings.push('La fecha de nacimiento leída está en el futuro. Revísela.');
  return {cedula:candidates.length===1?candidates[0]:'',candidates,full_name:full,sex,birth_date:birth&&birth<=localDay()?birth:'',warnings};
 }
-export async function readCedulaImage(file,{signal,onProgress=()=>{}}={}){
- if(!file||!['image/jpeg','image/png','image/webp'].includes(file.type))throw new Error('Use una imagen JPG, PNG o WebP de la cédula.');
- if(file.size>10*1024*1024)throw new Error('La imagen debe pesar menos de 10 MB.');
- if(signal?.aborted)throw new DOMException('Lectura cancelada','AbortError');
- const {default:Tesseract}=await import('../js/vendor/ocr/tesseract.esm.min.js');
- const {createWorker}=Tesseract;
- if(signal?.aborted)throw new DOMException('Lectura cancelada','AbortError');
- let worker;
- const stop=()=>worker?.terminate();
- signal?.addEventListener('abort',stop,{once:true});
- try{
-  worker=await createWorker('spa',1,{workerPath:new URL('../js/vendor/ocr/worker.min.js',import.meta.url).href,corePath:new URL('../js/vendor/ocr/core',import.meta.url).href,langPath:new URL('../js/vendor/ocr/lang',import.meta.url).href,workerBlobURL:false,cacheMethod:'none',logger:m=>onProgress(m.status==='recognizing text'?`Leyendo texto: ${Math.round(m.progress*100)}%`:'Preparando lector de cédula…')});
-  if(signal?.aborted)throw new DOMException('Lectura cancelada','AbortError');
-  const result=await worker.recognize(file);
-  if(signal?.aborted)throw new DOMException('Lectura cancelada','AbortError');
-  return {...parseCedulaText(result.data.text),text:result.data.text,confidence:result.data.confidence};
- }finally{signal?.removeEventListener('abort',stop);if(worker)await worker.terminate()}
+export async function readCedulaImage(file,options={}){
+ const {readDocumentImage}=await import('./image-ocr.js');
+ const result=await readDocumentImage(file,options);
+ return {...parseCedulaText(result.text),...result};
 }

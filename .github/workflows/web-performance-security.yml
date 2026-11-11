@@ -1,0 +1,50 @@
+name: Web performance, CSP and compatibility
+on:
+  pull_request:
+    paths: ['hemocura-core/**', 'index.html', 'login.html', 'auth-finish.html', 'tests/web-performance/**', 'tools/*browser*', 'tools/check_startup_budget.py', 'tools/fixture-csp.cjs', 'supabase/migrations/*web_performance_security.sql', '.github/workflows/web-performance-security.yml']
+  push:
+    branches: [main]
+    paths: ['hemocura-core/**', 'index.html', 'login.html', 'auth-finish.html', 'tests/web-performance/**', 'tools/*browser*', 'tools/check_startup_budget.py', 'tools/fixture-csp.cjs', 'supabase/migrations/*web_performance_security.sql', '.github/workflows/web-performance-security.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        engine: [chromium, firefox, webkit]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: python tools/check_startup_budget.py
+      - run: npm ci --prefix tests/wave50 --ignore-scripts --no-audit --no-fund
+      - run: node tests/wave50/node_modules/playwright/cli.js install --with-deps ${{ matrix.engine }}
+      - run: node tools/web_performance_browser_runner.cjs
+        env:
+          HEMOCURA_BROWSER_ENGINE: ${{ matrix.engine }}
+      - run: node tools/quotations_browser_runner.cjs
+        env:
+          HEMOCURA_BROWSER_ENGINE: ${{ matrix.engine }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: web-performance-${{ matrix.engine }}
+          path: /tmp/hemocura-web-performance
+  security-and-database:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: npm audit --prefix tools/vendor-supabase --package-lock-only --audit-level=high
+      - run: npm audit --prefix tests/wave50 --package-lock-only --audit-level=high
+      - run: python tools/quotations_postgres_runner.py
+      - run: sudo apt-get update && sudo apt-get install -y age rclone
+      - run: python tests/web-performance/test_backup_pipeline.py

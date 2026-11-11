@@ -1,5 +1,4 @@
-import { getSession } from './auth.js';
-import { mountLayout } from './layout.js';
+import { getSession,onAuthChange } from './auth.js';
 import { classifyError } from './diagnostic-engine.js';
 import { installProgressProtection } from './progress-protection.js';
 
@@ -16,17 +15,18 @@ async function currentVersion(){
 
 function renderBootError(app,error){
   const d=error?.diagnostic || classifyError(error,{subsystem:'BOOT',route:'bootstrap'});
-  const msg=String(d.message||error?.message||error);
+  const safe=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+  const msg=safe(d.message||error?.message||error);
   const action=d.action || 'Abra F12 → Console y Network para revisar el detalle.';
   app.innerHTML=`
     <main class="boot">
       <h1>HemoCura Operations</h1>
       <div class="status bad">
-        <strong>[${d.code||'BOOT_ERROR'}]</strong><br>
+        <strong>[${safe(d.code||'BOOT_ERROR')}]</strong><br>
         ${msg}
       </div>
-      <p><strong>Subsistema:</strong> ${d.subsystem||'BOOT'}</p>
-      <p><strong>Acción sugerida:</strong> ${action}</p>
+      <p><strong>Subsistema:</strong> ${safe(d.subsystem||'BOOT')}</p>
+      <p><strong>Acción sugerida:</strong> ${safe(action)}</p>
       <details>
         <summary>Diagnóstico técnico</summary>
         <pre class="debug-box">${String(d.technical||error?.stack||'Sin detalle adicional').replace(/</g,'&lt;')}</pre>
@@ -70,7 +70,15 @@ export async function initApp(){
 
     // CRÍTICO: mountLayout es async. Debe esperarse para que
     // cualquier error de perfil/roles/RLS/schema llegue a este catch.
+    onAuthChange((event,current)=>{
+      const changed=current?.user?.id&&current.user.id!==session.user.id;
+      if(event==='SIGNED_OUT'||changed){
+        app.replaceChildren();
+        import('./crm-drafts.js').then(m=>m.clearCrmDrafts()).catch(()=>console.warn('[LOCAL_DRAFT_CLEANUP_FAILED]')).finally(()=>location.replace('./login.html'));
+      }
+    });
     installProgressProtection();
+    const {mountLayout}=await import('./layout.js');
     await mountLayout(session);
 
     console.info(`[HEMOCURA_BOOT] OK v${version}`);

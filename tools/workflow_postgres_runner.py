@@ -58,8 +58,12 @@ def main():
   trip_migrations=[]
   team_role_migrations=[]
   delivery_migrations=[]
+  performance_migrations=[]
+  photo_migrations=[]
   for f in sorted((ROOT/'supabase/migrations').glob('*.sql')):
-   if f.name.endswith(('_team_delivery_coordination.sql','_clinical_commercial_job_roles.sql','_personal_username_accounts.sql')):delivery_migrations.append(f);continue
+   if f.name.endswith('_daily_report_photos.sql'):photo_migrations.append(f);continue
+   if f.name.endswith('_web_performance_security.sql'):performance_migrations.append(f);continue
+   if f.name.endswith(('_team_delivery_coordination.sql','_clinical_commercial_job_roles.sql','_personal_username_accounts.sql','_commercial_crm_contacts.sql','_crm_weekly_visit_planner.sql','_twelve_week_execution.sql','_commercial_agenda_union.sql')):delivery_migrations.append(f);continue
    if f.name.endswith('_production_security_privacy_readiness.sql'):production_followups.append(f);continue
    if f.name.endswith('_audit_criteria_and_competency_authorization.sql'):quality_security_followups.append(f);continue
    if f.name.endswith('_hemovigilance_access_and_anonymous_view_containment.sql'):security_followups.append(f);continue
@@ -71,7 +75,7 @@ def main():
    if f.name.endswith('_quality_information_decisions.sql'):qms_migrations.append(f);continue
    if f.name.endswith('_area_task_agenda.sql'):agenda_migrations.append(f);continue
    if f.name.endswith('_role_module_views.sql'):module_migrations.append(f);continue
-   if f.name.endswith(('_purchase_receiving.sql','_purchase_receipt_inventory_link.sql')):purchase_migrations.append(f);continue
+   if f.name.endswith(('_purchase_receiving.sql','_purchase_receipt_inventory_link.sql','_supplier_quotations.sql')):purchase_migrations.append(f);continue
    if f.name.endswith('_supply_transfers.sql'):deferred.append(f);continue
    # Hyperbaric follow-ups alter hyperbaric_appointments, created later by CANDIDATE.
    if f.name.endswith('_hyperbaric_patient_pii_masking.sql'):deferred.append(f);continue
@@ -89,6 +93,7 @@ def main():
   for f in deferred:apply(f)
   for f in coordination_migrations:apply(f)
   for f in purchase_migrations:apply(f)
+  for f in photo_migrations:apply(f)
   result=sql((ROOT/'tests/workflow/business-rules.sql').read_text(),'workflow-business-rules')
   checks=re.findall(r'PASS ([^\n]+)',result.stderr+result.stdout)
   if not checks:raise RuntimeError('Zero business-rule checks executed')
@@ -186,6 +191,22 @@ def main():
   if any(f.name.endswith('_personal_username_accounts.sql') for f in delivery_migrations):
    result=sql((ROOT/'tests/username-accounts/database.sql').read_text(),'personal-username-accounts')
    report['checks'].extend({'name':c.strip(),'pass':True} for c in re.findall(r'PASS ([^\n]+)',result.stderr+result.stdout))
+  if any(f.name.endswith('_commercial_crm_contacts.sql') for f in delivery_migrations):
+   result=sql((ROOT/'tests/crm/database.sql').read_text(),'commercial-crm-rules')
+   report['checks'].extend({'name':c.strip(),'pass':True} for c in re.findall(r'PASS ([^\n]+)',result.stderr+result.stdout))
+  if any(f.name.endswith('_crm_weekly_visit_planner.sql') for f in delivery_migrations):
+   result=sql((ROOT/'tests/crm-planner/database.sql').read_text(),'crm-weekly-planner')
+   report['checks'].extend({'name':c.strip(),'pass':True} for c in re.findall(r'PASS ([^\n]+)',result.stderr+result.stdout))
+  if any(f.name.endswith('_twelve_week_execution.sql') for f in delivery_migrations):
+   result=sql((ROOT/'tests/twelve-week/database.sql').read_text(),'twelve-week-execution')
+   report['checks'].extend({'name':c.strip(),'pass':True} for c in re.findall(r'PASS ([^\n]+)',result.stderr+result.stdout))
+  if any(f.name.endswith('_commercial_agenda_union.sql') for f in delivery_migrations):
+   result=sql((ROOT/'tests/commercial-agenda/database.sql').read_text(),'commercial-agenda-union')
+   report['checks'].extend({'name':c.strip(),'pass':True} for c in re.findall(r'PASS ([^\n]+)',result.stderr+result.stdout))
+   spec=importlib.util.spec_from_file_location('commercial_agenda_concurrency',ROOT/'tests/commercial-agenda/concurrency.py')
+   module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
+   report['checks'].extend(module.verify(name,out/'commercial-concurrency',ROOT))
+  for f in performance_migrations:apply(f)
   print(f'PASS: {len(report["checks"])} PostgreSQL checks; {len(report["migrations"])} baseline/candidate files. Production not verified.')
   return 0
  except Exception as e:

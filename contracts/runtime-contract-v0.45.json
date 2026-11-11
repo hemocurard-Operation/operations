@@ -26,13 +26,24 @@
     "commercial_opportunities",
     "commercial_plans",
     "commercial_visits",
-    "congress_attendance",
     "competency_assessments",
     "competency_catalog",
+    "congress_attendance",
     "continuity_plans",
     "continuity_tests",
+    "crm_activities",
+    "crm_center_locations",
+    "crm_contact_branch_access",
+    "crm_contact_sources",
+    "crm_contacts",
+    "crm_history",
+    "crm_requests",
+    "crm_services",
+    "crm_visit_rules",
+    "crm_weekly_visits",
     "daily_operational_closes",
     "daily_operational_report_versions",
+    "daily_report_photos",
     "daily_sales",
     "data_integrity_checks",
     "deployment_events",
@@ -75,11 +86,11 @@
     "lab_methods",
     "logistics_trip_history",
     "logistics_trips",
-    "medical_congresses",
-    "medical_news",
     "management_actions",
     "management_review_actions",
     "management_reviews",
+    "medical_congresses",
+    "medical_news",
     "monthly_cost_entries",
     "monthly_cost_periods",
     "nonconformities",
@@ -105,6 +116,7 @@
     "quality_indicators",
     "quality_objectives",
     "quality_processes",
+    "quotation_decisions",
     "reagent_lots",
     "release_signoffs",
     "requisition_lines",
@@ -123,6 +135,7 @@
     "sgc_steps",
     "staff_job_assignments",
     "supplier_incidents",
+    "supplier_quotations",
     "suppliers",
     "system_operating_mode",
     "team_deliveries",
@@ -141,7 +154,13 @@
     "training_question_bank",
     "training_quiz_attempts",
     "transport_events",
+    "twelve_week_cycles",
+    "twelve_week_goals",
+    "twelve_week_requests",
+    "twelve_week_task_links",
     "uat_test_cases",
+    "uat_test_results",
+    "uat_test_runs",
     "user_roles",
     "vw_analytical_quality_summary",
     "vw_app_migration_readiness",
@@ -244,9 +263,7 @@
     "work_tasks",
     "workflow_daily_sections",
     "workflow_service_events",
-    "workflow_supply_catalog",
-    "uat_test_runs",
-    "uat_test_results"
+    "workflow_supply_catalog"
   ],
   "rpcs": [
     "adjust_sale_line",
@@ -255,10 +272,22 @@
     "calculate_monthly_product_costs",
     "capture_daily_operational_close",
     "close_daily_operational_report",
+    "commercial_agenda",
     "create_approval_request",
     "create_exception_from_candidate",
+    "crm_action",
+    "crm_branch_contacts",
+    "crm_catalog",
+    "crm_plan_action",
+    "crm_review",
     "decide_approval_request",
+    "donor_search_page",
     "execute_approved_action",
+    "hc_release_readiness_v1",
+    "hc_uat_complete_run",
+    "hc_uat_record_result",
+    "hc_uat_start_run",
+    "hc_v044_release_signoff",
     "hemovig_delivery_nc_create",
     "iso_clause_assessment_create_nc",
     "iso_clause_assessment_upsert",
@@ -286,16 +315,14 @@
     "training_revoke_authorization",
     "training_revoke_certificate",
     "training_submit_quiz",
+    "twelve_week_action",
+    "twelve_week_catalog",
+    "twelve_week_context",
     "verify_training_certificate",
     "wf_create_blood_sale",
     "work_agenda_access",
     "work_agenda_people",
-    "work_task_action",
-    "hc_release_readiness_v1",
-    "hc_uat_start_run",
-    "hc_uat_record_result",
-    "hc_uat_complete_run",
-    "hc_v044_release_signoff"
+    "work_task_action"
   ],
   "optional_relations": [
     "compliance_penal_actions",
@@ -438,6 +465,94 @@
       "issued_by",
       "valid_until",
       "status"
+    ],
+    "crm_contacts": [
+      "id",
+      "branch_id",
+      "revision",
+      "owner_id"
+    ],
+    "crm_activities": [
+      "id",
+      "contact_id",
+      "branch_id",
+      "created_by"
+    ],
+    "crm_history": [
+      "contact_id",
+      "branch_id",
+      "actor_id"
+    ],
+    "crm_contact_branch_access": [
+      "contact_id",
+      "branch_id"
+    ],
+    "crm_contact_sources": [
+      "contact_id",
+      "branch_id",
+      "batch_sha256"
+    ],
+    "crm_visit_rules": [
+      "contact_id",
+      "branch_id",
+      "revision"
+    ],
+    "crm_center_locations": [
+      "id",
+      "branch_id",
+      "revision"
+    ],
+    "crm_weekly_visits": [
+      "id",
+      "branch_id",
+      "contact_id",
+      "agent_id",
+      "revision",
+      "request_id"
+    ],
+    "twelve_week_cycles": [
+      "id",
+      "branch_id",
+      "area_code",
+      "start_date",
+      "end_date",
+      "status",
+      "revision"
+    ],
+    "twelve_week_goals": [
+      "id",
+      "cycle_id",
+      "week_number",
+      "revision"
+    ],
+    "twelve_week_task_links": [
+      "task_id",
+      "cycle_id",
+      "week_number"
+    ],
+    "supplier_quotations": [
+      "id",
+      "branch_id",
+      "supplier_id",
+      "requisition_id",
+      "recorded_at"
+    ],
+    "quotation_decisions": [
+      "id",
+      "branch_id",
+      "quotation_id",
+      "recorded_at"
+    ],
+    "daily_report_photos": [
+      "id",
+      "report_id",
+      "content_sha256",
+      "file_name",
+      "mime_type",
+      "image_base64",
+      "reviewed_inventory",
+      "recorded_at",
+      "created_by"
     ]
   },
   "forbidden_columns": {
@@ -463,7 +578,9 @@
     "20261011005547",
     "20261011005602",
     "20261011010317",
-    "20261011010919"
+    "20261011010919",
+    "20261107181249",
+    "20261109002642"
   ],
   "required_migration_codes": [
     "44_RELEASE_1_0_RC_v0_44",

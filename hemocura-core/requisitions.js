@@ -1,3 +1,4 @@
+import {mountQuotationMenu} from './quotations.js';
 import { getBranches } from './sales-data.js';
 import { listRequisitions } from './integrated-qms-data.js';
 import { workflowData } from './workflow-data.js';
@@ -18,4 +19,5 @@ export async function mountRequisitions(root){
  const create=root.querySelector('#req-new');if(create){create.disabled=!catalog.length||!!catalogError;create.onclick=()=>{form.reset();form.elements.date.value=localDay();root.querySelector('#req-form-message').textContent='';lines.replaceChildren();addLine();dialog.showModal()}}
  form.onsubmit=async e=>{e.preventDefault();if(!write||!form.reportValidity())return;const button=form.querySelector('[type="submit"]'),msg=root.querySelector('#req-form-message');button.disabled=true;try{const ids=new Set(),items=Array.from(lines.children).map(row=>{const id=row.querySelector('[name="item"]').value;if(ids.has(id))throw new Error('Combine las cantidades del mismo insumo en una línea');ids.add(id);const qty=amount(row.querySelector('[name="quantity"]').value,'Cantidad');if(qty<=0)throw new Error('Cantidad positiva requerida');return {catalog_item_id:id,requested_qty:qty}});if(!items.length)throw new Error('Agregue al menos un insumo');const fd=new FormData(form);await workflowData.createCatalogRequisition({requisition_code:String(fd.get('code')).trim(),request_date:fd.get('date'),requesting_branch_id:fd.get('branch'),department:fd.get('department'),priority:fd.get('priority'),justification:fd.get('justification')},items);dialog.close();await load()}catch(e){msg.innerHTML=`<div class="status bad">${esc(e.message)}</div>`}finally{button.disabled=false}};
  await load();
+ await mountQuotationMenu(root);
 }
