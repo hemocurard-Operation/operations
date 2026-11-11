@@ -38,9 +38,9 @@ export async function mountHemovigilance(root){
   try{branches=await getBranches()}catch(err){}
   const branchId=branches[0]?.id||'';
 
-  root.innerHTML=`<div class="sales-toolbar"><div><h2>Hemovigilancia</h2><div class="muted">Eventos, casi eventos, reacciones, retiros y no conformidades de entrega.</div></div><div class="quick-links"><button id="hv-new-nc" class="secondary">Registrar NC de entrega</button><button id="hv-new">Registrar evento</button></div></div><div id="hv-msg"></div><section class="card"><div class="table-wrap"><table class="data-table"><thead><tr><th>Fecha</th><th>Código</th><th>Tipo</th><th>Severidad</th><th>Unidad</th><th>Centro / categoría</th><th>Descripción</th><th>Estado</th><th>NC</th><th>CAPA</th></tr></thead><tbody id="hv-body"></tbody></table></div></section>
-  <dialog id="hv-dialog" class="sales-dialog"><form id="hv-form"><h3>Evento</h3><label>Código<input id="h-code" required></label><label>Tipo<select id="h-type"><option>ERROR</option><option>CASI_EVENTO</option><option>REACCION_DONANTE</option><option>REACCION_TRANSFUSIONAL</option><option>QUEJA</option><option>RETIRO</option><option>OTRO</option></select></label><label>Severidad<select id="h-sev"><option>MEDIA</option><option>ALTA</option><option>CRITICA</option><option>BAJA</option></select></label><label>Unidad<input id="h-unit"></label><label>Descripción<textarea id="h-desc" required></textarea></label><label>Acción inmediata<textarea id="h-action"></textarea></label><div class="dialog-actions"><button type="button" id="h-cancel">Cancelar</button><button>Guardar</button></div></form></dialog>
-  <dialog id="hv-nc-dialog" class="sales-dialog"></dialog>`;
+  root.innerHTML=`<div class="sales-toolbar"><div><h2>Hemovigilancia</h2><div class="muted">Eventos, casi eventos, reacciones, retiros y no conformidades de entrega.</div></div><div class="quick-links"><button id="hv-new-nc" class="secondary">Registrar NC de entrega</button><button id="hv-new">Registrar evento</button></div></div><div id="hv-msg" role="status" aria-live="polite"></div><section class="card"><div class="table-wrap"><table class="data-table" aria-label="Eventos de hemovigilancia"><thead><tr><th scope="col">Fecha</th><th scope="col">Código</th><th scope="col">Tipo</th><th scope="col">Severidad</th><th scope="col">Unidad</th><th scope="col">Centro / categoría</th><th scope="col">Descripción</th><th scope="col">Estado</th><th scope="col">NC</th><th scope="col">CAPA</th></tr></thead><tbody id="hv-body"></tbody></table></div></section>
+  <dialog id="hv-dialog" class="sales-dialog" aria-labelledby="hv-dialog-title"><form id="hv-form" class="quick-capture-form" novalidate><h3 id="hv-dialog-title">Evento</h3><label data-required>Código<input id="h-code" required aria-required="true"></label><label>Tipo<select id="h-type"><option>ERROR</option><option>CASI_EVENTO</option><option>REACCION_DONANTE</option><option>REACCION_TRANSFUSIONAL</option><option>QUEJA</option><option>RETIRO</option><option>OTRO</option></select></label><label>Severidad<select id="h-sev"><option>MEDIA</option><option>ALTA</option><option>CRITICA</option><option>BAJA</option></select></label><label>Unidad<input id="h-unit"></label><label data-required>Descripción<textarea id="h-desc" required aria-required="true" rows="3"></textarea></label><label>Acción inmediata<textarea id="h-action" rows="2"></textarea></label><div class="dialog-actions"><button type="button" id="h-cancel">Cancelar</button><button type="submit">Guardar</button></div></form></dialog>
+  <dialog id="hv-nc-dialog" class="sales-dialog" aria-labelledby="hv-nc-dialog-title"></dialog>`;
 
   async function load(){
     try{
@@ -59,10 +59,13 @@ export async function mountHemovigilance(root){
   document.getElementById('h-cancel').onclick=()=>document.getElementById('hv-dialog').close();
   document.getElementById('hv-form').onsubmit=async ev=>{
     ev.preventDefault();
+    const submitBtn=ev.target.querySelector('button[type="submit"]');
+    if(submitBtn){submitBtn.setAttribute('aria-busy','true');submitBtn.disabled=true}
     try{
       await hemovigData.create({event_code:document.getElementById('h-code').value.trim(),event_type:document.getElementById('h-type').value,severity:document.getElementById('h-sev').value,source_unit_code:document.getElementById('h-unit').value.trim()||null,description:document.getElementById('h-desc').value.trim(),immediate_action:document.getElementById('h-action').value.trim()||null,status:'ABIERTO'});
       document.getElementById('hv-dialog').close();ev.target.reset();await load();
-    }catch(err){document.getElementById('hv-msg').innerHTML=`<div class="status bad">${e(err.message)}</div>`}
+    }catch(err){document.getElementById('hv-msg').innerHTML=`<div class="status bad" role="alert">${e(err.message)}</div>`}
+    finally{if(submitBtn){submitBtn.removeAttribute('aria-busy');submitBtn.disabled=false}}
   };
 
   document.getElementById('hv-new-nc').onclick=()=>openDeliveryNC();
@@ -74,40 +77,40 @@ export async function mountHemovigilance(root){
       const list=NC_SUBTYPES[category]||[];
       return `<option value="">Seleccionar tipo…</option>${list.map(s=>`<option value="${e(s)}">${e(s)}</option>`).join('')}`;
     }
-    dialog.innerHTML=`<form id="nc-form">
-      <h3>No conformidad post-entrega</h3>
+    dialog.innerHTML=`<form id="nc-form" class="quick-capture-form" novalidate>
+      <h3 id="hv-nc-dialog-title">No conformidad post-entrega</h3>
       <p class="muted">Hemocomponente entregado a un centro de salud externo.</p>
 
       <h4>1. Información general</h4>
       <div class="filter-grid">
-        <label>Código<input name="event_code" required value="NC-${Date.now().toString().slice(-6)}"></label>
-        <label>Sucursal HemoCura<select name="branch_id" required>${branches.map(b=>`<option value="${e(b.id)}">${e(b.name)}</option>`).join('')}</select></label>
-        <label>Centro de salud receptor<input name="health_center" required></label>
-        <label>Nombre del paciente<input name="patient_name" required></label>
-        <label>Fecha y hora de entrega<input name="delivered_at" type="datetime-local" value="${nowLocal()}" required></label>
+        <label data-required>Código<input name="event_code" required aria-required="true" value="NC-${Date.now().toString().slice(-6)}"></label>
+        <label data-required>Sucursal HemoCura<select name="branch_id" required aria-required="true">${branches.map(b=>`<option value="${e(b.id)}">${e(b.name)}</option>`).join('')}</select></label>
+        <label data-required>Centro de salud receptor<input name="health_center" required aria-required="true" autocomplete="organization"></label>
+        <label data-required>Nombre del paciente<input name="patient_name" required aria-required="true" autocomplete="off"></label>
+        <label data-required>Fecha y hora de entrega<input name="delivered_at" type="datetime-local" value="${nowLocal()}" required aria-required="true"></label>
       </div>
 
       <h4>Datos de quien reporta</h4>
       <div class="filter-grid">
-        <label>Nombre completo<input name="reporter_name" required></label>
-        <label>Cargo<input name="reporter_role" required placeholder="Ej: Bioanalista, Enfermera"></label>
-        <label>Teléfono<input name="reporter_phone" type="tel" required></label>
+        <label data-required>Nombre completo<input name="reporter_name" required aria-required="true" autocomplete="name"></label>
+        <label data-required>Cargo<input name="reporter_role" required aria-required="true" placeholder="Ej: Bioanalista, Enfermera"></label>
+        <label data-required>Teléfono<input name="reporter_phone" type="tel" inputmode="tel" required aria-required="true" autocomplete="tel"></label>
       </div>
 
       <h4>2. Datos del hemocomponente</h4>
       <div class="filter-grid">
-        <label>Tipo de hemocomponente<select name="component_type" required>
+        <label data-required>Tipo de hemocomponente<select name="component_type" required aria-required="true">
           <option value="">Seleccionar…</option>
           <option>Paquete de Sangre Total</option><option>Paquete Globular</option><option>Hematíes lavados</option>
           <option>Plasma Congelado</option><option>Plasma Fresco</option><option>Plaqueta por aféresis</option><option>Plasma por aféresis</option>
         </select></label>
-        <label>Nº unidades<input name="units" type="number" min="1" required></label>
+        <label data-required>Nº unidades<input name="units" type="number" min="1" inputmode="numeric" required aria-required="true"></label>
         <label>Grupo sanguíneo<select name="abo" required><option value="">Seleccionar…</option><option>A</option><option>B</option><option>AB</option><option>O</option></select></label>
         <label>Factor Rh<select name="rh" required><option value="">Seleccionar…</option><option value="POSITIVO">Positivo (+)</option><option value="NEGATIVO">Negativo (−)</option></select></label>
         <label>Código del producto<input name="product_code"></label>
         <label>Fecha de extracción<input name="collection_date" type="date"></label>
         <label>Fecha de vencimiento<input name="expiry_date" type="date"></label>
-        <label>Volumen (ml)<input name="volume_ml" type="number" min="1"></label>
+        <label>Volumen (ml)<input name="volume_ml" type="number" min="1" inputmode="numeric"></label>
         <label>Procedencia<select name="origin"><option value="">Seleccionar…</option><option>Donación voluntaria</option><option>Donación por reposición</option><option>Aféresis</option></select></label>
       </div>
 
@@ -123,7 +126,7 @@ export async function mountHemovigilance(root){
       <label>Severidad</label>
       <div class="quick-links" id="nc-severity">${SEVERITY.map(([k,label,desc])=>`<button type="button" class="secondary" data-sev="${k}">${e(label)}<br><small>${e(desc)}</small></button>`).join('')}</div>
       <input type="hidden" name="severity_scale" required>
-      <label>Descripción detallada<textarea name="description" required></textarea></label>
+      <label data-required>Descripción detallada<textarea name="description" required aria-required="true" rows="3"></textarea></label>
 
       <h4>4. Evidencia</h4>
       <div class="filter-grid">
@@ -132,7 +135,7 @@ export async function mountHemovigilance(root){
       </div>
 
       <h4>5. Acciones y disposición</h4>
-      <label>Acción inmediata tomada<textarea name="immediate_action" required></textarea></label>
+      <label data-required>Acción inmediata tomada<textarea name="immediate_action" required aria-required="true" rows="2"></textarea></label>
       <div class="filter-grid">
         <label>¿Producto devuelto?<select name="product_returned" required><option value="">Seleccionar…</option><option value="true">Sí</option><option value="false">No</option></select></label>
         <label>¿Médico notificado?<select name="doctor_notified"><option value="">Seleccionar…</option><option value="true">Sí</option><option value="false">No</option></select></label>
@@ -158,6 +161,8 @@ export async function mountHemovigilance(root){
       const fd=Object.fromEntries(new FormData(ev.target));
       if(!severity){dialog.querySelector('[data-dialog-error]').textContent='Seleccione un nivel de severidad.';return}
       if(category==='otro'&&!fd.nc_subtype){dialog.querySelector('[data-dialog-error]').textContent='Especifique el tipo de no conformidad.';return}
+      const ncSubmit=ev.target.querySelector('button[type="submit"]');
+      if(ncSubmit){ncSubmit.setAttribute('aria-busy','true');ncSubmit.disabled=true}
       const dbSeverity=SEVERITY.find(([k])=>k===severity)[3];
       try{
         await hemovigData.createDeliveryNC(fd.branch_id,{
@@ -175,6 +180,7 @@ export async function mountHemovigilance(root){
         dialog.close();
         await load();
       }catch(err){dialog.querySelector('[data-dialog-error]').textContent=err.message}
+      finally{if(ncSubmit){ncSubmit.removeAttribute('aria-busy');ncSubmit.disabled=false}}
     };
     dialog.showModal();
   }
