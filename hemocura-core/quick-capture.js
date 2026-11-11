@@ -1,6 +1,7 @@
 import { bloodData } from './blood-operations-data.js';
 import { createRequisition } from './integrated-qms-data.js';
 import { quickCaptureProducts, createDispatchDraft, createIncident } from './quick-capture-data.js';
+import { showToast, enableDraftSave, restoreDraft, clearDraft, enableBlurValidation, mountProgressBar } from './form-ux.js';
 
 const LEGACY_FORMS=[
   'https://forms.gle/mxXX6Y6d2vo5w5T17','https://forms.gle/HtnwoYbq5w6F4QiA8','https://forms.gle/96Vt4xs3Ub2dxNcu7','https://forms.gle/VUXv7PxKMs4J58mP8','https://forms.gle/7iVCkWW2Ssrcb3Ls5'
@@ -82,7 +83,7 @@ export async function mountQuickCapture(root){
   const productOptions=products.map(p=>`<option value="${esc(p.name)}">${esc(p.code||'')} · ${esc(p.unit_of_measure||'unidad')}</option>`).join('');
 
   root.innerHTML=`
-  <div class="sales-toolbar"><div><h2 class="section-heading">Captura rápida</h2><div class="muted">Registra lo esencial primero. El contexto se reutiliza y los datos clínicos sensibles exigen selección explícita.</div></div><span class="role-chip">v0.45.8</span></div>
+  <div class="sales-toolbar"><div><h2 class="section-heading">Captura rápida</h2><div class="muted">Registra lo esencial primero. El contexto se reutiliza y los datos clínicos sensibles exigen selección explícita.</div></div><span class="role-chip">v0.45.9</span></div>
   <div id="qc-msg" role="status" aria-live="polite" aria-atomic="true"></div>
 
   <section class="card">
@@ -191,6 +192,7 @@ export async function mountQuickCapture(root){
     const el=document.getElementById('qc-msg');
     el.innerHTML=`<div class="status ${t}" role="${t==='bad'?'alert':'status'}">${esc(m)}</div>`;
     el.scrollIntoView({behavior:'smooth',block:'nearest'});
+    showToast(m,t);
     if(t==='ok'){
       // Flash the success card
       const card=el.closest('.card')||el.previousElementSibling;
@@ -258,7 +260,7 @@ export async function mountQuickCapture(root){
     const unit=val('qc-screen-unit');
     if(!unit){markFieldError('qc-screen-unit','Indique el código de unidad.');throw new Error('Indique el código de unidad.')}
     const reagent=val('qc-screen-reagent'),lot=val('qc-screen-lot'),responsible=val('qc-screen-resp');
-    const base=stamp('TAM'),rows=selected.map((x,n)=>({screening_code:`${base}-${String(n+1).padStart(2,'0')}`,source_unit_code:unit,branch_id:c.branchId,screening_date:c.date,test_type:x.test,result:x.result,reagent:reagent||null,reagent_lot:lot||null,responsible:responsible||null,status:val('qc-screen-status'),observations:'Captura rápida v0.45.8 · resultado explícito'}));
+    const base=stamp('TAM'),rows=selected.map((x,n)=>({screening_code:`${base}-${String(n+1).padStart(2,'0')}`,source_unit_code:unit,branch_id:c.branchId,screening_date:c.date,test_type:x.test,result:x.result,reagent:reagent||null,reagent_lot:lot||null,responsible:responsible||null,status:val('qc-screen-status'),observations:'Captura rápida v0.45.9 · resultado explícito'}));
     if(chk('qc-screen-remember'))saveJson(SCREEN_KEY,{reagent,lot,responsible,remember:true});else saveJson(SCREEN_KEY,{remember:false});
     await bloodData.createScreenings(rows);
     document.getElementById('qc-screen-unit').value='';
@@ -299,4 +301,38 @@ export async function mountQuickCapture(root){
   },show);
 
   updateScreeningCount();
+
+  /* ── Phase 2 UX: toast, draft save, blur validation, progress bar ── */
+
+  // Enable blur validation on all forms
+  root.querySelectorAll('.quick-capture-form').forEach(f=>enableBlurValidation(f));
+
+  // Draft auto-save for donor form (most commonly interrupted)
+  const donorDraftFields=['qc-donor-code','qc-donor-type','qc-donor-status','qc-donor-abo','qc-donor-rh','qc-donor-reason','qc-donor-notes','qc-donor-effective'];
+  const donorDraft=enableDraftSave('qc-donor-form',donorDraftFields);
+  if(restoreDraft('qc-donor-form',donorDraftFields)){
+    showToast('Borrador de donante restaurado','ok',2500);
+  }
+
+  // Draft auto-save for incident form (long form, easy to lose)
+  const incDraftFields=['qc-inc-class','qc-inc-process','qc-inc-severity','qc-inc-description','qc-inc-affected','qc-inc-followup','qc-inc-impact','qc-inc-action','qc-inc-evidence'];
+  const incDraft=enableDraftSave('qc-inc-form',incDraftFields);
+  restoreDraft('qc-inc-form',incDraftFields);
+
+  // Progress bar for the main capture area
+  mountProgressBar('qc-donor-form',['.quick-form-grid']);
+
+  // Clear drafts on successful save — wrap existing handlers
+  const donorForm=document.getElementById('qc-donor-form');
+  const origDonorSubmit=donorForm.onsubmit;
+  donorForm.onsubmit=async e=>{
+    await origDonorSubmit(e);
+    clearDraft('qc-donor-form');
+  };
+  const incForm=document.getElementById('qc-inc-form');
+  const origIncSubmit=incForm.onsubmit;
+  incForm.onsubmit=async e=>{
+    await origIncSubmit(e);
+    clearDraft('qc-inc-form');
+  };
 }
