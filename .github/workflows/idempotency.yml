@@ -1,0 +1,38 @@
+name: Idempotency against retries
+
+on:
+  pull_request:
+    paths:
+      - 'sql/22_OPERATIONS_QMS_COMPLIANCE_v0_22.sql'
+      - 'sql/23_BLOOD_OPERATIONS_BI_PM_v0_23.sql'
+      - 'supabase/migrations/20261013183215_donor_management.sql'
+      - 'tests/idempotency/**'
+      - 'tools/idempotency_runner.py'
+      - '.github/workflows/idempotency.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'sql/22_OPERATIONS_QMS_COMPLIANCE_v0_22.sql'
+      - 'sql/23_BLOOD_OPERATIONS_BI_PM_v0_23.sql'
+      - 'supabase/migrations/20261013183215_donor_management.sql'
+      - 'tests/idempotency/**'
+      - 'tools/idempotency_runner.py'
+      - '.github/workflows/idempotency.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  idempotency:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run idempotency on disposable PostgreSQL
+        run: python3 tools/idempotency_runner.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: idempotency-report
+          path: /tmp/hemocura-idempotency
