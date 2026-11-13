@@ -307,15 +307,25 @@ export async function mountQuickCapture(root){
   // Enable blur validation on all forms
   root.querySelectorAll('.quick-capture-form').forEach(f=>enableBlurValidation(f));
 
-  // Draft auto-save for donor form (most commonly interrupted)
-  const donorDraftFields=['qc-donor-code','qc-donor-type','qc-donor-status','qc-donor-abo','qc-donor-rh','qc-donor-reason','qc-donor-notes','qc-donor-effective'];
+  // Draft auto-save for donor form (most commonly interrupted).
+  // §15 del prompt maestro v11 prohíbe almacenar datos clínicos sensibles
+  // en localStorage como fuente principal. Excluimos ABO, Rh, motivo de
+  // diferimiento, notas y efectividad — todos ellos derivan del juicio
+  // clínico o revelan estado de salud del donante. Solo se persisten
+  // campos administrativos de borrador (código, tipo de visita, estado
+  // del flujo) para que el captador no pierda su progreso.
+  const donorDraftFields=['qc-donor-code','qc-donor-type','qc-donor-status'];
   const donorDraft=enableDraftSave('qc-donor-form',donorDraftFields);
   if(restoreDraft('qc-donor-form',donorDraftFields)){
     showToast('Borrador de donante restaurado','ok',2500);
   }
 
-  // Draft auto-save for incident form (long form, easy to lose)
-  const incDraftFields=['qc-inc-class','qc-inc-process','qc-inc-severity','qc-inc-description','qc-inc-affected','qc-inc-followup','qc-inc-impact','qc-inc-action','qc-inc-evidence'];
+  // Draft auto-save for incident form (long form, easy to lose).
+  // §15: la descripción, afectados e impacto pueden contener datos
+  // clínicos de un paciente o donante involucrado en la incidencia.
+  // Persistimos solo metadatos de clasificación; el texto libre se
+  // vuelve a capturar si el navegador cierra.
+  const incDraftFields=['qc-inc-class','qc-inc-process','qc-inc-severity'];
   const incDraft=enableDraftSave('qc-inc-form',incDraftFields);
   restoreDraft('qc-inc-form',incDraftFields);
 

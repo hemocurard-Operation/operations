@@ -48,14 +48,9 @@ Clasificación: ✅ Operativo · ⚠ Parcial / brecha · ❌ Ausente · 🔎 Req
 **Severidad:** Media.
 **Pendiente de verificar en DB viva:** campos *fabricante, serie, fecha adquisición, suplidor, garantía, documentación*. Si están en `equipment.jsonb`/`equipment.metadata`, no es brecha; si no, hay que ampliar la tabla.
 
-### Riesgo heredado — localStorage con ABO/Rh y motivo de diferimiento (§15)
-**Severidad:** Alta (pero el autosave ya tiene TTL de 24 h, confirmado en `form-ux.js:67`).
-**Evidencia:** `quick-capture.js:311` → `donorDraftFields` incluye `qc-donor-abo`, `qc-donor-rh`, `qc-donor-reason`, `qc-donor-notes`. Son **datos clínicos**.
-**Impacto:** el prompt §15 prohíbe almacenar datos clínicos sensibles en localStorage como fuente principal. Borrador con TTL es un uso secundario, pero ABO/Rh/razón de diferimiento son sensibles aunque el borrador caduque a las 24 h.
-**Recomendación de parche** (mismo PR):
-- Excluir `qc-donor-abo`, `qc-donor-rh`, `qc-donor-reason` del autosave.
-- O reducir TTL a 2 h y añadir `localStorage.removeItem(key)` al éxito del submit.
-- O hashear la clave y cifrar el blob con una clave efímera de sesión.
+### Riesgo heredado — localStorage con ABO/Rh y motivo de diferimiento (§15) — **MITIGADO**
+**Estado:** corregido en esta misma rama.
+**Parche aplicado** (commit siguiente a esta auditoría): `quick-capture.js` reduce `donorDraftFields` a `['qc-donor-code','qc-donor-type','qc-donor-status']` e `incDraftFields` a `['qc-inc-class','qc-inc-process','qc-inc-severity']`. ABO, Rh, motivo de diferimiento, observaciones del donante, descripción, afectados e impacto de la incidencia **ya no se persisten** en localStorage. El autosave sigue útil para el captador (no perder progreso del código/tipo/estado), y los campos clínicos se recapturan si el navegador cierra. `clearDraft` al éxito se mantiene.
 
 ### 🔎 Verificaciones vivas pendientes
 1. Confirmar que las 3 sucursales iniciales existen en `branches`.
