@@ -1,0 +1,185 @@
+name: Apply pending Supabase migrations (v0.67.0)
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Solo listar lo que se aplicaría; no ejecuta nada.'
+        required: false
+        default: 'false'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install psql + jq
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq postgresql-client jq
+
+      - name: Resolve pooler host (IPv4)
+        id: pooler
+        env:
+          RAW_DSN: ${{ secrets.SUPABASE_MIGRATIONS_DSN }}
+        run: |
+          if [ -z "$RAW_DSN" ]; then
+            echo "::error::SUPABASE_MIGRATIONS_DSN secret no configurado."
+            echo "::error::Configúralo con: gh secret set SUPABASE_MIGRATIONS_DSN --repo hemocurard-Operation/operations"
+            exit 1
+          fi
+          # Si ya viene en formato pooler, usar directo
+          if echo "$RAW_DSN" | grep -q 'pooler.supabase.com'; then
+            echo "dsn=$RAW_DSN" >> "$GITHUB_OUTPUT"
+            echo "Pooler explícito en DSN."
+            exit 0
+          fi
+          # Parsear postgresql://user:pass@db.<ref>.supabase.co:5432/postgres?...
+          USER=$(echo "$RAW_DSN" | sed -E 's|postgresql://([^:]+):.*|\1|')
+          PASS=$(echo "$RAW_DSN" | sed -E 's|postgresql://[^:]+:([^@]+)@.*|\1|')
+          REF=$(echo "$RAW_DSN"  | sed -E 's|.*@db\.([^.]+)\.supabase\.co.*|\1|')
+          REGIONS="us-east-2 us-east-1 us-west-1 eu-west-1 eu-west-2 ap-southeast-1 ap-northeast-1 sa-east-1"
+          for REGION in $REGIONS; do
+            HOST="aws-0-$REGION.pooler.supabase.com"
+            if timeout 5 bash -c "cat < /dev/tcp/$HOST/5432" 2>/dev/null; then
+              DSN="postgresql://${USER}.${REF}:${PASS}@${HOST}:5432/postgres?sslmode=require"
+              echo "Pooler encontrado: $REGION"
+              echo "dsn=$DSN" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+          done
+          echo "::error::No se pudo conectar a ningún pooler regional."
+          exit 1
+
+      - name: Probe connection + ensure migrations bookkeeping
+        env:
+          DSN: ${{ steps.pooler.outputs.dsn }}
+        run: |
+          psql "$DSN" -At -c "select current_user, current_database();"
+          psql "$DSN" -v ON_ERROR_STOP=1 <<'SQL'
+          create schema if not exists public;
+          create table if not exists public.schema_migrations (
+            version text primary key,
+            applied_at timestamptz not null default now(),
+            applied_by text not null default current_user,
+            checksum text
+          );
+          SQL
+
+      - name: Apply pending migrations
+        env:
+          DSN: ${{ steps.pooler.outputs.dsn }}
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: |
+          mkdir -p docs/sprint-0/migration-logs
+          STAMP=$(date -u +%Y-%m-%dT%H-%M-%SZ)
+          LOG="docs/sprint-0/migration-logs/apply_${STAMP}.log"
+          echo "=== Apply pending migrations ${STAMP} ===" | tee "$LOG"
+
+          # Leer lista desde VERSION.json
+          mapfile -t PENDING < <(jq -r '.pending_supabase_migrations[]' VERSION.json)
+          if [ "${#PENDING[@]}" -eq 0 ]; then
+            echo "No hay migraciones pendientes en VERSION.json." | tee -a "$LOG"
+            exit 0
+          fi
+
+          APPLIED_NEW=()
+          SKIPPED=()
+          FAILED=()
+
+          for VERSION in "${PENDING[@]}"; do
+            FILE="supabase/migrations/${VERSION}.sql"
+            if [ ! -f "$FILE" ]; then
+              echo "::warning::Migración declarada pero archivo faltante: $FILE" | tee -a "$LOG"
+              FAILED+=("$VERSION:missing_file")
+              continue
+            fi
+
+            # ¿Ya aplicada?
+            ALREADY=$(psql "$DSN" -At -c "select 1 from public.schema_migrations where version = '$VERSION' limit 1;" 2>/dev/null || echo "")
+            if [ "$ALREADY" = "1" ]; then
+              echo "✓ Ya aplicada: $VERSION" | tee -a "$LOG"
+              SKIPPED+=("$VERSION")
+              continue
+            fi
+
+            CHECKSUM=$(sha256sum "$FILE" | cut -d' ' -f1)
+            echo "→ Aplicando $VERSION  (sha256=${CHECKSUM:0:12}…)" | tee -a "$LOG"
+
+            if [ "$DRY_RUN" = "true" ]; then
+              echo "  [DRY-RUN] se aplicaría $FILE" | tee -a "$LOG"
+              continue
+            fi
+
+            # Ejecutar dentro de transacción + registrar
+            if psql "$DSN" -v ON_ERROR_STOP=1 --single-transaction \
+                 -c "\set VERBOSITY verbose" \
+                 -f "$FILE" \
+                 -c "insert into public.schema_migrations(version, checksum) values ('$VERSION', '$CHECKSUM') on conflict (version) do nothing;" \
+                 >> "$LOG" 2>&1; then
+              echo "  ✅ OK $VERSION" | tee -a "$LOG"
+              APPLIED_NEW+=("$VERSION")
+            else
+              echo "  ❌ FALLA $VERSION — ver $LOG" | tee -a "$LOG"
+              FAILED+=("$VERSION:psql_error")
+              # Continuar con las demás (las que dependen fallarán limpio)
+            fi
+          done
+
+          echo "---" | tee -a "$LOG"
+          echo "Resumen:" | tee -a "$LOG"
+          echo "  Nuevas aplicadas: ${#APPLIED_NEW[@]}" | tee -a "$LOG"
+          echo "  Ya estaban:        ${#SKIPPED[@]}" | tee -a "$LOG"
+          echo "  Fallidas:          ${#FAILED[@]}" | tee -a "$LOG"
+          [ "${#FAILED[@]}" -gt 0 ] && printf '    - %s\n' "${FAILED[@]}" | tee -a "$LOG"
+
+          # Export para el siguiente step
+          printf '%s\n' "${APPLIED_NEW[@]}" > /tmp/applied.txt
+          [ "${#FAILED[@]}" -gt 0 ] && echo "::warning::Hubo ${#FAILED[@]} migración/es fallida/s"
+
+      - name: Update VERSION.json (remove applied)
+        if: inputs.dry_run != 'true'
+        run: |
+          APPLIED_FILE=/tmp/applied.txt
+          [ ! -s "$APPLIED_FILE" ] && echo "Sin nuevas aplicadas; VERSION.json sin cambios." && exit 0
+          # Quitar de pending_supabase_migrations las que están en applied.txt
+          jq --slurpfile applied <(jq -R . "$APPLIED_FILE" | jq -s .) '
+            .pending_supabase_migrations = (.pending_supabase_migrations - $applied[0])
+          ' VERSION.json > /tmp/VERSION.json.new
+          mv /tmp/VERSION.json.new VERSION.json
+          echo "VERSION.json actualizado:"
+          jq '.pending_supabase_migrations' VERSION.json
+
+      - name: Commit logs + VERSION.json
+        if: inputs.dry_run != 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config user.name "HemoCura migrations bot"
+          git config user.email "noreply@anthropic.com"
+          git add docs/sprint-0/migration-logs/ VERSION.json
+          if git diff --staged --quiet; then
+            echo "Sin cambios para commitear."
+            exit 0
+          fi
+          STAMP=$(date -u +%Y-%m-%d)
+          git commit -m "chore(migrations): aplicar migraciones v0.67.0 ${STAMP}
+
+$(cat /tmp/applied.txt | sed 's|^|- |')
+
+Co-Authored-By: Claude Opus 4.7 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01Xfbv3P2WmRB2Y4eFbYrCtU"
+          git push origin HEAD:main
+
+      - name: Upload logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: apply-migrations-logs
+          path: docs/sprint-0/migration-logs/
+          retention-days: 90
