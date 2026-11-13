@@ -1,0 +1,30 @@
+name: Facility licenses (C2)
+
+on:
+  pull_request:
+    paths:
+      - 'supabase/migrations/20261114040000_facility_licenses.sql'
+      - 'tests/facility-licenses/**'
+      - 'tools/facility_licenses_runner.py'
+      - '.github/workflows/facility-licenses.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'supabase/migrations/20261114040000_facility_licenses.sql'
+      - 'tests/facility-licenses/**'
+      - 'tools/facility_licenses_runner.py'
+      - '.github/workflows/facility-licenses.yml'
+  workflow_dispatch:
+
+permissions: {contents: read}
+jobs:
+  facility-licenses:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 tools/facility_licenses_runner.py
+      - run: python3 tools/migration_security_linter.py supabase/migrations/20261114040000_facility_licenses.sql
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: {name: facility-licenses-report, path: /tmp/hemocura-facility-licenses}
