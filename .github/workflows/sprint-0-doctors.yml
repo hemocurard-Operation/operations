@@ -20,20 +20,58 @@ jobs:
           sudo apt-get update -qq
           sudo apt-get install -y -qq postgresql-client jq
 
-      - name: Verify DSN reachable (read-only probe)
+      - name: Resolve working pooler DSN (auto-discovery IPv4)
+        id: pooler
         env:
           DSN: ${{ secrets.SUPABASE_AUDIT_DSN }}
         run: |
+          set -e
           if [ -z "$DSN" ]; then
-            echo "::error::SUPABASE_AUDIT_DSN secret is not set. Add it with: gh secret set SUPABASE_AUDIT_DSN"
+            echo "::error::SUPABASE_AUDIT_DSN secret is not set."
             exit 1
           fi
-          echo "Probing connection..."
-          psql "$DSN" -At -c "select current_user, current_database(), now() at time zone 'America/Santo_Domingo';"
+          # Extrae user, password y project ref del DSN directo.
+          # Formato esperado: postgresql://USER:PASS@db.REF.supabase.co:5432/postgres?...
+          CREDS="${DSN#postgresql://}"
+          USERPASS="${CREDS%%@*}"
+          HOSTPART="${CREDS#*@}"
+          USER="${USERPASS%%:*}"
+          PASS="${USERPASS#*:}"
+          HOST="${HOSTPART%%:*}"
+          # REF = segunda parte del host db.REF.supabase.co
+          REF=$(echo "$HOST" | awk -F. '{print $2}')
+          echo "Project ref detectado: $REF"
+          echo "Usuario: $USER"
+          POOLER_USER="${USER}.${REF}"
+          REGIONS="us-east-2 us-east-1 us-west-1 eu-west-1 eu-west-2 ap-southeast-1 ap-northeast-1 sa-east-1"
+          FOUND=""
+          for REGION in $REGIONS; do
+            POOLER_HOST="aws-0-${REGION}.pooler.supabase.com"
+            CANDIDATE="postgresql://${POOLER_USER}:${PASS}@${POOLER_HOST}:5432/postgres?sslmode=require"
+            echo "Probing region ${REGION}..."
+            if timeout 6 psql "$CANDIDATE" -At -c "select 1;" >/dev/null 2>&1; then
+              echo "::notice::Pooler reachable in region ${REGION} (host ${POOLER_HOST})"
+              FOUND="$CANDIDATE"
+              echo "region=${REGION}" >> "$GITHUB_OUTPUT"
+              break
+            fi
+          done
+          if [ -z "$FOUND" ]; then
+            echo "::error::No se encontró un pooler accesible en las regiones probadas."
+            echo "Prueba manual: ve a Supabase → Settings → Database → Connection pooling y copia el host."
+            exit 1
+          fi
+          # Guardamos el DSN resuelto como output enmascarado en vez de env global.
+          echo "::add-mask::$FOUND"
+          echo "resolved_dsn<<EOF" >> "$GITHUB_OUTPUT"
+          echo "$FOUND" >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
+          # Prueba concreta: identidad + permisos del rol
+          psql "$FOUND" -At -c "select current_user, current_database();"
 
       - name: Run C11_91 Security Doctor
         env:
-          DSN: ${{ secrets.SUPABASE_AUDIT_DSN }}
+          DSN: ${{ steps.pooler.outputs.resolved_dsn }}
         run: |
           mkdir -p docs/sprint-0
           STAMP=$(date -u +%Y-%m-%d)
@@ -51,7 +89,7 @@ jobs:
 
       - name: Run C12_00 Preflight Security Hardening
         env:
-          DSN: ${{ secrets.SUPABASE_AUDIT_DSN }}
+          DSN: ${{ steps.pooler.outputs.resolved_dsn }}
         run: |
           STAMP=$(date -u +%Y-%m-%d)
           OUT="docs/sprint-0/C12_00_preflight_${STAMP}.json"
@@ -67,27 +105,25 @@ jobs:
 
       - name: Verify read-only (confirm write is denied)
         env:
-          DSN: ${{ secrets.SUPABASE_AUDIT_DSN }}
+          DSN: ${{ steps.pooler.outputs.resolved_dsn }}
         run: |
           STAMP=$(date -u +%Y-%m-%d)
           OUT="docs/sprint-0/read_only_proof_${STAMP}.txt"
           {
             echo "# Read-only proof"
             echo "Run: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
-            echo
-            echo "## Confirmación de que el rol NO puede escribir"
+            echo "Pooler region: ${{ steps.pooler.outputs.region }}"
             echo
             if psql "$DSN" -c "update public.branches set name='HACK' where false;" 2>&1 | grep -q "permission denied"; then
-              echo "✅ UPDATE rechazado con permission denied (como se esperaba)."
+              echo "✅ UPDATE rechazado con permission denied."
             else
-              echo "❌ UPDATE NO rechazado — revisar grants, el rol parece tener permisos mutadores."
+              echo "❌ UPDATE NO rechazado."
               exit 1
             fi
-            echo
             if psql "$DSN" -c "insert into public.branches(code,name) values('HACK','HACK');" 2>&1 | grep -q "permission denied"; then
               echo "✅ INSERT rechazado con permission denied."
             else
-              echo "❌ INSERT NO rechazado — revisar grants."
+              echo "❌ INSERT NO rechazado."
               exit 1
             fi
           } > "$OUT"
@@ -103,7 +139,7 @@ jobs:
           git config user.email "noreply@anthropic.com"
           git add docs/sprint-0/
           if git diff --staged --quiet; then
-            echo "Sin cambios en los reports (idénticos a la corrida anterior)."
+            echo "Sin cambios en los reports."
             exit 0
           fi
           git commit -m "chore(sprint-0): doctor + preflight reports ${STAMP}"
