@@ -1,13 +1,10 @@
 {
   "uat_counts": {
-    "runs": 0,
-    "cases": 0,
+    "runs": 3,
+    "cases": 14,
     "results": 0
   },
-  "roles_missing": [
-    "ENCARGADA_LABORATORIO",
-    "TI"
-  ],
+  "roles_missing": [],
   "broad_policies": [],
   "release_rpc_exists": true,
   "release_signoffs_rows": 0,

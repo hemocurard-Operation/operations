@@ -4,11 +4,11 @@
     "detail": [
       {
         "code": "ENCARGADA_LABORATORIO",
-        "present": false
+        "present": true
       },
       {
         "code": "TI",
-        "present": false
+        "present": true
       }
     ]
   },
