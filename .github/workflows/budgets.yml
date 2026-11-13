@@ -1,0 +1,30 @@
+name: Budgets (F3)
+
+on:
+  pull_request:
+    paths:
+      - 'supabase/migrations/20261114080000_budgets.sql'
+      - 'tests/budgets/**'
+      - 'tools/budgets_runner.py'
+      - '.github/workflows/budgets.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'supabase/migrations/20261114080000_budgets.sql'
+      - 'tests/budgets/**'
+      - 'tools/budgets_runner.py'
+      - '.github/workflows/budgets.yml'
+  workflow_dispatch:
+
+permissions: {contents: read}
+jobs:
+  budgets:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 tools/budgets_runner.py
+      - run: python3 tools/migration_security_linter.py supabase/migrations/20261114080000_budgets.sql
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: {name: budgets-report, path: /tmp/hemocura-budgets}
