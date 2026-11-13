@@ -1,0 +1,30 @@
+name: Commercial visit purpose (CM2)
+
+on:
+  pull_request:
+    paths:
+      - 'supabase/migrations/20261113220000_commercial_visit_purpose.sql'
+      - 'tests/commercial-visit-purpose/**'
+      - 'tools/commercial_visit_purpose_runner.py'
+      - '.github/workflows/commercial-visit-purpose.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'supabase/migrations/20261113220000_commercial_visit_purpose.sql'
+      - 'tests/commercial-visit-purpose/**'
+      - 'tools/commercial_visit_purpose_runner.py'
+      - '.github/workflows/commercial-visit-purpose.yml'
+  workflow_dispatch:
+
+permissions: {contents: read}
+jobs:
+  commercial-visit-purpose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 tools/commercial_visit_purpose_runner.py
+      - run: python3 tools/migration_security_linter.py supabase/migrations/20261113220000_commercial_visit_purpose.sql
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: {name: commercial-visit-purpose-report, path: /tmp/hemocura-commercial-visit-purpose}
