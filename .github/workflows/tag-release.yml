@@ -1,0 +1,107 @@
+name: Tag + GitHub Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Versión a tagear, con la v (ej: v0.67.0)'
+        required: true
+        default: 'v0.67.0'
+      prerelease:
+        description: '¿Es prerelease (RC)?'
+        type: boolean
+        default: true
+      target_commit:
+        description: 'SHA al que apuntar (opcional; por defecto HEAD de la rama de disparo)'
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+
+jobs:
+  tag-and-release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Resolve target SHA
+        id: sha
+        run: |
+          VERSION="${{ inputs.version }}"
+          TARGET="${{ inputs.target_commit }}"
+          if [ -z "$TARGET" ]; then
+            TARGET=$(git rev-parse HEAD)
+          fi
+          echo "sha=$TARGET" >> "$GITHUB_OUTPUT"
+          echo "stripped=${VERSION#v}" >> "$GITHUB_OUTPUT"
+          echo "Target SHA: $TARGET"
+          echo "Version: $VERSION"
+
+      - name: Guard — tag no existe ya
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION="${{ inputs.version }}"
+          if gh api repos/${{ github.repository }}/git/refs/tags/${VERSION} >/dev/null 2>&1; then
+            echo "::warning::El tag ${VERSION} ya existe en el repo. Abortando para evitar sobrescritura."
+            exit 1
+          fi
+
+      - name: Resolve release notes path
+        id: notes
+        run: |
+          STRIP="${{ steps.sha.outputs.stripped }}"
+          P1="docs/RELEASE_NOTES_v${STRIP}.md"
+          P2="docs/RELEASE_NOTES_${STRIP}.md"
+          if [ -f "$P1" ]; then
+            echo "path=$P1" >> "$GITHUB_OUTPUT"
+          elif [ -f "$P2" ]; then
+            echo "path=$P2" >> "$GITHUB_OUTPUT"
+          else
+            echo "::warning::No se encontró release notes en $P1 ni $P2. Se usará un body mínimo."
+            printf "Automated release of %s.\n" "${{ inputs.version }}" > /tmp/release-body.md
+            echo "path=/tmp/release-body.md" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create annotated tag
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION="${{ inputs.version }}"
+          SHA="${{ steps.sha.outputs.sha }}"
+          git config user.name  "HemoCura release bot"
+          git config user.email "noreply@anthropic.com"
+          git tag -a "$VERSION" "$SHA" -m "HemoCura $VERSION — automated tag via tag-release workflow"
+          git push origin "refs/tags/$VERSION"
+          echo "Tag pushed: $VERSION → $SHA"
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION="${{ inputs.version }}"
+          PRERELEASE="${{ inputs.prerelease }}"
+          BODY="${{ steps.notes.outputs.path }}"
+          FLAG=""
+          [ "$PRERELEASE" = "true" ] && FLAG="--prerelease"
+          gh release create "$VERSION" \
+            --repo "${{ github.repository }}" \
+            --target "${{ steps.sha.outputs.sha }}" \
+            --title "HemoCura $VERSION" \
+            --notes-file "$BODY" \
+            $FLAG
+          echo "Release URL:"
+          gh release view "$VERSION" --repo "${{ github.repository }}" --json url -q .url
+
+      - name: Summary
+        run: |
+          echo "### Release creado 🎉" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Tag:** ${{ inputs.version }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **SHA:** \`${{ steps.sha.outputs.sha }}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Prerelease:** ${{ inputs.prerelease }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Release notes:** ${{ steps.notes.outputs.path }}" >> "$GITHUB_STEP_SUMMARY"
