@@ -1,0 +1,42 @@
+name: Debug — dump public.roles
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  dump:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install psql
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq postgresql-client
+      - name: Resolve pooler + dump roles
+        env:
+          DSN: ${{ secrets.SUPABASE_AUDIT_DSN }}
+        run: |
+          set -e
+          CREDS="${DSN#postgresql://}"
+          USERPASS="${CREDS%%@*}"
+          HOSTPART="${CREDS#*@}"
+          USER="${USERPASS%%:*}"
+          PASS="${USERPASS#*:}"
+          HOST="${HOSTPART%%:*}"
+          REF=$(echo "$HOST" | awk -F. '{print $2}')
+          POOLER_USER="${USER}.${REF}"
+          POOLER_HOST="aws-0-us-east-2.pooler.supabase.com"
+          POOL_DSN="postgresql://${POOLER_USER}:${PASS}@${POOLER_HOST}:5432/postgres?sslmode=require"
+
+          echo "=== TODOS los roles en public.roles ==="
+          psql "$POOL_DSN" -c "select id, code, name, created_at from public.roles order by code;"
+
+          echo "=== Busqueda exacta de ENCARGADA_LABORATORIO y TI ==="
+          psql "$POOL_DSN" -c "select code, name, (code='ENCARGADA_LABORATORIO') as es_enc, (code='TI') as es_ti from public.roles where code in ('ENCARGADA_LABORATORIO', 'TI', 'ENCARGADA LABORATORIO', 'encargada_laboratorio', 'ti');"
+
+          echo "=== Conteo total ==="
+          psql "$POOL_DSN" -c "select count(*) as total_roles from public.roles;"
