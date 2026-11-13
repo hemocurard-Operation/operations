@@ -1,0 +1,17 @@
+{
+  "uat_counts": {
+    "runs": 0,
+    "cases": 0,
+    "results": 0
+  },
+  "roles_missing": [
+    "ENCARGADA_LABORATORIO",
+    "TI"
+  ],
+  "broad_policies": [],
+  "release_rpc_exists": true,
+  "release_signoffs_rows": 0,
+  "release_duplicate_signers": [],
+  "release_direct_insert_anon": false,
+  "release_direct_insert_authenticated": false
+}

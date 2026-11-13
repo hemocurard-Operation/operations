@@ -1,0 +1,6 @@
+# Read-only proof
+Run: 2026-11-13T15:27:32Z
+Pooler region: us-east-2
+
+✅ UPDATE rechazado con permission denied.
+✅ INSERT rechazado con permission denied.

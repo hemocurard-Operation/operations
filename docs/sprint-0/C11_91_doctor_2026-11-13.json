@@ -1,0 +1,28 @@
+[
+  {
+    "control": "missing_roles",
+    "detail": [
+      {
+        "code": "ENCARGADA_LABORATORIO",
+        "present": false
+      },
+      {
+        "code": "TI",
+        "present": false
+      }
+    ]
+  },
+  {
+    "control": "broad_all_policies",
+    "detail": "Expected JSON value (while parsing '')"
+  },
+  {
+    "control": "critical_release_objects",
+    "detail": {
+      "v044_rpc": true,
+      "v100_rpc": false,
+      "release_signoffs": true,
+      "release_operational_signoffs": false
+    }
+  }
+]
