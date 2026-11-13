@@ -1,5 +1,5 @@
 # Read-only proof
-Run: 2026-11-13T15:36:12Z
+Run: 2026-11-13T15:40:09Z
 Pooler region: us-east-2
 
 ✅ UPDATE rechazado con permission denied.
