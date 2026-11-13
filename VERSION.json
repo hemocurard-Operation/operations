@@ -1,7 +1,7 @@
 {
   "project": "HemoCura Operations Intelligence + QMS + Compliance",
-  "version": "0.66.0",
-  "stage": "Propuestas de encuadre de inventario con selección humana entre formularios · liberación clínica humana pendiente",
+  "version": "0.67.0",
+  "stage": "Ampliación v11: limpieza de equipos, cuentas por pagar, cash flow, matriz regulatoria RD, habilitaciones sanitarias, metas comerciales y metadata de predicción. Migraciones pendientes de aplicar en Supabase.",
   "release_channel": "RC",
   "protected_files": [
     "js/config.js"
@@ -9,5 +9,27 @@
   "config_policy": "PROTECTED_LOCAL_ENVIRONMENT_FILE",
   "clinical_core": "LIVE-LIMITED / CONTROLLED_RELEASE",
   "workflow_migration": "20261013120000_workflow_commercial_quality",
-  "workflow_refinements_migration": "20261013133000_workflow_refinements"
+  "workflow_refinements_migration": "20261013133000_workflow_refinements",
+  "pending_supabase_migrations": [
+    "20261113120000_cleaning_module",
+    "20261113140000_predictive_meta",
+    "20261113160000_donor_status_enum",
+    "20261113180000_equipment_usage",
+    "20261113200000_donation_interval_rules",
+    "20261113220000_commercial_visit_purpose",
+    "20261114000000_accounts_payable",
+    "20261114020000_cash_flow_projection",
+    "20261114040000_facility_licenses",
+    "20261114060000_regulatory_matrix",
+    "20261114080000_budgets",
+    "20261114100000_daily_reports",
+    "20261114120000_closing_batch",
+    "20261114140000_expense_forecast"
+  ],
+  "pending_approvals": [
+    "regulatory_requirements.approved_by (11 normas)",
+    "donation_interval_rules.approved_by (7 tipos de donación)",
+    "budgets.approved_by (por período)",
+    "commercial_goals.approved_by (por meta)"
+  ]
 }
