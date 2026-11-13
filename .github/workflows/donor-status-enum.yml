@@ -1,0 +1,30 @@
+name: Donor status enum (D4)
+
+on:
+  pull_request:
+    paths:
+      - 'supabase/migrations/20261113160000_donor_status_enum.sql'
+      - 'tests/donor-status-enum/**'
+      - 'tools/donor_status_enum_runner.py'
+      - '.github/workflows/donor-status-enum.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'supabase/migrations/20261113160000_donor_status_enum.sql'
+      - 'tests/donor-status-enum/**'
+      - 'tools/donor_status_enum_runner.py'
+      - '.github/workflows/donor-status-enum.yml'
+  workflow_dispatch:
+
+permissions: {contents: read}
+jobs:
+  donor-status-enum:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 tools/donor_status_enum_runner.py
+      - run: python3 tools/migration_security_linter.py supabase/migrations/20261113160000_donor_status_enum.sql
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: {name: donor-status-enum-report, path: /tmp/hemocura-donor-status-enum}

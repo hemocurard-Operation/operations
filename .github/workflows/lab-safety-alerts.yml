@@ -1,0 +1,40 @@
+name: Lab safety alerts
+
+on:
+  pull_request:
+    paths:
+      - 'sql/22_OPERATIONS_QMS_COMPLIANCE_v0_22.sql'
+      - 'sql/23_BLOOD_OPERATIONS_BI_PM_v0_23.sql'
+      - 'sql/35_RESOURCES_CONTROL_v0_35.sql'
+      - 'sql/39_COLD_CHAIN_v0_39.sql'
+      - 'tests/lab-safety-alerts/**'
+      - 'tools/lab_safety_alerts_runner.py'
+      - '.github/workflows/lab-safety-alerts.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'sql/22_OPERATIONS_QMS_COMPLIANCE_v0_22.sql'
+      - 'sql/23_BLOOD_OPERATIONS_BI_PM_v0_23.sql'
+      - 'sql/35_RESOURCES_CONTROL_v0_35.sql'
+      - 'sql/39_COLD_CHAIN_v0_39.sql'
+      - 'tests/lab-safety-alerts/**'
+      - 'tools/lab_safety_alerts_runner.py'
+      - '.github/workflows/lab-safety-alerts.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  lab-safety-alerts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run lab safety alerts on disposable PostgreSQL
+        run: python3 tools/lab_safety_alerts_runner.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lab-safety-alerts-report
+          path: /tmp/hemocura-lab-safety-alerts

@@ -49,6 +49,7 @@ const ROUTES={
   hemovigilance:{title:'Hemovigilancia',subtitle:'Eventos adversos, casi eventos y retiros',group:'LABORATORIO Y SANGRE',order:80},
   resources:{title:'Recursos Críticos',subtitle:'Equipos, reactivos y ambiente',group:'LABORATORIO Y SANGRE',order:90},
   maintenance:{title:'Mantenimiento',subtitle:'Órdenes de trabajo, calendario preventivo y calibraciones',group:'LABORATORIO Y SANGRE',order:92},
+  cleaning:{title:'Limpieza de equipos',subtitle:'Planes recurrentes, registros ejecutados y verificación independiente',group:'LABORATORIO Y SANGRE',order:93},
   environmental:{title:'Control Ambiental y Temperaturas',subtitle:'Registro diario por equipo, con hoja imprimible del mes',group:'LABORATORIO Y SANGRE',order:95},
 
   actions:{title:'Acciones Integradas',subtitle:'Cartera única de acciones, evidencia y eficacia',group:'CALIDAD Y SEGURIDAD',order:5},
@@ -70,6 +71,11 @@ const ROUTES={
   projects:{title:'Proyectos',subtitle:'Portafolio, avance y dependencias',group:'GESTIÓN',order:30},
   continuity:{title:'Continuidad',subtitle:'Continuidad operativa e integridad de datos',group:'GESTIÓN',order:40},
   suppliers:{title:'Pedidos y proveedores',subtitle:'Órdenes de compra, recepción e historial',group:'GESTIÓN',order:50},
+  payables:{title:'Cuentas por Pagar',subtitle:'Facturas de suplidores, aging y proyección de egresos',group:'GESTIÓN',order:55},
+  regulatorymatrix:{title:'Matriz regulatoria',subtitle:'Normas RD, evidencias y estado por norma',group:'CALIDAD Y SEGURIDAD',order:85},
+  licenses:{title:'Habilitaciones sanitarias',subtitle:'MSP, banco de sangre, hiperbárica, residuos, ISO con alertas de vencimiento',group:'CALIDAD Y SEGURIDAD',order:87},
+  budgets:{title:'Presupuestos',subtitle:'Presupuesto vs ejecutado por categoría, variación y estado',group:'GESTIÓN',order:60},
+  commercialgoals:{title:'Metas comerciales',subtitle:'Objetivos cuantitativos vs desempeño real por agente, sucursal y servicio',group:'CADENA DE VALOR',order:38},
 
   settings:{title:'Configuración',subtitle:'Catálogos y diagnóstico',group:'ADMINISTRACIÓN',order:10},
   users:{title:'Usuarios y Roles',subtitle:'Crear usuarios y asignar acceso por rol y sucursal',group:'ADMINISTRACIÓN',order:15},

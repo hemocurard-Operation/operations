@@ -1,0 +1,30 @@
+name: Accounts payable (F1)
+
+on:
+  pull_request:
+    paths:
+      - 'supabase/migrations/20261114000000_accounts_payable.sql'
+      - 'tests/accounts-payable/**'
+      - 'tools/accounts_payable_runner.py'
+      - '.github/workflows/accounts-payable.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'supabase/migrations/20261114000000_accounts_payable.sql'
+      - 'tests/accounts-payable/**'
+      - 'tools/accounts_payable_runner.py'
+      - '.github/workflows/accounts-payable.yml'
+  workflow_dispatch:
+
+permissions: {contents: read}
+jobs:
+  accounts-payable:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 tools/accounts_payable_runner.py
+      - run: python3 tools/migration_security_linter.py supabase/migrations/20261114000000_accounts_payable.sql
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: {name: accounts-payable-report, path: /tmp/hemocura-accounts-payable}

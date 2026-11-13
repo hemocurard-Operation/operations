@@ -1,0 +1,30 @@
+name: Daily reports (F4 + D1)
+
+on:
+  pull_request:
+    paths:
+      - 'supabase/migrations/20261114100000_daily_reports.sql'
+      - 'tests/daily-reports/**'
+      - 'tools/daily_reports_runner.py'
+      - '.github/workflows/daily-reports.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'supabase/migrations/20261114100000_daily_reports.sql'
+      - 'tests/daily-reports/**'
+      - 'tools/daily_reports_runner.py'
+      - '.github/workflows/daily-reports.yml'
+  workflow_dispatch:
+
+permissions: {contents: read}
+jobs:
+  daily-reports:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 tools/daily_reports_runner.py
+      - run: python3 tools/migration_security_linter.py supabase/migrations/20261114100000_daily_reports.sql
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: {name: daily-reports-report, path: /tmp/hemocura-daily-reports}

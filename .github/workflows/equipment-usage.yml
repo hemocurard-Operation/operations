@@ -1,0 +1,30 @@
+name: Equipment usage (L2)
+
+on:
+  pull_request:
+    paths:
+      - 'supabase/migrations/20261113180000_equipment_usage.sql'
+      - 'tests/equipment-usage/**'
+      - 'tools/equipment_usage_runner.py'
+      - '.github/workflows/equipment-usage.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'supabase/migrations/20261113180000_equipment_usage.sql'
+      - 'tests/equipment-usage/**'
+      - 'tools/equipment_usage_runner.py'
+      - '.github/workflows/equipment-usage.yml'
+  workflow_dispatch:
+
+permissions: {contents: read}
+jobs:
+  equipment-usage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 tools/equipment_usage_runner.py
+      - run: python3 tools/migration_security_linter.py supabase/migrations/20261113180000_equipment_usage.sql
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: {name: equipment-usage-report, path: /tmp/hemocura-equipment-usage}

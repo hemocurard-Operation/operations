@@ -1,0 +1,40 @@
+name: Predictive meta (BI1)
+
+on:
+  pull_request:
+    paths:
+      - 'supabase/migrations/20261113140000_predictive_meta.sql'
+      - 'hemocura-core/predictive.js'
+      - 'hemocura-core/predictive-data.js'
+      - 'tests/predictive-meta/**'
+      - 'tools/predictive_meta_runner.py'
+      - '.github/workflows/predictive-meta.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'supabase/migrations/20261113140000_predictive_meta.sql'
+      - 'hemocura-core/predictive.js'
+      - 'hemocura-core/predictive-data.js'
+      - 'tests/predictive-meta/**'
+      - 'tools/predictive_meta_runner.py'
+      - '.github/workflows/predictive-meta.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  predictive-meta:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run predictive meta on disposable PostgreSQL
+        run: python3 tools/predictive_meta_runner.py
+      - name: Lint migration
+        run: python3 tools/migration_security_linter.py supabase/migrations/20261113140000_predictive_meta.sql
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: predictive-meta-report
+          path: /tmp/hemocura-predictive-meta

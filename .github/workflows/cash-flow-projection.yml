@@ -1,0 +1,32 @@
+name: Cash flow projection (F2)
+
+on:
+  pull_request:
+    paths:
+      - 'supabase/migrations/20261114020000_cash_flow_projection.sql'
+      - 'supabase/migrations/20261114000000_accounts_payable.sql'
+      - 'tests/cash-flow-projection/**'
+      - 'tools/cash_flow_projection_runner.py'
+      - '.github/workflows/cash-flow-projection.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'supabase/migrations/20261114020000_cash_flow_projection.sql'
+      - 'supabase/migrations/20261114000000_accounts_payable.sql'
+      - 'tests/cash-flow-projection/**'
+      - 'tools/cash_flow_projection_runner.py'
+      - '.github/workflows/cash-flow-projection.yml'
+  workflow_dispatch:
+
+permissions: {contents: read}
+jobs:
+  cash-flow-projection:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 tools/cash_flow_projection_runner.py
+      - run: python3 tools/migration_security_linter.py supabase/migrations/20261114020000_cash_flow_projection.sql
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: {name: cash-flow-projection-report, path: /tmp/hemocura-cash-flow-projection}

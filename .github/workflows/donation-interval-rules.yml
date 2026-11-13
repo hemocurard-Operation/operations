@@ -1,0 +1,30 @@
+name: Donation interval rules (D3)
+
+on:
+  pull_request:
+    paths:
+      - 'supabase/migrations/20261113200000_donation_interval_rules.sql'
+      - 'tests/donation-interval-rules/**'
+      - 'tools/donation_interval_rules_runner.py'
+      - '.github/workflows/donation-interval-rules.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'supabase/migrations/20261113200000_donation_interval_rules.sql'
+      - 'tests/donation-interval-rules/**'
+      - 'tools/donation_interval_rules_runner.py'
+      - '.github/workflows/donation-interval-rules.yml'
+  workflow_dispatch:
+
+permissions: {contents: read}
+jobs:
+  donation-interval-rules:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 tools/donation_interval_rules_runner.py
+      - run: python3 tools/migration_security_linter.py supabase/migrations/20261113200000_donation_interval_rules.sql
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: {name: donation-interval-rules-report, path: /tmp/hemocura-donation-interval-rules}

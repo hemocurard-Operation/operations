@@ -1,0 +1,30 @@
+name: Regulatory matrix (C1)
+
+on:
+  pull_request:
+    paths:
+      - 'supabase/migrations/20261114060000_regulatory_matrix.sql'
+      - 'tests/regulatory-matrix/**'
+      - 'tools/regulatory_matrix_runner.py'
+      - '.github/workflows/regulatory-matrix.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'supabase/migrations/20261114060000_regulatory_matrix.sql'
+      - 'tests/regulatory-matrix/**'
+      - 'tools/regulatory_matrix_runner.py'
+      - '.github/workflows/regulatory-matrix.yml'
+  workflow_dispatch:
+
+permissions: {contents: read}
+jobs:
+  regulatory-matrix:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 tools/regulatory_matrix_runner.py
+      - run: python3 tools/migration_security_linter.py supabase/migrations/20261114060000_regulatory_matrix.sql
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: {name: regulatory-matrix-report, path: /tmp/hemocura-regulatory-matrix}
