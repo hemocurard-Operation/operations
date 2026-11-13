@@ -71,6 +71,7 @@ const ROUTES={
   projects:{title:'Proyectos',subtitle:'Portafolio, avance y dependencias',group:'GESTIÓN',order:30},
   continuity:{title:'Continuidad',subtitle:'Continuidad operativa e integridad de datos',group:'GESTIÓN',order:40},
   suppliers:{title:'Pedidos y proveedores',subtitle:'Órdenes de compra, recepción e historial',group:'GESTIÓN',order:50},
+  payables:{title:'Cuentas por Pagar',subtitle:'Facturas de suplidores, aging y proyección de egresos',group:'GESTIÓN',order:55},
 
   settings:{title:'Configuración',subtitle:'Catálogos y diagnóstico',group:'ADMINISTRACIÓN',order:10},
   users:{title:'Usuarios y Roles',subtitle:'Crear usuarios y asignar acceso por rol y sucursal',group:'ADMINISTRACIÓN',order:15},

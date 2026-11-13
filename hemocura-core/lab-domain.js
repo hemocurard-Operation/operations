@@ -12,6 +12,8 @@ export function labSignals(data,today=localDay(),now=Date.now()){
  rows('eqa').filter(r=>!['CERRADO','CANCELADO'].includes(r.status)).forEach(r=>push('EQA',r.id,`${r.event_code} · ${r.result||'PENDIENTE'}`,r.due_date,'analyticalqc',r.result==='NO_SATISFACTORIO'));
  rows('quality').filter(labOpen).forEach(r=>push('RUTINA',r.id,r.title,r.due_at,'bloodquality',r.priority==='CRITICA'));
  rows('tasks').filter(r=>r.area_code==='LABORATORIO'&&labOpen(r)).forEach(r=>push('TAREA',r.id,r.title,r.due_at,'areaagenda',r.priority==='CRITICA'));
+ // Q3 §5.8+§11: alertas de limpieza (vw_cleaning_alerts) tratadas como el resto de señales técnicas.
+ rows('cleaning_alerts').filter(r=>['CRITICA','ALTA'].includes(r.severity)).forEach(r=>push('LIMPIEZA',r.equipment_id,`${r.equipment_code||r.equipment_id} · ${r.severity} · ${r.days_overdue||0}d`,r.next_due_date,'cleaning',r.severity==='CRITICA'));
  return signals.sort((a,b)=>Number(b.critical)-Number(a.critical)||(a.date||'9999').localeCompare(b.date||'9999'));
 }
 export function labMetrics(data,today=localDay()){
