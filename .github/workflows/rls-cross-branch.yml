@@ -1,0 +1,46 @@
+name: RLS cross-branch isolation
+
+on:
+  pull_request:
+    paths:
+      - 'sql/22_OPERATIONS_QMS_COMPLIANCE_v0_22.sql'
+      - 'sql/23_BLOOD_OPERATIONS_BI_PM_v0_23.sql'
+      - 'sql/27_AUDIT_TRACE_EXCEPTIONS_v0_27.sql'
+      - 'sql/29_ACCESS_GOVERNANCE_v0_29.sql'
+      - 'supabase/migrations/20261013183215_donor_management.sql'
+      - 'supabase/migrations/20261013230050_super_user_total_access.sql'
+      - 'supabase/migrations/20261014135910_assigned_role_branch_access.sql'
+      - 'tests/rls-cross-branch/**'
+      - 'tools/rls_cross_branch_runner.py'
+      - '.github/workflows/rls-cross-branch.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'sql/22_OPERATIONS_QMS_COMPLIANCE_v0_22.sql'
+      - 'sql/23_BLOOD_OPERATIONS_BI_PM_v0_23.sql'
+      - 'sql/27_AUDIT_TRACE_EXCEPTIONS_v0_27.sql'
+      - 'sql/29_ACCESS_GOVERNANCE_v0_29.sql'
+      - 'supabase/migrations/20261013183215_donor_management.sql'
+      - 'supabase/migrations/20261013230050_super_user_total_access.sql'
+      - 'supabase/migrations/20261014135910_assigned_role_branch_access.sql'
+      - 'tests/rls-cross-branch/**'
+      - 'tools/rls_cross_branch_runner.py'
+      - '.github/workflows/rls-cross-branch.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  rls-cross-branch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run RLS cross-branch on disposable PostgreSQL
+        run: python3 tools/rls_cross_branch_runner.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: rls-cross-branch-report
+          path: /tmp/hemocura-rls-cross-branch
