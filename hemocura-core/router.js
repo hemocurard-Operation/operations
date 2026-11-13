@@ -49,6 +49,7 @@ const ROUTES={
   hemovigilance:{title:'Hemovigilancia',subtitle:'Eventos adversos, casi eventos y retiros',group:'LABORATORIO Y SANGRE',order:80},
   resources:{title:'Recursos Críticos',subtitle:'Equipos, reactivos y ambiente',group:'LABORATORIO Y SANGRE',order:90},
   maintenance:{title:'Mantenimiento',subtitle:'Órdenes de trabajo, calendario preventivo y calibraciones',group:'LABORATORIO Y SANGRE',order:92},
+  cleaning:{title:'Limpieza de equipos',subtitle:'Planes recurrentes, registros ejecutados y verificación independiente',group:'LABORATORIO Y SANGRE',order:93},
   environmental:{title:'Control Ambiental y Temperaturas',subtitle:'Registro diario por equipo, con hoja imprimible del mes',group:'LABORATORIO Y SANGRE',order:95},
 
   actions:{title:'Acciones Integradas',subtitle:'Cartera única de acciones, evidencia y eficacia',group:'CALIDAD Y SEGURIDAD',order:5},
