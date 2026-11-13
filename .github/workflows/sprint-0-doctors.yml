@@ -1,0 +1,118 @@
+name: Sprint 0 — Security + Preflight doctors
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 6 * * 1' # lunes 06:00 UTC
+
+permissions:
+  contents: write
+
+jobs:
+  doctors:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install psql + jq
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq postgresql-client jq
+
+      - name: Verify DSN reachable (read-only probe)
+        env:
+          DSN: ${{ secrets.SUPABASE_AUDIT_DSN }}
+        run: |
+          if [ -z "$DSN" ]; then
+            echo "::error::SUPABASE_AUDIT_DSN secret is not set. Add it with: gh secret set SUPABASE_AUDIT_DSN"
+            exit 1
+          fi
+          echo "Probing connection..."
+          psql "$DSN" -At -c "select current_user, current_database(), now() at time zone 'America/Santo_Domingo';"
+
+      - name: Run C11_91 Security Doctor
+        env:
+          DSN: ${{ secrets.SUPABASE_AUDIT_DSN }}
+        run: |
+          mkdir -p docs/sprint-0
+          STAMP=$(date -u +%Y-%m-%d)
+          OUT="docs/sprint-0/C11_91_doctor_${STAMP}.json"
+          echo "Running sql/C11_91_SECURITY_DOCTOR_READONLY.sql against production..."
+          psql "$DSN" -At -F $'\t' -f sql/C11_91_SECURITY_DOCTOR_READONLY.sql \
+            | jq -R -s 'split("\n") | map(select(length>0) | split("\t")) | map({control: .[0], detail: (.[1] // "null" | try fromjson catch .)})' \
+            > "$OUT" || {
+              echo "::warning::C11_91 execution failed; capturing raw error"
+              psql "$DSN" -f sql/C11_91_SECURITY_DOCTOR_READONLY.sql > "$OUT" 2>&1 || true
+            }
+          echo "Wrote $OUT:"
+          head -c 2000 "$OUT"
+          echo
+
+      - name: Run C12_00 Preflight Security Hardening
+        env:
+          DSN: ${{ secrets.SUPABASE_AUDIT_DSN }}
+        run: |
+          STAMP=$(date -u +%Y-%m-%d)
+          OUT="docs/sprint-0/C12_00_preflight_${STAMP}.json"
+          echo "Running sql/C12_00_PREFLIGHT_SECURITY_HARDENING.sql against production..."
+          psql "$DSN" -At -t -f sql/C12_00_PREFLIGHT_SECURITY_HARDENING.sql \
+            | jq '.' > "$OUT" || {
+              echo "::warning::C12_00 execution failed; capturing raw error"
+              psql "$DSN" -f sql/C12_00_PREFLIGHT_SECURITY_HARDENING.sql > "$OUT" 2>&1 || true
+            }
+          echo "Wrote $OUT:"
+          head -c 2000 "$OUT"
+          echo
+
+      - name: Verify read-only (confirm write is denied)
+        env:
+          DSN: ${{ secrets.SUPABASE_AUDIT_DSN }}
+        run: |
+          STAMP=$(date -u +%Y-%m-%d)
+          OUT="docs/sprint-0/read_only_proof_${STAMP}.txt"
+          {
+            echo "# Read-only proof"
+            echo "Run: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            echo
+            echo "## Confirmación de que el rol NO puede escribir"
+            echo
+            if psql "$DSN" -c "update public.branches set name='HACK' where false;" 2>&1 | grep -q "permission denied"; then
+              echo "✅ UPDATE rechazado con permission denied (como se esperaba)."
+            else
+              echo "❌ UPDATE NO rechazado — revisar grants, el rol parece tener permisos mutadores."
+              exit 1
+            fi
+            echo
+            if psql "$DSN" -c "insert into public.branches(code,name) values('HACK','HACK');" 2>&1 | grep -q "permission denied"; then
+              echo "✅ INSERT rechazado con permission denied."
+            else
+              echo "❌ INSERT NO rechazado — revisar grants."
+              exit 1
+            fi
+          } > "$OUT"
+          cat "$OUT"
+
+      - name: Commit reports to main
+        if: github.event_name == 'workflow_dispatch' || github.event_name == 'schedule'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          STAMP=$(date -u +%Y-%m-%d)
+          git config user.name "HemoCura Sprint 0 bot"
+          git config user.email "noreply@anthropic.com"
+          git add docs/sprint-0/
+          if git diff --staged --quiet; then
+            echo "Sin cambios en los reports (idénticos a la corrida anterior)."
+            exit 0
+          fi
+          git commit -m "chore(sprint-0): doctor + preflight reports ${STAMP}"
+          git push origin HEAD:main
+
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sprint-0-reports
+          path: docs/sprint-0/
+          retention-days: 90
