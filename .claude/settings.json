@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git push --force-with-lease origin claude/*)",
+      "Bash(gh api -X DELETE repos/hemocurard-Operation/operations/git/refs/heads/claude/*)",
+      "Bash(psql postgresql://claude_audit_reader:*)",
+      "Bash(psql $SUPABASE_AUDIT_DSN *)",
+      "Bash(supabase db push *)",
+      "Bash(supabase link --project-ref *)"
+    ]
+  }
+}
