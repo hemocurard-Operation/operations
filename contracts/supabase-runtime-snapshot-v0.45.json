@@ -1,7 +1,7 @@
 {
   "project_id": "tiothqiljipdamgudvcb",
   "verified_at": "2026-11-09",
-  "scope": "Frontend runtime objects, Daily Operational Report production contract and Training Native 1.1 RC; added coordination, purchases, role windows and area agenda objects verified 2026-10-16 against production catalogs; quality-information objects verified against production after migration 20261017005235; audit in implementation report; ISO clause assessment/evidence tables, vw_iso_compliance_summary and iso_clause_assessment RPCs verified live 2026-11-03 after migration 20261103130000; vw_referrer_visit_route verified live 2026-11-03 after migration 20261103190000; hemovigilance_delivery_details and hemovig_delivery_nc_create verified live 2026-11-04 after migration 20261104100000; vw_hyperbaric_appointments_display verified live 2026-11-04 after migration 20261104110000; CRM contacts, activities, history, idempotent requests, services and three RPCs verified after commercial_crm_contacts migration; scoped customer catalog and writes tested; CRM shared portfolio and weekly planner verified 2026-11-06; twelve-week execution objects verified 2026-11-06; incoming supplier quotation metadata verified 2026-11-07; commercial agenda RPC and reservation triggers verified 2026-11-07; donor_search_page invoker/permissions, quotation indexes and insert policies verified live after web_performance_security migration 20261107181249; daily_report_photos columns, RLS and private immutable grants verified live 2026-11-09 after migration 20261109002642",
+  "scope": "Frontend runtime objects, Daily Operational Report production contract and Training Native 1.1 RC; added coordination, purchases, role windows and area agenda objects verified 2026-10-16 against production catalogs; quality-information objects verified against production after migration 20261017005235; audit in implementation report; ISO clause assessment/evidence tables, vw_iso_compliance_summary and iso_clause_assessment RPCs verified live 2026-11-03 after migration 20261103130000; vw_referrer_visit_route verified live 2026-11-03 after migration 20261103190000; hemovigilance_delivery_details and hemovig_delivery_nc_create verified live 2026-11-04 after migration 20261104100000; vw_hyperbaric_appointments_display verified live 2026-11-04 after migration 20261104110000; CRM contacts, activities, history, idempotent requests, services and three RPCs verified after commercial_crm_contacts migration; scoped customer catalog and writes tested; CRM shared portfolio and weekly planner verified 2026-11-06; twelve-week execution objects verified 2026-11-06; incoming supplier quotation metadata verified 2026-11-07; commercial agenda RPC and reservation triggers verified 2026-11-07; donor_search_page invoker/permissions, quotation indexes and insert policies verified live after web_performance_security migration 20261107181249; daily_report_photos columns, RLS and private immutable grants verified live 2026-11-09 after migration 20261109002642; v0.68 operational objects, RLS flags, admin metadata RPC privileges and nine migration source hashes verified against production catalogs; regulatory/forecast and financial drafts NOT included as deployed.",
   "relations": [
     "access_events",
     "app_feature_flags",
@@ -21,6 +21,8 @@
     "branch_inspections",
     "branches",
     "capa",
+    "cleaning_plans",
+    "cleaning_records",
     "cold_chain_devices",
     "cold_chain_readings",
     "commercial_locations",
@@ -54,6 +56,7 @@
     "dispatches",
     "document_changes",
     "document_register",
+    "donation_interval_rules",
     "donations",
     "donor_agenda_capacity",
     "donor_contacts",
@@ -65,6 +68,8 @@
     "eqa_events",
     "eqa_programs",
     "equipment_service_events",
+    "equipment_usage",
+    "facility_licenses",
     "forecast_snapshots",
     "hemovigilance_delivery_details",
     "hemovigilance_events",
@@ -102,6 +107,7 @@
     "operational_sales",
     "operations_orders",
     "physical_inventory_counts",
+    "predictive_meta",
     "price_versions",
     "product_recalls",
     "production_batches",
@@ -179,6 +185,7 @@
     "vw_blood_inventory_available",
     "vw_blood_supply_plan",
     "vw_capa_control_status",
+    "vw_cleaning_alerts",
     "vw_cold_chain_excursions",
     "vw_command_center_today",
     "vw_competency_alerts",
@@ -187,6 +194,7 @@
     "vw_current_user_health",
     "vw_daily_branch_operations",
     "vw_daily_close_reconciliation",
+    "vw_daily_donor_report",
     "vw_dispatch_sales_reconciliation",
     "vw_document_control_status",
     "vw_donor_appointment_agenda",
@@ -197,6 +205,7 @@
     "vw_environmental_alerts",
     "vw_eqa_alerts",
     "vw_equipment_alerts",
+    "vw_equipment_usage_alerts",
     "vw_exception_candidates",
     "vw_exception_portfolio",
     "vw_feature_complete_scorecard",
@@ -207,6 +216,7 @@
     "vw_inventory_status",
     "vw_iqc_alerts",
     "vw_iso_compliance_summary",
+    "vw_license_alerts",
     "vw_logistics_trip_branches",
     "vw_management_action_portfolio",
     "vw_management_review_inputs",
@@ -264,10 +274,12 @@
     "work_tasks",
     "workflow_daily_sections",
     "workflow_service_events",
-    "workflow_supply_catalog"
+    "workflow_supply_catalog",
+    "workspace_preview_access_log"
   ],
   "functions": [
     "adjust_sale_line",
+    "admin_workspace_preview",
     "audit_finding_create_capa",
     "audit_finding_to_nonconformity",
     "calculate_monthly_product_costs",
@@ -910,6 +922,51 @@
     {
       "migration_code": "daily_report_photos",
       "version": "20261109002642",
+      "source": "supabase_migrations.schema_migrations"
+    },
+    {
+      "version": "20261115225212",
+      "name": "cleaning_module",
+      "source": "supabase_migrations.schema_migrations"
+    },
+    {
+      "version": "20261115225218",
+      "name": "predictive_meta",
+      "source": "supabase_migrations.schema_migrations"
+    },
+    {
+      "version": "20261115225231",
+      "name": "donor_status_enum",
+      "source": "supabase_migrations.schema_migrations"
+    },
+    {
+      "version": "20261115225241",
+      "name": "equipment_usage",
+      "source": "supabase_migrations.schema_migrations"
+    },
+    {
+      "version": "20261115225247",
+      "name": "donation_interval_rules",
+      "source": "supabase_migrations.schema_migrations"
+    },
+    {
+      "version": "20261115225255",
+      "name": "commercial_visit_purpose",
+      "source": "supabase_migrations.schema_migrations"
+    },
+    {
+      "version": "20261115225306",
+      "name": "facility_licenses",
+      "source": "supabase_migrations.schema_migrations"
+    },
+    {
+      "version": "20261115230858",
+      "name": "daily_reports",
+      "source": "supabase_migrations.schema_migrations"
+    },
+    {
+      "version": "20261115231550",
+      "name": "admin_workspace_preview",
       "source": "supabase_migrations.schema_migrations"
     }
   ]
