@@ -12,6 +12,7 @@ create function pg_temp.denied(stmt text,label text) returns void language plpgs
 begin begin execute stmt;exception when others then raise notice 'PASS %',label;return;end;
  raise exception 'FAIL unexpectedly allowed %',label;end$$;
 
+select set_config('request.jwt.claim.sub','ca200000-0000-0000-0000-000000000001',true);
 -- Visita sin purpose_type (legacy) sigue aceptada.
 insert into commercial_visits(branch_id,customer_id,agent_id,scheduled_at,purpose)
  values('ca100000-0000-0000-0000-000000000001','ca300000-0000-0000-0000-000000000001',
@@ -54,4 +55,4 @@ select pg_temp.ok(
       and branch_id='ca100000-0000-0000-0000-000000000001'),
  'activity mix reports one visit per purpose_type as expected');
 
-commit;
+rollback;

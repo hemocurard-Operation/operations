@@ -79,10 +79,10 @@ create policy supplier_payments_read on public.supplier_payments for select to a
 create policy supplier_payments_write on public.supplier_payments for insert to authenticated
  with check(public.has_permission('FINANCE_WRITE'));
 
-insert into public.app_permissions(permission_code,active,description) values
- ('FINANCE_VIEW',true,'Consulta de información financiera (AP, AR, costos)'),
- ('FINANCE_WRITE',true,'Registrar y aprobar transacciones financieras'),
- ('AP_AUTHORIZE',true,'Autorizar pagos a proveedores')
+insert into public.app_permissions(permission_code,module,active,description) values
+ ('FINANCE_VIEW','FINANZAS',true,'Consulta de información financiera (AP, AR, costos)'),
+ ('FINANCE_WRITE','FINANZAS',true,'Registrar y aprobar transacciones financieras'),
+ ('AP_AUTHORIZE','FINANZAS',true,'Autorizar pagos a proveedores')
  on conflict (permission_code) do update set active=excluded.active,description=excluded.description;
 
 insert into public.role_permissions(role_id,permission_code)
@@ -132,7 +132,7 @@ select
   when current_date-p.due_date<=90 then '61-90d'
   else '90d+'
  end as aging_bucket,
- s.name as supplier_name
+ s.legal_name as supplier_name
 from public.supplier_payables p
 join public.suppliers s on s.id=p.supplier_id;
 

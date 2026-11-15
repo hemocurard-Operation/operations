@@ -1,10 +1,17 @@
 import {getSupabase} from './supabase.js';
-import {loadUsersAdmin} from './users-data.js';
 import {workspacePreview} from './workspace-preview-model.js';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
-async function rows(table,columns,orders){
- const result=[];
- for(let offset=0;;offset+=500){let q=getSupabase().from(table).select(columns);for(const key of orders)q=q.order(key);const {data,error}=await q.range(offset,offset+499);if(error)throw Error('No se pudo consultar la configuración de áreas. Actualice e inténtelo de nuevo.');if(!Array.isArray(data))throw Error('Configuración de áreas no disponible.');result.push(...data);if(data.length<500)return result}
+export async function loadWorkspaceDirectory(target=null,search='',offset=0){
+ const {data,error}=await getSupabase().rpc('admin_workspace_preview',{p_target:target,p_search:search,p_offset:offset});
+ if(error)throw Error('No se pudo consultar las áreas. Verifique su permiso de administrador y vuelva a intentar.');
+ return data;
+}
+export async function mountUserWorkspaces(root){
+ root.innerHTML='<section class="card"><h2>Pantallas por usuario</h2><p>Consulte los menús y tareas asignados a cada usuario. Las pantallas operativas se abren con sus propios permisos de administrador.</p><form data-directory-search><label>Buscar por nombre <input name="search" maxlength="100" autocomplete="off"></label><button>Buscar</button></form><div data-directory-status role="status"></div><div data-directory-list></div><button type="button" data-directory-prev>Anterior</button><button type="button" data-directory-next>Siguiente</button></section>';
+ let offset=0,search='',generation=0;
+ const status=root.querySelector('[data-directory-status]'),list=root.querySelector('[data-directory-list]'),prev=root.querySelector('[data-directory-prev]'),next=root.querySelector('[data-directory-next]');
+ async function load(){const current=++generation;list.replaceChildren();prev.disabled=next.disabled=true;status.textContent='Consultando usuarios…';try{const state=await loadWorkspaceDirectory(null,search,offset);if(current!==generation||!root.isConnected)return;status.textContent=state.users.length?'Seleccione un usuario para revisar sus áreas.':'Sin resultados.';list.innerHTML=state.users.map(u=>`<p><strong>${esc(u.full_name||'Sin nombre')}</strong> · ${u.active?'Activo':'Inactivo'} <button type="button" class="secondary" data-directory-user="${esc(u.id)}">Ver áreas de trabajo</button></p>`).join('');prev.disabled=offset===0;next.disabled=!state.has_more;list.querySelectorAll('[data-directory-user]').forEach(b=>b.onclick=()=>openWorkspacePreview(root,b.dataset.directoryUser));}catch(e){if(current===generation){status.textContent=e.message;prev.disabled=offset===0;}}}
+ root.querySelector('form').onsubmit=e=>{e.preventDefault();search=new FormData(e.target).get('search').trim();offset=0;load()};prev.onclick=()=>{offset=Math.max(0,offset-50);load()};next.onclick=()=>{offset+=50;load()};await load();
 }
 export async function openWorkspacePreview(root,userId){
  root.querySelector('[data-workspace-dialog]')?.remove();
@@ -16,17 +23,8 @@ export async function openWorkspacePreview(root,userId){
  async function refresh(){
   const current=++generation;body.replaceChildren();controls.replaceChildren();status.textContent='Consultando accesos actuales…';
   try{
-   // The existing admin endpoint rechecks active SUPER_USUARIO + ACCESS_ADMIN server-side.
-   const state=await loadUsersAdmin();
-   if(current!==generation||!dialog.isConnected)return;
-   const caller=state.users?.find(u=>u.id===state.caller_user_id);
-   if(caller?.active!==true||!caller.roles?.some(r=>r.role_code==='SUPER_USUARIO'))throw Error('Esta vista está disponible únicamente para el Súper Usuario activo.');
-   const [catalog,settings,permissions,rolePermissions]=await Promise.all([
-    rows('app_module_catalog','route_key,title,group_name,permission_code,active',['route_key']),
-    rows('role_module_access','role_id,route_key,enabled',['role_id','route_key']),
-    rows('app_permissions','permission_code,active',['permission_code']),
-    rows('role_permissions','role_id,permission_code',['role_id','permission_code'])
-   ]);
+   const state=await loadWorkspaceDirectory(selected);
+   const {catalog,settings,permissions,rolePermissions}=state;
    if(current!==generation||!dialog.isConnected)return;
    const metadata={catalog,settings,permissions,rolePermissions},verifiedAt=new Date().toLocaleTimeString('es-DO');
    controls.innerHTML=`<label>Ver como usuario<select data-preview-user aria-label="Usuario de la vista previa">${state.users.map(u=>`<option value="${esc(u.id)}">${esc(u.full_name||u.username||u.email||'Sin nombre')}${u.active===true?'':' · Perfil inactivo'}</option>`).join('')}</select></label><button type="button" class="secondary" data-preview-refresh>Actualizar accesos</button>`;
@@ -40,7 +38,7 @@ export async function openWorkspacePreview(root,userId){
     const scope=model.superUser?'Todas las sucursales':branchNames.join(' · ')||'Sin sucursales asignadas a sus roles';
     const groups=[...new Set(model.routes.map(([,m])=>m.group))];
     status.textContent=`${model.routes.length} áreas disponibles · Configuración consultada a las ${verifiedAt}`;
-    body.innerHTML=`<div class="status info">Está revisando la vista de <strong>${esc(user.full_name||user.username||user.email)}</strong>. Su sesión de Súper Usuario continúa activa. Esta vista muestra accesos y tareas; los registros, formularios y decisiones se consultan con la cuenta propia del usuario.</div><div class="workspace-preview-shell"><aside class="workspace-preview-nav"><strong>HemoCura</strong><p>${esc(roleNames.join(' / ')||'Sin roles')}</p><button type="button" data-preview-home>Mi trabajo · Vista previa</button>${groups.map(group=>`<section><h3>${esc(group)}</h3>${model.routes.filter(([,m])=>m.group===group).map(([key,m])=>`<button type="button" data-preview-route="${esc(key)}">${esc(m.title)}</button>`).join('')}</section>`).join('')}</aside><main class="workspace-preview-main"><div class="workspace-preview-identity"><strong>${esc(user.full_name||user.username||'Usuario')}</strong><span>${esc(scope)}</span><small>Sucursales de sus roles. Los alcances adicionales y las reglas de cada registro se validan al operar.</small></div><div data-preview-content></div></main></div>`;
+    body.innerHTML=`<div class="status info">Está revisando la vista de <strong>${esc(user.full_name||user.username||user.email)}</strong>. Su sesión de administrador continúa activa. Esta vista muestra accesos y tareas; las pantallas operativas se consultan con sus propios permisos de administrador, sin asumir la identidad del usuario.</div><div class="workspace-preview-shell"><aside class="workspace-preview-nav"><strong>HemoCura</strong><p>${esc(roleNames.join(' / ')||'Sin roles')}</p><button type="button" data-preview-home>Mi trabajo · Vista previa</button>${groups.map(group=>`<section><h3>${esc(group)}</h3>${model.routes.filter(([,m])=>m.group===group).map(([key,m])=>`<button type="button" data-preview-route="${esc(key)}">${esc(m.title)}</button>`).join('')}</section>`).join('')}</aside><main class="workspace-preview-main"><div class="workspace-preview-identity"><strong>${esc(user.full_name||user.username||'Usuario')}</strong><span>${esc(scope)}</span><small>Sucursales de sus roles. Los alcances adicionales y las reglas de cada registro se validan al operar.</small></div><div data-preview-content></div></main></div>`;
     const content=body.querySelector('[data-preview-content]');
     function showHome(){
      body.querySelectorAll('[data-preview-route]').forEach(b=>b.removeAttribute('aria-current'));
@@ -50,8 +48,9 @@ export async function openWorkspacePreview(root,userId){
     function showRoute(key){
      const entry=model.routes.find(([k])=>k===key);if(!entry)return;const [,meta]=entry;
      body.querySelectorAll('[data-preview-route]').forEach(b=>{if(b.dataset.previewRoute===key)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});
-     content.innerHTML=`<p class="muted">${esc(meta.group)}</p><h2>${esc(meta.title)}</h2><p>${esc(meta.subtitle)}</p><div class="status ok">Área visible en el menú de este usuario.</div><section class="card"><h3>Acceso del área</h3><p>Permiso de entrada: <strong>${esc(catalog.find(m=>m.route_key===key)?.permission_code)}</strong></p><p>Los botones y registros disponibles se ajustan a sus permisos, sucursales y estado de cada operación.</p></section><details><summary>Permisos de datos activos del usuario (${model.permissions.size})</summary><ul>${[...model.permissions].sort().map(p=>`<li>${esc(p)}</li>`).join('')}</ul></details><button type="button" class="secondary" data-preview-back>Volver a Mi trabajo</button>`;
+     content.innerHTML=`<p class="muted">${esc(meta.group)}</p><h2>${esc(meta.title)}</h2><p>${esc(meta.subtitle)}</p><div class="status ok">Área visible en el menú de este usuario.</div><section class="card"><h3>Acceso del área</h3><p>Permiso de entrada: <strong>${esc(catalog.find(m=>m.route_key===key)?.permission_code)}</strong></p><p>Los botones y registros disponibles se ajustan a sus permisos, sucursales y estado de cada operación.</p></section><details><summary>Permisos de datos activos del usuario (${model.permissions.size})</summary><ul>${[...model.permissions].sort().map(p=>`<li>${esc(p)}</li>`).join('')}</ul></details><button type="button" class="secondary" data-preview-open>Abrir pantalla con mis permisos</button><button type="button" class="secondary" data-preview-back>Volver a Mi trabajo</button>`;
      content.querySelector('[data-preview-back]').onclick=showHome;
+     content.querySelector('[data-preview-open]').onclick=()=>{dialog.close();location.hash=key};
     }
     body.querySelector('[data-preview-home]').onclick=showHome;body.querySelectorAll('[data-preview-route]').forEach(b=>b.onclick=()=>showRoute(b.dataset.previewRoute));showHome();
    }

@@ -20,10 +20,10 @@
 
 begin;
 
-insert into public.app_permissions(permission_code,active,description) values
- ('REGULATORY_VIEW',true,'Consulta de matriz regulatoria y evidencias'),
- ('REGULATORY_WRITE',true,'Registrar evaluaciones y evidencias regulatorias'),
- ('REGULATORY_REVIEW',true,'Revisión independiente de cumplimiento regulatorio')
+insert into public.app_permissions(permission_code,module,active,description) values
+ ('REGULATORY_VIEW','OPERACIONES',true,'Consulta de matriz regulatoria y evidencias'),
+ ('REGULATORY_WRITE','OPERACIONES',true,'Registrar evaluaciones y evidencias regulatorias'),
+ ('REGULATORY_REVIEW','OPERACIONES',true,'Revisión independiente de cumplimiento regulatorio')
  on conflict (permission_code) do update set active=excluded.active,description=excluded.description;
 
 insert into public.role_permissions(role_id,permission_code)
@@ -204,6 +204,47 @@ from public.regulatory_requirements r
 left join public.regulatory_assessments a on a.requirement_id=r.id;
 
 grant select on public.vw_regulatory_matrix to authenticated;
+
+-- Global records require the global owner; branch records follow existing scopes.
+drop policy regulatory_ass_read on public.regulatory_assessments;
+create policy regulatory_ass_read on public.regulatory_assessments for select to authenticated using(public.has_permission('REGULATORY_VIEW') and case when branch_id is null then public.has_role('SUPER_USUARIO') else public.can_access_branch(branch_id) end);
+drop policy regulatory_ass_write on public.regulatory_assessments;
+create policy regulatory_ass_write on public.regulatory_assessments for insert to authenticated with check(public.has_permission('REGULATORY_WRITE') and case when branch_id is null then public.has_role('SUPER_USUARIO') else public.can_access_branch(branch_id) end);
+drop policy regulatory_ass_update on public.regulatory_assessments;
+create policy regulatory_ass_update on public.regulatory_assessments for update to authenticated using(public.has_permission('REGULATORY_WRITE') and case when branch_id is null then public.has_role('SUPER_USUARIO') else public.can_access_branch(branch_id) end) with check(public.has_permission('REGULATORY_WRITE') and case when branch_id is null then public.has_role('SUPER_USUARIO') else public.can_access_branch(branch_id) end);
+drop policy regulatory_act_read on public.regulatory_actions;
+create policy regulatory_act_read on public.regulatory_actions for select to authenticated using(public.has_permission('REGULATORY_VIEW') and case when branch_id is null then public.has_role('SUPER_USUARIO') else public.can_access_branch(branch_id) end);
+drop policy regulatory_act_write on public.regulatory_actions;
+create policy regulatory_act_write on public.regulatory_actions for insert to authenticated with check(public.has_permission('REGULATORY_WRITE') and case when branch_id is null then public.has_role('SUPER_USUARIO') else public.can_access_branch(branch_id) end);
+drop policy regulatory_act_update on public.regulatory_actions;
+create policy regulatory_act_update on public.regulatory_actions for update to authenticated using((public.has_permission('REGULATORY_WRITE') or public.has_permission('REGULATORY_REVIEW')) and case when branch_id is null then public.has_role('SUPER_USUARIO') else public.can_access_branch(branch_id) end) with check((public.has_permission('REGULATORY_WRITE') or public.has_permission('REGULATORY_REVIEW')) and case when branch_id is null then public.has_role('SUPER_USUARIO') else public.can_access_branch(branch_id) end);
+
+create function private.regulatory_integrity() returns trigger language plpgsql security definer set search_path=public,pg_temp as $$
+begin
+ if not (public.has_permission('REGULATORY_WRITE') or public.has_permission('REGULATORY_REVIEW')) then raise exception 'Sin permiso' using errcode='42501';end if;
+ if tg_op='INSERT' then new.created_by:=auth.uid();else new.created_by:=old.created_by;new.created_at:=old.created_at;end if;
+ if tg_op='UPDATE' and (new.branch_id is distinct from old.branch_id or new.requirement_id is distinct from old.requirement_id) then raise exception 'El alcance del registro es inmutable' using errcode='23514';end if;
+ if tg_table_name='regulatory_actions' then
+  if new.assessment_id is not null and not exists(select 1 from public.regulatory_assessments a where a.id=new.assessment_id and a.requirement_id=new.requirement_id and a.branch_id is not distinct from new.branch_id) then raise exception 'Evaluación y acción incompatibles' using errcode='23514';end if;
+  if tg_op='UPDATE' and old.verified_by is not null then raise exception 'Acción verificada inmutable' using errcode='23514';end if;
+  if new.status='VERIFICADA' or new.verified_by is not null or new.verified_at is not null then
+   if not public.has_permission('REGULATORY_REVIEW') or auth.uid() in (new.created_by,new.owner_user_id) then raise exception 'Revisión independiente requerida' using errcode='42501';end if;
+   if tg_op='UPDATE' and (to_jsonb(new)-array['status','verified_by','verified_at','verification_notes','updated_at']) is distinct from (to_jsonb(old)-array['status','verified_by','verified_at','verification_notes','updated_at']) then raise exception 'La verificación no permite editar la acción' using errcode='23514';end if;
+   new.verified_by:=auth.uid();new.verified_at:=now();new.status:='VERIFICADA';
+  elsif not public.has_permission('REGULATORY_WRITE') then raise exception 'Sin permiso de escritura' using errcode='42501';end if;
+ else
+  if tg_op='UPDATE' and old.reviewed_by is not null then raise exception 'Evaluación verificada inmutable' using errcode='23514';end if;
+  if new.status='VERIFICADO' or new.reviewed_by is not null or new.last_reviewed_at is not null then
+   if not public.has_permission('REGULATORY_REVIEW') or auth.uid() in (new.created_by,new.owner_user_id) then raise exception 'Revisión independiente requerida' using errcode='42501';end if;
+   if tg_op='UPDATE' and (to_jsonb(new)-array['status','reviewed_by','last_reviewed_at','updated_at']) is distinct from (to_jsonb(old)-array['status','reviewed_by','last_reviewed_at','updated_at']) then raise exception 'La revisión no permite editar la evaluación' using errcode='23514';end if;
+   new.reviewed_by:=auth.uid();new.last_reviewed_at:=now();new.status:='VERIFICADO';
+  elsif not public.has_permission('REGULATORY_WRITE') then raise exception 'Sin permiso de escritura' using errcode='42501';end if;
+ end if;
+ new.updated_at:=now();return new;
+end;$$;
+revoke all on function private.regulatory_integrity() from public,anon,authenticated;
+create trigger regulatory_actions_integrity before insert or update on public.regulatory_actions for each row execute function private.regulatory_integrity();
+create trigger regulatory_assessments_integrity before insert or update on public.regulatory_assessments for each row execute function private.regulatory_integrity();
 
 notify pgrst,'reload schema';
 commit;

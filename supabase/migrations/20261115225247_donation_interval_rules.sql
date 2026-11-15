@@ -44,7 +44,7 @@ create policy donation_interval_read on public.donation_interval_rules for selec
 -- alineados con guías AABB/MSP. Marcados como requieren aprobación
 -- clínica (approved_by NULL): un médico autorizado debe firmarlos antes
 -- de que entren en vigor en producción. Mientras approved_by sea NULL,
--- la función devuelve el fallback conservador de 84 días.
+-- la función devuelve NULL: no emite una recomendación clínica.
 insert into public.donation_interval_rules(donation_type,min_days,max_per_year,source_norm,notes) values
  ('SANGRE_TOTAL',56,6,'AABB Technical Manual',
   'Intervalo estándar para donación de sangre total en varones. Mujeres: validar ferritina.'),
@@ -64,7 +64,8 @@ insert into public.donation_interval_rules(donation_type,min_days,max_per_year,s
 create function public.donor_min_interval_days(p_donation_type text)
  returns integer language sql stable security invoker set search_path=public,pg_temp as $$
  select min_days from public.donation_interval_rules
-  where active and approved_by is not null
+  where active and approved_by is not null and approved_at is not null
+    and effective_from<=current_date and superseded_at is null
     and donation_type=p_donation_type
   limit 1;
 $$;
