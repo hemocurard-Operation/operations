@@ -27,7 +27,7 @@ const {protectResponse}=require('./fixture-csp.cjs');
  function fixtureCount(){return 5}
  await page.locator('[name=search]').fill('Luis');await page.locator('[data-directory-search] button').click();await page.waitForFunction(()=>document.querySelectorAll('[data-directory-user]').length===1);ok('directory supports searching by name',await page.locator('[data-directory-user=luis]').count()===1);
  await page.locator('[data-directory-user=luis]').click();await page.waitForSelector('[data-preview-route=donors]');await page.locator('[data-preview-route=donors]').click();await page.setViewportSize({width:1440,height:1000});await page.screenshot({path:path.join(out,'admin-workspaces.png')});
- await page.locator('[data-preview-open]').click();ok('actual screen opens explicitly using caller session',new URL(page.url()).hash==='#donors'&&await page.locator('[data-workspace-dialog]').count()===0);
+ await page.locator('[data-preview-open]').click();await page.waitForURL('**#donors');await page.waitForSelector('[data-workspace-dialog]',{state:'detached'});ok('actual screen opens explicitly using caller session',new URL(page.url()).hash==='#donors'&&await page.locator('[data-workspace-dialog]').count()===0);
  ok('no browser runtime errors',errors.length===0);fs.writeFileSync(path.join(out,'report-'+engine+'.json'),JSON.stringify({status:'PASS',checks,errors,synthetic:true},null,2));
  }finally{await browser?.close();await new Promise(r=>server.close(r))}
 })().catch(e=>{console.error(e);process.exitCode=1});
