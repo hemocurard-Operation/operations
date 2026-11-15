@@ -6,6 +6,8 @@ Se aplicaron nueve migraciones a HEMOCURA (`tiothqiljipdamgudvcb`): limpieza y v
 
 Las limpiezas validan equipo, plan y sucursal. El servidor identifica ejecutor y verificador; el ejecutor no puede verificar su trabajo y el verificador no puede modificarlo. Los contadores se serializan por equipo, rechazan lecturas fuera de orden y usan la lectura más reciente después de un reinicio documentado.
 
+El informe de laboratorio ahora distingue fuentes fuera del alcance de la sesión de fuentes autorizadas que fallan. La exportación declara las exclusiones, conserva los datos no disponibles y sigue bloqueándose ante errores reales. Validación adicional: nueve pruebas de dominio y 19 comprobaciones de navegador de laboratorio.
+
 ## Pendientes reales
 
 - `regulatory_matrix_ready`: confirmación de la herramienta vencida; no aplicada. Incluye aislamiento por sucursal y revisión independiente.
