@@ -60,7 +60,9 @@ def main():
   delivery_migrations=[]
   performance_migrations=[]
   photo_migrations=[]
+  v11_migrations=[]
   for f in sorted((ROOT/'supabase/migrations').glob('*.sql')):
+   if f.name[:14] >= '20261113120000':v11_migrations.append(f);continue
    if f.name.endswith('_daily_report_photos.sql'):photo_migrations.append(f);continue
    if f.name.endswith('_web_performance_security.sql'):performance_migrations.append(f);continue
    if f.name.endswith(('_team_delivery_coordination.sql','_clinical_commercial_job_roles.sql','_personal_username_accounts.sql','_commercial_crm_contacts.sql','_crm_weekly_visit_planner.sql','_twelve_week_execution.sql','_commercial_agenda_union.sql')):delivery_migrations.append(f);continue
@@ -207,6 +209,16 @@ def main():
    module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
    report['checks'].extend(module.verify(name,out/'commercial-concurrency',ROOT))
   for f in performance_migrations:apply(f)
+  for f in v11_migrations:apply(f)
+  for f in sorted((ROOT/'supabase/deferred/financial').glob('*.sql')):apply(f)
+  if v11_migrations:
+   result=sql((ROOT/'tests/operational-readiness/database.sql').read_text(),'operational-readiness')
+   report['checks'].extend({'name':c.strip(),'pass':True} for c in re.findall(r'PASS ([^\n]+)',result.stderr+result.stdout))
+  if v11_migrations:
+   for suite in ('facility-licenses','predictive-meta','donation-interval-rules','donor-status-enum','commercial-visit-purpose','daily-reports'):
+    text=(ROOT/'tests'/suite/'business-rules.sql').read_text().replace('commit;','rollback;')
+    result=sql(text,'integrated-'+suite)
+    report['checks'].extend({'name':c.strip(),'pass':True} for c in re.findall(r'PASS ([^\n]+)',result.stderr+result.stdout))
   print(f'PASS: {len(report["checks"])} PostgreSQL checks; {len(report["migrations"])} baseline/candidate files. Production not verified.')
   return 0
  except Exception as e:

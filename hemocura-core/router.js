@@ -78,6 +78,7 @@ const ROUTES={
   commercialgoals:{title:'Metas comerciales',subtitle:'Objetivos cuantitativos vs desempeño real por agente, sucursal y servicio',group:'CADENA DE VALOR',order:38},
 
   settings:{title:'Configuración',subtitle:'Catálogos y diagnóstico',group:'ADMINISTRACIÓN',order:10},
+  userworkspaces:{title:'Pantallas por usuario',subtitle:'Consultar las áreas de trabajo asignadas a cada usuario',group:'ADMINISTRACIÓN',order:14},
   users:{title:'Usuarios y Roles',subtitle:'Crear usuarios y asignar acceso por rol y sucursal',group:'ADMINISTRACIÓN',order:15},
   security:{title:'Seguridad y Acceso',subtitle:'Roles, permisos, sucursal y RLS',group:'ADMINISTRACIÓN',order:20},
   diagnostics:{title:'Diagnóstico',subtitle:'Configuración, Auth, RLS y migraciones',group:'ADMINISTRACIÓN',order:30},

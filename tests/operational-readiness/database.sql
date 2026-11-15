@@ -1,0 +1,63 @@
+begin;
+create function pg_temp.ok(v boolean,label text) returns void language plpgsql as $$begin if v is distinct from true then raise exception 'FAIL %',label;end if;raise notice 'PASS %',label;end$$;
+create function pg_temp.denied(stmt text,code text,label text) returns void language plpgsql as $$begin begin execute stmt;exception when others then if sqlstate<>code then raise exception 'FAIL %: expected %, got %: %',label,code,sqlstate,sqlerrm;end if;raise notice 'PASS %',label;return;end;raise exception 'FAIL unexpectedly allowed %',label;end$$;
+insert into branches(id,code,name) values('c7100000-0000-0000-0000-000000000001','RDY-A','Synthetic A'),('c7100000-0000-0000-0000-000000000002','RDY-B','Synthetic B');
+insert into auth.users(id,email) select ('c7200000-0000-0000-0000-00000000000'||i)::uuid,'readiness-'||i||'@example.invalid' from generate_series(1,4)i;
+insert into profiles(id,full_name,branch_id,active) select ('c7200000-0000-0000-0000-00000000000'||i)::uuid,'Readiness synthetic '||i,'c7100000-0000-0000-0000-000000000001',i<>4 from generate_series(1,4)i;
+insert into roles(code,name) values('ADMIN','Administrador') on conflict(code) do nothing;
+insert into role_permissions(role_id,permission_code) select id,'WORKSPACE_PREVIEW_VIEW' from roles where code='ADMIN' on conflict do nothing;
+insert into user_roles(user_id,role_id,branch_id) select ('c7200000-0000-0000-0000-00000000000'||i)::uuid,r.id,'c7100000-0000-0000-0000-000000000001' from generate_series(1,4)i join roles r on r.code=case when i in(3,4) then 'ADMIN' else 'ENCARGADA_LABORATORIO' end;
+select set_config('request.jwt.claim.sub','c7200000-0000-0000-0000-000000000001',true);
+insert into lab_equipment(id,equipment_code,branch_id,equipment_type,status,criticality,usage_threshold_hours) values('c7300000-0000-0000-0000-000000000001','RDY-EQ-A','c7100000-0000-0000-0000-000000000001','Nevera','ACTIVO','ALTA',100),('c7300000-0000-0000-0000-000000000002','RDY-EQ-B','c7100000-0000-0000-0000-000000000002','Nevera','ACTIVO','ALTA',100);
+grant execute on all functions in schema pg_temp to authenticated,anon;
+set local role authenticated;
+select set_config('request.jwt.claim.sub','c7200000-0000-0000-0000-000000000001',true);
+select pg_temp.denied($q$select admin_workspace_preview()$q$,'42501','non-admin cannot list user workspaces');
+insert into cleaning_plans(id,equipment_id,branch_id,frequency_days,created_by) values('c7400000-0000-0000-0000-000000000001','c7300000-0000-0000-0000-000000000001','c7100000-0000-0000-0000-000000000001',7,'c7200000-0000-0000-0000-000000000002');
+select pg_temp.ok((select created_by=auth.uid() from cleaning_plans where id='c7400000-0000-0000-0000-000000000001'),'plan actor derived from session');
+select pg_temp.denied($q$insert into cleaning_plans(equipment_id,branch_id,frequency_days) values('c7300000-0000-0000-0000-000000000002','c7100000-0000-0000-0000-000000000001',7)$q$,'23514','equipment cannot be assigned to a different branch');
+insert into cleaning_records(id,plan_id,equipment_id,branch_id,performed_by) values('c7500000-0000-0000-0000-000000000001','c7400000-0000-0000-0000-000000000001','c7300000-0000-0000-0000-000000000001','c7100000-0000-0000-0000-000000000001','c7200000-0000-0000-0000-000000000002');
+select pg_temp.ok((select performed_by=auth.uid() from cleaning_records where id='c7500000-0000-0000-0000-000000000001'),'execution actor cannot be forged');
+select pg_temp.denied($q$update cleaning_records set verified_by='c7200000-0000-0000-0000-000000000002',verified_at=now() where id='c7500000-0000-0000-0000-000000000001'$q$,'23514','performer cannot forge an independent verifier');
+select set_config('request.jwt.claim.sub','c7200000-0000-0000-0000-000000000002',true);
+select pg_temp.denied($q$update cleaning_records set product_used='changed',verified_by=auth.uid() where id='c7500000-0000-0000-0000-000000000001'$q$,'23514','verifier cannot edit execution');
+update cleaning_records set verified_by=auth.uid() where id='c7500000-0000-0000-0000-000000000001';
+select pg_temp.ok((select verified_by=auth.uid() and verified_at is not null from cleaning_records where id='c7500000-0000-0000-0000-000000000001'),'independent verification succeeds');
+select pg_temp.denied($q$update cleaning_records set verified_at=now() where id='c7500000-0000-0000-0000-000000000001'$q$,'23514','verified execution immutable');
+
+-- Synthetic permission grant isolates counter invariants from role policy configuration.
+reset role;
+insert into role_permissions(role_id,permission_code) select id,p from roles cross join (values('RESOURCES_VIEW'),('RESOURCES_WRITE')) v(p) where code='ENCARGADA_LABORATORIO' on conflict do nothing;
+set local role authenticated;
+insert into equipment_usage(equipment_id,branch_id,hours_counter,reading_time,recorded_by) values('c7300000-0000-0000-0000-000000000001','c7100000-0000-0000-0000-000000000001',120,now()-interval '2 hours','c7200000-0000-0000-0000-000000000001');
+select pg_temp.ok((select recorded_by=auth.uid() from equipment_usage where equipment_id='c7300000-0000-0000-0000-000000000001'),'counter actor derived from session');
+select pg_temp.denied($q$insert into equipment_usage(equipment_id,branch_id,hours_counter,reading_time) values('c7300000-0000-0000-0000-000000000001','c7100000-0000-0000-0000-000000000001',20,now()-interval '1 hour')$q$,'23514','counter rollback without documentation rejected');
+insert into equipment_usage(equipment_id,branch_id,hours_counter,reading_time,observations) values('c7300000-0000-0000-0000-000000000001','c7100000-0000-0000-0000-000000000001',20,now()-interval '1 hour','Synthetic replacement of counter');
+select pg_temp.ok((select hours_now=20 and usage_status='DENTRO_UMBRAL' from vw_equipment_usage_alerts where equipment_id='c7300000-0000-0000-0000-000000000001'),'documented reset clears obsolete counter alert');
+select pg_temp.denied($q$insert into equipment_usage(equipment_id,branch_id,hours_counter,reading_time) values('c7300000-0000-0000-0000-000000000001','c7100000-0000-0000-0000-000000000001',30,now()-interval '1 hour')$q$,'23514','duplicate reading timestamp rejected');
+select pg_temp.denied($q$insert into equipment_usage(equipment_id,branch_id,hours_counter) values('c7300000-0000-0000-0000-000000000002','c7100000-0000-0000-0000-000000000001',30)$q$,'23514','counter cannot use a different equipment branch');
+
+
+reset role;
+insert into role_permissions(role_id,permission_code) select id,p from roles cross join (values('REGULATORY_VIEW'),('REGULATORY_WRITE'),('REGULATORY_REVIEW')) v(p) where code='ENCARGADA_LABORATORIO' on conflict do nothing;
+insert into regulatory_assessments(id,requirement_id,branch_id) select 'c7600000-0000-0000-0000-000000000001',id,'c7100000-0000-0000-0000-000000000002' from regulatory_requirements where requirement_code='LEY-42-01-GEN';
+set local role authenticated;
+select pg_temp.ok((select count(*)=0 from regulatory_assessments where id='c7600000-0000-0000-0000-000000000001'),'regulatory rows hidden outside assigned branch');
+select pg_temp.denied($q$insert into regulatory_actions(requirement_id,branch_id,title) select id,null,'Synthetic global' from regulatory_requirements where requirement_code='LEY-42-01-GEN'$q$,'42501','branch user cannot create global regulatory action');
+select pg_temp.denied($q$insert into regulatory_actions(requirement_id,assessment_id,branch_id,title) select id,'c7600000-0000-0000-0000-000000000001','c7100000-0000-0000-0000-000000000001','Synthetic mismatched assessment' from regulatory_requirements where requirement_code='LEY-42-01-GEN'$q$,'23514','action must match assessment branch');
+insert into regulatory_actions(id,requirement_id,branch_id,title) select 'c7700000-0000-0000-0000-000000000001',id,'c7100000-0000-0000-0000-000000000001','Synthetic action' from regulatory_requirements where requirement_code='LEY-42-01-GEN';
+select pg_temp.denied($q$update regulatory_actions set status='VERIFICADA',verified_by='c7200000-0000-0000-0000-000000000001' where id='c7700000-0000-0000-0000-000000000001'$q$,'42501','regulatory creator cannot forge verifier');
+select set_config('request.jwt.claim.sub','c7200000-0000-0000-0000-000000000001',true);
+update regulatory_actions set status='VERIFICADA' where id='c7700000-0000-0000-0000-000000000001';
+select pg_temp.ok((select verified_by=auth.uid() and verified_at is not null from regulatory_actions where id='c7700000-0000-0000-0000-000000000001'),'regulatory verification derives independent session actor');
+
+select set_config('request.jwt.claim.sub','c7200000-0000-0000-0000-000000000003',true);
+select pg_temp.ok((admin_workspace_preview('c7200000-0000-0000-0000-000000000001')->'users') @> '[{"id":"c7200000-0000-0000-0000-000000000001"}]','active ADMIN can review target workspace');
+select pg_temp.ok(not has_permission('ACCESS_ADMIN'),'workspace permission does not grant identity administration');
+select pg_temp.denied($q$select admin_workspace_preview(null,'',-1)$q$,'22023','directory pagination validates bounds');
+select set_config('request.jwt.claim.sub','c7200000-0000-0000-0000-000000000004',true);
+select pg_temp.denied($q$select admin_workspace_preview()$q$,'42501','inactive administrator denied');
+reset role;
+select pg_temp.ok((select count(*)=1 from workspace_preview_access_log where actor_id='c7200000-0000-0000-0000-000000000003'),'metadata access is audited');
+select pg_temp.ok(public.donor_min_interval_days('SANGRE_TOTAL') is null,'unapproved clinical intervals remain ineffective');
+rollback;

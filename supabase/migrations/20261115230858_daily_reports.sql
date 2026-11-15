@@ -1,37 +1,11 @@
--- HemoCura v11 Brechas F4 + D1 — Reportes operacionales diarios.
+-- HemoCura v11 D1 — Reporte operacional diario de donantes.
 --
--- F4 (§10): conciliación de ingresos diaria por sucursal × método de pago.
 -- D1 (§6.4): reporte diario de donantes (programados, recibidos, aceptados,
 --            diferidos, rechazados, motivos, tasa de aceptación).
 --
 -- Solo vistas. Sin schema change. Toma datos existentes.
 
 begin;
-
--- F4: Conciliación diaria de ingresos consolidada.
-create or replace view public.vw_daily_cash_reconciliation with(security_invoker=true) as
-with
- sales_by_method as (
-  select sale_date::date as day,branch_id,
-         coalesce(payment_status,'PENDIENTE') as payment_status,
-         case
-          when invoice_number ilike '%EFECTIVO%' then 'EFECTIVO'
-          when invoice_number ilike '%TRANSFER%' then 'TRANSFERENCIA'
-          when invoice_number ilike '%OFICINA%' then 'OFICINA'
-          when status='COBRADA' then 'COBRO_DIRECTO'
-          else 'POR_CLASIFICAR'
-         end as payment_method,
-         sum(total_amount) as total,
-         sum(collected_amount) as collected,
-         count(*) as count
-   from public.operational_sales
-   where status<>'ANULADA'
-   group by 1,2,3,4
- )
-select day,branch_id,payment_status,payment_method,total,collected,count
- from sales_by_method;
-
-grant select on public.vw_daily_cash_reconciliation to authenticated;
 
 -- D1: Reporte diario de donantes.
 -- Combina donor_visits (programados/recibidos) con donations (efectivas) y

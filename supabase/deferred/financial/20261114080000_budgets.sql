@@ -18,9 +18,11 @@ create table public.budgets(
  created_by uuid references public.profiles(id),
  revision integer not null default 1,
  created_at timestamptz not null default now(),
- updated_at timestamptz not null default now(),
- unique(period_month,coalesce(branch_id,'00000000-0000-0000-0000-000000000000'::uuid),category)
+ updated_at timestamptz not null default now()
 );
+
+create unique index budgets_period_branch_category_currency on public.budgets
+ (period_month,coalesce(branch_id,'00000000-0000-0000-0000-000000000000'::uuid),category,currency);
 
 create index budgets_by_period on public.budgets(period_month desc);
 

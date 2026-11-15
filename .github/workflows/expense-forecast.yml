@@ -3,14 +3,14 @@ name: Expense forecast (BI3)
 on:
   pull_request:
     paths:
-      - 'supabase/migrations/20261114140000_expense_forecast.sql'
+      - 'supabase/deferred/financial/20261114140000_expense_forecast.sql'
       - 'tests/expense-forecast/**'
       - 'tools/expense_forecast_runner.py'
       - '.github/workflows/expense-forecast.yml'
   push:
     branches: [main]
     paths:
-      - 'supabase/migrations/20261114140000_expense_forecast.sql'
+      - 'supabase/deferred/financial/20261114140000_expense_forecast.sql'
       - 'tests/expense-forecast/**'
       - 'tools/expense_forecast_runner.py'
       - '.github/workflows/expense-forecast.yml'
@@ -24,7 +24,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: python3 tools/expense_forecast_runner.py
-      - run: python3 tools/migration_security_linter.py supabase/migrations/20261114140000_expense_forecast.sql
+      - run: python3 tools/migration_security_linter.py supabase/deferred/financial/20261114140000_expense_forecast.sql
       - uses: actions/upload-artifact@v4
         if: always()
         with: {name: expense-forecast-report, path: /tmp/hemocura-expense-forecast}

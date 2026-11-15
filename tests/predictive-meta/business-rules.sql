@@ -51,13 +51,11 @@ select pg_temp.denied(
     values('vw_z','z','DEMANDA','agg','x',10000)$q$,
  'horizon_days out of range is rejected');
 
--- Invariante 7: trigger bump de revision al cambiar method.
-select pg_temp.ok(
- (with before as (select revision from predictive_meta where view_name='vw_predictive_demand_30d'),
-       upd as (update predictive_meta set method='Nuevo método suavizado'
-                where view_name='vw_predictive_demand_30d' returning revision)
-  select (select revision from upd)>(select revision from before)),
- 'updating method bumps revision via trigger');
+do $$declare previous integer;begin
+ select revision into previous from predictive_meta where view_name='vw_predictive_demand_30d';
+ update predictive_meta set method='Nuevo método suavizado' where view_name='vw_predictive_demand_30d';
+ perform pg_temp.ok((select revision>previous from predictive_meta where view_name='vw_predictive_demand_30d'),'updating method bumps revision via trigger');
+end$$;
 
 -- Invariante 8: data_sources es un text array.
 select pg_temp.ok(
@@ -65,11 +63,9 @@ select pg_temp.ok(
     from predictive_meta where view_name='vw_stock_risk_projection'),
  'data_sources is populated as text array');
 
--- Invariante 9: cambiar un campo no esencial NO bumpea revision.
-select pg_temp.ok(
- (with before as (select revision from predictive_meta where view_name='vw_stock_risk_projection'),
-       upd as (update predictive_meta set title=title where view_name='vw_stock_risk_projection' returning revision)
-  select (select revision from upd)=(select revision from before)),
- 'updating title does not bump revision');
-
-commit;
+do $$declare previous integer;begin
+ select revision into previous from predictive_meta where view_name='vw_stock_risk_projection';
+ update predictive_meta set title=title where view_name='vw_stock_risk_projection';
+ perform pg_temp.ok((select revision=previous from predictive_meta where view_name='vw_stock_risk_projection'),'updating title does not bump revision');
+end$$;
+rollback;

@@ -16,10 +16,10 @@
 
 begin;
 
-insert into public.app_permissions(permission_code,active,description) values
- ('CLEANING_VIEW',true,'Consulta de planes y registros de limpieza de equipos'),
- ('CLEANING_WRITE',true,'Crear o editar planes y registros de limpieza'),
- ('CLEANING_VERIFY',true,'Verificar de forma independiente un registro de limpieza')
+insert into public.app_permissions(permission_code,module,active,description) values
+ ('CLEANING_VIEW','OPERACIONES',true,'Consulta de planes y registros de limpieza de equipos'),
+ ('CLEANING_WRITE','OPERACIONES',true,'Crear o editar planes y registros de limpieza'),
+ ('CLEANING_VERIFY','OPERACIONES',true,'Verificar de forma independiente un registro de limpieza')
  on conflict (permission_code) do update set active=excluded.active,description=excluded.description;
 
 insert into public.role_permissions(role_id,permission_code)
@@ -161,6 +161,39 @@ insert into public.role_module_access(role_id,route_key,enabled)
  select id,'cleaning',code in ('SUPER_USUARIO','ENCARGADA_LABORATORIO','LABORATORIO','CALIDAD','GERENCIA_OPERATIVA','GERENCIA_GENERAL','MEDICO_GERENTE_TECNICO')
  from public.roles
  on conflict do nothing;
+
+-- Actor and parent linkage are enforced server-side, including calls outside the UI.
+create function private.cleaning_integrity() returns trigger language plpgsql security definer set search_path=public,pg_temp as $$
+begin
+ if auth.uid() is null then raise exception 'Sesión activa requerida' using errcode='42501';end if;
+ if not exists(select 1 from public.lab_equipment e where e.id=new.equipment_id and e.branch_id=new.branch_id) then
+  raise exception 'El equipo no pertenece a la sucursal' using errcode='23514';end if;
+ if tg_table_name='cleaning_plans' then
+  if not public.lab_scope(new.branch_id,'CLEANING_WRITE',true) then raise exception 'Sin permiso de escritura' using errcode='42501';end if;
+  if tg_op='INSERT' then new.created_by:=auth.uid();else new.created_by:=old.created_by;new.created_at:=old.created_at;new.revision:=old.revision+1;end if;
+  new.updated_at:=now();
+ else
+  if new.plan_id is not null and not exists(select 1 from public.cleaning_plans p where p.id=new.plan_id and p.equipment_id=new.equipment_id and p.branch_id=new.branch_id) then
+   raise exception 'El plan no corresponde al equipo y sucursal' using errcode='23514';end if;
+  if tg_op='INSERT' then
+   if not public.lab_scope(new.branch_id,'CLEANING_WRITE',true) then raise exception 'Sin permiso de escritura' using errcode='42501';end if;
+   if new.verified_by is not null or new.verified_at is not null then raise exception 'La verificación requiere un segundo usuario' using errcode='23514';end if;
+   new.performed_by:=auth.uid();new.created_at:=now();new.revision:=1;
+   if new.performed_at>now()+interval '5 minutes' then raise exception 'Fecha de ejecución futura' using errcode='23514';end if;
+  else
+   if not public.lab_scope(old.branch_id,'CLEANING_VERIFY',true) then raise exception 'Sin permiso de verificación' using errcode='42501';end if;
+   if old.verified_by is not null or old.performed_by=auth.uid() then raise exception 'Verificación independiente requerida' using errcode='23514';end if;
+   if (to_jsonb(new)-array['verified_by','verified_at','revision']) is distinct from (to_jsonb(old)-array['verified_by','verified_at','revision']) then
+    raise exception 'La verificación no permite editar la ejecución' using errcode='23514';end if;
+   new.verified_by:=auth.uid();new.verified_at:=now();new.revision:=old.revision+1;
+  end if;
+ end if;
+ return new;
+end;$$;
+revoke all on function private.cleaning_integrity() from public,anon,authenticated;
+create trigger cleaning_plans_integrity before insert or update on public.cleaning_plans for each row execute function private.cleaning_integrity();
+create trigger cleaning_records_integrity before insert or update on public.cleaning_records for each row execute function private.cleaning_integrity();
+
 
 notify pgrst,'reload schema';
 

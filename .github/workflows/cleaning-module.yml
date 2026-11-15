@@ -3,7 +3,7 @@ name: Cleaning module (equipment hygiene)
 on:
   pull_request:
     paths:
-      - 'supabase/migrations/20261113120000_cleaning_module.sql'
+      - 'supabase/migrations/20261115225212_cleaning_module.sql'
       - 'sql/35_RESOURCES_CONTROL_v0_35.sql'
       - 'sql/39_COLD_CHAIN_v0_39.sql'
       - 'supabase/migrations/20261017084848_lab_management_workspace.sql'
@@ -13,7 +13,7 @@ on:
   push:
     branches: [main]
     paths:
-      - 'supabase/migrations/20261113120000_cleaning_module.sql'
+      - 'supabase/migrations/20261115225212_cleaning_module.sql'
       - 'sql/35_RESOURCES_CONTROL_v0_35.sql'
       - 'sql/39_COLD_CHAIN_v0_39.sql'
       - 'supabase/migrations/20261017084848_lab_management_workspace.sql'
@@ -34,7 +34,7 @@ jobs:
       - name: Run cleaning module tests on disposable PostgreSQL
         run: python3 tools/cleaning_module_runner.py
       - name: Lint migration
-        run: python3 tools/migration_security_linter.py supabase/migrations/20261113120000_cleaning_module.sql
+        run: python3 tools/migration_security_linter.py supabase/migrations/20261115225212_cleaning_module.sql
       - uses: actions/upload-artifact@v4
         if: always()
         with:

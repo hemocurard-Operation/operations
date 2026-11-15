@@ -24,7 +24,7 @@ create table public.equipment_usage(
  id uuid primary key default gen_random_uuid(),
  equipment_id uuid not null references public.lab_equipment(id) on delete restrict,
  branch_id uuid not null references public.branches(id),
- reading_time timestamptz not null default now(),
+ reading_time timestamptz not null default clock_timestamp(),
  hours_counter numeric check(hours_counter is null or hours_counter>=0),
  services_counter integer check(services_counter is null or services_counter>=0),
  observations text check(length(coalesce(observations,''))<=2000),
@@ -74,12 +74,11 @@ create policy equipment_usage_insert on public.equipment_usage for insert to aut
 
 create or replace view public.vw_equipment_usage_alerts with(security_invoker=true) as
 with latest as (
- select u.equipment_id,
-        max(u.hours_counter) as hours_now,
-        max(u.services_counter) as services_now,
-        max(u.reading_time) as last_reading_at
-   from public.equipment_usage u
-   group by u.equipment_id
+ select distinct on (u.equipment_id) u.equipment_id,
+        (select x.hours_counter from public.equipment_usage x where x.equipment_id=u.equipment_id and x.hours_counter is not null order by x.reading_time desc,x.id desc limit 1) as hours_now,
+        (select x.services_counter from public.equipment_usage x where x.equipment_id=u.equipment_id and x.services_counter is not null order by x.reading_time desc,x.id desc limit 1) as services_now,
+        u.reading_time as last_reading_at
+   from public.equipment_usage u order by u.equipment_id,u.reading_time desc,u.id desc
 )
 select
  e.id as equipment_id,e.equipment_code,e.branch_id,e.equipment_type,
@@ -103,6 +102,26 @@ where e.status='ACTIVO'
  and (e.usage_threshold_hours is not null or e.usage_threshold_services is not null);
 
 grant select on public.vw_equipment_usage_alerts to authenticated;
+
+-- Serialize readings for each equipment, even when two sessions submit simultaneously.
+create or replace function private.equipment_usage_monotonic() returns trigger language plpgsql security definer set search_path=public,pg_temp as $$
+declare previous_time timestamptz;previous_hours numeric;previous_services integer;
+begin
+ if not public.lab_scope(new.branch_id,'RESOURCES_WRITE',true) then raise exception 'Sin permiso de escritura' using errcode='42501';end if;
+ perform 1 from public.lab_equipment where id=new.equipment_id and branch_id=new.branch_id for update;
+ if not found then raise exception 'El equipo no pertenece a la sucursal' using errcode='23514';end if;
+ new.recorded_by:=auth.uid();new.created_at:=now();
+ select max(reading_time) into previous_time from public.equipment_usage where equipment_id=new.equipment_id;
+ if new.reading_time>now()+interval '5 minutes' or new.reading_time<=previous_time then
+  raise exception 'La lectura debe ser posterior a la anterior y no futura' using errcode='23514';end if;
+ select hours_counter into previous_hours from public.equipment_usage where equipment_id=new.equipment_id and hours_counter is not null order by reading_time desc,id desc limit 1;
+ select services_counter into previous_services from public.equipment_usage where equipment_id=new.equipment_id and services_counter is not null order by reading_time desc,id desc limit 1;
+ if (new.hours_counter<previous_hours or new.services_counter<previous_services) and coalesce(trim(new.observations),'')='' then
+  raise exception 'Documente el reset o reemplazo del contador' using errcode='23514';end if;
+ return new;
+end;$$;
+revoke all on function private.equipment_usage_monotonic() from public,anon,authenticated;
+
 
 notify pgrst,'reload schema';
 commit;

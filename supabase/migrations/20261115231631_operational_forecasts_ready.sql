@@ -28,7 +28,7 @@ select
  e.calibration_required,e.next_calibration_date,
  e.maintenance_required,e.next_maintenance_date,
  e.usage_threshold_hours,e.usage_threshold_services,
- s.name as supplier_name,s.id as supplier_id,
+ s.legal_name as supplier_name,s.id as supplier_id,
  p.full_name as responsible_name,p.id as responsible_user_id,
  e.documentation_ref,
  case
@@ -58,8 +58,8 @@ create table public.commercial_goals(
  service_id uuid references public.crm_services(id),
  metric text not null check(metric in (
   'VISITAS_COMPLETADAS','VISITAS_EDUCATIVAS','REFERIDOS_NUEVOS','DONANTES_CAPTADOS',
-  'VENTAS_UNIDADES','VENTAS_MONTO','OPORTUNIDADES_ABIERTAS','OPORTUNIDADES_GANADAS',
-  'OPORTUNIDADES_MONTO','CLIENTES_ACTIVOS','TASA_CONVERSION_PCT'
+  'VENTAS_UNIDADES','OPORTUNIDADES_ABIERTAS','OPORTUNIDADES_GANADAS',
+  'CLIENTES_ACTIVOS','TASA_CONVERSION_PCT'
  )),
  target_value numeric(14,2) not null check(target_value>0),
  currency text check(currency in ('DOP','USD') or currency is null),
@@ -110,11 +110,6 @@ select
    where v.status='REALIZADA' and v.purpose_type='EDUCACION_INSTITUCIONAL'
      and v.scheduled_at::date between g.period_start and g.period_end
      and (g.branch_id is null or v.branch_id=g.branch_id))
-  when 'VENTAS_MONTO' then (
-   select coalesce(sum(s.total_amount),0) from public.operational_sales s
-   where s.status<>'ANULADA'
-     and s.sale_date between g.period_start and g.period_end
-     and (g.branch_id is null or s.branch_id=g.branch_id))
   when 'OPORTUNIDADES_GANADAS' then (
    select count(*) from public.commercial_opportunities o
    where o.stage='GANADA'
@@ -147,8 +142,8 @@ with
    group by im.product_id,im.branch_id
  ),
  stock as (
-  select product_id,branch_id,sum(quantity) as available_quantity
-   from public.inventory_balances
+  select product_id,branch_id,sum(theoretical_qty) as available_quantity
+   from public.vw_inventory_status
    group by product_id,branch_id
  )
 select
@@ -196,7 +191,7 @@ with
  campaigns as (
   select c.branch_id,
          sum(coalesce(c.target_donors,0)) filter(where c.status='ACTIVA') as active_campaign_targets,
-         sum(coalesce(c.donations_captured,0)) filter(where c.status='ACTIVA') as active_campaign_captured
+         sum((select count(*) from public.donations d where d.campaign_id=c.id and d.collection_effective)) filter(where c.status='ACTIVA') as active_campaign_captured
    from public.donor_campaigns c
    where c.branch_id is not null
    group by c.branch_id
@@ -230,7 +225,7 @@ do $$ begin
   insert into public.predictive_meta(view_name,title,domain,method,horizon_days,data_sources,confidence_level,limitations) values
    ('vw_supply_consumption_forecast','Proyección de consumo de insumos','INVENTARIO',
     'Promedio móvil 90 días de inventory_movements con cálculo de días de cobertura',30,
-    array['inventory_movements','inventory_balances'],'AGREGACION',
+    array['inventory_movements','vw_inventory_status'],'AGREGACION',
     'No ajusta por estacionalidad clínica; cuenta días activos para evitar inflar con períodos sin consumo.'),
    ('vw_donor_outlook','Proyección de donantes 4 semanas','DEMANDA',
     'Promedio semanal de donaciones efectivas de los últimos 90 días proyectado a 4 semanas',28,
@@ -246,6 +241,14 @@ do $$ begin
    updated_at=now();
  end if;
 end$$;
+
+drop policy commercial_goals_read on public.commercial_goals;
+create policy commercial_goals_read on public.commercial_goals for select to authenticated using(public.has_permission('COMMERCIAL_VIEW') and case when branch_id is null then public.has_role('SUPER_USUARIO') else public.can_access_branch(branch_id) end);
+drop policy commercial_goals_write on public.commercial_goals;
+create policy commercial_goals_write on public.commercial_goals for insert to authenticated with check(public.has_permission('COMMERCIAL_WRITE') and case when branch_id is null then public.has_role('SUPER_USUARIO') else public.can_access_branch(branch_id) end);
+drop policy commercial_goals_update on public.commercial_goals;
+create policy commercial_goals_update on public.commercial_goals for update to authenticated using(public.has_permission('COMMERCIAL_WRITE') and case when branch_id is null then public.has_role('SUPER_USUARIO') else public.can_access_branch(branch_id) end) with check(public.has_permission('COMMERCIAL_WRITE') and case when branch_id is null then public.has_role('SUPER_USUARIO') else public.can_access_branch(branch_id) end);
+
 
 notify pgrst,'reload schema';
 commit;

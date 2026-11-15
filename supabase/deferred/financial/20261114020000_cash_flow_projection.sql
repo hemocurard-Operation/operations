@@ -17,7 +17,7 @@ begin;
 create or replace view public.vw_cash_flow_projection with(security_invoker=true) as
 with
  inflows as (
-  select date_trunc('week',coalesce(a.due_date,current_date+(a.days_past_due)))::date as week,
+  select date_trunc('week',coalesce(a.payment_due_date,current_date+(a.days_past_due)))::date as week,
          sum(
           case
            when a.days_past_due<=0 then a.outstanding_amount*0.85

@@ -10,9 +10,9 @@
 
 begin;
 
-insert into public.app_permissions(permission_code,active,description) values
- ('LICENSE_VIEW',true,'Consulta de habilitaciones sanitarias y documentos regulatorios'),
- ('LICENSE_WRITE',true,'Registrar y renovar habilitaciones sanitarias')
+insert into public.app_permissions(permission_code,module,active,description) values
+ ('LICENSE_VIEW','OPERACIONES',true,'Consulta de habilitaciones sanitarias y documentos regulatorios'),
+ ('LICENSE_WRITE','OPERACIONES',true,'Registrar y renovar habilitaciones sanitarias')
  on conflict (permission_code) do update set active=excluded.active,description=excluded.description;
 
 insert into public.role_permissions(role_id,permission_code)
