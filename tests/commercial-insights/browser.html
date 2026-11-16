@@ -1,0 +1,8 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Análisis comercial sintético</title><link rel="stylesheet" href="/css/app.css"><link rel="stylesheet" href="/css/ui-v0442.css"></head><body><main id="insights"></main><script type="module">
+import {fixture} from '/hemocura-core/supabase.js';
+import {mountCommercialInsights} from '/hemocura-core/commercial-insights.js';
+window.fixture=fixture;window.mount=options=>mountCommercialInsights(document.querySelector('#insights'),{branch:'b1',asOf:'2026-11-16',canReadSales:true,customers:[{id:'c3',name:'Centro prospecto'}],opportunities:[{id:'op3',branch_id:'b1',customer_id:'c3',stage:'PROSPECTO',target_date:'2027-01-01',target_units:7,service_type:'SANGRE'},{id:'op1',branch_id:'b1',customer_id:'c1',stage:'PROPUESTA',target_date:'2026-12-01',target_units:5,service_type:'SANGRE'},{id:'op2',branch_id:'b1',customer_id:'c1',stage:'CONTACTO',target_date:'2026-12-01',target_units:2,service_type:'CAMARA_HIPERBARICA'}],...options});
+const row=(sale_date,quantity,extra={})=>({sale_id:'s-'+sale_date,line_id:'l-'+sale_date,branch_id:'b1',sale_date,customer_id:'c1',center_name:'Centro sintético',component_name:'PG',status:'DESPACHADA',quantity,total_amount:999999,...extra});
+fixture.tables={vw_sales_unit_report:[row('2026-11-15',3),row('2026-11-01',6),row('2026-10-20',9),row('2026-09-20',12,{customer_id:'c2',center_name:'Centro por contactar',component_name:'PLASMA'}),row('2026-11-16',100,{branch_id:'b2'}),row('2026-11-16',100,{status:'CANCELADA'})]};
+window.reads=[];fixture.readHook=q=>{window.reads.push({table:q.table,columns:q.columns});return undefined};await window.mount();window.insightsReady=true;
+</script></body></html>
