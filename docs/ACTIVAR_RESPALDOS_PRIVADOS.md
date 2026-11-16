@@ -28,3 +28,19 @@ Nunca enviar estas credenciales al chat, al repositorio ni a registros públicos
 7. Tras la copia y revisión de recuperación satisfactorias, activar la variable `HC_BACKUPS_ENABLED=true` y verificar una ejecución programada.
 
 La firma médica de reglas de donación y la revisión legal de requisitos son procesos distintos y no deben marcarse como realizados por habilitar respaldos o desplegar tablas.
+
+## Verificar la integridad del export antes de restaurar
+
+El proceso de copia comprueba automáticamente los cinco archivos SQL contra los SHA256 del manifiesto antes de cifrar y subir el paquete. El cálculo se hace por bloques para evitar cargar una base de datos completa en memoria.
+
+También puede comprobarse un directorio de exportación privado, sin conectarse a ninguna base de datos:
+
+```bash
+python3 tools/verify_backup_bundle.py /ruta/privada/del/export
+```
+
+El verificador no extrae archivos, no descifra copias, no ejecuta SQL y no imprime datos ni rutas privadas. Rechaza archivos faltantes, vacíos, alterados, enlaces simbólicos y manifiestos con nombres inesperados. Un fallo detiene el proceso antes de la subida.
+
+`integrity_verified=true` comprueba únicamente presencia y coincidencia de hashes. No autentica por sí solo la procedencia del manifiesto, no valida la sintaxis o consistencia del SQL y no demuestra recuperación. `restoration_verified` siempre permanece en `false`, incluso si el manifiesto afirma lo contrario. La restauración sigue pendiente hasta una prueba real y documentada en un destino aislado autorizado.
+
+Esta mejora se probó con paquetes sintéticos. No se ejecutó una copia real ni se activó la programación sin confirmar destino, acceso privado y recuperación.
