@@ -10,14 +10,17 @@ create function pg_temp.claim(dep text,arr text,key uuid default gen_random_uuid
 set local role authenticated;select set_config('request.jwt.claim.sub','da200000-0000-0000-0000-000000000001',true);
 select pg_temp.ok(has_permission('TRIPS_WRITE') and not has_permission('ACCESS_ADMIN') and not has_permission('TRIPS_REVIEW'),'logistics role can submit but cannot administer or approve');
 select pg_temp.ok((select count(*)=1 from vw_logistics_trip_branches),'worker branch selector excludes unauthorized branches');
-select pg_temp.denied($q$select logistics_trip_action('CREATE',pg_temp.claim('2026-10-12T09:00','2026-10-12T17:00'))$q$,'weekday trip within working hours is rejected');
+select logistics_trip_action('CREATE',pg_temp.claim('2026-10-15T09:00','2026-10-15T17:00','da300000-0000-0000-0000-000000000009'));
+select pg_temp.ok((select schedule_snapshot->'departure'->>'classification'='DENTRO_DE_JORNADA' and schedule_snapshot->'arrival'->>'classification'='DENTRO_DE_JORNADA' and amount is null from logistics_trips where request_id='da300000-0000-0000-0000-000000000009'),'inside-hours trip accepted with both classifications and no automatic incentive');
+select pg_temp.ok(logistics_trip_timing('2026-10-16 07:30-04','2026-10-16 09:00-04')->>'start_outside_work_hours'='true' and logistics_trip_timing('2026-10-16 07:30-04','2026-10-16 09:00-04')->>'end_outside_work_hours'='false','early departure is distinguished from inside arrival');
+select pg_temp.ok(logistics_trip_timing('2026-10-17 23:00-04','2026-10-18 01:00-04')->'arrival'->>'classification'='DIA_NO_LABORABLE','each endpoint preserves its own local calendar date');
 select pg_temp.ok(logistics_trip_schedule('2026-10-12 18:00-04')->>'classification'='DENTRO_DE_JORNADA','exact weekday end is within authorized shift');
 select pg_temp.ok(logistics_trip_schedule('2026-10-10 12:00-04')->>'classification'='DENTRO_DE_JORNADA' and logistics_trip_schedule('2026-10-10 12:01-04')->>'classification'='DESPUES_DE_JORNADA','Saturday noon boundary is correct');
 select pg_temp.ok(logistics_trip_schedule('2026-10-11 10:00-04')->>'classification'='DIA_NO_LABORABLE','Sunday has no regular working shift');
 select pg_temp.denied($q$select logistics_trip_action('CREATE',pg_temp.claim('2099-10-12T17:00','2099-10-12T19:00'))$q$,'unfinished future trip is rejected');
 select logistics_trip_action('CREATE',pg_temp.claim('2026-10-12T17:00','2026-10-12T19:00','da300000-0000-0000-0000-000000000001'));
 select logistics_trip_action('CREATE',pg_temp.claim('2026-10-12T17:00','2026-10-12T19:00','da300000-0000-0000-0000-000000000001'));
-select pg_temp.ok((select count(*)=1 and bool_and(amount is null and status='ENVIADO' and worker_id=auth.uid() and worker_name='Colaborador ficticio 1') from logistics_trips),'retry is idempotent and stamps real worker without promising incentive');
+select pg_temp.ok((select count(*)=1 and bool_and(amount is null and status='ENVIADO' and worker_id=auth.uid() and worker_name='Colaborador ficticio 1') from logistics_trips where request_id='da300000-0000-0000-0000-000000000001'),'retry is idempotent and stamps real worker without promising incentive');
 select pg_temp.denied($q$select logistics_trip_action('CREATE',pg_temp.claim('2026-10-12T18:00','2026-10-12T20:00'))$q$,'overlapping duplicate claim is rejected');
 select pg_temp.denied($q$select logistics_trip_action('CREATE',pg_temp.claim('2026-10-12T17:00','2026-10-12T19:00','da300000-0000-0000-0000-000000000001')||'{"origin":"Changed"}')$q$,'same request key cannot be reused with changed payload');
 select pg_temp.denied($q$select logistics_trip_action('CREATE',pg_temp.claim('2026-10-13T17:00','2026-10-13T19:00')||'{"branch_id":"da100000-0000-0000-0000-000000000002"}')$q$,'worker cannot claim another branch');
@@ -29,13 +32,16 @@ select pg_temp.ok((select count(*)=0 from logistics_trips) and (select count(*)=
 select logistics_trip_action('CREATE',pg_temp.claim('2026-10-10T11:00','2026-10-10T13:00'));
 select set_config('request.jwt.claim.sub','da200000-0000-0000-0000-000000000003',true);
 select logistics_trip_action('CREATE',pg_temp.claim('2026-10-14T18:30','2026-10-14T20:00'));
+select pg_temp.denied($q$select logistics_trip_action('APPROVE',(select jsonb_build_object('id',id,'revision',revision,'amount',500,'review_note','Synthetic incentive review') from logistics_trips where request_id='da300000-0000-0000-0000-000000000009'))$q$,'recording inside-hours trip does not authorize an outside-hours incentive');
+select logistics_trip_action('REJECT',(select jsonb_build_object('id',id,'revision',revision,'review_note','Inside-hours operational trip recorded') from logistics_trips where request_id='da300000-0000-0000-0000-000000000009'));
+
 select pg_temp.denied($q$select logistics_trip_action('APPROVE',(select jsonb_build_object('id',id,'revision',revision,'amount',500,'review_note','Autorrevisión') from logistics_trips where worker_id=auth.uid()))$q$,'supervisor cannot approve their own trip even with review permission');
 select pg_temp.denied($q$select logistics_trip_action('APPROVE',(select jsonb_build_object('id',id,'revision',revision,'amount',0,'review_note','Prueba') from logistics_trips where request_id='da300000-0000-0000-0000-000000000001'))$q$,'incentive must be positive and authorized');
 select pg_temp.denied($q$update logistics_trips set schedule_snapshot='{}',status='APROBADO',amount=500,review_note='Prueba' where request_id='da300000-0000-0000-0000-000000000001'$q$,'reviewer cannot replace preserved working schedule');
 select logistics_trip_action('RETURN',(select jsonb_build_object('id',id,'revision',revision,'review_note','Añadir referencia de entrega') from logistics_trips where request_id='da300000-0000-0000-0000-000000000001'));
 select set_config('request.jwt.claim.sub','da200000-0000-0000-0000-000000000001',true);
 select logistics_trip_action('RESUBMIT',(select pg_temp.claim('2026-10-12T17:00','2026-10-12T19:00')||jsonb_build_object('id',id,'revision',revision,'delivery_reference','ENTREGA-FICTICIA') from logistics_trips where request_id='da300000-0000-0000-0000-000000000001'));
-select pg_temp.ok((select status='ENVIADO' and revision=3 and reviewed_by is null from logistics_trips),'correction resubmits with fresh review and audit revision');
+select pg_temp.ok((select status='ENVIADO' and revision=3 and reviewed_by is null from logistics_trips where request_id='da300000-0000-0000-0000-000000000001'),'correction resubmits with fresh review and audit revision');
 select set_config('request.jwt.claim.sub','da200000-0000-0000-0000-000000000003',true);
 select logistics_trip_action('APPROVE',(select jsonb_build_object('id',id,'revision',revision,'amount',500,'review_note','Entrega verificada y tarifa autorizada','scheduled_end_local','2026-10-12T01:00') from logistics_trips where request_id='da300000-0000-0000-0000-000000000001'));
 select pg_temp.ok((select amount=500 and reviewed_by=auth.uid() and scheduled_end_at='2026-10-12 18:00-04'::timestamptz from logistics_trips where request_id='da300000-0000-0000-0000-000000000001'),'review stamps actual supervisor and authorized schedule rather than supplied fake hours');
