@@ -12,7 +12,7 @@ export const bloodData={
   screenings:()=>query('Tamizaje',sb().from('screening_tests').select('*').order('screening_date',{ascending:false}).order('id')),
   createScreening:async p=>{const {data,error}=await sb().from('screening_tests').insert(p).select('*').single();if(error)throw new Error(`Tamizaje: ${error.message}`);return data},
   createScreenings:async rows=>{const {data,error}=await sb().from('screening_tests').insert(rows).select('*');if(error)throw new Error(`Tamizaje por lote: ${error.message}`);return data||[]},
-  inventory:()=>query('Inventario sangre',sb().from('vw_blood_inventory_available').select('*').order('component_name')),
+  inventory:()=>query('Inventario sangre',sb().from('vw_blood_inventory_available').select('branch_id,component_name,abo,rh,available_units,quarantine_units,reserved_units,nearest_expiry').order('component_name')),
   inventoryUnits:()=>query('Unidades',sb().from('blood_inventory_units').select('*').order('production_date',{ascending:false}).order('id')),
   createInventoryUnit:async p=>{const {data,error}=await sb().from('blood_inventory_units').insert(p).select('*').single();if(error)throw new Error(`Unidad: ${error.message}`);return data},
   sales:()=>query('Ventas/Salidas',sb().from('operational_sales').select('*').order('sale_date',{ascending:false})),

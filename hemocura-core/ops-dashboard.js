@@ -1,9 +1,12 @@
+import {allPages} from './data-pages.js';
 import { getSupabase } from './supabase.js';
-import { loadAccess } from './access-control.js';
+import {operationsOverview} from './operations-overview.js';
+import {routeList} from './router.js';
+import { filterRoutes,loadAccess } from './access-control.js';
 
 function esc(v=''){return String(v ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
-async function safeRows(label,fn){try{const r=await fn();if(r?.error)throw r.error;return {label,ok:true,data:r?.data||[]}}catch(e){return {label,ok:false,data:[],error:e?.message||String(e)}}}
-async function safeCount(label,fn){try{const r=await fn();if(r?.error)throw r.error;return {label,ok:true,count:Number(r?.count||0)}}catch(e){return {label,ok:false,count:0,error:e?.message||String(e)}}}
+async function safeRows(label,fn){try{const data=await allPages(label,fn());return {label,ok:true,data}}catch(e){return {label,ok:false,data:[],error:e?.message||String(e)}}}
+async function safeCount(label,fn){try{const r=await fn();if(r?.error)throw r.error;if(!Number.isFinite(r?.count))throw Error('Conteo no disponible');return {label,ok:true,count:r.count}}catch(e){return {label,ok:false,count:0,error:e?.message||String(e)}}}
 async function loadVersion(){try{const url=new URL('../VERSION.json',import.meta.url);const r=await fetch(url,{cache:'no-store'});if(!r.ok)throw new Error(`VERSION.json HTTP ${r.status}`);return await r.json()}catch(e){return {version:'desconocida',stage:'No disponible',clinical_core:'NO DECLARADO'}}}
 function localDateISO(date=new Date()){return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`}
 function openCount(rows=[]){const closed=new Set(['CERRADO','CERRADA','CLOSED','CANCELADO','CANCELADA','COMPLETADO','COMPLETADA']);return rows.filter(r=>!closed.has(String(r.status||'').trim().toUpperCase())).length}
@@ -30,7 +33,7 @@ const ROLE_KPIS={
   ADMIN:['Despachos de hoy','Incidencias con seguimiento','NC activas','CAPA activas'],
 };
 function roleKpiLabels(primary){return ROLE_KPIS[primary]||['Despachos de hoy','Incidencias con seguimiento','NC activas','CAPA activas']}
-function roleKpiValues(labels,counts){return labels.map(l=>{const m={'Despachos de hoy':counts.dispatches,'Incidencias con seguimiento':counts.incidents,'NC activas':counts.ncOpen,'CAPA activas':counts.capaOpen,'Tamizaje pendiente':counts.incidents,'Cadena de frío':counts.dispatches,'Requisiciones abiertas':counts.incidents,'Entregas pendientes':counts.dispatches,'Viajes extra':counts.dispatches,'Auditorías pendientes':counts.incidents,'Sesiones cámara':counts.dispatches,'Visitas programadas':counts.incidents};return {label:l,value:m[l]??0}}).map(k=>kpi(k.label,k.value))}
+function roleKpiValues(labels,counts){const actual={'Despachos de hoy':counts.dispatches,'Incidencias con seguimiento':counts.incidents,'NC activas':counts.ncOpen,'CAPA activas':counts.capaOpen};return labels.map(label=>kpi(label,actual[label]??'No disponible',actual[label]==null?'Sin una fuente verificada para este indicador.':''))}
 
 const EXPERIENCES={
   SUPER_USUARIO:{title:'Panel de Super Usuario',subtitle:'Gobierno, seguridad, calidad y operación completa',actions:[['security','Seguridad y Acceso','Roles, permisos y RLS'],['audit','Auditoría del Sistema','Trazabilidad y revisión'],['diagnostics','Diagnóstico','Dependencias y salud técnica'],['releasegate','Release Gate','Preparación de liberación'],['quality','SGC','NC, CAPA e incidencias'],['command','Centro de Mando','Operación diaria']]},
@@ -55,12 +58,12 @@ export async function mountOpsDashboard(root){
   if(!root) throw new Error('ops-dashboard-root no disponible');
   const sb=getSupabase();root.innerHTML='<section class="card"><div class="status info">Cargando experiencia por rol…</div></section>';
   const today=localDateISO();
-  const [version,access,dispatches,incidents,nc,capa]=await Promise.all([
-    loadVersion(),loadAccess(),
+  const [version,access,allowed,dispatches,incidents,nc,capa]=await Promise.all([
+    loadVersion(),loadAccess(),filterRoutes(routeList()),
     safeCount('Despachos',()=>sb.from('dispatches').select('id',{count:'exact',head:true}).eq('dispatch_date',today)),
     safeCount('Incidencias',()=>sb.from('incidents').select('id',{count:'exact',head:true}).eq('requires_quality_followup',true)),
-    safeRows('No conformidades',()=>sb.from('nonconformities').select('id,status').limit(200)),
-    safeRows('CAPA',()=>sb.from('capa').select('id,status').limit(200))
+    safeRows('No conformidades',()=>sb.from('nonconformities').select('id,status')),
+    safeRows('CAPA',()=>sb.from('capa').select('id,status'))
   ]);
   const roles=rolesOf(access.context),primary=roles.find(r=>EXPERIENCES[r])||'GERENCIA_OPERATIVA',xp=EXPERIENCES[primary]||EXPERIENCES.GERENCIA_OPERATIVA;
   // Merge actions from secondary roles (hallazgo #4: multi-role support)
@@ -68,17 +71,15 @@ export async function mountOpsDashboard(root){
   const primaryRoutes=new Set(xp.actions.map(([r])=>r));
   const mergedActions=[...xp.actions];
   for(const sr of secondaryRoles){const sx=EXPERIENCES[sr];if(sx)for(const a of sx.actions){if(!primaryRoutes.has(a[0])){mergedActions.push(a);primaryRoutes.add(a[0])}}}
-  const permittedActions=mergedActions.filter(([route])=>{
-    const need={security:'ACCESS_ADMIN',settings:'ADMIN_VIEW',audit:'AUDIT_VIEW',diagnostics:'RELEASE_GATE_VIEW',releasegate:'RELEASE_GATE_VIEW',quality:'QUALITY_VIEW',command:'COMMAND_VIEW',donors:'DONORS_VIEW',screening:'SCREENING_VIEW',production:'BLOOD_INVENTORY_WRITE',bloodinventory:'BLOOD_INVENTORY_VIEW',analyticalqc:'ANALYTICAL_QC_VIEW',coldchain:'COLD_CHAIN_VIEW',transport:'COLD_CHAIN_VIEW',environmental:'RESOURCES_VIEW',bloodflow:'BLOOD_INVENTORY_VIEW',hemovigilance:'HEMOVIGILANCE_VIEW',management:'MANAGEMENT_REVIEW_VIEW',dispatches:'DISPATCH_VIEW',requisitions:'DISPATCH_VIEW',inventory:'BLOOD_INVENTORY_VIEW',sales:'SALES_VIEW',supply:'SUPPLY_VIEW',bi:'BI_VIEW',projects:'PROJECTS_VIEW',commercialcalendar:'COMMERCIAL_VIEW'}[route];
-    return !need||access.permissions.has(need);
-  });
+  const allowedKeys=new Set(allowed.map(([key])=>key));
+  const permittedActions=mergedActions.filter(([route])=>allowedKeys.has(route));
   const failures=[dispatches,incidents,nc,capa].filter(x=>!x.ok);
-  const counts={dispatches:dispatches.count,incidents:incidents.count,ncOpen:openCount(nc.data),capaOpen:openCount(capa.data)};
+  const counts={dispatches:dispatches.ok?dispatches.count:null,incidents:incidents.ok?incidents.count:null,ncOpen:nc.ok?openCount(nc.data):null,capaOpen:capa.ok?openCount(capa.data):null};
   const kpiLabels=roleKpiLabels(primary);
   const kpiHtml=roleKpiValues(kpiLabels,counts).join('');
   const shift=shiftLabel();
   const rolesExtra=secondaryRoles.length?` + ${secondaryRoles.map(r=>{const x=EXPERIENCES[r];return x?x.title.replace('Panel de ','').replace('Panel ',''):r}).join(', ')}`:'';
-  root.innerHTML=`
+  root.innerHTML=`${operationsOverview(allowed)}
     <section class="ops-hero role-hero"><div><div class="eyebrow">HemoCura · experiencia por rol · ${esc(shift)}</div><h2 class="section-heading">${esc(xp.title)}${esc(rolesExtra)}</h2><div class="muted">${esc(xp.subtitle)}</div></div><div class="ops-version"><span>Versión</span><strong>${esc(version.version||'desconocida')}</strong></div></section>
     ${failures.length?`<div class="status warn"><strong>Carga parcial.</strong> ${esc(failures.map(x=>`${x.label}: ${x.error}`).join(' · '))}</div>`:''}
     <section class="ops-section"><div class="ops-section-head"><div><div class="eyebrow">Hoy · ${esc(today)}</div><h3>Indicadores de ${esc(xp.title.replace('Panel de ','').replace('Panel ',''))}</h3></div></div><div class="ops-kpi-grid">${kpiHtml}</div></section>
