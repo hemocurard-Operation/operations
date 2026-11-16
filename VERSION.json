@@ -1,7 +1,7 @@
 {
   "project": "HemoCura Operations Intelligence + QMS + Compliance",
-  "version": "0.72.0",
-  "stage": "Acceso completo del súper usuario a las áreas operativas, agenda comercial mejorada, oportunidades en unidades y análisis de demanda.",
+  "version": "0.73.0",
+  "stage": "Operaciones en siete módulos, navegación y paneles autorizados, inventario con filtros y cantidades separadas, Finanzas en unidades.",
   "release_channel": "RC",
   "protected_files": [
     "js/config.js"
