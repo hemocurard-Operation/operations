@@ -19,6 +19,20 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
+      - name: Validate private backup configuration
+        env:
+          HC_BACKUP_DB_URL: ${{ secrets.HC_BACKUP_DB_URL }}
+          HC_BACKUP_REMOTE: ${{ vars.HC_BACKUP_REMOTE }}
+          HC_BACKUP_AGE_RECIPIENT: ${{ vars.HC_BACKUP_AGE_RECIPIENT }}
+          HC_RCLONE_CONFIG_TEXT: ${{ secrets.HC_RCLONE_CONFIG_TEXT }}
+        run: |
+          python3 - <<'PYCONF'
+          import os
+          required=('HC_BACKUP_DB_URL','HC_BACKUP_REMOTE','HC_BACKUP_AGE_RECIPIENT','HC_RCLONE_CONFIG_TEXT')
+          missing=[name for name in required if not os.environ.get(name)]
+          if missing: raise SystemExit('Missing private settings: '+', '.join(missing)+'. Configure repository Actions settings; never place credentials in chat or code.')
+          print('Private settings present; no values printed. Copy and recovery verification are still required.')
+          PYCONF
       - name: Install backup utilities
         run: |
           sudo apt-get update

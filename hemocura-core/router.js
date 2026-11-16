@@ -1,5 +1,6 @@
 const GROUP_ORDER=['INICIO','TRABAJO DIARIO','CADENA DE VALOR','LABORATORIO Y SANGRE','CALIDAD Y SEGURIDAD','GESTIÓN','ADMINISTRACIÓN'];
 const ROUTES={
+  operationsoutlook:{title:'Previsión operativa',subtitle:'Cobertura de insumos, donantes y expediente de equipos',group:'GESTIÓN',order:15},
   teamdeliveries:{title:'Entregas del equipo',subtitle:'Asignación por supervisor, relevo y recepción logística',group:'TRABAJO DIARIO',order:14},
   extratrips:{title:'Viajes fuera de horario',subtitle:'Registro sencillo, revisión e incentivos de Logística',group:'TRABAJO DIARIO',order:1},
   laboratory:{title:'Gestión del Laboratorio',subtitle:'Turnos, unidades, controles, recursos y seguimiento',group:'LABORATORIO Y SANGRE',order:1},
@@ -75,7 +76,7 @@ const ROUTES={
   regulatorymatrix:{title:'Matriz regulatoria',subtitle:'Normas RD, evidencias y estado por norma',group:'CALIDAD Y SEGURIDAD',order:85},
   licenses:{title:'Habilitaciones sanitarias',subtitle:'MSP, banco de sangre, hiperbárica, residuos, ISO con alertas de vencimiento',group:'CALIDAD Y SEGURIDAD',order:87},
   budgets:{title:'Presupuestos',subtitle:'Presupuesto vs ejecutado por categoría, variación y estado',group:'GESTIÓN',order:60},
-  commercialgoals:{title:'Metas comerciales',subtitle:'Objetivos cuantitativos vs desempeño real por agente, sucursal y servicio',group:'CADENA DE VALOR',order:38},
+  commercialgoals:{title:'Metas operativas',subtitle:'Objetivos cuantitativos vs desempeño real por agente, sucursal y servicio',group:'CADENA DE VALOR',order:38},
 
   settings:{title:'Configuración',subtitle:'Catálogos y diagnóstico',group:'ADMINISTRACIÓN',order:10},
   userworkspaces:{title:'Pantallas por usuario',subtitle:'Consultar las áreas de trabajo asignadas a cada usuario',group:'ADMINISTRACIÓN',order:14},

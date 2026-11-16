@@ -82,14 +82,9 @@ create index commercial_goals_period on public.commercial_goals(period_start,per
 alter table public.commercial_goals enable row level security;
 revoke all on public.commercial_goals from public,anon,authenticated;
 grant select,insert,update on public.commercial_goals to authenticated;
-create policy commercial_goals_read on public.commercial_goals for select to authenticated
- using(public.has_permission('COMMERCIAL_VIEW'));
-create policy commercial_goals_write on public.commercial_goals for insert to authenticated
- with check(public.has_permission('COMMERCIAL_WRITE')
-            and (branch_id is null or public.can_access_branch(branch_id)));
-create policy commercial_goals_update on public.commercial_goals for update to authenticated
- using(public.has_permission('COMMERCIAL_WRITE'))
- with check(public.has_permission('COMMERCIAL_WRITE'));
+
+
+
 
 -- Vista de progreso: cuenta visitas completadas y ventas por meta aplicable.
 -- Solo cubre dos métricas por simplicidad; las demás requieren datasets no
@@ -242,11 +237,8 @@ do $$ begin
  end if;
 end$$;
 
-drop policy commercial_goals_read on public.commercial_goals;
 create policy commercial_goals_read on public.commercial_goals for select to authenticated using(public.has_permission('COMMERCIAL_VIEW') and case when branch_id is null then public.has_role('SUPER_USUARIO') else public.can_access_branch(branch_id) end);
-drop policy commercial_goals_write on public.commercial_goals;
 create policy commercial_goals_write on public.commercial_goals for insert to authenticated with check(public.has_permission('COMMERCIAL_WRITE') and case when branch_id is null then public.has_role('SUPER_USUARIO') else public.can_access_branch(branch_id) end);
-drop policy commercial_goals_update on public.commercial_goals;
 create policy commercial_goals_update on public.commercial_goals for update to authenticated using(public.has_permission('COMMERCIAL_WRITE') and case when branch_id is null then public.has_role('SUPER_USUARIO') else public.can_access_branch(branch_id) end) with check(public.has_permission('COMMERCIAL_WRITE') and case when branch_id is null then public.has_role('SUPER_USUARIO') else public.can_access_branch(branch_id) end);
 
 

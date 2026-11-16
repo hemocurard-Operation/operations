@@ -112,22 +112,12 @@ grant select,insert,update on public.regulatory_assessments,public.regulatory_ac
 
 create policy regulatory_req_read on public.regulatory_requirements for select to authenticated
  using(public.has_permission('REGULATORY_VIEW'));
-create policy regulatory_ass_read on public.regulatory_assessments for select to authenticated
- using(public.has_permission('REGULATORY_VIEW')
-       and (branch_id is null or public.can_access_branch(branch_id) or public.has_role('SUPER_USUARIO')));
-create policy regulatory_ass_write on public.regulatory_assessments for insert to authenticated
- with check(public.has_permission('REGULATORY_WRITE')
-            and (branch_id is null or public.can_access_branch(branch_id)));
-create policy regulatory_ass_update on public.regulatory_assessments for update to authenticated
- using(public.has_permission('REGULATORY_WRITE'))
- with check(public.has_permission('REGULATORY_WRITE'));
-create policy regulatory_act_read on public.regulatory_actions for select to authenticated
- using(public.has_permission('REGULATORY_VIEW'));
-create policy regulatory_act_write on public.regulatory_actions for insert to authenticated
- with check(public.has_permission('REGULATORY_WRITE'));
-create policy regulatory_act_update on public.regulatory_actions for update to authenticated
- using(public.has_permission('REGULATORY_WRITE') or public.has_permission('REGULATORY_REVIEW'))
- with check(public.has_permission('REGULATORY_WRITE') or public.has_permission('REGULATORY_REVIEW'));
+
+
+
+
+
+
 
 -- Seed inicial. Borrador — requiere revisión legal interna antes de uso
 -- vinculante (approved_by=NULL hasta que lo apruebe un oficial de cumplimiento).
@@ -206,17 +196,11 @@ left join public.regulatory_assessments a on a.requirement_id=r.id;
 grant select on public.vw_regulatory_matrix to authenticated;
 
 -- Global records require the global owner; branch records follow existing scopes.
-drop policy regulatory_ass_read on public.regulatory_assessments;
 create policy regulatory_ass_read on public.regulatory_assessments for select to authenticated using(public.has_permission('REGULATORY_VIEW') and case when branch_id is null then public.has_role('SUPER_USUARIO') else public.can_access_branch(branch_id) end);
-drop policy regulatory_ass_write on public.regulatory_assessments;
 create policy regulatory_ass_write on public.regulatory_assessments for insert to authenticated with check(public.has_permission('REGULATORY_WRITE') and case when branch_id is null then public.has_role('SUPER_USUARIO') else public.can_access_branch(branch_id) end);
-drop policy regulatory_ass_update on public.regulatory_assessments;
 create policy regulatory_ass_update on public.regulatory_assessments for update to authenticated using(public.has_permission('REGULATORY_WRITE') and case when branch_id is null then public.has_role('SUPER_USUARIO') else public.can_access_branch(branch_id) end) with check(public.has_permission('REGULATORY_WRITE') and case when branch_id is null then public.has_role('SUPER_USUARIO') else public.can_access_branch(branch_id) end);
-drop policy regulatory_act_read on public.regulatory_actions;
 create policy regulatory_act_read on public.regulatory_actions for select to authenticated using(public.has_permission('REGULATORY_VIEW') and case when branch_id is null then public.has_role('SUPER_USUARIO') else public.can_access_branch(branch_id) end);
-drop policy regulatory_act_write on public.regulatory_actions;
 create policy regulatory_act_write on public.regulatory_actions for insert to authenticated with check(public.has_permission('REGULATORY_WRITE') and case when branch_id is null then public.has_role('SUPER_USUARIO') else public.can_access_branch(branch_id) end);
-drop policy regulatory_act_update on public.regulatory_actions;
 create policy regulatory_act_update on public.regulatory_actions for update to authenticated using((public.has_permission('REGULATORY_WRITE') or public.has_permission('REGULATORY_REVIEW')) and case when branch_id is null then public.has_role('SUPER_USUARIO') else public.can_access_branch(branch_id) end) with check((public.has_permission('REGULATORY_WRITE') or public.has_permission('REGULATORY_REVIEW')) and case when branch_id is null then public.has_role('SUPER_USUARIO') else public.can_access_branch(branch_id) end);
 
 create function private.regulatory_integrity() returns trigger language plpgsql security definer set search_path=public,pg_temp as $$

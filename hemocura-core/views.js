@@ -1,4 +1,5 @@
 const ROOT_IDS={
+  operationsoutlook:'operational-outlook-root',
   userworkspaces:'user-workspaces-root',
   teamdeliveries:'team-deliveries-root',
   extratrips:'extra-trips-root',

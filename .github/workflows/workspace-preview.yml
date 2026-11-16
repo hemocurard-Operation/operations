@@ -1,10 +1,10 @@
 name: Superuser workspace preview
 on:
   pull_request:
-    paths: ['hemocura-core/users.js', 'hemocura-core/users-data.js', 'hemocura-core/user-workspace-preview.js', 'hemocura-core/workspace-preview-model.js', 'hemocura-core/my-work.js', 'hemocura-core/access-control.js', 'hemocura-core/router.js', 'css/workspace-preview.css', 'tests/workspace-preview/**', 'tools/workspace_preview_browser_runner.cjs', '.github/workflows/workspace-preview.yml']
+    paths: ['hemocura-core/users.js', 'hemocura-core/users-data.js', 'hemocura-core/user-workspace-preview.js', 'hemocura-core/workspace-preview-model.js', 'hemocura-core/my-work.js', 'hemocura-core/access-control.js', 'hemocura-core/router.js', 'css/workspace-preview.css', 'hemocura-core/workspace-screen*', 'workspace-screen.html', 'hemocura-core/operational-outlook.js', 'hemocura-core/regulatory.js', 'tests/workspace-preview/**', 'tools/workspace_preview_browser_runner.cjs', '.github/workflows/workspace-preview.yml']
   push:
     branches: [main]
-    paths: ['hemocura-core/users.js', 'hemocura-core/users-data.js', 'hemocura-core/user-workspace-preview.js', 'hemocura-core/workspace-preview-model.js', 'hemocura-core/my-work.js', 'hemocura-core/access-control.js', 'hemocura-core/router.js', 'css/workspace-preview.css', 'tests/workspace-preview/**', 'tools/workspace_preview_browser_runner.cjs', '.github/workflows/workspace-preview.yml']
+    paths: ['hemocura-core/users.js', 'hemocura-core/users-data.js', 'hemocura-core/user-workspace-preview.js', 'hemocura-core/workspace-preview-model.js', 'hemocura-core/my-work.js', 'hemocura-core/access-control.js', 'hemocura-core/router.js', 'css/workspace-preview.css', 'hemocura-core/workspace-screen*', 'workspace-screen.html', 'hemocura-core/operational-outlook.js', 'hemocura-core/regulatory.js', 'tests/workspace-preview/**', 'tools/workspace_preview_browser_runner.cjs', '.github/workflows/workspace-preview.yml']
   workflow_dispatch:
 permissions:
   contents: read

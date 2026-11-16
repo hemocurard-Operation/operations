@@ -60,4 +60,9 @@ select pg_temp.denied($q$select admin_workspace_preview()$q$,'42501','inactive a
 reset role;
 select pg_temp.ok((select count(*)=1 from workspace_preview_access_log where actor_id='c7200000-0000-0000-0000-000000000003'),'metadata access is audited');
 select pg_temp.ok(public.donor_min_interval_days('SANGRE_TOTAL') is null,'unapproved clinical intervals remain ineffective');
+
+select pg_temp.ok((select count(*)=4 from app_module_catalog where route_key in ('operationsoutlook','licenses','regulatorymatrix','commercialgoals')),'four operational windows registered');
+select pg_temp.ok((select count(*)=5 from pg_class where relname in ('vw_supply_consumption_forecast','vw_donor_outlook','vw_equipment_dossier','vw_regulatory_matrix','vw_commercial_goal_progress') and reloptions @> array['security_invoker=true']),'new operational views preserve caller RLS');
+select pg_temp.ok((select count(*)=11 from regulatory_requirements where approved_by is null),'legal draft requirements never auto-approved');
+
 rollback;

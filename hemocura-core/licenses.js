@@ -17,7 +17,7 @@ export async function mountLicenses(root){
       sb.from('vw_license_alerts').select('*').order('severity').order('days_to_expiry').limit(200),
       sb.from('facility_licenses').select('*').order('expires_at',{ascending:true}).limit(200)
     ]);
-    if(b.error) throw new Error(b.error.message);
+    if(b.error) throw new Error(b.error.message);if(a.error)throw new Error(a.error.message);if(l.error)throw new Error(l.error.message);
     branches=b.data||[];alerts=a.data||[];licenses=l.data||[];
   }catch(err){root.innerHTML=`<section class="card"><div class="status bad">${esc(err.message)}</div></section>`;return;}
   const canWrite=access.permissions.has('LICENSE_WRITE');
@@ -25,8 +25,8 @@ export async function mountLicenses(root){
   const bname=id=>branches.find(b=>b.id===id)?.name||esc(id);
 
   function render(){
-    const rowsAlerts=alerts.map(a=>[bname(a.branch_id),esc(a.license_type),esc(a.license_number),esc(a.expires_at||'—'),String(a.days_to_expiry||0),pill(a.severity),esc(a.recommended_action)]);
-    const rowsAll=licenses.map(l=>[bname(l.branch_id),esc(l.license_type),esc(l.authority),esc(l.license_number),esc(l.issued_at),esc(l.expires_at||'—'),esc(l.status)]);
+    const rowsAlerts=alerts.map(a=>[esc(bname(a.branch_id)),esc(a.license_type),esc(a.license_number),esc(a.expires_at||'—'),String(a.days_to_expiry||0),pill(a.severity),esc(a.recommended_action)]);
+    const rowsAll=licenses.map(l=>[esc(bname(l.branch_id)),esc(l.license_type),esc(l.authority),esc(l.license_number),esc(l.issued_at),esc(l.expires_at||'—'),esc(l.status)]);
     root.innerHTML=`
       <div class="sales-toolbar"><div>
         <h2 class="section-heading">Habilitaciones sanitarias</h2>
