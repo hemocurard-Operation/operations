@@ -29,10 +29,17 @@ for file in roles.sql schema.sql data.sql history-schema.sql history-data.sql; d
 python3 - "$backup_tmp" "$backup_root" <<'PY'
 import pathlib,sys,json,subprocess,datetime,hashlib
 folder=pathlib.Path(sys.argv[1]);root=pathlib.Path(sys.argv[2])
-files={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in folder.glob('*.sql')}
+files={}
+for p in folder.glob('*.sql'):
+ digest=hashlib.sha256()
+ with p.open('rb') as stream:
+  for chunk in iter(lambda:stream.read(1024*1024),b''):digest.update(chunk)
+ files[p.name]=digest.hexdigest()
 metadata={'created_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'source_commit':subprocess.check_output(['git','rev-parse','HEAD'],cwd=root,text=True).strip(),'sha256':files,'restore_verified':False,'scope':'logical database export; storage objects and platform secrets require separate recovery procedures'}
 (folder/'manifest.json').write_text(json.dumps(metadata,indent=2))
 PY
+# Verify the manifest before encrypting or uploading; never execute the exported SQL.
+python3 "$backup_root/tools/verify_backup_bundle.py" "$backup_tmp" >"$backup_tmp/integrity.log" 2>&1
 mkdir -p "$HC_BACKUP_DIR"
 backup_file="$HC_BACKUP_DIR/hemocura-$(date -u +%Y%m%dT%H%M%SZ).tar.age"
 tar -C "$backup_tmp" -cf - roles.sql schema.sql data.sql history-schema.sql history-data.sql manifest.json |
