@@ -62,6 +62,7 @@ def main():
   photo_migrations=[]
   v11_migrations=[]
   for f in sorted((ROOT/'supabase/migrations').glob('*.sql')):
+   if f.name.endswith('_logistics_all_trips.sql'):trip_migrations.append(f);continue
    if f.name[:14] >= '20261113120000':v11_migrations.append(f);continue
    if f.name.endswith('_daily_report_photos.sql'):photo_migrations.append(f);continue
    if f.name.endswith('_web_performance_security.sql'):performance_migrations.append(f);continue
