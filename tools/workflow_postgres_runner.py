@@ -213,6 +213,9 @@ def main():
   for f in v11_migrations:apply(f)
   for f in sorted((ROOT/'supabase/deferred/financial').glob('*.sql')):apply(f)
   if v11_migrations:
+   for suite in ('superuser-operational-access','commercial-insights'):
+    extra_result=sql((ROOT/'tests'/suite/'database.sql').read_text(),suite)
+    report['checks'].extend({'name':c.strip(),'pass':True} for c in re.findall(r'PASS ([^\n]+)',extra_result.stderr+extra_result.stdout))
    unit_result=sql((ROOT/'tests/unit-sales/database.sql').read_text(),'unit-sales')
    report['checks'].extend({'name':c.strip(),'pass':True} for c in re.findall(r'PASS ([^\n]+)',unit_result.stderr+unit_result.stdout))
    result=sql((ROOT/'tests/operational-readiness/database.sql').read_text(),'operational-readiness')

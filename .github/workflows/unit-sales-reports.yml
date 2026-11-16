@@ -1,8 +1,18 @@
-name: Sales reports in physical units
+name: Operational commercial insights and superuser access
 on:
   pull_request:
     paths:
       - 'hemocura-core/unit-sales-*.js'
+      - 'hemocura-core/commercial*.js'
+      - 'hemocura-core/workflow-data.js'
+      - 'hemocura-core/module-management.js'
+      - 'supabase/migrations/*commercial_operational_opportunities.sql'
+      - 'supabase/migrations/*superuser_operational_access.sql'
+      - 'tests/commercial-insights/**'
+      - 'tests/commercial-ux/**'
+      - 'tests/superuser-operational-access/**'
+      - 'tools/commercial_*browser_runner.cjs'
+      - 'tools/test_superuser_operational_access.py'
       - 'hemocura-core/workflow-sales.js'
       - 'hemocura-core/collections.js'
       - 'hemocura-core/economics.js'
@@ -16,6 +26,16 @@ on:
     branches: [main]
     paths:
       - 'hemocura-core/unit-sales-*.js'
+      - 'hemocura-core/commercial*.js'
+      - 'hemocura-core/workflow-data.js'
+      - 'hemocura-core/module-management.js'
+      - 'supabase/migrations/*commercial_operational_opportunities.sql'
+      - 'supabase/migrations/*superuser_operational_access.sql'
+      - 'tests/commercial-insights/**'
+      - 'tests/commercial-ux/**'
+      - 'tests/superuser-operational-access/**'
+      - 'tools/commercial_*browser_runner.cjs'
+      - 'tools/test_superuser_operational_access.py'
       - 'supabase/migrations/*sales_unit_reports.sql'
       - 'tests/unit-sales/**'
       - '.github/workflows/unit-sales-reports.yml'
@@ -32,12 +52,18 @@ jobs:
         with:
           node-version: '24'
       - run: node tests/unit-sales/domain.test.mjs
-      - run: python tools/migration_security_linter.py supabase/migrations/*sales_unit_reports.sql
+      - run: node tests/commercial-insights/domain.test.mjs
+      - run: node tests/commercial-ux/domain.test.mjs
+      - run: python tools/test_superuser_operational_access.py
+      - run: python tools/migration_security_linter.py supabase/migrations/*sales_unit_reports.sql supabase/migrations/*superuser_operational_access.sql supabase/migrations/*commercial_operational_opportunities.sql
       - run: python tools/workflow_postgres_runner.py --allow-external-prerequisite-fixture --report-dir /tmp/hemocura-unit-sales-sql
       - run: npm ci --prefix tests/wave50 --ignore-scripts --no-audit --no-fund
       - run: node tests/wave50/node_modules/playwright/cli.js install --with-deps chromium
       - run: node tools/workflow_browser_runner.cjs
       - run: node tools/inventory_output_browser_runner.cjs
+      - run: node tools/commercial_insights_browser_runner.cjs
+      - run: node tools/commercial_ux_browser_runner.cjs
+      - run: node tools/module_views_browser_runner.cjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -46,3 +72,6 @@ jobs:
             /tmp/hemocura-unit-sales-sql
             /tmp/hemocura-workflow-browser
             /tmp/hemocura-inventory-output
+            /tmp/hemocura-commercial-insights
+            /tmp/hemocura-commercial-ux
+            /tmp/hemocura-module-views-browser

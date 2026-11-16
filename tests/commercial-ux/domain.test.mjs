@@ -1,0 +1,10 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {commercialAgendaRows,commercialAgendaSummary} from '../../hemocura-core/commercial-agenda-domain.js';
+const date='2026-11-16',old='2026-11-15T14:00:00Z',today='2026-11-16T13:00:00Z';
+const visits=[{id:'future',customer_id:'c1',agent_id:'u1',scheduled_at:'2026-11-17T13:00:00Z',purpose:'Entrega',status:'PROPUESTA'},{id:'late',customer_id:'c1',agent_id:'u1',scheduled_at:today,purpose:'Revisar demanda',commitment:'Confirmar PG',followup_at:old,status:'CONFIRMADA'},{id:'resolved',customer_id:'c2',agent_id:'u2',scheduled_at:today,status:'REALIZADA',commitment:'Resuelto',commitment_closed_at:today,followup_at:old},{id:'cancelled',customer_id:'c2',agent_id:'u2',scheduled_at:today,status:'CANCELADA',commitment:'Anulado',followup_at:old}];
+test('summary excludes cancelled commitments and counts operational date',()=>assert.deepEqual(commercialAgendaSummary(visits,date),{today:2,pending:1,overdue:1}));
+test('pending followups rank before other visits',()=>assert.equal(commercialAgendaRows(visits,{date})[0].id,'late'));
+test('filters combine center text, ownership and pending mode',()=>assert.deepEqual(commercialAgendaRows(visits,{date,mode:'pending',mine:true,userId:'u1',search:'centro norte',customerName:id=>id==='c1'?'Centro Norte':'Sur'}).map(v=>v.id),['late']));
+test('today uses Santo Domingo date at midnight boundary',()=>assert.equal(commercialAgendaRows([{id:'midnight',scheduled_at:'2026-11-17T02:00:00Z',status:'PROPUESTA'}],{date,mode:'today'}).length,1));
+test('empty filters return no invented records',()=>assert.equal(commercialAgendaRows(visits,{date,mode:'overdue',mine:true,userId:'nobody'}).length,0));
