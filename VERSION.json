@@ -1,7 +1,7 @@
 {
   "project": "HemoCura Operations Intelligence + QMS + Compliance",
-  "version": "0.70.0",
-  "stage": "Reporte de todos los viajes realizados, con filtros por horario de salida y llegada y exportación del listado filtrado.",
+  "version": "0.71.0",
+  "stage": "Reportes de ventas en unidades físicas, filtros operativos y descarga sin montos económicos.",
   "release_channel": "RC",
   "protected_files": [
     "js/config.js"

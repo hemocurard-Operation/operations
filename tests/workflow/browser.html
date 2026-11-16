@@ -9,6 +9,8 @@ fixture.permissions=['DONORS_VIEW','DASHBOARD_VIEW','WORKFLOW_VIEW','COMMERCIAL_
 fixture.context={user_id:USER,roles:['SUPER_USUARIO'],email:'fixture@example.invalid',profile_branch_id:A,full_name:'Local test operator'};
 const hyperbaricAppointments=[{id:'appt1',branch_id:A,resource_id:'resource1',patient_name:'Carmen Abreu',patient_phone:'829-727-8852',patient_code:'CA-0001',starts_at:day+'T13:00:00-04:00',ends_at:day+'T14:00:00-04:00',operational_date:day,shift:'DIURNO',price:100,currency:'USD',session_label:'1 por el momento',referrer_name:'Dr. Báez',note:'no requiere transporte',status:'SOLICITADA'}];
 fixture.tables={
+ vw_sales_unit_report:[{sale_id:"sale1",sale_code:"OUT-1",sale_date:day,branch_id:A,customer_id:CLIENT,center_name:"Centro de ejemplo",shift:"DIURNO",status:"COMPLETADA",line_id:"line1",component_name:"PG",abo:"O",rh:"POSITIVO",quantity:3}],
+ vw_performed_session_report:[{id:"session1",branch_id:A,operational_date:day,shift:"DIURNO",status:"REALIZADA"}],
  branches:[{id:A,code:'A',name:'Sucursal A',active:true},{id:B,code:'B',name:'Sucursal B',active:true}],customers:[{id:CLIENT,name:'Centro de ejemplo',active:true}],
  products:[{id:'p1',code:'P1',name:'Guantes M',unit_of_measure:'caja',active:true}],
  commercial_visits:[{id:'visit1',branch_id:A,customer_id:CLIENT,agent_id:USER,scheduled_at:day+'T13:00:00-04:00',purpose:'Revisar demanda',status:'PROPUESTA',commitment:'Seguimiento',followup_at:day+'T08:00:00-04:00'}],

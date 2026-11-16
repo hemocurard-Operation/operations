@@ -1,3 +1,6 @@
+import {readUnitSales} from './unit-sales-data.js';
+import {unitSalesSummary} from './unit-sales-domain.js';
+import {localDay} from './workflow-domain.js';
 import { bloodData } from './blood-operations-data.js';
 import { flowData } from './blood-flow-data.js';
 import { supplyData } from './supply-data.js';
@@ -6,7 +9,9 @@ function esc(v=''){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':
 export async function mountBI(root){
   root.innerHTML='<section class="card"><div class="status info">Cargando inteligencia de negocios…</div></section>';
   try{
-    const [allRows,allFunnel,allSupply]=await Promise.all([bloodData.biToday(),flowData.funnel(),supplyData.plan()]);
+    const today=localDay();
+    const [allRows,allFunnel,allSupply,unitRows]=await Promise.all([bloodData.biToday(),flowData.funnel(),supplyData.plan(),readUnitSales({from:today,to:today})]);
+    const unitsByBranch=new Map(allRows.map(r=>[r.branch_id,unitSalesSummary(unitRows.filter(u=>u.branch_id===r.branch_id)).units]));
     const branchNames=[...new Set(allRows.map(r=>r.branch_name).filter(Boolean))].sort();
     let fBranch='';
 
@@ -14,7 +19,7 @@ export async function mountBI(root){
       const rows=fBranch?allRows.filter(r=>r.branch_name===fBranch):allRows;
       const funnel=fBranch?allFunnel.filter(r=>r.branch_name===fBranch):allFunnel;
       const supply=fBranch?allSupply.filter(r=>{const bn=allRows.find(b=>b.branch_id===r.branch_id);return bn&&bn.branch_name===fBranch}):allSupply;
-      const totals=rows.reduce((a,x)=>({d:a.d+Number(x.donors||0),e:a.e+Number(x.effective_donations||0),s:a.s+Number(x.screened_tests||0),r:a.r+Number(x.reactive_tests||0),i:a.i+Number(x.available_blood_units||0),o:a.o+Number(x.sales_outflows||0),f:a.f+Number(x.invoiced_amount||0)}),{d:0,e:0,s:0,r:0,i:0,o:0,f:0});
+      const totals=rows.reduce((a,x)=>({d:a.d+Number(x.donors||0),e:a.e+Number(x.effective_donations||0),s:a.s+Number(x.screened_tests||0),r:a.r+Number(x.reactive_tests||0),i:a.i+Number(x.available_blood_units||0),o:a.o+Number(x.sales_outflows||0),f:a.f+(unitsByBranch.get(x.branch_id)||0)}),{d:0,e:0,s:0,r:0,i:0,o:0,f:0});
 
       root.innerHTML=`
       <div class="sales-toolbar"><div><h2 class="section-heading">Inteligencia de Negocios</h2>
@@ -28,12 +33,12 @@ export async function mountBI(root){
         <section class="card"><div class="muted">Donantes</div><div class="kpi">${totals.d}</div></section>
         <section class="card"><div class="muted">Tamizajes</div><div class="kpi">${totals.s}</div></section>
         <section class="card"><div class="muted">Unidades disponibles</div><div class="kpi">${totals.i}</div></section>
-        <section class="card"><div class="muted">Facturado hoy</div><div class="kpi">RD$${totals.f.toLocaleString('es-DO')}</div></section>
+        <section class="card"><div class="muted">Unidades vendidas hoy</div><div class="kpi">${totals.f.toLocaleString('es-DO')}</div></section>
       </div>
 
       <section class="card"><h3>Comparativo por sucursal — hoy</h3><div class="table-wrap"><table class="data-table">
-      <thead><tr><th>Sucursal</th><th>Donantes</th><th>Donaciones efectivas</th><th>Tamizajes</th><th>Reactivos</th><th>Unidades disponibles</th><th>Salidas</th><th>Facturado</th></tr></thead>
-      <tbody>${rows.map(r=>`<tr><td>${esc(r.branch_name)}</td><td>${esc(r.donors)}</td><td>${esc(r.effective_donations)}</td><td>${esc(r.screened_tests)}</td><td>${esc(r.reactive_tests)}</td><td>${esc(r.available_blood_units)}</td><td>${esc(r.sales_outflows)}</td><td>${Number(r.invoiced_amount||0).toLocaleString('es-DO')}</td></tr>`).join('')}</tbody>
+      <thead><tr><th>Sucursal</th><th>Donantes</th><th>Donaciones efectivas</th><th>Tamizajes</th><th>Reactivos</th><th>Unidades disponibles</th><th>Salidas</th><th>Unidades vendidas</th></tr></thead>
+      <tbody>${rows.map(r=>`<tr><td>${esc(r.branch_name)}</td><td>${esc(r.donors)}</td><td>${esc(r.effective_donations)}</td><td>${esc(r.screened_tests)}</td><td>${esc(r.reactive_tests)}</td><td>${esc(r.available_blood_units)}</td><td>${esc(r.sales_outflows)}</td><td>${(unitsByBranch.get(r.branch_id)||0).toLocaleString('es-DO')}</td></tr>`).join('')}</tbody>
       </table></div></section>
 
       <section class="card"><h3>Embudo sanguíneo 30 días</h3><div class="table-wrap"><table class="data-table">
@@ -50,7 +55,7 @@ export async function mountBI(root){
       <li>Tasa de donación efectiva = donaciones efectivas / donantes.</li>
       <li>Tasa reactiva = resultados reactivos / pruebas realizadas.</li>
       <li>Cobertura operativa = inventario disponible vs salidas.</li>
-      <li>Conversión despacho→facturación y cartera pendiente.</li>
+      <li>Unidades entregadas por componente y centro; sesiones de servicio por separado.</li>
       <li>NC/CAPA y proyectos se mantienen en sus módulos de SGC/PM.</li></ul></section>`;
 
       document.getElementById('bi-f-branch').onchange=e=>{fBranch=e.target.value;render()};

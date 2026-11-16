@@ -23,7 +23,7 @@ export const bloodData={
   screeningSummary:()=>query('Reporte tamizaje',sb().from('vw_screening_summary').select('*').order('screening_date',{ascending:false})),
   donorSummary:()=>query('Reporte donantes',sb().from('vw_donor_summary').select('*').order('registration_date',{ascending:false})),
   salesSummary:()=>query('Reporte ventas',sb().from('vw_sales_operational_summary').select('*').order('sale_date',{ascending:false})),
-  biToday:()=>query('BI Operaciones',sb().from('vw_bi_operations_today').select('*')),
+  biToday:()=>query('BI Operaciones',sb().from('vw_bi_operations_today').select('branch_id,branch_name,donors,effective_donations,screened_tests,reactive_tests,available_blood_units,sales_outflows')),
   projects:()=>query('Portafolio',sb().from('vw_project_portfolio').select('*').order('priority')),
   createProject:async p=>{const {data,error}=await sb().from('projects').insert(p).select('*').single();if(error)throw new Error(`Proyecto: ${error.message}`);return data},
   updateProject:async(id,p)=>{const {data,error}=await sb().from('projects').update(p).eq('id',id).select('*').single();if(error)throw new Error(`Proyecto: ${error.message}`);return data}
