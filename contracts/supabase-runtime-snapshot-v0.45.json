@@ -1,7 +1,7 @@
 {
   "project_id": "tiothqiljipdamgudvcb",
   "verified_at": "2026-11-09",
-  "scope": "Frontend runtime objects, Daily Operational Report production contract and Training Native 1.1 RC; added coordination, purchases, role windows and area agenda objects verified 2026-10-16 against production catalogs; quality-information objects verified against production after migration 20261017005235; audit in implementation report; ISO clause assessment/evidence tables, vw_iso_compliance_summary and iso_clause_assessment RPCs verified live 2026-11-03 after migration 20261103130000; vw_referrer_visit_route verified live 2026-11-03 after migration 20261103190000; hemovigilance_delivery_details and hemovig_delivery_nc_create verified live 2026-11-04 after migration 20261104100000; vw_hyperbaric_appointments_display verified live 2026-11-04 after migration 20261104110000; CRM contacts, activities, history, idempotent requests, services and three RPCs verified after commercial_crm_contacts migration; scoped customer catalog and writes tested; CRM shared portfolio and weekly planner verified 2026-11-06; twelve-week execution objects verified 2026-11-06; incoming supplier quotation metadata verified 2026-11-07; commercial agenda RPC and reservation triggers verified 2026-11-07; donor_search_page invoker/permissions, quotation indexes and insert policies verified live after web_performance_security migration 20261107181249; daily_report_photos columns, RLS and private immutable grants verified live 2026-11-09 after migration 20261109002642; v0.68 operational objects, RLS flags, admin metadata RPC privileges and nine migration source hashes verified against production catalogs; regulatory/forecast and financial drafts NOT included as deployed.; v0.69 regulatory and operational forecasts deployed with invoker views and three source hashes verified against production; seven clinical rules and eleven legal requirements remain unapproved.; v0.70 logistics endpoint classification helper, anonymous execution denial, removal of arrival-hours registration block and migration source hash verified live without creating operational records.",
+  "scope": "Frontend runtime objects, Daily Operational Report production contract and Training Native 1.1 RC; added coordination, purchases, role windows and area agenda objects verified 2026-10-16 against production catalogs; quality-information objects verified against production after migration 20261017005235; audit in implementation report; ISO clause assessment/evidence tables, vw_iso_compliance_summary and iso_clause_assessment RPCs verified live 2026-11-03 after migration 20261103130000; vw_referrer_visit_route verified live 2026-11-03 after migration 20261103190000; hemovigilance_delivery_details and hemovig_delivery_nc_create verified live 2026-11-04 after migration 20261104100000; vw_hyperbaric_appointments_display verified live 2026-11-04 after migration 20261104110000; CRM contacts, activities, history, idempotent requests, services and three RPCs verified after commercial_crm_contacts migration; scoped customer catalog and writes tested; CRM shared portfolio and weekly planner verified 2026-11-06; twelve-week execution objects verified 2026-11-06; incoming supplier quotation metadata verified 2026-11-07; commercial agenda RPC and reservation triggers verified 2026-11-07; donor_search_page invoker/permissions, quotation indexes and insert policies verified live after web_performance_security migration 20261107181249; daily_report_photos columns, RLS and private immutable grants verified live 2026-11-09 after migration 20261109002642; v0.68 operational objects, RLS flags, admin metadata RPC privileges and nine migration source hashes verified against production catalogs; regulatory/forecast and financial drafts NOT included as deployed.; v0.69 regulatory and operational forecasts deployed with invoker views and three source hashes verified against production; seven clinical rules and eleven legal requirements remain unapproved.; v0.70 logistics endpoint classification helper, anonymous execution denial, removal of arrival-hours registration block and migration source hash verified live without creating operational records.; v0.71 unit-sales invoker views, absence of monetary/patient columns, anonymous denial and report titles verified against production catalog.",
   "relations": [
     "access_events",
     "app_feature_flags",
@@ -235,6 +235,7 @@
     "vw_my_training_catalog",
     "vw_my_work_areas",
     "vw_open_management_alerts",
+    "vw_performed_session_report",
     "vw_plan_vs_actual_status",
     "vw_production_summary_30d",
     "vw_project_portfolio",
@@ -248,6 +249,7 @@
     "vw_resource_control_summary",
     "vw_sale_lines_editable",
     "vw_sales_operational_summary",
+    "vw_sales_unit_report",
     "vw_screening_release_queue",
     "vw_screening_summary",
     "vw_security_readiness",
@@ -997,6 +999,11 @@
     {
       "version": "20261116072812",
       "name": "logistics_all_trips",
+      "source": "supabase_migrations.schema_migrations"
+    },
+    {
+      "version": "20261116130810",
+      "name": "sales_unit_reports",
       "source": "supabase_migrations.schema_migrations"
     }
   ]

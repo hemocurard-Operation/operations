@@ -1,0 +1,10 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {filterUnitSales,unitSalesSummary,groupUnitSales,unitSalesCsv} from '../../hemocura-core/unit-sales-domain.js';
+const base={sale_id:'s1',sale_date:'2026-11-16',branch_id:'b1',customer_id:'c1',center_name:'Centro',shift:'DIURNO',status:'DESPACHADA',line_id:'l1',component_name:'PG',quantity:2,total_amount:999999};
+const rows=[base,{...base,line_id:'l2',component_name:'Plasma',quantity:3},{...base,sale_id:'s2',line_id:'l3',branch_id:'b2',shift:'NOCTURNO',quantity:4},{...base,sale_id:'missing',line_id:null,quantity:null},{...base,sale_id:'cancelled',status:'CANCELADA',quantity:100}];
+test('units come from line quantities and deliveries are unique, not money or line counts',()=>assert.deepEqual(unitSalesSummary(rows),{units:9,sales:3,centers:1,missing:1}));
+test('combined filters and cancelled exclusion',()=>{const f=filterUnitSales(rows,{branch:'b1',shift:'DIURNO',center:'c1',component:'PG'});assert.equal(unitSalesSummary(f).units,2);assert.equal(filterUnitSales(rows).length,4)});
+test('component totals preserve physical quantities',()=>assert.equal(groupUnitSales(rows,r=>r.component_name).find(g=>g.label==='PG').units,6));
+test('invalid quantity fails visibly',()=>{for(const quantity of [-1,NaN,Infinity,'oops'])assert.throws(()=>unitSalesSummary([{...base,quantity}]))});
+test('export contains quantities only, preserves unknowns and prevents spreadsheet formulas',()=>{const csv=unitSalesCsv([...rows,{...base,center_name:'=HYPERLINK("bad")'}]);assert.match(csv,/Unidades/);assert.match(csv,/No registrado/);assert.match(csv,/'=HYPERLINK/);assert.doesNotMatch(csv,/999999|amount|DOP|USD|cancelled/)});

@@ -9,7 +9,7 @@ export async function mountOperationalSales(root){
  const canWrite=access.permissions.has('SALES_WRITE')&&access.permissions.has('DISPATCH_WRITE');
  const bm=Object.fromEntries(branches.map(b=>[b.id,b.name]));
  let rows=[],lines=[],units=[],busy=false,loading=false;
- root.innerHTML=`<div class="sales-toolbar"><div><h2 class="section-heading">Salidas de inventario</h2><div class="muted">Registre la entrega de unidades liberadas y conserve su trazabilidad por sucursal y centro.</div></div><div>${canWrite?'<button id="sale-new" disabled>Nueva salida</button> ':''}<button id="sale-refresh" class="secondary">Actualizar</button></div></div>
+ root.innerHTML=`<div class="sales-toolbar"><div><h2 class="section-heading">Salidas de inventario</h2><div class="muted">Registre la entrega de unidades liberadas y conserve su trazabilidad por sucursal y centro.</div></div><div>${canWrite?'<button id="sale-new" disabled>Nueva salida</button> ':''}<a class="button secondary" href="#shiftreport">Reporte de unidades</a> <button id="sale-refresh" class="secondary">Actualizar</button></div></div>
  <div id="sale-msg" role="status" aria-live="polite"></div>
  <form id="sale-filters" class="card filter-grid"><label>Sucursal<select id="sale-filter-branch"><option value="">Todas las autorizadas</option>${branches.map(b=>`<option value="${esc(b.id)}">${esc(b.name)}</option>`).join('')}</select></label><label>Buscar código o centro<input id="sale-search" type="search" placeholder="Código de salida, unidad o centro"></label></form>
  <div class="grid sales-kpis" id="sale-kpis"></div>

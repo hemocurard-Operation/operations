@@ -1,0 +1,48 @@
+name: Sales reports in physical units
+on:
+  pull_request:
+    paths:
+      - 'hemocura-core/unit-sales-*.js'
+      - 'hemocura-core/workflow-sales.js'
+      - 'hemocura-core/collections.js'
+      - 'hemocura-core/economics.js'
+      - 'hemocura-core/bi.js'
+      - 'hemocura-core/command-center.js'
+      - 'supabase/migrations/*sales_unit_reports.sql'
+      - 'tests/unit-sales/**'
+      - 'tools/workflow_browser_runner.cjs'
+      - '.github/workflows/unit-sales-reports.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'hemocura-core/unit-sales-*.js'
+      - 'supabase/migrations/*sales_unit_reports.sql'
+      - 'tests/unit-sales/**'
+      - '.github/workflows/unit-sales-reports.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: node tests/unit-sales/domain.test.mjs
+      - run: python tools/migration_security_linter.py supabase/migrations/*sales_unit_reports.sql
+      - run: python tools/workflow_postgres_runner.py --allow-external-prerequisite-fixture --report-dir /tmp/hemocura-unit-sales-sql
+      - run: npm ci --prefix tests/wave50 --ignore-scripts --no-audit --no-fund
+      - run: node tests/wave50/node_modules/playwright/cli.js install --with-deps chromium
+      - run: node tools/workflow_browser_runner.cjs
+      - run: node tools/inventory_output_browser_runner.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: physical-unit-reports
+          path: |
+            /tmp/hemocura-unit-sales-sql
+            /tmp/hemocura-workflow-browser
+            /tmp/hemocura-inventory-output
