@@ -62,8 +62,8 @@ export async function mountOpsDashboard(root){
     loadVersion(),loadAccess(),filterRoutes(routeList()),
     safeCount('Despachos',()=>sb.from('dispatches').select('id',{count:'exact',head:true}).eq('dispatch_date',today)),
     safeCount('Incidencias',()=>sb.from('incidents').select('id',{count:'exact',head:true}).eq('requires_quality_followup',true)),
-    safeRows('No conformidades',()=>sb.from('nonconformities').select('id,status')),
-    safeRows('CAPA',()=>sb.from('capa').select('id,status'))
+    safeRows('No conformidades',()=>sb.from('nonconformities').select('id,status').order('id')),
+    safeRows('CAPA',()=>sb.from('capa').select('id,status').order('id'))
   ]);
   const roles=rolesOf(access.context),primary=roles.find(r=>EXPERIENCES[r])||'GERENCIA_OPERATIVA',xp=EXPERIENCES[primary]||EXPERIENCES.GERENCIA_OPERATIVA;
   // Merge actions from secondary roles (hallazgo #4: multi-role support)
