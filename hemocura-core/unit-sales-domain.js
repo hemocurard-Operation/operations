@@ -1,4 +1,4 @@
-export const isActiveSale=row=>!['CANCELADA','ANULADA'].includes(row.status);
+export const isActiveSale=row=>!['CANCELADA','ANULADA','PENDIENTE'].includes(row.status);
 export function filterUnitSales(rows,{branch='',shift='',center='',component=''}={}){
  return rows.filter(r=>isActiveSale(r)&&(!branch||r.branch_id===branch)&&(!shift||r.shift===shift)&&(!center||(r.customer_id||r.center_name)===center)&&(!component||r.component_name===component));
 }

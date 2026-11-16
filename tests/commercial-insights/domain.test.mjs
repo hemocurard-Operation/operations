@@ -16,3 +16,5 @@ test('invalid dates and physical quantities fail rather than generating false me
 test('declared opportunity targets count only future horizon and keep blood units and sessions separate',()=>{const base={branch_id:'b1',customer_id:'c1',stage:'PROPUESTA',target_date:'2026-12-01',target_units:4,service_type:'SANGRE'};const plan=opportunityPlan([base,{...base,service_type:'CAMARA_HIPERBARICA',target_units:2},{...base,target_units:null},{...base,target_date:'2026-11-01'},{...base,target_date:'2027-01-01'},{...base,stage:'GANADA'},{...base,branch_id:'b2'}],{asOf,branch:'b1'});assert.deepEqual(plan,{bloodUnits:4,sessions:2,planned:2,undocumented:1,overdue:1})});
 
 test('targets due today are not overdue before the day has ended',()=>{const result=opportunityPlan([{branch_id:'b1',stage:'PROPUESTA',target_date:asOf,target_units:2,service_type:'SANGRE'}],{asOf,branch:'b1'});assert.equal(result.overdue,0)});
+
+test('pending dispatches never inflate history or the business reference',()=>{const clean=commercialInsights(rows,{asOf,branch:'b1'});assert.deepEqual(commercialInsights([...rows,row(asOf,700,{status:'PENDIENTE'})],{asOf,branch:'b1'}),clean)});
