@@ -1,5 +1,5 @@
 {
-  "contract_version": "0.68.0",
+  "contract_version": "0.69.0",
   "database_baseline": "0.45-training-native-1.1-rc + value-chain-50 + decision-chain-50 + predictive-chain-50 + orchestration-chain-50",
   "relations": [
     "access_events",
@@ -24,6 +24,7 @@
     "cleaning_records",
     "cold_chain_devices",
     "cold_chain_readings",
+    "commercial_goals",
     "commercial_locations",
     "commercial_opportunities",
     "commercial_plans",
@@ -124,6 +125,9 @@
     "quality_processes",
     "quotation_decisions",
     "reagent_lots",
+    "regulatory_actions",
+    "regulatory_assessments",
+    "regulatory_requirements",
     "release_signoffs",
     "requisition_lines",
     "requisitions",
@@ -187,6 +191,7 @@
     "vw_cleaning_alerts",
     "vw_cold_chain_excursions",
     "vw_command_center_today",
+    "vw_commercial_goal_progress",
     "vw_competency_alerts",
     "vw_competency_compliance_summary",
     "vw_continuity_readiness",
@@ -199,11 +204,13 @@
     "vw_donor_appointment_agenda",
     "vw_donor_coordination",
     "vw_donor_next_donation",
+    "vw_donor_outlook",
     "vw_donor_summary",
     "vw_donors_required_plan",
     "vw_environmental_alerts",
     "vw_eqa_alerts",
     "vw_equipment_alerts",
+    "vw_equipment_dossier",
     "vw_equipment_usage_alerts",
     "vw_exception_candidates",
     "vw_exception_portfolio",
@@ -235,6 +242,7 @@
     "vw_quality_today",
     "vw_reagent_alerts",
     "vw_referrer_visit_route",
+    "vw_regulatory_matrix",
     "vw_release_1_0_readiness",
     "vw_resource_control_summary",
     "vw_sale_lines_editable",
@@ -245,6 +253,7 @@
     "vw_staff_competency_gaps",
     "vw_supplier_performance",
     "vw_supply_alerts",
+    "vw_supply_consumption_forecast",
     "vw_training_analytics",
     "vw_training_assignment_detail",
     "vw_training_assignment_eligibility",
@@ -339,7 +348,6 @@
   "optional_relations": [
     "budgets",
     "clinical_demand_requests",
-    "commercial_goals",
     "compliance_penal_actions",
     "compliance_penal_assessments",
     "compliance_penal_requirements",
@@ -354,7 +362,6 @@
     "medical_referrers",
     "orchestration_scenarios",
     "predictive_decision_reviews",
-    "regulatory_assessments",
     "supplier_payables",
     "supplier_payments",
     "supply_transfers",
@@ -369,7 +376,6 @@
     "vw_campaign_economics",
     "vw_cash_collection_forecast",
     "vw_cash_flow_summary",
-    "vw_commercial_goal_progress",
     "vw_customer_health_score",
     "vw_customer_profitability",
     "vw_customer_value_summary",
@@ -387,7 +393,6 @@
     "vw_predictive_demand_30d",
     "vw_predictive_network_candidates",
     "vw_referrer_effectiveness_score",
-    "vw_regulatory_matrix",
     "vw_scenario_impact",
     "vw_service_level_performance",
     "vw_stock_risk_projection",
@@ -625,7 +630,6 @@
     "training_native_1_1_job_assignment_rpc"
   ],
   "optional_module_notes": {
-    "financial": "Excluded from deployment and navigation; drafts in supabase/deferred/financial.",
-    "regulatory_and_forecasts": "Prepared and isolated-tested; Supabase confirmation expired; not deployed."
+    "financial": "Excluded from deployment and navigation; drafts in supabase/deferred/financial."
   }
 }

@@ -4,7 +4,7 @@ import { loadAccess } from './access-control.js';
 import { esc, field, table } from './workflow-ui.js';
 
 function bar(actual,target){
-  if(!target) return '—';
+  if(actual===null||actual===undefined)return 'Sin cálculo';if(!target) return '—';
   const pct=Math.min(100,Math.max(0,Math.round((Number(actual||0)/Number(target))*100)));
   const cls=pct>=100?'stock-ok':pct>=70?'stock-warning':'stock-critical';
   return `<span class="stock-pill ${cls}">${pct}%</span>`;
@@ -20,7 +20,7 @@ export async function mountCommercialGoals(root){
       sb.from('branches').select('id,name').eq('active',true).order('name'),
       sb.from('vw_commercial_goal_progress').select('*').order('period_end',{ascending:false}).limit(200)
     ]);
-    if(b.error) throw new Error(b.error.message);
+    if(b.error) throw new Error(b.error.message);if(g.error) throw new Error(g.error.message);
     branches=b.data||[];goals=g.data||[];
   }catch(err){root.innerHTML=`<section class="card"><div class="status bad">${esc(err.message)}</div></section>`;return;}
   const canWrite=access.permissions.has('COMMERCIAL_WRITE');
@@ -28,15 +28,15 @@ export async function mountCommercialGoals(root){
   const bname=id=>branches.find(b=>b.id===id)?.name||'Corporativo';
 
   function render(){
-    const t=table(['Período','Sucursal','Métrica','Objetivo','Real','Progreso'],
+    const t=table(['Período','Sucursal','Métrica','Objetivo','Real','Progreso','Estado'],
       goals.map(g=>[
         esc(g.period_start)+' → '+esc(g.period_end),
-        bname(g.branch_id),esc(g.metric),
-        esc(g.target_value),esc(g.actual_value??'—'),bar(g.actual_value,g.target_value)
+        esc(bname(g.branch_id)),esc(g.metric),
+        esc(g.target_value),esc(g.actual_value??'—'),bar(g.actual_value,g.target_value),g.approved_by?'Aprobada':'Borrador'
       ]));
     root.innerHTML=`
       <div class="sales-toolbar"><div>
-        <h2 class="section-heading">Metas comerciales</h2>
+        <h2 class="section-heading">Metas operativas</h2>
         <div class="muted">Objetivos cuantitativos por sucursal/agente/servicio comparados con el desempeño real.</div>
       </div>${canWrite?'<button data-cg-new>+ Nueva meta</button>':''}</div>
       <div data-cg-msg role="status"></div>
@@ -55,18 +55,16 @@ export async function mountCommercialGoals(root){
   }
 
   function openNew(){
-    const metrics=['VISITAS_COMPLETADAS','VISITAS_EDUCATIVAS','REFERIDOS_NUEVOS','DONANTES_CAPTADOS',
-                   'VENTAS_UNIDADES','VENTAS_MONTO','OPORTUNIDADES_ABIERTAS','OPORTUNIDADES_GANADAS',
-                   'OPORTUNIDADES_MONTO','CLIENTES_ACTIVOS','TASA_CONVERSION_PCT'];
+    const metrics=['VISITAS_COMPLETADAS','VISITAS_EDUCATIVAS','OPORTUNIDADES_GANADAS'];
     const today=new Date().toISOString().slice(0,10);
     const d=new Date();d.setMonth(d.getMonth()+3);
     const future=d.toISOString().slice(0,10);
     const html=field('period_start','Inicio','date',today,{required:true})
       +field('period_end','Fin','date',future,{required:true})
-      +field('branch_id','Sucursal','select','',{items:[['','Corporativo'],...branches.map(b=>[b.id,b.name])]})
+      +field('branch_id','Sucursal','select','',{items:[...(access.context?.roles?.includes('SUPER_USUARIO')?[['','Corporativo']]:[]),...branches.map(b=>[b.id,b.name])]})
       +field('metric','Métrica','select','',{items:metrics.map(m=>[m,m]),required:true})
       +field('target_value','Objetivo','number',0,{required:true})
-      +field('notes','Notas','textarea','');
+      +field('notes','Notas','textarea','',{required:false});
     const dlg=root.querySelector('[data-cg-dialog]');
     const form=root.querySelector('[data-cg-form]');
     root.querySelector('[data-cg-fields]').innerHTML=html;
@@ -92,8 +90,8 @@ export async function mountCommercialGoals(root){
   }
 
   async function reload(){
-    const {data}=await sb.from('vw_commercial_goal_progress').select('*').order('period_end',{ascending:false}).limit(200);
-    goals=data||[];render();
+    const {data,error}=await sb.from('vw_commercial_goal_progress').select('*').order('period_end',{ascending:false}).limit(200);
+    if(error)throw new Error(error.message);goals=data||[];render();
   }
 
   render();

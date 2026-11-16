@@ -1,7 +1,7 @@
 {
   "project": "HemoCura Operations Intelligence + QMS + Compliance",
-  "version": "0.68.0",
-  "stage": "Consulta de áreas por ADMIN y SUPER_USUARIO; limpieza, contadores de equipos, donantes y habilitaciones operacionales aplicados. Matriz regulatoria y proyecciones preparadas, pendientes de confirmación técnica.",
+  "version": "0.69.0",
+  "stage": "Matriz regulatoria, proyecciones, expediente de equipos y menús desplegados; simulación de formularios por usuario sin sesión ni registros reales.",
   "release_channel": "RC",
   "protected_files": [
     "js/config.js"
@@ -10,10 +10,7 @@
   "clinical_core": "LIVE-LIMITED / CONTROLLED_RELEASE",
   "workflow_migration": "20261013120000_workflow_commercial_quality",
   "workflow_refinements_migration": "20261013133000_workflow_refinements",
-  "pending_supabase_migrations": [
-    "20261115231630_regulatory_matrix_ready",
-    "20261115231631_operational_forecasts_ready"
-  ],
+  "pending_supabase_migrations": [],
   "pending_approvals": [
     "Revisión clínica de donation_interval_rules: las reglas sin firma no entran en vigor.",
     "Revisión legal de la matriz regulatoria cuando se despliegue."
@@ -24,5 +21,10 @@
     "20261114080000_budgets",
     "20261114140000_expense_forecast"
   ],
-  "admin_workspace_mode": "Consulta de accesos; apertura de pantallas con permisos propios del administrador. Sin suplantación de usuarios."
+  "admin_workspace_mode": "Componentes reales y formularios según los permisos seleccionados, con datos sintéticos vacíos en marco aislado; sin acceso a sesión, red de datos ni escritura.",
+  "pending_external_actions": [
+    "Validación médica de 7 reglas de donación.",
+    "Validación legal de 11 requisitos normativos.",
+    "Configurar destino privado y credenciales de respaldos; ejecutar copia y restauración aislada."
+  ]
 }

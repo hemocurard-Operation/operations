@@ -1,6 +1,7 @@
 import { accessData } from './access-data.js';
 import {getSupabase} from './supabase.js';
 export const ROUTE_PERMISSION={
+  operationsoutlook:'OPERATIONAL_OUTLOOK_VIEW',commercialgoals:'COMMERCIAL_VIEW',
   userworkspaces:'WORKSPACE_PREVIEW_VIEW',cleaning:'CLEANING_VIEW',licenses:'LICENSE_VIEW',regulatorymatrix:'REGULATORY_VIEW',
   teamdeliveries:'DELIVERIES_VIEW',
   extratrips:'TRIPS_VIEW',

@@ -1,102 +1,21 @@
-// HemoCura v11 C1 §8 — UI mínima de matriz regulatoria.
-import { getSupabase } from './supabase.js';
-import { loadAccess } from './access-control.js';
-import { esc, field, table } from './workflow-ui.js';
-
-const STATE={AL_DIA:'stock-ok',IMPLEMENTADO_SIN_VERIFICAR:'stock-warning',PENDIENTE:'stock-warning',REVISION_VENCIDA:'stock-critical',SIN_EVALUAR:'stock-critical',NO_APLICA:'',INACTIVO:''};
-function pill(s){return `<span class="stock-pill ${STATE[s]||''}">${esc(s)}</span>`;}
-
+import {getSupabase} from './supabase.js';
+import {loadAccess} from './access-control.js';
+import {esc,field,table} from './workflow-ui.js';
 export async function mountRegulatory(root){
-  root.innerHTML='<section class="card"><div class="status info">Cargando matriz regulatoria…</div></section>';
-  let access,matrix=[],busy=false;
-  const sb=getSupabase();
-  try{
-    access=await loadAccess();
-    const {data,error}=await sb.from('vw_regulatory_matrix').select('*').order('sequence_no').limit(500);
-    if(error) throw new Error(error.message);
-    matrix=data||[];
-  }catch(err){root.innerHTML=`<section class="card"><div class="status bad">${esc(err.message)}</div></section>`;return;}
-  const canWrite=access.permissions.has('REGULATORY_WRITE');
-  const actor=access.context?.user_id||null;
-
-  function render(){
-    const byDomain=matrix.reduce((acc,r)=>{(acc[r.domain]=acc[r.domain]||[]).push(r);return acc;},{});
-    const sections=Object.entries(byDomain).map(([domain,rows])=>`
-      <section class="card"><h3>${esc(domain)}</h3>
-        ${table(['#','Norma','Artículo','Obligación','Aplicabilidad','Estado','Acción'],
-          rows.map(r=>[
-            String(r.sequence_no),
-            `<strong>${esc(r.requirement_code)}</strong><br><small>${esc(r.source_norm)}</small>`,
-            esc(r.article_reference||'—'),
-            esc(r.obligation),
-            esc(r.applicability),
-            pill(r.overall_state),
-            canWrite?`<button class="secondary compact" data-reg-evaluate="${esc(r.requirement_id)}">Evaluar</button>`:'Consulta'
-          ]))}
-      </section>`).join('');
-    root.innerHTML=`
-      <div class="sales-toolbar"><div>
-        <h2 class="section-heading">Matriz regulatoria</h2>
-        <div class="muted">Ley 42-01, Dec. 349-04 banco de sangre, Ley 172-13, Ley 87-01, Ley 64-00, Código de Trabajo, ISO 9001/15189, MSP. Borrador: cada norma requiere aprobación de cumplimiento antes de uso vinculante.</div>
-      </div></div>
-      <div data-reg-msg role="status"></div>
-      ${sections}
-      <dialog data-reg-dialog class="sales-dialog"><form data-reg-form>
-        <h3 data-reg-title></h3>
-        <div data-reg-fields class="filter-grid"></div>
-        <p data-reg-error role="alert"></p>
-        <div class="dialog-actions">
-          <button type="button" data-reg-cancel class="secondary">Cancelar</button>
-          <button type="submit">Guardar evaluación</button>
-        </div>
-      </form></dialog>`;
-    root.querySelectorAll('[data-reg-evaluate]').forEach(b=>b.onclick=()=>openEvaluate(b.dataset.regEvaluate));
+ root.innerHTML='<section class="card" role="status">Cargando matriz regulatoria…</section>';
+ const sb=getSupabase();
+ try{
+  const [access,b]=await Promise.all([loadAccess(),sb.from('branches').select('id,name').eq('active',true).order('name')]);if(b.error)throw b.error;
+  const branches=b.data||[],canWrite=access.permissions.has('REGULATORY_WRITE'),canReview=access.permissions.has('REGULATORY_REVIEW');let branch=branches.find(b=>b.id===access.context?.branch_id)?.id||branches[0]?.id||'',rows=[],generation=0;
+  root.innerHTML=`<section class="card"><h2>Matriz regulatoria</h2><p>Los requisitos sin aprobación legal permanecen en borrador. Una evaluación operativa no sustituye esa aprobación.</p><label>Sucursal <select data-reg-branch>${branches.map(b=>`<option value="${esc(b.id)}">${esc(b.name)}</option>`).join('')}</select></label><button type="button" data-reg-refresh>Actualizar</button><p data-reg-status role="status"></p><div data-reg-body></div><dialog data-reg-dialog><form><h3 data-reg-title></h3><div data-reg-fields></div><p data-reg-error role="alert"></p><button type="button" data-reg-cancel>Cancelar</button><button type="submit">Guardar evaluación</button></form></dialog></section>`;
+  const status=root.querySelector('[data-reg-status]'),body=root.querySelector('[data-reg-body]'),select=root.querySelector('select'),dialog=root.querySelector('dialog');select.value=branch;
+  async function load(){const ticket=++generation;body.replaceChildren();status.textContent='Consultando requisitos y evaluaciones…';if(!branch){status.textContent='No hay sucursales disponibles.';return}
+   try{const [req,ass]=await Promise.all([sb.from('regulatory_requirements').select('id,requirement_code,source_norm,title,obligation,approved_by,approved_at,sequence_no').eq('active',true).order('sequence_no').limit(500),sb.from('regulatory_assessments').select('id,requirement_id,branch_id,status,maturity,target_date,evidence_reference,notes,created_by,reviewed_by').eq('branch_id',branch).order('id').limit(500)]);if(req.error||ass.error)throw req.error||ass.error;if(ticket!==generation||!root.isConnected)return;const assessments=new Map((ass.data||[]).map(a=>[a.requirement_id,a]));rows=(req.data||[]).map(r=>({...r,assessment:assessments.get(r.id)}));
+    body.innerHTML=table(['Requisito','Obligación','Aprobación legal','Evaluación de sucursal','Evidencia','Acción'],rows.map(r=>{const a=r.assessment;const editable=canWrite&&!a?.reviewed_by;return [esc(r.requirement_code)+'<br>'+esc(r.source_norm),esc(r.obligation),r.approved_by&&r.approved_at?'Aprobada':'Borrador · revisión legal pendiente',esc(a?.status||'SIN_EVALUAR'),esc(a?.evidence_reference||'No registrada'),(editable?`<button type="button" data-reg-evaluate="${esc(r.id)}">Evaluar</button>`:'Consulta')+(canReview&&a&&a.created_by!==access.context?.user_id&&!a.reviewed_by?` <button type="button" data-reg-review="${esc(r.id)}">Verificar evaluación</button>`:'')]}));status.textContent=`${rows.length} requisitos · evaluaciones de la sucursal seleccionada`;
+    body.querySelectorAll('[data-reg-evaluate]').forEach(b=>b.onclick=()=>edit(b.dataset.regEvaluate));body.querySelectorAll('[data-reg-review]').forEach(b=>b.onclick=async()=>{b.disabled=true;try{const r=rows.find(x=>x.id===b.dataset.regReview);const {data,error}=await sb.from('regulatory_assessments').update({status:'VERIFICADO'}).eq('id',r.assessment.id).select('id').single();if(error||!data)throw error||Error('No se confirmó la verificación');await load();}catch(e){status.textContent=e.message;b.disabled=false;}});
+   }catch(e){if(ticket===generation){body.replaceChildren();status.textContent='No se pudieron cargar las evaluaciones: '+e.message;}}
   }
-
-  function openEvaluate(requirementId){
-    const r=matrix.find(x=>x.requirement_id===requirementId);
-    if(!r) return;
-    const html=field('status','Estado','select',r.assessment_status||'NO_INICIADO',{items:[
-      ['NO_INICIADO','No iniciado'],['EN_DESARROLLO','En desarrollo'],['IMPLEMENTADO','Implementado'],
-      ['VERIFICADO','Verificado'],['BLOQUEADO','Bloqueado'],['NO_APLICA','No aplica']
-    ],required:true})
-    +field('maturity','Madurez (0-4)','number',r.maturity||0,{required:true})
-    +field('target_date','Fecha objetivo','date',r.target_date||'')
-    +field('evidence_reference','Referencia de evidencia','text',r.evidence_reference||'')
-    +field('notes','Notas','textarea','');
-    const d=root.querySelector('[data-reg-dialog]');
-    const form=root.querySelector('[data-reg-form]');
-    root.querySelector('[data-reg-title]').textContent=`${r.requirement_code} · ${r.source_norm}`;
-    root.querySelector('[data-reg-fields]').innerHTML=html;
-    root.querySelector('[data-reg-error]').textContent='';
-    form.onsubmit=async ev=>{
-      ev.preventDefault();if(busy||!form.reportValidity())return;busy=true;
-      const btn=form.querySelector('[type=submit]');btn.disabled=true;
-      try{
-        const f=Object.fromEntries(new FormData(form));
-        const payload={
-          requirement_id:requirementId,
-          branch_id:r.branch_id||null,
-          status:f.status,maturity:Number(f.maturity),
-          target_date:f.target_date||null,evidence_reference:f.evidence_reference||null,
-          notes:f.notes||null,created_by:actor
-        };
-        let {error}= r.assessment_id
-          ? await sb.from('regulatory_assessments').update(payload).eq('id',r.assessment_id)
-          : await sb.from('regulatory_assessments').insert(payload);
-        if(error) throw new Error(error.message);
-        d.close();await reload();root.querySelector('[data-reg-msg]').innerHTML='<div class="status ok">Evaluación guardada.</div>';
-      }catch(err){root.querySelector('[data-reg-error]').textContent=err.message;}
-      finally{busy=false;btn.disabled=false;}
-    };
-    root.querySelector('[data-reg-cancel]').onclick=()=>{if(!busy)d.close();};
-    d.showModal();
-  }
-
-  async function reload(){
-    const {data}=await sb.from('vw_regulatory_matrix').select('*').order('sequence_no').limit(500);
-    matrix=data||[];render();
-  }
-
-  render();
+  function edit(id){const r=rows.find(r=>r.id===id),a=r.assessment||{},savedBranch=branch;root.querySelector('[data-reg-title]').textContent=r.requirement_code+' · '+r.title;root.querySelector('[data-reg-fields]').innerHTML=field('status','Estado','select',a.status||'NO_INICIADO',{items:['NO_INICIADO','EN_DESARROLLO','IMPLEMENTADO','BLOQUEADO','NO_APLICA'],required:true})+field('maturity','Madurez (0–4)','number',a.maturity||0,{required:true})+field('target_date','Fecha objetivo','date',a.target_date||'',{required:false})+field('evidence_reference','Referencia de evidencia','text',a.evidence_reference||'',{required:false})+field('notes','Notas','textarea',a.notes||'',{required:false});root.querySelector('[data-reg-error]').textContent='';const form=dialog.querySelector('form');form.onsubmit=async e=>{e.preventDefault();if(!form.reportValidity())return;const button=form.querySelector('[type=submit]');if(button.disabled)return;button.disabled=true;try{const f=Object.fromEntries(new FormData(form));const maturity=Number(f.maturity);if(!Number.isInteger(maturity)||maturity<0||maturity>4)throw Error('La madurez debe ser un entero entre 0 y 4.');const payload={requirement_id:id,branch_id:savedBranch,status:f.status,maturity,target_date:f.target_date||null,evidence_reference:f.evidence_reference||null,notes:f.notes||null};const q=a.id?sb.from('regulatory_assessments').update(payload).eq('id',a.id):sb.from('regulatory_assessments').insert(payload);const {data,error}=await q.select('id').single();if(error||!data)throw error||Error('No se confirmó el guardado');dialog.close();await load();}catch(e){root.querySelector('[data-reg-error]').textContent=e.message;}finally{button.disabled=false;}};dialog.showModal();}
+  root.querySelector('[data-reg-cancel]').onclick=()=>{if(!dialog.querySelector('[type=submit]').disabled)dialog.close()};select.onchange=()=>{branch=select.value;load()};root.querySelector('[data-reg-refresh]').onclick=load;await load();
+ }catch(e){root.innerHTML=`<section class="card"><p role="alert">${esc(e.message)}</p></section>`}
 }

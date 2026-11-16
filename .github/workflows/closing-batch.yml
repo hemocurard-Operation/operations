@@ -3,14 +3,14 @@ name: Closing batch (L3+CM1+BI2+BI4)
 on:
   pull_request:
     paths:
-      - 'supabase/migrations/20261115231631_operational_forecasts_ready.sql'
+      - 'supabase/migrations/20261116063749_operational_forecasts_ready.sql'
       - 'tests/closing-batch/**'
       - 'tools/closing_batch_runner.py'
       - '.github/workflows/closing-batch.yml'
   push:
     branches: [main]
     paths:
-      - 'supabase/migrations/20261115231631_operational_forecasts_ready.sql'
+      - 'supabase/migrations/20261116063749_operational_forecasts_ready.sql'
       - 'tests/closing-batch/**'
       - 'tools/closing_batch_runner.py'
       - '.github/workflows/closing-batch.yml'
@@ -24,7 +24,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: python3 tools/closing_batch_runner.py
-      - run: python3 tools/migration_security_linter.py supabase/migrations/20261115231631_operational_forecasts_ready.sql
+      - run: python3 tools/migration_security_linter.py supabase/migrations/20261116063749_operational_forecasts_ready.sql
       - uses: actions/upload-artifact@v4
         if: always()
         with: {name: closing-batch-report, path: /tmp/hemocura-closing-batch}
