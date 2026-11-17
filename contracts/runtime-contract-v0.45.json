@@ -1,5 +1,5 @@
 {
-  "contract_version": "0.73.0",
+  "contract_version": "0.74.0",
   "database_baseline": "0.45-training-native-1.1-rc + value-chain-50 + decision-chain-50 + predictive-chain-50 + orchestration-chain-50",
   "relations": [
     "access_events",
@@ -91,6 +91,8 @@
     "lab_event_log",
     "lab_methods",
     "logistics_trip_history",
+    "logistics_trip_rate_history",
+    "logistics_trip_rates",
     "logistics_trips",
     "management_actions",
     "management_review_actions",
@@ -290,6 +292,7 @@
   "rpcs": [
     "adjust_sale_line",
     "admin_workspace_preview",
+    "approve_commercial_goal",
     "audit_finding_create_capa",
     "audit_finding_to_nonconformity",
     "calculate_monthly_product_costs",
@@ -318,6 +321,7 @@
     "log_access_event",
     "log_diagnostic_event",
     "logistics_trip_action",
+    "logistics_trip_rate_save",
     "logistics_trip_timing",
     "procurement_action",
     "production_healthcheck",
@@ -593,6 +597,34 @@
     "vw_performed_session_report": [
       "id",
       "customer_id"
+    ],
+    "commercial_goals": [
+      "component_name",
+      "product_id"
+    ],
+    "vw_commercial_goal_progress": [
+      "actual_quantity",
+      "component_name",
+      "product_id"
+    ],
+    "logistics_trips": [
+      "incentive_rule_id",
+      "incentive_rule_snapshot"
+    ],
+    "logistics_trip_rates": [
+      "active",
+      "amount",
+      "branch_id",
+      "currency",
+      "id",
+      "purpose",
+      "revision"
+    ],
+    "logistics_trip_rate_history": [
+      "actor_id",
+      "changed_at",
+      "id",
+      "rate_id"
     ]
   },
   "forbidden_columns": {
@@ -624,7 +656,9 @@
     "20261116072812",
     "20261116130810",
     "20261116143054",
-    "20261116143111"
+    "20261116143111",
+    "20261117035023",
+    "20261117035039"
   ],
   "required_migration_codes": [
     "44_RELEASE_1_0_RC_v0_44",

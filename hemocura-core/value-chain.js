@@ -1,3 +1,5 @@
+import {salesQuantities} from './operational-report-domain.js';
+import {unitSalesSummary} from './unit-sales-domain.js';
 import { loadValueChainWorkspace,createDemand,updateDemandStatus } from './value-chain-data.js';
 
 function esc(v=''){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
@@ -17,8 +19,7 @@ export async function mountValueChain(root){
     const allDemand=state.demand.filter(d=>!filterBranch||d.branch_id===filterBranch);
     const totalDemand=sc.reduce((a,x)=>a+Number(x.open_demand||0),0);
     const stock=sc.reduce((a,x)=>a+Number(x.available_units||0),0);
-    const billed=sc.reduce((a,x)=>a+Number(x.billed_30d||0),0);
-    const collected=sc.reduce((a,x)=>a+Number(x.collected_30d||0),0);
+    const unitRows=state.sales===null?null:state.sales.filter(r=>!filterBranch||r.branch_id===filterBranch),physical=unitRows===null?null:unitSalesSummary(unitRows),byBranch=salesQuantities(unitRows||[],'branch_id');
     const actions=sc.reduce((a,x)=>a+Number(x.open_actions||0),0);
     const attended=allDemand.filter(d=>d.status==='ATENDIDA').length;
     const total=allDemand.length;
@@ -26,7 +27,7 @@ export async function mountValueChain(root){
     const resolved=allDemand.filter(d=>d.status==='ATENDIDA'&&d.updated_at&&d.requested_at);
     const avgHours=resolved.length?Math.round(resolved.reduce((a,d)=>{const diff=(new Date(d.updated_at)-new Date(d.requested_at))/3600000;return a+Math.max(0,diff)},0)/resolved.length):null;
     root.innerHTML=`
-      <div class="sales-toolbar"><div><h2 class="section-heading">Cadena de Valor HemoCura</h2><div class="muted">Demanda → planificación → donación → procesamiento → inventario → despacho → ingreso → mejora.</div></div><button id="vc-new-demand">Nueva demanda</button></div>
+      <div class="sales-toolbar"><div><h2 class="section-heading">Cadena de Valor HemoCura</h2><div class="muted">Demanda → planificación → donación → procesamiento → inventario → despacho → cantidades entregadas → mejora.</div></div><button id="vc-new-demand">Nueva demanda</button></div>
       <div id="vc-status"></div>
       <form class="card filter-grid" id="vc-filters">
         <label>Sucursal<select name="branch"><option value="">Todas</option>${state.branches.map(b=>`<option value="${esc(b.id)}" ${filterBranch===b.id?'selected':''}>${esc(b.name)}</option>`).join('')}</select></label>
@@ -37,14 +38,15 @@ export async function mountValueChain(root){
       <div class="grid sales-kpis">
         <section class="card"><div class="muted">Demanda abierta</div><div class="kpi">${n(totalDemand)}</div></section>
         <section class="card"><div class="muted">Unidades disponibles</div><div class="kpi">${n(stock)}</div></section>
-        <section class="card"><div class="muted">Facturado 30d</div><div class="kpi">RD$ ${n(billed)}</div></section>
-        <section class="card"><div class="muted">Cobrado 30d</div><div class="kpi">RD$ ${n(collected)}</div></section>
+        <section class="card"><div class="muted">Unidades entregadas · 30 días</div><div class="kpi">${physical?n(physical.units):'No disponible'}</div></section>
+        <section class="card"><div class="muted">Entregas realizadas · 30 días</div><div class="kpi">${physical?n(physical.sales):'No disponible'}</div></section>
         <section class="card"><div class="muted">Acciones abiertas</div><div class="kpi">${n(actions)}</div></section>
         <section class="card"><div class="muted">Tasa de atención</div><div class="kpi">${fulfillment}%<br><small class="muted">${attended}/${total}</small></div></section>
         <section class="card"><div class="muted">Tiempo respuesta prom.</div><div class="kpi">${avgHours!==null?avgHours+'h':'—'}</div></section>
       </div>
-      <section class="card"><h3>Flujo de creación de valor</h3><div style="display:flex;gap:8px;flex-wrap:wrap;align-items:stretch">${state.stages.map((s,i)=>`<article style="flex:1 1 140px;min-width:120px;padding:12px;border-radius:8px;background:${STAGE_COLORS[i%STAGE_COLORS.length]};color:#fff"><span style="font-size:.75rem;opacity:.8">${esc(s.stage_code)} · ${esc(s.owner_domain)}</span><br><strong>${esc(s.stage_name)}</strong><br><small style="opacity:.85">${esc(s.objective)}</small></article>${i<state.stages.length-1?'<span style="display:flex;align-items:center;font-size:1.5rem;color:#999">→</span>':''}`).join('')}</div></section>
-      <section class="card"><div class="card-head"><h3>Scorecard por sucursal</h3><span class="muted">últimos 30 días donde aplica</span></div><div class="table-wrap"><table class="data-table"><thead><tr><th>Sucursal</th><th>Demanda</th><th>Stock</th><th>Despachos</th><th>Facturado</th><th>Cobrado</th><th>Campañas</th><th>Feedback</th><th>Acciones</th></tr></thead><tbody>${sc.map(r=>`<tr><td><strong>${esc(r.branch_name)}</strong></td><td>${n(r.open_demand)}</td><td>${n(r.available_units)}</td><td>${n(r.dispatches_30d)}</td><td>RD$ ${n(r.billed_30d)}</td><td>RD$ ${n(r.collected_30d)}</td><td>${n(r.active_campaigns)}</td><td>${n(r.open_feedback)}</td><td>${n(r.open_actions)}</td></tr>`).join('')||'<tr><td colspan="9" class="muted">Sin datos visibles.</td></tr>'}</tbody></table></div></section>
+      ${physical?.missing?`<p class="status warn">${esc(physical.missing)} entregas sin detalle físico; sus cantidades faltantes no se estiman.</p>`:''}
+      <section class="card"><h3>Flujo operativo</h3><div style="display:flex;gap:8px;flex-wrap:wrap;align-items:stretch">${state.stages.filter(s=>!/(FINANZ|ECONOM|COBRANZ|INGRESO|FACTUR)/i.test([s.stage_name,s.owner_domain,s.objective].join(' '))).map((s,i)=>`<article style="flex:1 1 140px;min-width:120px;padding:12px;border-radius:8px;background:${STAGE_COLORS[i%STAGE_COLORS.length]};color:#fff"><span style="font-size:.75rem;opacity:.8">${esc(s.stage_code)} · ${esc(s.owner_domain)}</span><br><strong>${esc(s.stage_name)}</strong><br><small style="opacity:.85">${esc(s.objective)}</small></article>${i<state.stages.length-1?'<span style="display:flex;align-items:center;font-size:1.5rem;color:#999">→</span>':''}`).join('')}</div></section>
+      <section class="card"><div class="card-head"><h3>Scorecard por sucursal</h3><span class="muted">últimos 30 días donde aplica</span></div><div class="table-wrap"><table class="data-table"><thead><tr><th>Sucursal</th><th>Demanda</th><th>Stock</th><th>Despachos</th><th>Unidades entregadas</th><th>Entregas realizadas</th><th>Campañas</th><th>Feedback</th><th>Acciones</th></tr></thead><tbody>${sc.map(r=>`<tr><td><strong>${esc(r.branch_name)}</strong></td><td>${n(r.open_demand)}</td><td>${n(r.available_units)}</td><td>${n(r.dispatches_30d)}</td><td>${physical?n(byBranch.get(r.branch_id)?.units||0):'No disponible'}</td><td>${physical?n(byBranch.get(r.branch_id)?.sales||0):'No disponible'}</td><td>${n(r.active_campaigns)}</td><td>${n(r.open_feedback)}</td><td>${n(r.open_actions)}</td></tr>`).join('')||'<tr><td colspan="9" class="muted">Sin datos visibles.</td></tr>'}</tbody></table></div></section>
       <section class="card"><div class="card-head"><h3>Demanda clínica y operativa</h3><span class="muted">${demand.length} registros${filterPriority||filterStatus?' (filtrados)':''}</span></div><div class="table-wrap"><table class="data-table"><thead><tr><th>Solicitada</th><th>Sucursal</th><th>Cliente</th><th>Producto</th><th>ABO/Rh</th><th>Unid.</th><th>Necesaria</th><th>Prioridad</th><th>Estado</th></tr></thead><tbody>${demand.map(d=>`<tr><td>${esc(new Date(d.requested_at).toLocaleString('es-DO'))}</td><td>${esc(branches[d.branch_id]?.name||'—')}</td><td>${esc(customers[d.customer_id]?.name||'—')}</td><td>${esc(products[d.product_id]?.name||d.product_id)}</td><td>${esc([d.blood_group,d.rh_factor].filter(Boolean).join(' ')||'—')}</td><td>${n(d.requested_units)}</td><td>${esc(new Date(d.needed_by).toLocaleString('es-DO'))}</td><td><span class="status ${d.priority==='CRITICA'?'bad':d.priority==='URGENTE'?'warn':'info'}">${esc(d.priority)}</span></td><td><select data-demand-status="${esc(d.id)}"><option ${d.status==='ABIERTA'?'selected':''}>ABIERTA</option><option ${d.status==='EN_PROCESO'?'selected':''}>EN_PROCESO</option><option ${d.status==='ATENDIDA'?'selected':''}>ATENDIDA</option><option ${d.status==='CANCELADA'?'selected':''}>CANCELADA</option></select></td></tr>`).join('')||'<tr><td colspan="9" class="muted">No hay demandas registradas.</td></tr>'}</tbody></table></div></section>
       <dialog id="vc-demand-dialog" class="sales-dialog"><form id="vc-demand-form"><h3>Nueva demanda</h3>
         <label>Sucursal<select id="vc-branch" required><option value="">Seleccione…</option>${state.branches.map(b=>`<option value="${esc(b.id)}">${esc(b.name)}</option>`).join('')}</select></label>

@@ -1,0 +1,15 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import {customerUnitSummary,salesQuantities,isOperationalSignal} from '../../hemocura-core/operational-report-domain.js';
+import {operationalAppointmentPayload} from '../../hemocura-core/hyperbaric-operations-domain.js';
+import {appointmentReport} from '../../hemocura-core/workflow-domain.js';
+const base={sale_id:'s1',line_id:'l1',branch_id:'b1',customer_id:'c1',quantity:2,status:'DESPACHADA',total_amount:999999};
+test('customer reports sum real quantities and count documents once',()=>{const rows=[base,{...base,line_id:'l2',quantity:3},{...base,sale_id:'s2',line_id:null,quantity:null},{...base,sale_id:'s3',status:'PENDIENTE',quantity:100},{...base,sale_id:'s4',status:'ANULADA',quantity:100}];const [x]=customerUnitSummary([{customer_id:'c1',billed_amount:1e12}],rows);assert.equal(x.units,5);assert.equal(x.sales_count,2);assert.equal(x.missing_units,1);assert.equal(x.billed_amount,1e12);assert.equal(salesQuantities(rows,'branch_id').get('b1').units,5)});
+test('quantity reports reject corrupt quantities rather than deriving them from amounts',()=>assert.throws(()=>salesQuantities([{...base,quantity:-1}],'customer_id')));
+test('monetary candidates stay out of operational queues',()=>{for(const row of [{domain:'FINANZAS'},{source_domain:'COBRANZA'},{domain:'MERMA',description:'Valor 90 días: RD$ 999999'},{title:'Deuda vencida'},{description:'Valor en USD'}])assert.equal(isOperationalSignal(row),false);assert.equal(isOperationalSignal({domain:'ABASTECIMIENTO',description:'Demanda abierta: 2 unidades'}),true)});
+const fields={starts_at:'2026-11-16T13:00',ends_at:'2026-11-16T14:00',price:999999,currency:'USD'};
+test('new operational appointments do not accept monetary form values',()=>{const x=operationalAppointmentPayload(fields);assert.equal(x.price,0);assert.equal(x.currency,'DOP');assert.equal(x.starts_at,'2026-11-16T17:00:00.000Z')});
+test('editing preserves historical values without displaying or replacing them',()=>{const x=operationalAppointmentPayload(fields,{price:'123.45',currency:'USD'});assert.equal(x.price,'123.45');assert.equal(x.currency,'USD');assert.throws(()=>operationalAppointmentPayload(fields,{price:null,currency:'USD'}));assert.throws(()=>operationalAppointmentPayload({...fields,ends_at:fields.starts_at}))});
+test('appointment report is operational even when legacy amounts exist',()=>{const text=appointmentReport({...fields,starts_at:'2026-11-16T17:00:00Z',patient_name:'SYNTHETIC',patient_phone:'000',session_label:'Sesión de ejemplo',referrer_name:'TEST'});assert.match(text,/Cantidad: 1 cita/);assert.doesNotMatch(text,/999999|USD|DOP|Valor|dólares/)});
+
+const {isPlanningQuantityMetric}=await import('../../hemocura-core/operational-report-domain.js');
+test('planning only presents actual quantity metrics, never financial amounts',()=>{for(const code of ['REVENUE','TOTAL_COST','GROSS_MARGIN'])assert.equal(isPlanningQuantityMetric(code),false);assert.equal(isPlanningQuantityMetric('UNITS_SOLD'),true)});

@@ -1,98 +1,29 @@
-// HemoCura v11 CM1 §9 — UI mínima de metas comerciales.
-import { getSupabase } from './supabase.js';
-import { loadAccess } from './access-control.js';
-import { esc, field, table } from './workflow-ui.js';
-
-function bar(actual,target){
-  if(actual===null||actual===undefined)return 'Sin cálculo';if(!target) return '—';
-  const pct=Math.min(100,Math.max(0,Math.round((Number(actual||0)/Number(target))*100)));
-  const cls=pct>=100?'stock-ok':pct>=70?'stock-warning':'stock-critical';
-  return `<span class="stock-pill ${cls}">${pct}%</span>`;
-}
-
+import {getSupabase} from './supabase.js';
+import {loadAccess} from './access-control.js';
+import {allPages} from './data-pages.js';
+import {esc,field,table} from './workflow-ui.js';
+import {localDay} from './workflow-domain.js';
+import {GOAL_METRICS,goalProgress,filterGoals,goalScope,goalPayload} from './commercial-goals-domain.js';
+const columns='goal_id,period_start,period_end,branch_id,agent_id,service_id,metric,target_value,actual_value,actual_quantity,approved_by,approved_at,product_id,component_name';
+const shown=n=>Number(n).toLocaleString('es-DO',{maximumFractionDigits:2});
+function styles(){if(document.querySelector('[data-commercial-goals-style]'))return;const link=document.createElement('link');link.rel='stylesheet';link.href=new URL('../css/commercial-goals.css',import.meta.url).href;link.dataset.commercialGoalsStyle='';document.head.append(link)}
 export async function mountCommercialGoals(root){
-  root.innerHTML='<section class="card"><div class="status info">Cargando metas comerciales…</div></section>';
-  let access,branches,goals=[],busy=false;
-  const sb=getSupabase();
-  try{
-    access=await loadAccess();
-    const [b,g]=await Promise.all([
-      sb.from('branches').select('id,name').eq('active',true).order('name'),
-      sb.from('vw_commercial_goal_progress').select('*').order('period_end',{ascending:false}).limit(200)
-    ]);
-    if(b.error) throw new Error(b.error.message);if(g.error) throw new Error(g.error.message);
-    branches=b.data||[];goals=g.data||[];
-  }catch(err){root.innerHTML=`<section class="card"><div class="status bad">${esc(err.message)}</div></section>`;return;}
-  const canWrite=access.permissions.has('COMMERCIAL_WRITE');
-  const actor=access.context?.user_id||null;
-  const bname=id=>branches.find(b=>b.id===id)?.name||'Corporativo';
-
-  function render(){
-    const t=table(['Período','Sucursal','Métrica','Objetivo','Real','Progreso','Estado'],
-      goals.map(g=>[
-        esc(g.period_start)+' → '+esc(g.period_end),
-        esc(bname(g.branch_id)),esc(g.metric),
-        esc(g.target_value),esc(g.actual_value??'—'),bar(g.actual_value,g.target_value),g.approved_by?'Aprobada':'Borrador'
-      ]));
-    root.innerHTML=`
-      <div class="sales-toolbar"><div>
-        <h2 class="section-heading">Metas operativas</h2>
-        <div class="muted">Objetivos cuantitativos por sucursal/agente/servicio comparados con el desempeño real.</div>
-      </div>${canWrite?'<button data-cg-new>+ Nueva meta</button>':''}</div>
-      <div data-cg-msg role="status"></div>
-      <section class="card">${t}</section>
-      <dialog data-cg-dialog class="sales-dialog"><form data-cg-form>
-        <h3>Nueva meta</h3>
-        <div data-cg-fields class="filter-grid"></div>
-        <p data-cg-error role="alert"></p>
-        <div class="dialog-actions">
-          <button type="button" data-cg-cancel class="secondary">Cancelar</button>
-          <button type="submit">Guardar</button>
-        </div>
-      </form></dialog>`;
-    const newBtn=root.querySelector('[data-cg-new]');
-    if(newBtn) newBtn.onclick=openNew;
-  }
-
-  function openNew(){
-    const metrics=['VISITAS_COMPLETADAS','VISITAS_EDUCATIVAS','OPORTUNIDADES_GANADAS'];
-    const today=new Date().toISOString().slice(0,10);
-    const d=new Date();d.setMonth(d.getMonth()+3);
-    const future=d.toISOString().slice(0,10);
-    const html=field('period_start','Inicio','date',today,{required:true})
-      +field('period_end','Fin','date',future,{required:true})
-      +field('branch_id','Sucursal','select','',{items:[...(access.context?.roles?.includes('SUPER_USUARIO')?[['','Corporativo']]:[]),...branches.map(b=>[b.id,b.name])]})
-      +field('metric','Métrica','select','',{items:metrics.map(m=>[m,m]),required:true})
-      +field('target_value','Objetivo','number',0,{required:true})
-      +field('notes','Notas','textarea','',{required:false});
-    const dlg=root.querySelector('[data-cg-dialog]');
-    const form=root.querySelector('[data-cg-form]');
-    root.querySelector('[data-cg-fields]').innerHTML=html;
-    root.querySelector('[data-cg-error]').textContent='';
-    form.onsubmit=async ev=>{
-      ev.preventDefault();if(busy||!form.reportValidity())return;busy=true;
-      const btn=form.querySelector('[type=submit]');btn.disabled=true;
-      try{
-        const f=Object.fromEntries(new FormData(form));
-        const {error}=await sb.from('commercial_goals').insert({
-          period_start:f.period_start,period_end:f.period_end,
-          branch_id:f.branch_id||null,metric:f.metric,
-          target_value:Number(f.target_value),notes:f.notes||null,
-          created_by:actor
-        });
-        if(error) throw new Error(error.message);
-        dlg.close();await reload();root.querySelector('[data-cg-msg]').innerHTML='<div class="status ok">Meta creada. Requiere aprobación para activarse.</div>';
-      }catch(err){root.querySelector('[data-cg-error]').textContent=err.message;}
-      finally{busy=false;btn.disabled=false;}
-    };
-    root.querySelector('[data-cg-cancel]').onclick=()=>{if(!busy)dlg.close();};
-    dlg.showModal();
-  }
-
-  async function reload(){
-    const {data,error}=await sb.from('vw_commercial_goal_progress').select('*').order('period_end',{ascending:false}).limit(200);
-    if(error)throw new Error(error.message);goals=data||[];render();
-  }
-
-  render();
+ styles();root.classList.add('commercial-goals');root.innerHTML='<section class="card" role="status">Cargando metas y logros autorizados…</section>';
+ const sb=getSupabase();let access,branches=[],products=[],services=[],goals=[],busy=false,loaded=false,ticket=0;
+ let filter={from:'',to:'',branch:'',metric:'',scope:''};
+ try{[access,branches,products,services]=await Promise.all([loadAccess(),allPages('Sucursales',sb.from('branches').select('id,name').eq('active',true).order('id')),allPages('Productos',sb.from('products').select('id,name,active').eq('active',true).order('id')),allPages('Servicios',sb.from('crm_services').select('id,code,name,active').eq('active',true).order('id'))]);}catch(e){root.innerHTML=`<section class="card"><p role="alert">${esc(e.message)}</p></section>`;return}
+ const canWrite=access.permissions.has('COMMERCIAL_WRITE'),canApprove=canWrite&&access.permissions.has('ACCESS_ADMIN'),actor=access.context?.user_id||null;
+ const bname=id=>id?branches.find(b=>b.id===id)?.name||'Sucursal no disponible':'Corporativo';
+ const opts=(items,current,all)=>`<option value="">${esc(all)}</option>`+items.map(([value,label])=>`<option value="${esc(value)}" ${value===current?'selected':''}>${esc(label)}</option>`).join('');
+ function render(){if(!root.isConnected)return;const scopes=[...products.map(p=>['p:'+p.id,p.name]),...services.map(s=>['s:'+s.id,s.name]),...[...new Set(goals.map(g=>g.component_name).filter(Boolean))].sort().map(c=>['c:'+c,c])];
+ root.innerHTML=`<div class="sales-toolbar"><div><h2 class="section-heading">Metas por sucursal, producto y servicio</h2><p class="muted">Cantidad objetivo frente al logro documentado en el período completo de cada meta.</p></div><div><button class="secondary" data-cg-refresh>Actualizar</button>${canWrite?' <button data-cg-new>Nueva meta</button>':''}</div></div><form class="card cg-filters" data-cg-filters><label>Desde<input type="date" name="from" value="${esc(filter.from)}"></label><label>Hasta<input type="date" name="to" value="${esc(filter.to)}"></label><label>Sucursal<select name="branch">${opts(branches.map(b=>[b.id,b.name]),filter.branch,'Todas las autorizadas')}</select></label><label>Métrica<select name="metric">${opts(Object.entries(GOAL_METRICS).map(([id,m])=>[id,m.label]),filter.metric,'Todas')}</select></label><label>Producto o servicio<select name="scope">${opts(scopes,filter.scope,'Todos')}</select></label><button type="submit">Aplicar filtros</button></form><p class="cg-help">Los filtros de fecha seleccionan metas cuyo período se cruza con el rango. Meta y logrado siempre corresponden a las fechas indicadas en cada fila. No se suman unidades de sangre, sesiones, visitas ni metas solapadas.</p><p data-cg-status role="status"></p><div data-cg-results></div><dialog data-cg-dialog class="sales-dialog"><form data-cg-form><h3>Nueva meta en cantidades</h3><div data-cg-fields class="filter-grid"></div><p data-cg-error role="alert"></p><div class="dialog-actions"><button type="button" data-cg-cancel class="secondary">Cancelar</button><button type="submit">Guardar borrador</button></div></form></dialog>`;
+ root.querySelector('[data-cg-filters]').onsubmit=e=>{e.preventDefault();const next=Object.fromEntries(new FormData(e.target));if(next.from&&next.to&&next.from>next.to){root.querySelector('[data-cg-status]').textContent='Revise el rango de fechas.';return}filter=next;draw()};root.querySelector('[data-cg-refresh]').onclick=reload;root.querySelector('[data-cg-new]')?.addEventListener('click',openNew);draw();}
+ function draw(){const host=root.querySelector('[data-cg-results]');if(!host)return;if(!loaded){host.replaceChildren();return}const selected=filterGoals(goals,filter);const chart=selected.map(g=>{const p=goalProgress(g),scope=goalScope(g,{products,services}),title=`${bname(g.branch_id)} · ${scope}`;return `<article class="cg-goal"><div class="cg-goal-header"><div><h4>${esc(title)}</h4><p>${esc(GOAL_METRICS[g.metric]?.label||g.metric)} · ${esc(g.period_start)} → ${esc(g.period_end)}</p></div><div><span class="cg-progress">${p.percent===null?'Sin cálculo':esc(shown(p.percent))+'%'}</span><p class="cg-state">${g.approved_by?'Meta aprobada':'Borrador · pendiente de aprobación'}</p></div></div><div role="img" aria-label="${esc(title)}: meta ${p.target} ${p.unit}; ${p.actual===null?'logro no disponible':'logrado '+p.actual+' '+p.unit}"><div class="cg-bar-row"><span>Meta</span><div class="cg-track"><div class="cg-target" style="width:${p.targetWidth}%"></div></div><span class="cg-amount">${esc(shown(p.target))} ${p.unit}</span></div><div class="cg-bar-row"><span>Logrado</span><div class="cg-track"><div class="cg-actual" style="width:${p.actualWidth}%"></div></div><span class="cg-amount">${p.actual===null?'No disponible':esc(shown(p.actual))+' '+p.unit}</span></div></div>${canApprove&&!g.approved_by?`<button class="secondary" data-cg-approve="${esc(g.goal_id)}">Aprobar meta</button>`:''}</article>`}).join('');
+ host.innerHTML=`<section class="card"><h3>Meta y logrado</h3><div class="cg-chart">${chart||'<p class="cg-empty">No hay metas para estos filtros. Puede crear una cantidad objetivo por sucursal y producto o servicio.</p>'}</div></section><section class="card">${table(['Período','Sucursal','Producto / servicio','Métrica','Meta','Logrado','Avance','Estado'],selected.map(g=>{const p=goalProgress(g);return[esc(g.period_start+' → '+g.period_end),esc(bname(g.branch_id)),esc(goalScope(g,{products,services})),esc(GOAL_METRICS[g.metric]?.label||g.metric),esc(shown(p.target)+' '+p.unit),p.actual===null?'Sin cálculo':esc(shown(p.actual)+' '+p.unit),p.percent===null?'—':esc(shown(p.percent)+'%'),g.approved_by?'Aprobada':'Borrador']}))}<p class="cg-help">El logro depende de los registros visibles según sus permisos. Los ámbitos por agente o servicio sin atribución comprobable se muestran sin cálculo. Las cantidades pendientes y canceladas no cuentan como entregas realizadas.</p></section>`;
+ root.querySelector('[data-cg-status]').textContent=selected.length+' metas visibles · Metas y logros en cantidades.';host.querySelectorAll('[data-cg-approve]').forEach(button=>button.onclick=()=>approve(button.dataset.cgApprove));}
+ async function reload(){const generation=++ticket;loaded=false;root.querySelector('[data-cg-results]')?.replaceChildren();const status=root.querySelector('[data-cg-status]');if(status)status.textContent='Consultando metas autorizadas…';try{const rows=await allPages('Metas',sb.from('vw_commercial_goal_progress').select(columns).order('period_end',{ascending:false}).order('goal_id'));rows.forEach(goalProgress);if(generation!==ticket||!root.isConnected)return;goals=rows;loaded=true;render()}catch(e){if(generation===ticket&&root.isConnected){loaded=false;root.querySelector('[data-cg-results]')?.replaceChildren();root.querySelector('[data-cg-status]').textContent='No se pudieron cargar las metas: '+e.message}}}
+ async function approve(id){if(busy||!canApprove)return;if(!window.confirm('¿Aprobar esta cantidad objetivo y su período? La aprobación quedará auditada.'))return;busy=true;root.querySelectorAll('[data-cg-approve]').forEach(b=>b.disabled=true);try{const {error}=await sb.rpc('approve_commercial_goal',{p_goal:id});if(error)throw Error(error.message);await reload()}catch(e){root.querySelector('[data-cg-status]').textContent='No se pudo aprobar: '+e.message}finally{busy=false;root.querySelectorAll('[data-cg-approve]').forEach(b=>b.disabled=false)}}
+ function openNew(){const today=localDay(),future=new Date(Date.parse(today+'T00:00:00Z')+90*86400000).toISOString().slice(0,10),roleCodes=(access.context?.roles||[]).map(r=>typeof r==='string'?r:r.code);const fields=root.querySelector('[data-cg-fields]'),dlg=root.querySelector('[data-cg-dialog]'),form=root.querySelector('[data-cg-form]');const components=[...new Set(goals.map(g=>g.component_name).filter(Boolean))].sort();
+ fields.innerHTML=field('period_start','Inicio','date',today)+field('period_end','Fin','date',future)+field('branch_id','Sucursal','select','',{items:[...(roleCodes.includes('SUPER_USUARIO')?[['','Corporativo']]:[]),...branches.map(b=>[b.id,b.name])]})+field('metric','Medida','select','VENTAS_UNIDADES',{items:Object.entries(GOAL_METRICS).map(([id,m])=>[id,m.label])})+field('product_scope','Producto o componente','select','',{required:false,items:[['','Todos los productos de sangre'],...products.map(p=>['p:'+p.id,p.name]),...components.map(c=>['c:'+c,c])]})+field('component_name','Componente si no selecciona producto','text','',{required:false})+field('service_id','Servicio','select','',{required:false,items:[['','Servicio general de la métrica'],...services.filter(s=>['SANGRE','CAMARA_HIPERBARICA'].includes(s.code)).map(s=>[s.id,s.name])]})+field('target_value','Cantidad objetivo','number','',{step:'0.01'})+field('notes','Notas','textarea','',{required:false});root.querySelector('[data-cg-error]').textContent='';const sync=()=>{const metric=form.elements.metric.value;form.elements.product_scope.disabled=metric!=='VENTAS_UNIDADES';form.elements.product_scope.closest('label').hidden=metric!=='VENTAS_UNIDADES';form.elements.component_name.disabled=metric!=='VENTAS_UNIDADES';form.elements.component_name.closest('label').hidden=metric!=='VENTAS_UNIDADES';form.elements.service_id.disabled=!['VENTAS_UNIDADES','SESIONES_REALIZADAS'].includes(metric);const code=metric==='VENTAS_UNIDADES'?'SANGRE':metric==='SESIONES_REALIZADAS'?'CAMARA_HIPERBARICA':null;form.elements.service_id.value=services.find(s=>s.code===code)?.id||''};form.elements.metric.onchange=sync;sync();root.querySelector('[data-cg-cancel]').onclick=()=>{if(!busy)dlg.close()};form.onsubmit=async e=>{e.preventDefault();if(busy||!form.reportValidity())return;busy=true;const btn=form.querySelector('[type=submit]');btn.disabled=true;try{const payload=goalPayload(Object.fromEntries(new FormData(form)),actor),{error}=await sb.from('commercial_goals').insert(payload);if(error)throw Error(error.message);dlg.close();await reload();root.querySelector('[data-cg-status]').textContent='Meta creada como borrador; la aprobación requiere un administrador autorizado.'}catch(e){root.querySelector('[data-cg-error]').textContent=e.message}finally{busy=false;btn.disabled=false}};dlg.showModal();}
+ render();await reload();
 }

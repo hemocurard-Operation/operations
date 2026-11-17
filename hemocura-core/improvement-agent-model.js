@@ -1,7 +1,7 @@
 export const IMPROVEMENT_AGENTS=[
  {id:'inventory',name:'Abastecimiento y merma',domains:['ABASTECIMIENTO','MERMA'],route:'supply',mission:'Priorizar cobertura de stock y pérdidas evitables.',rule:'Revisa las señales de abastecimiento y merma de la cola de orquestación.'},
  {id:'suppliers',name:'Proveedores',domains:['PROVEEDOR'],route:'suppliers',mission:'Detectar riesgos de continuidad y evaluaciones pendientes.',rule:'Revisa los proveedores que la cola clasifica con riesgo.'},
- {id:'finance',name:'Cobranza',domains:['FINANZAS'],route:'collections',mission:'Priorizar saldos vencidos para revisión y contacto.',rule:'Revisa las señales de cobranza y su fecha objetivo.'},
+ {id:'finance',name:'Unidades por centro',domains:['FINANZAS'],route:'collections',mission:'Consultar actividad y cantidades entregadas por centro.',rule:'Abra el reporte de unidades por centro para revisar las entregas documentadas.'},
  {id:'quality',name:'Calidad y cumplimiento',domains:['CALIDAD','COMPLIANCE'],route:'actions',mission:'Señalar acciones próximas a vencer o que requieren evidencia.',rule:'Revisa las señales de CAPA y cumplimiento; no cierra ni aprueba acciones.'},
  {id:'operations',name:'Servicios y coordinación',domains:['RESILIENCIA','RED_MEDICA'],route:'decisioncenter',mission:'Ordenar los riesgos de sucursal y oportunidades de coordinación.',rule:'Revisa resiliencia, red médica y las señales de otros dominios autorizados.'},
  {id:'data',name:'Calidad de información',domains:[],route:'orchestration',mission:'Localizar información incompleta antes de decidir.',rule:'Señala sucursales con calidad de datos inferior a 80/100 o sin score evaluable.'}
