@@ -4,15 +4,17 @@ async function userId(){const {data}=await getSupabase().auth.getUser();return d
 
 export async function loadDonorOutreach(){
   const sb=getSupabase();
-  const [campaigns,branches,donations]=await Promise.all([
-    sb.from('vw_donor_campaign_performance').select('*').order('start_date',{ascending:false}),
+  const [campaigns,branches,donations,contacts]=await Promise.all([
+    sb.from('vw_donor_campaign_performance').select('id,campaign_code,branch_id,name,channel,status,start_date,end_date,target_donors,donations_captured,attainment_pct').order('start_date',{ascending:false}),
     sb.from('branches').select('id,code,name').eq('active',true).order('name'),
-    sb.from('donations').select('id,branch_id,donation_date,status,campaign_id').order('donation_date',{ascending:false}).limit(100)
+    sb.from('donations').select('id,branch_id,donation_date,status,campaign_id').order('donation_date',{ascending:false}).limit(100),
+    sb.from('donor_campaigns').select('id,contacts_reached').order('id')
   ]);
   if(campaigns.error) throw new Error(`Campañas: ${campaigns.error.message}`);
   if(branches.error) throw new Error(`Sucursales: ${branches.error.message}`);
+  if(contacts.error) throw new Error(`Contactos: ${contacts.error.message}`);
   if(donations.error) throw new Error(`Donaciones: ${donations.error.message}`);
-  return {campaigns:campaigns.data||[],branches:branches.data||[],donations:donations.data||[]};
+  return {campaigns:(campaigns.data||[]).map(c=>({...c,contacts_reached:(contacts.data||[]).find(x=>x.id===c.id)?.contacts_reached??null})),branches:branches.data||[],donations:donations.data||[]};
 }
 
 export async function createCampaign(payload){

@@ -1,7 +1,6 @@
 import { loadDonorOutreach,createCampaign,setCampaignStatus,linkDonationToCampaign } from './donor-outreach-data.js';
 function esc(v=''){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
 function n(v){return Number(v||0).toLocaleString('es-DO',{maximumFractionDigits:1})}
-function money(v){return Number(v||0).toLocaleString('es-DO',{style:'currency',currency:'DOP',maximumFractionDigits:0})}
 function today(){return new Date().toISOString().slice(0,10)}
 function pctBar(pct,color){const w=Math.min(100,Math.max(0,Number(pct)||0));return `<div style="display:flex;align-items:center;gap:6px"><div style="flex:1;height:8px;background:#e0e0e0;border-radius:4px;overflow:hidden"><div style="width:${w}%;height:100%;background:${color};border-radius:4px"></div></div><span style="font-size:.8rem;min-width:40px">${n(pct)}%</span></div>`}
 export async function mountDonorOutreach(root){
@@ -20,8 +19,6 @@ export async function mountDonorOutreach(root){
     const totalContacts=allCampaigns.reduce((a,x)=>a+Number(x.contacts_reached||0),0);
     const totalDonations=allCampaigns.reduce((a,x)=>a+Number(x.donations_captured||0),0);
     const conversionPct=totalContacts?Math.round(totalDonations/totalContacts*100*10)/10:0;
-    const totalCost=allCampaigns.reduce((a,x)=>a+Number(x.actual_cost||0),0);
-    const costPerAcq=totalDonations?Math.round(totalCost/totalDonations):0;
     root.innerHTML=`
       <div class="sales-toolbar"><div><h2 class="section-heading">Captación de Donantes</h2><div class="muted">Campañas dirigidas por demanda e inventario. El módulo no decide elegibilidad clínica.</div></div><button id="campaign-new">Nueva campaña</button></div>
       <div id="campaign-status"></div>
@@ -37,7 +34,7 @@ export async function mountDonorOutreach(root){
         <section class="card"><div class="muted">Donaciones atribuidas</div><div class="kpi">${n(captured)}</div></section>
         <section class="card"><div class="muted">Sin campaña</div><div class="kpi ${unlinked>0?'':'muted'}">${n(unlinked)}</div></section>
         <section class="card"><div class="muted">Conversión contactos→donaciones</div><div class="kpi">${conversionPct}%<br><small class="muted">${n(totalDonations)}/${n(totalContacts)}</small></div></section>
-        <section class="card"><div class="muted">Costo por adquisición</div><div class="kpi">${costPerAcq?money(costPerAcq):'—'}</div></section>
+        <section class="card"><div class="muted">Contactos registrados</div><div class="kpi">${n(totalContacts)}</div></section>
       </div>
       <section class="card"><div class="status info"><strong>Cadena:</strong> brecha de demanda/inventario → campaña → donación registrada → atribución de campaña → resultado → aprendizaje de captación. La atribución no altera el estado clínico de la donación.</div></section>
       <section class="card"><h3>Campañas</h3><div class="table-wrap"><table class="data-table"><thead><tr><th>Código</th><th>Campaña</th><th>Sucursal</th><th>Canal</th><th>Periodo</th><th>Meta</th><th>Captadas</th><th>Progreso</th><th>Estado</th></tr></thead><tbody>${campaigns.map(c=>`<tr><td><code>${esc(c.campaign_code)}</code></td><td><strong>${esc(c.name)}</strong></td><td>${esc(branchMap[c.branch_id]?.name||'Corporativo')}</td><td>${esc(c.channel)}</td><td>${esc(c.start_date)} → ${esc(c.end_date||'abierta')}</td><td>${n(c.target_donors)}</td><td>${n(c.donations_captured)}</td><td>${pctBar(c.attainment_pct,Number(c.attainment_pct)>=80?'#2e7d32':Number(c.attainment_pct)>=50?'#e65100':'#c62828')}</td><td><select data-campaign-status="${esc(c.id)}"><option ${c.status==='PLANIFICADA'?'selected':''}>PLANIFICADA</option><option ${c.status==='ACTIVA'?'selected':''}>ACTIVA</option><option ${c.status==='PAUSADA'?'selected':''}>PAUSADA</option><option ${c.status==='CERRADA'?'selected':''}>CERRADA</option><option ${c.status==='CANCELADA'?'selected':''}>CANCELADA</option></select></td></tr>`).join('')||'<tr><td colspan="9" class="muted">No hay campañas registradas.</td></tr>'}</tbody></table></div></section>

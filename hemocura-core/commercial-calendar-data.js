@@ -34,7 +34,7 @@ export async function loadCommercialCalendar(branchId){
     crmVisits:mapAgenda.enabled===true?mapAgenda.visits:[],crmAgendaEnabled:mapAgenda.enabled,crmAgendaError:mapAgenda.error||'',warnings};
 }
 
-async function loadMapAgenda(branchId){
+export async function loadMapAgenda(branchId){
   const {data,error}=await getSupabase().rpc('commercial_agenda',{p_branch:branchId});
   if(error)throw Error(error.message);
   if(!data||typeof data.enabled!=='boolean'||!Array.isArray(data.visits))throw Error('Respuesta incompleta del origen CRM.');

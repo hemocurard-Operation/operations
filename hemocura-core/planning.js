@@ -1,3 +1,4 @@
+import {PLANNING_QUANTITY_METRICS,isPlanningQuantityMetric} from './operational-report-domain.js';
 import {
   loadPlanningWorkspace,
   getPlanLines,
@@ -8,7 +9,7 @@ import {
 import { getBranches } from './sales-data.js';
 
 const num = new Intl.NumberFormat('es-DO', { maximumFractionDigits:2 });
-const money = new Intl.NumberFormat('es-DO', { style:'currency', currency:'DOP', maximumFractionDigits:0 });
+
 
 function esc(v='') {
   return String(v ?? '').replace(/[&<>"']/g, c => ({
@@ -35,9 +36,8 @@ function attainmentStatus(status='') {
 }
 
 function formatMetric(metric, value) {
-  const n=Number(value || 0);
-  if(['REVENUE','TOTAL_COST','GROSS_MARGIN'].includes(metric)) return money.format(n);
-  return num.format(n);
+  if(!isPlanningQuantityMetric(metric)||value==null||!Number.isFinite(Number(value)))return 'Sin dato';
+  return num.format(Number(value));
 }
 
 function planRows(rows, branchMap) {
@@ -61,7 +61,7 @@ function planVsActualRows(rows) {
       <td>${esc(r.branch)}</td>
       <td>${esc(r.period_start)} → ${esc(r.period_end)}</td>
       <td>${esc(r.product_name || 'General')}</td>
-      <td>${esc(r.metric_code)}</td>
+      <td>${esc(PLANNING_QUANTITY_METRICS[r.metric_code]||r.metric_code)}</td>
       <td class="num">${formatMetric(r.metric_code,r.target_value)}</td>
       <td class="num">${r.actual_value == null ? '—' : formatMetric(r.metric_code,r.actual_value)}</td>
       <td class="num">${r.attainment_pct == null ? '—' : num.format(Number(r.attainment_pct))+'%'}</td>
@@ -78,7 +78,7 @@ function forecastRows(rows, branchMap) {
       <td>${esc(r.forecast_date)}</td>
       <td>${esc(branchMap[r.branch_id]?.name || r.branch_id)}</td>
       <td>${esc(r.product_id || 'General')}</td>
-      <td>${esc(r.metric_code)}</td>
+      <td>${esc(PLANNING_QUANTITY_METRICS[r.metric_code]||r.metric_code)}</td>
       <td>${esc(r.horizon_days)} días</td>
       <td class="num">${formatMetric(r.metric_code,r.forecast_value)}</td>
       <td>${esc(r.method)}</td>
@@ -92,7 +92,7 @@ function lineRows(rows) {
   return rows.map(r=>`
     <tr>
       <td>${esc(r.product_id || 'General')}</td>
-      <td>${esc(r.metric_code)}</td>
+      <td>${esc(PLANNING_QUANTITY_METRICS[r.metric_code]||r.metric_code)}</td>
       <td class="num">${formatMetric(r.metric_code,r.target_value)}</td>
       <td class="num">${num.format(Number(r.warning_threshold_pct||90))}%</td>
       <td class="num">${num.format(Number(r.critical_threshold_pct||80))}%</td>
@@ -237,9 +237,6 @@ export async function mountPlanning(root) {
           <label>Métrica
             <select id="new-plan-metric" required>
               <option>UNITS_SOLD</option>
-              <option>REVENUE</option>
-              <option>TOTAL_COST</option>
-              <option>GROSS_MARGIN</option>
               <option>DONORS_PRESENTED</option>
               <option>DONORS_EFFECTIVE</option>
               <option>UNITS_PRODUCED</option>
@@ -269,7 +266,7 @@ export async function mountPlanning(root) {
         horizonDays:document.getElementById('forecast-horizon').value
       };
 
-      const ws=await loadPlanningWorkspace(filters);
+      const ws=await loadPlanningWorkspace(filters);ws.planVsActual=ws.planVsActual.filter(r=>isPlanningQuantityMetric(r.metric_code));ws.forecasts=ws.forecasts.filter(r=>isPlanningQuantityMetric(r.metric_code));
       state.workspace=ws;
 
       document.getElementById('plans-body').innerHTML=planRows(ws.plans,branchMap);
@@ -306,7 +303,7 @@ export async function mountPlanning(root) {
       document.getElementById('plan-lines-body').innerHTML=`<tr><td colspan="6">Cargando…</td></tr>`;
 
       try {
-        const rows=await getPlanLines(planId);
+        const rows=(await getPlanLines(planId)).filter(r=>isPlanningQuantityMetric(r.metric_code));
         document.getElementById('plan-lines-body').innerHTML=lineRows(rows);
       } catch(error) {
         document.getElementById('plan-lines-body').innerHTML=

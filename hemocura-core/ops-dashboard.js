@@ -1,6 +1,6 @@
 import {allPages} from './data-pages.js';
 import { getSupabase } from './supabase.js';
-import {operationsOverview} from './operations-overview.js';
+import {operationsOverview,bindOperationsOverview} from './operations-overview.js';
 import {routeList} from './router.js';
 import { filterRoutes,loadAccess } from './access-control.js';
 
@@ -85,4 +85,5 @@ export async function mountOpsDashboard(root){
     <section class="ops-section"><div class="ops-section-head"><div><div class="eyebrow">Hoy · ${esc(today)}</div><h3>Indicadores de ${esc(xp.title.replace('Panel de ','').replace('Panel ',''))}</h3></div></div><div class="ops-kpi-grid">${kpiHtml}</div></section>
     <section class="ops-section"><div class="ops-section-head"><div><div class="eyebrow">Trabajo priorizado</div><h3>Accesos rápidos para tu rol</h3></div></div><div class="ops-actions">${permittedActions.map(x=>action(...x)).join('')||'<div class="status info">No hay acciones rápidas adicionales para este rol.</div>'}</div></section>
     <section class="card ops-core"><div class="ops-section-head"><div><div class="eyebrow">Guardrail clínico</div><h3>Clinical Core</h3></div><strong class="state-pill state-info">${esc(version.clinical_core||'NO DECLARADO')}</strong></div><div class="ops-core-grid">${coreItem('FEFO por unidad','SHADOW / BLOCKED')}${coreItem('Bloqueo térmico','SHADOW / BLOCKED')}${coreItem('Trazabilidad donante → receptor','SHADOW / BLOCKED')}${coreItem('Decisión clínica automática','NO PERMITIDA','ok')}</div><p class="muted ops-note">Las recomendaciones del sistema no sustituyen revisión clínica, autorización humana, UAT ni controles de calidad.</p></section>`;
+  bindOperationsOverview(root);
 }

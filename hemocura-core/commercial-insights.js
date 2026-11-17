@@ -3,7 +3,7 @@ import {readUnitSales} from './unit-sales-data.js';
 import {esc,table,downloadText} from './workflow-ui.js';
 import {commercialInsights,insightWindow,opportunityStages,opportunityPlan,commercialInsightsCsv} from './commercial-insights-domain.js';
 const shown=n=>n===null?'Sin base suficiente':Number(n).toLocaleString('es-DO',{maximumFractionDigits:1});
-export async function mountCommercialInsights(root,{branch,asOf,canReadSales=false,customers=[],opportunities=[],historyRows}={}){
+export async function mountCommercialInsights(root,{branch,asOf,canReadSales=false,canOpenReport=false,customers=[],opportunities=[],historyRows}={}){
  if(!root)return;
  const today=localDay(),futureCutoff=typeof asOf==='string'&&asOf>today;if(futureCutoff)asOf=today;
  const stages=opportunityStages(opportunities,{branch});
@@ -16,7 +16,7 @@ export async function mountCommercialInsights(root,{branch,asOf,canReadSales=fal
   for(const o of opportunities.filter(o=>(!branch||o.branch_id===branch)&&o.customer_id)){if(!centerMap.has(o.customer_id))centerMap.set(o.customer_id,customers.find(c=>c.id===o.customer_id)?.name||'Centro de oportunidad sin nombre disponible')}
   const centers=[...centerMap.entries()].sort((a,b)=>a[1].localeCompare(b[1]));
   const components=[...new Set(rows.map(r=>r.component_name).filter(Boolean))].sort();let center='',component='',report;
-  target.removeAttribute('role');target.innerHTML=`<div class="filter-grid"><label>Centro del análisis<select data-insight-center><option value="">Todos los centros visibles</option>${centers.map(([id,name])=>`<option value="${esc(id)}">${esc(name)}</option>`).join('')}</select></label><label>Componente del análisis<select data-insight-component><option value="">Todos los componentes</option>${components.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('')}</select></label></div><div data-insight-results></div><button type="button" class="secondary" data-insight-export>Descargar análisis en unidades</button> <a href="#shiftreport">Abrir reporte detallado de unidades</a>`;
+  target.removeAttribute('role');target.innerHTML=`<div class="filter-grid"><label>Centro del análisis<select data-insight-center><option value="">Todos los centros visibles</option>${centers.map(([id,name])=>`<option value="${esc(id)}">${esc(name)}</option>`).join('')}</select></label><label>Componente del análisis<select data-insight-component><option value="">Todos los componentes</option>${components.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('')}</select></label></div><div data-insight-results></div><button type="button" class="secondary" data-insight-export>Descargar análisis en unidades</button> ${canOpenReport?'<a href="#shiftreport">Abrir reporte detallado de unidades</a>':''}`;
   const body=target.querySelector('[data-insight-results]');
   function draw(){
    report=commercialInsights(rows,{asOf,branch,center,component});const w=report.window,plan=opportunityPlan(opportunities,{asOf,branch,center}),stageCounts=opportunityStages(opportunities,{branch,center}),open=stageCounts.filter(s=>!['GANADA','PERDIDA'].includes(s.stage)).reduce((n,s)=>n+s.count,0);

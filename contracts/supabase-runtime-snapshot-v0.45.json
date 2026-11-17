@@ -1,7 +1,7 @@
 {
   "project_id": "tiothqiljipdamgudvcb",
   "verified_at": "2026-11-09",
-  "scope": "Frontend runtime objects, Daily Operational Report production contract and Training Native 1.1 RC; added coordination, purchases, role windows and area agenda objects verified 2026-10-16 against production catalogs; quality-information objects verified against production after migration 20261017005235; audit in implementation report; ISO clause assessment/evidence tables, vw_iso_compliance_summary and iso_clause_assessment RPCs verified live 2026-11-03 after migration 20261103130000; vw_referrer_visit_route verified live 2026-11-03 after migration 20261103190000; hemovigilance_delivery_details and hemovig_delivery_nc_create verified live 2026-11-04 after migration 20261104100000; vw_hyperbaric_appointments_display verified live 2026-11-04 after migration 20261104110000; CRM contacts, activities, history, idempotent requests, services and three RPCs verified after commercial_crm_contacts migration; scoped customer catalog and writes tested; CRM shared portfolio and weekly planner verified 2026-11-06; twelve-week execution objects verified 2026-11-06; incoming supplier quotation metadata verified 2026-11-07; commercial agenda RPC and reservation triggers verified 2026-11-07; donor_search_page invoker/permissions, quotation indexes and insert policies verified live after web_performance_security migration 20261107181249; daily_report_photos columns, RLS and private immutable grants verified live 2026-11-09 after migration 20261109002642; v0.68 operational objects, RLS flags, admin metadata RPC privileges and nine migration source hashes verified against production catalogs; regulatory/forecast and financial drafts NOT included as deployed.; v0.69 regulatory and operational forecasts deployed with invoker views and three source hashes verified against production; seven clinical rules and eleven legal requirements remain unapproved.; v0.70 logistics endpoint classification helper, anonymous execution denial, removal of arrival-hours registration block and migration source hash verified live without creating operational records.; v0.71 unit-sales invoker views, absence of monetary/patient columns, anonymous denial and report titles verified against production catalog.; v0.72 three operational routes, opportunity target fields, invoker session customer view, source RLS and anonymous RPC denial verified against live metadata after two migrations.",
+  "scope": "Frontend runtime objects, Daily Operational Report production contract and Training Native 1.1 RC; added coordination, purchases, role windows and area agenda objects verified 2026-10-16 against production catalogs; quality-information objects verified against production after migration 20261017005235; audit in implementation report; ISO clause assessment/evidence tables, vw_iso_compliance_summary and iso_clause_assessment RPCs verified live 2026-11-03 after migration 20261103130000; vw_referrer_visit_route verified live 2026-11-03 after migration 20261103190000; hemovigilance_delivery_details and hemovig_delivery_nc_create verified live 2026-11-04 after migration 20261104100000; vw_hyperbaric_appointments_display verified live 2026-11-04 after migration 20261104110000; CRM contacts, activities, history, idempotent requests, services and three RPCs verified after commercial_crm_contacts migration; scoped customer catalog and writes tested; CRM shared portfolio and weekly planner verified 2026-11-06; twelve-week execution objects verified 2026-11-06; incoming supplier quotation metadata verified 2026-11-07; commercial agenda RPC and reservation triggers verified 2026-11-07; donor_search_page invoker/permissions, quotation indexes and insert policies verified live after web_performance_security migration 20261107181249; daily_report_photos columns, RLS and private immutable grants verified live 2026-11-09 after migration 20261109002642; v0.68 operational objects, RLS flags, admin metadata RPC privileges and nine migration source hashes verified against production catalogs; regulatory/forecast and financial drafts NOT included as deployed.; v0.69 regulatory and operational forecasts deployed with invoker views and three source hashes verified against production; seven clinical rules and eleven legal requirements remain unapproved.; v0.70 logistics endpoint classification helper, anonymous execution denial, removal of arrival-hours registration block and migration source hash verified live without creating operational records.; v0.71 unit-sales invoker views, absence of monetary/patient columns, anonymous denial and report titles verified against production catalog.; v0.72 three operational routes, opportunity target fields, invoker session customer view, source RLS and anonymous RPC denial verified against live metadata after two migrations.; v0.74 goal quantity columns and invoker report, rates/audit tables with RLS and anonymous RPC denial verified against live catalogs after two migrations; rates intentionally unconfigured.",
   "relations": [
     "access_events",
     "app_feature_flags",
@@ -92,6 +92,8 @@
     "lab_event_log",
     "lab_methods",
     "logistics_trip_history",
+    "logistics_trip_rate_history",
+    "logistics_trip_rates",
     "logistics_trips",
     "management_actions",
     "management_review_actions",
@@ -291,6 +293,7 @@
   "functions": [
     "adjust_sale_line",
     "admin_workspace_preview",
+    "approve_commercial_goal",
     "audit_finding_create_capa",
     "audit_finding_to_nonconformity",
     "calculate_monthly_product_costs",
@@ -319,6 +322,7 @@
     "log_access_event",
     "log_diagnostic_event",
     "logistics_trip_action",
+    "logistics_trip_rate_save",
     "logistics_trip_timing",
     "procurement_action",
     "production_healthcheck",
@@ -857,6 +861,78 @@
     {
       "table_name": "vw_performed_session_report",
       "column_name": "customer_id"
+    },
+    {
+      "table_name": "commercial_goals",
+      "column_name": "product_id"
+    },
+    {
+      "table_name": "commercial_goals",
+      "column_name": "component_name"
+    },
+    {
+      "table_name": "vw_commercial_goal_progress",
+      "column_name": "actual_quantity"
+    },
+    {
+      "table_name": "vw_commercial_goal_progress",
+      "column_name": "product_id"
+    },
+    {
+      "table_name": "vw_commercial_goal_progress",
+      "column_name": "component_name"
+    },
+    {
+      "table_name": "logistics_trips",
+      "column_name": "incentive_rule_id"
+    },
+    {
+      "table_name": "logistics_trips",
+      "column_name": "incentive_rule_snapshot"
+    },
+    {
+      "table_name": "logistics_trip_rates",
+      "column_name": "id"
+    },
+    {
+      "table_name": "logistics_trip_rates",
+      "column_name": "branch_id"
+    },
+    {
+      "table_name": "logistics_trip_rates",
+      "column_name": "purpose"
+    },
+    {
+      "table_name": "logistics_trip_rates",
+      "column_name": "amount"
+    },
+    {
+      "table_name": "logistics_trip_rates",
+      "column_name": "currency"
+    },
+    {
+      "table_name": "logistics_trip_rates",
+      "column_name": "active"
+    },
+    {
+      "table_name": "logistics_trip_rates",
+      "column_name": "revision"
+    },
+    {
+      "table_name": "logistics_trip_rate_history",
+      "column_name": "id"
+    },
+    {
+      "table_name": "logistics_trip_rate_history",
+      "column_name": "rate_id"
+    },
+    {
+      "table_name": "logistics_trip_rate_history",
+      "column_name": "actor_id"
+    },
+    {
+      "table_name": "logistics_trip_rate_history",
+      "column_name": "changed_at"
     }
   ],
   "migrations": [
@@ -1038,6 +1114,16 @@
     {
       "version": "20261116143111",
       "name": "commercial_operational_opportunities",
+      "source": "supabase_migrations.schema_migrations"
+    },
+    {
+      "version": "20261117035023",
+      "name": "commercial_goals_units",
+      "source": "supabase_migrations.schema_migrations"
+    },
+    {
+      "version": "20261117035039",
+      "name": "logistics_fixed_incentives",
       "source": "supabase_migrations.schema_migrations"
     }
   ]
