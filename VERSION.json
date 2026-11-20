@@ -1,7 +1,7 @@
 {
   "project": "HemoCura Operations Intelligence + QMS + Compliance",
-  "version": "0.78.0",
-  "stage": "Inventario cuantitativo de hemocomponentes por sucursal y grupo, sin códigos ni trazabilidad individual de laboratorio.",
+  "version": "0.79.0",
+  "stage": "Formularios simplificados, requisiciones automáticas, compras y proveedores por sucursal y entrenamiento con la interfaz real.",
   "release_channel": "RC",
   "protected_files": [
     "js/config.js"

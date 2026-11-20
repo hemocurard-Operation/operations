@@ -3,9 +3,11 @@ import {fixture} from '/hemocura-core/supabase.js';
 import {mountProcurement} from '/hemocura-core/procurement.js';
 import {resetAccessCache} from '/hemocura-core/access-control.js';
 window.fixture=fixture;
+fixture.context={user_id:'buyer',profile_branch_id:'b1',roles:['INVENTARIO']};
 fixture.permissions=['PURCHASE_VIEW','PURCHASE_WRITE','PURCHASE_APPROVE','PURCHASE_RECEIVE'];
 fixture.tables.branches=[{id:'b1',name:'Santiago',active:true},{id:'b2',name:'Otra sucursal',active:true}];
-fixture.tables.suppliers=[{id:'s1',legal_name:'Proveedor sintético <img src=x onerror="window.evil=1">',status:'ACTIVO',tax_id:'TEST',phone:'8095550100'}];
+fixture.tables.suppliers=[{id:'s1',branch_id:'b1',legal_name:'Proveedor sintético <img src=x onerror="window.evil=1">',status:'ACTIVO',tax_id:'TEST',phone:'8095550100'}];
+fixture.tables.products=[{id:'auto-product',code:'AUTO-1',name:'Reactivo de catálogo',unit_of_measure:'caja',active:true}];
 fixture.tables.purchase_orders=[];fixture.tables.purchase_order_lines=[];fixture.tables.purchase_receipts=[];
 fixture.rpcHandler=async(name,{p_action:a,p_payload:p})=>{
  if(name!=='procurement_action')return {error:{message:'RPC ajena'}};
