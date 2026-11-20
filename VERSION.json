@@ -1,7 +1,7 @@
 {
   "project": "HemoCura Operations Intelligence + QMS + Compliance",
-  "version": "0.77.0",
-  "stage": "Corrección de catálogos: hemocomponentes separados de insumos en inventario y metas; fechas por componente y alta en cuarentena.",
+  "version": "0.78.0",
+  "stage": "Inventario cuantitativo de hemocomponentes por sucursal y grupo, sin códigos ni trazabilidad individual de laboratorio.",
   "release_channel": "RC",
   "protected_files": [
     "js/config.js"

@@ -10,6 +10,8 @@ on:
       - 'hemocura-core/blood-component-catalog.js'
       - 'hemocura-core/blood-operations-data.js'
       - 'tests/inventory-capture/**'
+      - 'tests/operational-blood-counts/**'
+      - 'supabase/migrations/*operational_blood_counts.sql'
       - 'hemocura-core/blood-inventory.js'
       - 'hemocura-core/layout.js'
       - 'hemocura-core/my-work.js'
@@ -29,6 +31,8 @@ on:
       - 'hemocura-core/blood-component-catalog.js'
       - 'hemocura-core/blood-operations-data.js'
       - 'tests/inventory-capture/**'
+      - 'tests/operational-blood-counts/**'
+      - 'supabase/migrations/*operational_blood_counts.sql'
       - 'hemocura-core/blood-inventory.js'
       - 'hemocura-core/layout.js'
       - 'css/operations-shell.css'
@@ -49,6 +53,8 @@ jobs:
           node-version: '24'
       - run: node tests/operations-modules/domain.test.mjs
       - run: node tests/inventory-capture/domain.test.mjs
+      - run: python tools/migration_security_linter.py supabase/migrations/*operational_blood_counts.sql
+      - run: python tools/workflow_postgres_runner.py --allow-external-prerequisite-fixture --report-dir /tmp/operational-counts-postgres
       - run: python tools/javascript_syntax_gate.py
       - run: python tools/ux_budget_gate.py contracts/ux-budget-v0.45.7.json
       - run: npm ci --prefix tests/wave50 --ignore-scripts --no-audit --no-fund
