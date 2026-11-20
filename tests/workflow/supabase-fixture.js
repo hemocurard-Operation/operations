@@ -31,7 +31,7 @@ class Query {
     if(this.table==='vw_donor_appointment_agenda')rows=(fixture.tables.donor_visits||[]).map(v=>({...((fixture.tables.donors||[]).find(d=>d.id===v.donor_id)||{}),...v}));
     if(this.table==='vw_my_security_context')rows=[fixture.context||{roles:['FINANZAS'],email:'fixture@example.invalid'}];
     rows=rows.filter(row=>this.filters.every(test=>test(row)));if(this.offset!==undefined)rows=rows.slice(this.offset,this.end+1);
-    if(this.kind==='insert'){rows=[{id:crypto.randomUUID(),...(this.table==='operations_orders'?{status:'PENDIENTE',revision:1}:{}),...this.payload}];fixture.tables[this.table]??=[];fixture.tables[this.table].push(...rows);}
+    if(this.kind==='insert'){rows=(Array.isArray(this.payload)?this.payload:[this.payload]).map(item=>({id:crypto.randomUUID(),...(this.table==='operations_orders'?{status:'PENDIENTE',revision:1}:{}),...item}));fixture.tables[this.table]??=[];fixture.tables[this.table].push(...rows);}
     if(this.kind==='update')rows.forEach(row=>Object.assign(row,this.payload,this.table==='operations_orders'?{revision:(row.revision||1)+1}:{}));
     if(this.kind==='upsert'){fixture.tables[this.table]??=[];let existing=fixture.tables[this.table].find(r=>r.branch_id===this.payload.branch_id);if(existing)Object.assign(existing,this.payload);else{existing={...this.payload};fixture.tables[this.table].push(existing)}rows=[existing]}
     if(this.kind!=='select')fixture.writes.push({table:this.table,kind:this.kind,payload:this.payload});
