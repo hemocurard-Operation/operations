@@ -1,5 +1,5 @@
 {
-  "contract_version": "0.77.0",
+  "contract_version": "0.78.0",
   "database_baseline": "0.45-training-native-1.1-rc + value-chain-50 + decision-chain-50 + predictive-chain-50 + orchestration-chain-50",
   "relations": [
     "access_events",
@@ -102,6 +102,7 @@
     "monthly_cost_entries",
     "monthly_cost_periods",
     "nonconformities",
+    "operational_blood_counts",
     "operational_exceptions",
     "operational_plan_lines",
     "operational_plans",
@@ -236,6 +237,7 @@
     "vw_my_training_catalog",
     "vw_my_work_areas",
     "vw_open_management_alerts",
+    "vw_operational_blood_inventory",
     "vw_performed_session_report",
     "vw_plan_vs_actual_status",
     "vw_production_summary_30d",
@@ -328,6 +330,7 @@
     "qms_capa_action",
     "qms_management_action",
     "qms_record_action",
+    "record_operational_blood_counts",
     "refresh_forecasts",
     "reopen_daily_operational_report",
     "request_capa_close",
@@ -625,6 +628,38 @@
       "changed_at",
       "id",
       "rate_id"
+    ],
+    "operational_blood_counts": [
+      "id",
+      "branch_id",
+      "component_name",
+      "group_code",
+      "available_units",
+      "quarantine_units",
+      "reserved_units",
+      "count_date",
+      "revision",
+      "created_by",
+      "created_at",
+      "previous_id",
+      "request_id",
+      "line_no",
+      "payload_hash"
+    ],
+    "vw_operational_blood_inventory": [
+      "id",
+      "branch_id",
+      "component_name",
+      "group_code",
+      "abo",
+      "rh",
+      "available_units",
+      "quarantine_units",
+      "reserved_units",
+      "count_date",
+      "revision",
+      "created_at",
+      "created_by"
     ]
   },
   "forbidden_columns": {
@@ -659,7 +694,8 @@
     "20261116143111",
     "20261117035023",
     "20261117035039",
-    "20261120052344"
+    "20261120052344",
+    "20261120123618"
   ],
   "required_migration_codes": [
     "44_RELEASE_1_0_RC_v0_44",
