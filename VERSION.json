@@ -1,7 +1,7 @@
 {
   "project": "HemoCura Operations Intelligence + QMS + Compliance",
-  "version": "0.74.0",
-  "stage": "Agenda comercial semanal, contactos en submenú, metas gráficas en cantidades y viajes mensuales con incentivos fijos y autorización única.",
+  "version": "0.75.0",
+  "stage": "Incentivo base de RD$1,000 por viaje autorizado con salida o llegada fuera de horario laboral.",
   "release_channel": "RC",
   "protected_files": [
     "js/config.js"

@@ -30,4 +30,14 @@ export function tripCalendarMonth(month){
 }
 export function shiftTripMonth(month,offset){tripCalendarMonth(month);const [year,m]=month.split('-').map(Number),d=new Date(Date.UTC(year,m-1+offset,1));return d.toISOString().slice(0,7)}
 export function tripsByArrivalDay(rows,month){const out=new Map();for(const r of rows){const day=localDay(new Date(r.arrival_at));if(day.slice(0,7)!==month)continue;if(!out.has(day))out.set(day,[]);out.get(day).push(r)}return out}
-export function fixedTripIncentive(row){if(!['APROBADO','LIQUIDADO'].includes(row.status))return {known:false,amount:null,label:'Pendiente de autorización'};const n=row.amount==null?null:Number(row.amount);return n!==null&&Number.isFinite(n)&&n>0?{known:true,amount:n,label:'Tarifa aplicada'}:{known:false,amount:null,label:'Pendiente de configurar tarifa'};}
+export function fixedTripIncentive(row){if(!['APROBADO','LIQUIDADO'].includes(row.status))return {known:false,amount:null,label:'Pendiente de autorización'};if(row.incentive_rule_snapshot?.status==='NO_APLICA_DENTRO_HORARIO')return {known:true,amount:0,label:'Sin incentivo: dentro de horario'};const n=row.amount==null?null:Number(row.amount);return n!==null&&Number.isFinite(n)&&n>0?{known:true,amount:n,label:'Tarifa aplicada'}:{known:false,amount:null,label:'Pendiente de configurar tarifa'};}
+
+export function previewTripIncentive(row,rates=[],loaded=true){
+ const timing=tripTiming(row);
+ if(timing.startOutside===null||timing.endOutside===null)return {amount:null,label:'Horario no disponible'};
+ if(!timing.startOutside&&!timing.endOutside)return {amount:0,label:'Sin incentivo: dentro de horario'};
+ if(!loaded)return {amount:null,label:'Tarifa no disponible'};
+ const rate=rates.find(r=>r.purpose===row.purpose);
+ if(rate&&!rate.active)return {amount:null,label:'Tarifa inactiva'};
+ return {amount:rate?Number(rate.amount):1000,label:rate?'Tarifa por sucursal y motivo':'Tarifa base fuera de horario'};
+}

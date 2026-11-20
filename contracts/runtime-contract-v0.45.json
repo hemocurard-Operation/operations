@@ -1,5 +1,5 @@
 {
-  "contract_version": "0.74.0",
+  "contract_version": "0.75.0",
   "database_baseline": "0.45-training-native-1.1-rc + value-chain-50 + decision-chain-50 + predictive-chain-50 + orchestration-chain-50",
   "relations": [
     "access_events",
@@ -658,7 +658,8 @@
     "20261116143054",
     "20261116143111",
     "20261117035023",
-    "20261117035039"
+    "20261117035039",
+    "20261120052344"
   ],
   "required_migration_codes": [
     "44_RELEASE_1_0_RC_v0_44",

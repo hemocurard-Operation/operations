@@ -1125,6 +1125,11 @@
       "version": "20261117035039",
       "name": "logistics_fixed_incentives",
       "source": "supabase_migrations.schema_migrations"
+    },
+    {
+      "version": "20261120052344",
+      "name": "logistics_outside_hours_default",
+      "source": "supabase_migrations.schema_migrations"
     }
   ]
 }
