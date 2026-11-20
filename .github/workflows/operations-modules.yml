@@ -6,6 +6,9 @@ on:
       - 'hemocura-core/operations-overview.js'
       - 'hemocura-core/operations-shell.js'
       - 'hemocura-core/inventory-view-domain.js'
+      - 'hemocura-core/inventory-capture*.js'
+      - 'hemocura-core/blood-operations-data.js'
+      - 'tests/inventory-capture/**'
       - 'hemocura-core/blood-inventory.js'
       - 'hemocura-core/layout.js'
       - 'hemocura-core/my-work.js'
@@ -21,6 +24,9 @@ on:
       - 'hemocura-core/operations-overview.js'
       - 'hemocura-core/operations-shell.js'
       - 'hemocura-core/inventory-view-domain.js'
+      - 'hemocura-core/inventory-capture*.js'
+      - 'hemocura-core/blood-operations-data.js'
+      - 'tests/inventory-capture/**'
       - 'hemocura-core/blood-inventory.js'
       - 'hemocura-core/layout.js'
       - 'css/operations-shell.css'
@@ -40,6 +46,7 @@ jobs:
         with:
           node-version: '24'
       - run: node tests/operations-modules/domain.test.mjs
+      - run: node tests/inventory-capture/domain.test.mjs
       - run: python tools/javascript_syntax_gate.py
       - run: python tools/ux_budget_gate.py contracts/ux-budget-v0.45.7.json
       - run: npm ci --prefix tests/wave50 --ignore-scripts --no-audit --no-fund
