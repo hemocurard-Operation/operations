@@ -1,5 +1,5 @@
 {
-  "contract_version": "0.78.0",
+  "contract_version": "0.79.0",
   "database_baseline": "0.45-training-native-1.1-rc + value-chain-50 + decision-chain-50 + predictive-chain-50 + orchestration-chain-50",
   "relations": [
     "access_events",
@@ -325,6 +325,7 @@
     "logistics_trip_action",
     "logistics_trip_rate_save",
     "logistics_trip_timing",
+    "operations_branch_allowed",
     "procurement_action",
     "production_healthcheck",
     "qms_capa_action",
@@ -660,6 +661,19 @@
       "revision",
       "created_at",
       "created_by"
+    ],
+    "suppliers": [
+      "branch_id"
+    ],
+    "supplier_evaluations": [
+      "branch_id"
+    ],
+    "vw_supplier_performance": [
+      "branch_id"
+    ],
+    "requisitions": [
+      "client_request_id",
+      "request_payload_hash"
     ]
   },
   "forbidden_columns": {
@@ -695,7 +709,9 @@
     "20261117035023",
     "20261117035039",
     "20261120052344",
-    "20261120123618"
+    "20261120123618",
+    "20261120171556",
+    "20261120172407"
   ],
   "required_migration_codes": [
     "44_RELEASE_1_0_RC_v0_44",

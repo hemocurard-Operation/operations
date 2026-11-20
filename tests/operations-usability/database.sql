@@ -1,0 +1,57 @@
+begin;
+create function pg_temp.ok(v boolean,label text) returns void language plpgsql as $$begin if v is distinct from true then raise exception 'FAIL %',label;end if;raise notice 'PASS %',label;end$$;
+create function pg_temp.denied(stmt text,label text) returns void language plpgsql as $$begin begin execute stmt;exception when others then if sqlstate in ('42601','42702','42703','42883','42P01') then raise;end if;raise notice 'PASS %',label;return;end;raise exception 'FAIL unexpectedly allowed %',label;end$$;
+insert into branches(id,code,name) values('ef810000-0000-0000-0000-000000000001','UX-A','Synthetic Santiago'),('ef810000-0000-0000-0000-000000000002','UX-B','Synthetic other');
+insert into auth.users(id,email) values('ef820000-0000-0000-0000-000000000001','ux@example.invalid');
+insert into profiles(id,full_name,branch_id,active) values('ef820000-0000-0000-0000-000000000001','Synthetic branch manager','ef810000-0000-0000-0000-000000000001',true);
+insert into roles(id,code,name) values('ef830000-0000-0000-0000-000000000001','UX_BRANCH_TEST','Synthetic branch test');
+insert into role_permissions(role_id,permission_code) select 'ef830000-0000-0000-0000-000000000001',p from (values('PURCHASE_VIEW'),('PURCHASE_WRITE'),('SUPPLIERS_VIEW'),('SUPPLIERS_WRITE'),('REQUISITION_WRITE'),('DISPATCH_VIEW'))v(p);
+insert into user_roles(user_id,role_id,branch_id) values('ef820000-0000-0000-0000-000000000001','ef830000-0000-0000-0000-000000000001','ef810000-0000-0000-0000-000000000001');
+-- An extra explicit role grant must not override the assigned profile branch for purchasing.
+insert into user_roles(user_id,role_id,branch_id) values('ef820000-0000-0000-0000-000000000001','ef830000-0000-0000-0000-000000000001','ef810000-0000-0000-0000-000000000002');
+insert into suppliers(id,supplier_code,legal_name,branch_id) values('ef840000-0000-0000-0000-000000000001','UX-S1','Branch A supplier','ef810000-0000-0000-0000-000000000001'),('ef840000-0000-0000-0000-000000000002','UX-S2','Branch B supplier','ef810000-0000-0000-0000-000000000002');
+insert into supplier_evaluations(supplier_id,branch_id,total_score) values('ef840000-0000-0000-0000-000000000001','ef810000-0000-0000-0000-000000000001',90),('ef840000-0000-0000-0000-000000000002','ef810000-0000-0000-0000-000000000002',80);
+insert into products(id,code,name,unit_of_measure) values('ef850000-0000-0000-0000-000000000001','UX-P1','Synthetic supply','caja');
+insert into workflow_supply_catalog(id,code,source_label,approved_name,unit_of_measure,product_id,reviewed_at) values('ef860000-0000-0000-0000-000000000001','UX-C1','Synthetic supply','Synthetic supply','caja','ef850000-0000-0000-0000-000000000001',now());
+insert into auth.users(id,email) values('ef820000-0000-0000-0000-000000000002','ux-other@example.invalid');
+insert into profiles(id,full_name,branch_id,active) values('ef820000-0000-0000-0000-000000000002','Synthetic other manager','ef810000-0000-0000-0000-000000000002',true);
+insert into user_roles(user_id,role_id,branch_id) values('ef820000-0000-0000-0000-000000000002','ef830000-0000-0000-0000-000000000001','ef810000-0000-0000-0000-000000000002');
+select set_config('request.jwt.claim.sub','ef820000-0000-0000-0000-000000000002',true);
+select procurement_action('CREATE','{"branch_id":"ef810000-0000-0000-0000-000000000002","supplier_id":"ef840000-0000-0000-0000-000000000002","lines":[{"description":"Synthetic branch B supplies","quantity":2,"unit":"caja","unit_price":10,"requires_lot":false,"requires_expiry":false}]}')->>'id' as other_order \gset
+insert into supplier_quotations(branch_id,supplier_id,code,quote_date,valid_until,currency,delivery_days,payment_terms,lines,pdf_name,pdf_base64) values('ef810000-0000-0000-0000-000000000002','ef840000-0000-0000-0000-000000000002','UX-Q-B',current_date,current_date+30,'DOP',3,'30 días','[{"reference":"X1","description":"Synthetic","unit":"caja","quantity":"2","unit_price":"10","tax":"0","freight":"0"}]','synthetic.pdf',encode(convert_to('%PDF-1.4 synthetic','UTF8'),'base64'));
+select set_config('request.jwt.claim.sub','',true);
+insert into auth.users(id,email) values('ef820000-0000-0000-0000-000000000003','ux-no-financial@example.invalid');
+insert into profiles(id,full_name,branch_id,active) values('ef820000-0000-0000-0000-000000000003','Synthetic no financial permissions','ef810000-0000-0000-0000-000000000001',true);
+insert into roles(id,code,name) values('ef830000-0000-0000-0000-000000000003','UX_NO_PURCHASE_TEST','Synthetic no purchase rights');
+insert into user_roles(user_id,role_id,branch_id) values('ef820000-0000-0000-0000-000000000003','ef830000-0000-0000-0000-000000000003','ef810000-0000-0000-0000-000000000001');
+select ur.user_id as super_actor from user_roles ur join roles r on r.id=ur.role_id where r.code='SUPER_USUARIO' limit 1 \gset
+grant execute on all functions in schema pg_temp to authenticated;
+set local role authenticated;
+select set_config('request.jwt.claim.sub','ef820000-0000-0000-0000-000000000001',true);
+select pg_temp.ok(public.operations_branch_allowed('ef810000-0000-0000-0000-000000000001') and not public.operations_branch_allowed('ef810000-0000-0000-0000-000000000002'),'financial scope is restricted to assigned branch');
+select pg_temp.ok(not exists(select 1 from suppliers where branch_id='ef810000-0000-0000-0000-000000000002'),'other branch supplier contacts are hidden');
+select pg_temp.ok(not exists(select 1 from purchase_orders where branch_id='ef810000-0000-0000-0000-000000000002'),'other branch purchase records are hidden even with extra role grant');
+select pg_temp.ok(not exists(select pdf_base64 from supplier_quotations where branch_id='ef810000-0000-0000-0000-000000000002'),'other branch quotation PDFs are hidden even with extra role grant');
+select pg_temp.ok(not exists(select 1 from supplier_evaluations where branch_id='ef810000-0000-0000-0000-000000000002'),'other branch supplier evaluations are hidden');
+select pg_temp.ok(not exists(select 1 from vw_supplier_performance where branch_id='ef810000-0000-0000-0000-000000000002'),'supplier performance view honors branch RLS');
+select procurement_action('SUPPLIER','{"branch_id":"ef810000-0000-0000-0000-000000000001","legal_name":"Own branch created supplier"}');
+select pg_temp.ok(exists(select 1 from suppliers where legal_name='Own branch created supplier' and branch_id='ef810000-0000-0000-0000-000000000001'),'new supplier gets selected authorized branch');
+select pg_temp.denied($q$select procurement_action('SUPPLIER','{"branch_id":"ef810000-0000-0000-0000-000000000002","legal_name":"Forbidden"}')$q$,'definer API cannot create other branch suppliers');
+select pg_temp.denied($q$select procurement_action('CREATE','{"branch_id":"ef810000-0000-0000-0000-000000000002","supplier_id":"ef840000-0000-0000-0000-000000000002"}')$q$,'definer API cannot create other branch purchase orders');
+select pg_temp.denied($q$update suppliers set branch_id='ef810000-0000-0000-0000-000000000002' where id='ef840000-0000-0000-0000-000000000001'$q$,'supplier cannot be moved to another branch');
+select wf_create_catalog_requisition('{"requesting_branch_id":"ef810000-0000-0000-0000-000000000001","client_request_id":"ef870000-0000-0000-0000-000000000001"}','[{"catalog_item_id":"ef860000-0000-0000-0000-000000000001","requested_qty":3}]') as req \gset
+select pg_temp.ok((select requisition_code like 'REQ-%' and request_date=(now() at time zone 'America/Santo_Domingo')::date and priority='NORMAL' and requested_by=auth.uid() from requisitions where id=:'req'),'requisition code date priority and responsible are automatic');
+select pg_temp.ok(wf_create_catalog_requisition('{"requesting_branch_id":"ef810000-0000-0000-0000-000000000001","client_request_id":"ef870000-0000-0000-0000-000000000001"}','[{"catalog_item_id":"ef860000-0000-0000-0000-000000000001","requested_qty":3}]')=:'req'::uuid,'requisition retry is idempotent');
+select pg_temp.denied($q$select wf_create_catalog_requisition('{"requesting_branch_id":"ef810000-0000-0000-0000-000000000002"}','[{"catalog_item_id":"ef860000-0000-0000-0000-000000000001","requested_qty":3}]')$q$,'requisition API rejects another branch despite role grant');
+select pg_temp.ok(not has_function_privilege('anon','public.operations_branch_allowed(uuid)','execute'),'anonymous branch helper access is revoked');
+select set_config('request.jwt.claim.sub','ef820000-0000-0000-0000-000000000003',true);
+select pg_temp.ok(public.operations_branch_allowed('ef810000-0000-0000-0000-000000000001'),'nonfinancial actor has own branch scope');
+select pg_temp.ok(not exists(select 1 from supplier_evaluations),'branch membership alone cannot read supplier evaluations');
+select pg_temp.ok(not exists(select 1 from suppliers),'branch membership alone cannot read supplier contacts');
+select set_config('request.jwt.claim.sub',:'super_actor',true);
+select pg_temp.ok(public.operations_branch_allowed('ef810000-0000-0000-0000-000000000002'),'super user retains cross branch purchasing access');
+select pg_temp.denied($q$select procurement_action('SUPPLIER','{"legal_name":"No implicit super branch"}')$q$,'super user must select supplier branch explicitly');
+select procurement_action('SUPPLIER','{"branch_id":"ef810000-0000-0000-0000-000000000002","legal_name":"Super created supplier in branch B"}');
+select pg_temp.ok(exists(select 1 from suppliers where legal_name='Super created supplier in branch B' and branch_id='ef810000-0000-0000-0000-000000000002'),'super user can manage selected branch supplier');
+reset role;
+rollback;

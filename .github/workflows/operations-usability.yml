@@ -1,0 +1,51 @@
+name: Operations usability and branch isolation
+on:
+  pull_request:
+    paths:
+      - 'hemocura-core/**'
+      - 'workspace-screen.html'
+      - 'tests/operations-usability/**'
+      - 'supabase/migrations/*operations_usability_branch_scope.sql'
+      - 'supabase/migrations/*operations_supplier_read_permissions.sql'
+      - '.github/workflows/operations-usability.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'supabase/migrations/*operations_usability_branch_scope.sql'
+      - 'supabase/migrations/*operations_supplier_read_permissions.sql'
+      - '.github/workflows/operations-usability.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: node tests/operations-usability/domain.test.mjs
+      - run: python tools/migration_security_linter.py supabase/migrations/*operations_usability_branch_scope.sql supabase/migrations/*operations_supplier_read_permissions.sql
+      - run: python tools/workflow_postgres_runner.py --allow-external-prerequisite-fixture --report-dir /tmp/usability-postgres
+      - run: python tools/javascript_syntax_gate.py
+      - run: npm ci --prefix tests/wave50 --ignore-scripts --no-audit --no-fund
+      - run: node tests/wave50/node_modules/playwright/cli.js install --with-deps chromium
+      - name: Real forms and training browser integration
+        shell: bash
+        run: |
+          export HEMOCURA_BROWSER="$(node -p "require('./tests/wave50/node_modules/playwright').chromium.executablePath()")"
+          node tools/workspace_preview_browser_runner.cjs
+          node tools/procurement_browser_runner.cjs
+          node tools/quotations_browser_runner.cjs
+          node tools/workflow_browser_runner.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: operations-usability
+          path: |
+            /tmp/usability-postgres
+            /tmp/hemocura-workspace-preview
+            /tmp/hemocura-procurement-browser
+            /tmp/hemocura-workflow-browser
