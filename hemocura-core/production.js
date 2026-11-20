@@ -1,8 +1,9 @@
+import {BLOOD_COMPONENTS} from './blood-component-catalog.js';
 import { localDay } from './workflow-domain.js';
 import { supplyData } from './supply-data.js';
 function esc(v=''){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
 const today=()=>localDay();
-const COMPONENTS=['SANGRE_TOTAL','CONCENTRADO_HEMATIES','PLASMA_FRESCO_CONGELADO','PLAQUETAS','CRIOPRECIPITADO'];
+const COMPONENTS=BLOOD_COMPONENTS.map(c=>c.code);
 export async function mountProduction(root){
  const branches=await supplyData.branches(),bm=Object.fromEntries(branches.map(b=>[b.id,b.name]));
  root.innerHTML=`<div class="sales-toolbar"><div><h2 class="section-heading">Producción</h2><div class="muted">Captura guiada de componentes obtenidos desde unidades origen. La disponibilidad se determina mediante revisión y liberación técnica.</div></div><button id="prod-new">Nueva producción</button></div>
