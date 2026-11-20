@@ -1,7 +1,7 @@
 {
   "project": "HemoCura Operations Intelligence + QMS + Compliance",
-  "version": "0.76.0",
-  "stage": "Captura móvil de inventario con productos desplegables, cantidades y filas plegables por producto.",
+  "version": "0.77.0",
+  "stage": "Corrección de catálogos: hemocomponentes separados de insumos en inventario y metas; fechas por componente y alta en cuarentena.",
   "release_channel": "RC",
   "protected_files": [
     "js/config.js"
