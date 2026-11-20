@@ -8,6 +8,7 @@ on:
       - 'css/extra-trips.css'
       - 'supabase/migrations/*commercial_goals_units.sql'
       - 'supabase/migrations/*logistics_fixed_incentives.sql'
+      - 'supabase/migrations/*logistics_outside_hours_default.sql'
       - 'tests/commercial-goals/**'
       - 'tests/commercial-ux/weekly.test.mjs'
       - 'tests/operational-reports/**'
@@ -22,6 +23,7 @@ on:
       - 'hemocura-core/extra-trips*.js'
       - 'supabase/migrations/*commercial_goals_units.sql'
       - 'supabase/migrations/*logistics_fixed_incentives.sql'
+      - 'supabase/migrations/*logistics_outside_hours_default.sql'
       - '.github/workflows/commercial-operations-refresh.yml'
   workflow_dispatch:
 permissions:
@@ -41,7 +43,7 @@ jobs:
       - run: node tests/logistics-trips/domain.test.mjs
       - run: python tools/javascript_syntax_gate.py
       - run: python tools/audit_ui_routes.py
-      - run: python tools/migration_security_linter.py supabase/migrations/*commercial_goals_units.sql supabase/migrations/*logistics_fixed_incentives.sql
+      - run: python tools/migration_security_linter.py supabase/migrations/*commercial_goals_units.sql supabase/migrations/*logistics_fixed_incentives.sql supabase/migrations/*logistics_outside_hours_default.sql
       - run: python tools/workflow_postgres_runner.py --allow-external-prerequisite-fixture --report-dir /tmp/commercial-operations-postgres
       - run: npm ci --prefix tests/wave50 --ignore-scripts --no-audit --no-fund
       - run: node tests/wave50/node_modules/playwright/cli.js install --with-deps chromium
