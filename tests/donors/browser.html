@@ -1,15 +1,1 @@
-<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="/css/app.css"><link rel="stylesheet" href="/css/ui-v0442.css"><title>Donantes · prueba local</title></head><body><main class="content" id="root"></main><script type="module">
-import {fixture} from '../../hemocura-core/supabase.js';
-import {mountDonors} from '../../hemocura-core/donors.js';
-import {resetAccessCache} from '../../hemocura-core/access-control.js';
-fixture.permissions=['DONORS_VIEW','DONORS_WRITE','SCREENING_WRITE'];
-fixture.tables.branches=[{id:'b1',name:'Centro principal',active:true}];
-fixture.tables.donors=[{id:'d1',donor_code:'DON-001',branch_id:'b1',full_name:'María López',cedula:'00000000000',sex:'FEMENINO',phone:'809-555-0100',preferred_channel:'LLAMADA',abo:'O',rh:'POSITIVO',status:'PENDIENTE',registration_date:'2026-10-13',effective_donation:false},{id:'d2',donor_code:'DON-002',branch_id:'b1',full_name:'Pedro Pérez',cedula:'11111111111',sex:'MASCULINO',status:'DIFERIDO'}];
-fixture.tables.vw_donor_next_donation=fixture.tables.donors;fixture.tables.vw_donor_coordination=fixture.tables.donors;fixture.tables.vw_donor_appointment_agenda=[];fixture.tables.donor_agenda_capacity=[];
-Object.assign(fixture.tables.donors[0],{last_donation_date:'2026-07-12',next_donation_date:'2026-10-04',agenda_state:'FECHA_ALCANZADA',reference_source:'REGISTRO_HEMOCURA'});Object.assign(fixture.tables.donors[1],{last_donation_date:null,next_donation_date:null,agenda_state:'SIN_FECHA'});
-fixture.tables.donations=[{id:'don1',donor_id:'d1',branch_id:'b1',donation_code:'DN-001',donation_date:'2026-07-12',status:'RECOLECTADA',source_unit_code:'U-001'}];
-fixture.tables.donor_lab_comments=[{id:'lab1',donor_id:'d1',branch_id:'b1',comment:'Resultados registrados.',created_at:'2026-07-12T13:00:00Z',responsible_name:'Lic. Ana Pérez'}];
-fixture.tables.donor_contacts=[];fixture.tables.donor_visits=[];
-window.fixture=fixture;window.remount=async()=>{resetAccessCache();await mountDonors(document.querySelector('#root'))};
-await window.remount();window.donorReady=true;
-</script></body></html>
+<!doctype html><html lang="es"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>HemoCura · Nuevo comienzo</title><style>body{margin:0;background:#f3f6fa;color:#183550;font:18px system-ui;display:grid;min-height:100vh;place-items:center}main{padding:40px;max-width:560px}p{line-height:1.6;color:#4d6378}</style><main><h1>HemoCura</h1><p>Este sistema se ha reiniciado.</p><p>Las pantallas anteriores se han retirado. Los módulos y accesos se configurarán nuevamente.</p></main><script src="/operations/reset-client.js"></script></html>

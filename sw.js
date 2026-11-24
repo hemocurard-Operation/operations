@@ -1,5 +1,1 @@
-// HemoCura v0.14.0 RC-FREEZE
-// Service Worker intentionally inert during stabilization.
-// No fetch interception, no cache population.
-self.addEventListener('install', event => self.skipWaiting());
-self.addEventListener('activate', event => event.waitUntil(self.clients.claim()));
+self.addEventListener('install',()=>self.skipWaiting());self.addEventListener('activate',e=>e.waitUntil(self.registration.unregister().then(()=>self.clients.matchAll()).then(cs=>Promise.all(cs.map(c=>c.navigate(c.url))))));
